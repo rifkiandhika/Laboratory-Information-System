@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard|Admin</title>
+
 
 
 
@@ -131,6 +131,9 @@
     </div>
     <script src="assets/static/js/components/dark.js"></script>
     <script src="assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+
+
+    @include('sweetalert::alert')
 
 
     <script src="assets/compiled/js/app.js"></script>
