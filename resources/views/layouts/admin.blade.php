@@ -95,8 +95,7 @@
                                             class="bi bi-hospital"></i> Department</a>
                                 </li>
                                 <li class="submenu-item">
-                                    <a href="component-alert.html" class="submenu-link"><i
-                                            class="bi bi-heart-pulse"></i>
+                                    <a href="/dokter" class="submenu-link"><i class="bi bi-heart-pulse"></i>
                                         Dokter</a>
                                 </li>
                                 <li class="submenu-item  ">

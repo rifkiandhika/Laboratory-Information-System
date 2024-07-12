@@ -37,6 +37,7 @@ route::get('logout', [userController::class, 'logout'])->name('logout');
 
 route::middleware('auth')->group(function(){
     route::get('/dashboard', [AdminController::class, "index"])->name('admin.dashboard');
+    route::get('/dokter', [AdminController::class, "dokter"]);
 });
 
 route::group(['prefix' => 'demo', 'middleware' => ['auth']], function() {
