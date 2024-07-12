@@ -1,0 +1,42 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('pasiens', function (Blueprint $table) {
+            $table->id();
+            $table->string('no_lab');
+            $table->string('no_rm');
+            $table->string('cito', 1)->default('0');
+            $table->string('nik');
+            $table->string('jenis_pelayanan');
+            $table->string('nama');
+            $table->string('lahir');
+            $table->string('jenis_kelamin');
+            $table->string('no_telp');
+            $table->string('diagnosa');
+            $table->text('alamat');
+            $table->string('kode_dokter');
+            $table->string('asal_ruangan')->default('-');
+            $table->string('status')->default('Belum Dilayani');
+            $table->dateTime('tanggal_masuk')->default(now());
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('pasiens');
+    }
+};

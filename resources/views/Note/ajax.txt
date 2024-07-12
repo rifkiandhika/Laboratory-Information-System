@@ -1,0 +1,36 @@
+
+    <!-- Tampilan data -->
+    <script type="text/javascript">
+        $(document).ready(function() {
+                selesai();
+            });
+
+            function selesai() {
+                setTimeout(function() {
+                    update();
+                    selesai();
+                }, 1000);
+            }
+
+            function update() {
+                $.getJSON("data_pemeriksaan_masuk_dashboard.php", function(data) {
+                    $("tbody").empty();
+                    var no = 1;
+                    $.each(data.result, function() {
+                        if(this['status_pelayanan'] == "Belum Dilayani"){
+                            var statusPelayanan = "btn-pelayanan";
+                            var status = " belum";
+                            var linkTo = "registration?no_reg="+this['no_reg']+"&no_rm="+this['no_rm'];
+                            var visible = "";
+                        } else if(this['status_pelayanan'] == "Sudah Dilayani"){
+                            var statusPelayanan = "btn-pelayanan";
+                            var status = " sudah";
+                            var linkTo = "#";
+                            var visible = "Disable";
+                        }
+
+                        $("tbody").append("<tr><td>"+this['no_reg']+"</td><td>"+this['no_rm']+"</td><td>"+this['nama_pasien']+"</td><td>"+this['jenis_layanan']+"</td><td><a href="+ linkTo +" class='"+ statusPelayanan + status +"'>"+this['status_pelayanan']+"</a></td></tr>");
+                    });
+                });
+            }
+    </script>

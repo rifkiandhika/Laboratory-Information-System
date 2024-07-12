@@ -1,0 +1,1029 @@
+@extends('master')
+
+@section('title', 'Loket')
+
+@section('content')
+<div class="content" id="scroll-content">
+  <div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex  mt-3">
+      <h1 class="h3 mb-0 text-gray-600">Dashboard</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row mt-3">
+
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-primary shadow h-100 py-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                              Jumlah Pasien Masuk (Harian)</div>
+                          <div class="h3 mt-3 font-weight-bold text-gray-600">150</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="bx bx-chart fa-3x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-warning shadow h-100 py-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                              Pasien Belum Dilayani</div>
+                          <div class="h3 mt-3 font-weight-bold text-gray-600">10</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="bx bx-info-circle fa-3x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 py-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Pasien Telah Dilayani
+                          </div>
+                          <div class="h3 mt-3 font-weight-bold text-gray-600">250</div>
+                          <!-- <div class="row no-gutters align-items-center">
+                              <div class="col-auto">
+                                  <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
+                              </div>
+                              <div class="col">
+                                  <div class="progress progress-sm mr-2">
+                                      <div class="progress-bar bg-info" role="progressbar"
+                                          style="width: 50%" aria-valuenow="50" aria-valuemin="0"
+                                          aria-valuemax="100"></div>
+                                  </div>
+                              </div>
+                          </div> -->
+                      </div>
+                      <div class="col-auto">
+                          <i class="bx bxs-user-check fa-3x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Pending Requests Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-bottom-info shadow h-100 py-2">
+              <div class="card-body d-flex justify-content-center align-items-center">
+                  <div class="row no-gutters">
+                      <p class="h1 font-weight-bold text-gray-800 mt-3" id="waktu">00:00:00</p>
+                      <span id="timeformat" class="text-gray-500 ml-2">AM</span>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+    <!-- Content Row -->
+    <div class="row">
+
+      <!-- Area Chart -->
+      <div class="col-xl-7 col-lg-7">
+          <div class="card shadow mb-4">
+              <!-- Card Header - Dropdown -->
+              <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold" style="color: #96B6C5;">Antrian Pasien</h6>
+              </div>
+              <!-- Card Body -->
+              <div class="card-body">
+                <div class="d-flex justify-content-between mb-3">
+                  <form class="form-inline">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                  </form>
+                  <a href="{{ route('pasien.create') }}" class="btn btn-outline-primary">
+                    <i class='bx bx-plus' ></i> Tambah Pasien Baru
+                  </a>
+                </div>
+                <div class="table-scroll table-pasien" style="width: 100%; overflow-y: scroll; max-height: 550px;">
+                <table class="table table-striped" style="font-size: 14px;">
+                  <thead>
+                    <tr>
+                      <th scope="col">No</th>
+                      <th scope="col">No RM</th>
+                      <th scope="col">Cito</th>
+                      <th scope="col">Nama</th>
+                      <th scope="col">Tanggal Lahir</th>
+                      <th scope="col">Gender</th>
+                      <th scope="col">Alamat</th>
+                      <th scope="col">Asal Poli</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @if ($data_pasien->isEmpty() && $data_pasien_cito->isEmpty())
+                    <tr>
+                      <td colspan="10" class="text-center">Tidak ada data</td>
+                    </tr>
+                    @else
+                        @foreach ($data_pasien_cito as $dc)
+                        <tr>
+                        <th scope="row">{{ $loop->iteration }}</th>
+                        <td>{{ $dc->no_rm }}</td>
+                        <td>
+                            @if ($dc->cito == 1)
+                            <i class='bx bxs-bell-ring mt-2 ml-1 text-danger' style="font-size: 23px;"></i>
+                            @else
+                            <i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i>
+                            @endif
+                        </td>
+                        <td>{{ $dc->nama }}</td>
+                        <!-- ganti format dengan tanggal-bulan-tahun -->
+                        <td>
+                            {{ date('d-m-Y', strtotime($dc->lahir)) }}
+                            <br>
+                            ({{ \Carbon\Carbon::parse($dc->lahir)->age }} tahun)
+                        </td>
+                        <td>{{ $dc->jenis_kelamin }}</td>
+                        <td>{{ $dc->alamat }}</td>
+                        <td> - </td>
+                        <td>
+                            @if ($dc->status == "Belum Dilayani")
+                                <span class="badge bg-danger text-white">Belum Di Layani</span>
+                            @elseif($dc->status == "Telah Dikirim ke Lab")
+                                <span class="badge bg-success text-white">Dikirim ke Lab</span>
+                            @elseif($dc->status == "Diproses")
+                                <span class="badge bg-warning text-white">Diproses</span>
+                            @endif
+                        </td>
+                        <td>
+                            <a href="#" class="btn btn-info text-white" style="font-size: 15px" id="open-pasien" data-lab="{{ $dc->no_lab }}" onclick="previewPasien('{{ $dc->no_lab }}')"><i class='bx bx-clipboard'></i></a>
+                            <a href="{{ route('pasien.destroy', $dc->no_lab) }}" class="btn btn-danger text-white" style="font-size: 15px" data-confirm-delete="true">✕</a>
+                        </tr>
+                        @endforeach
+                        @foreach ($data_pasien as $dp)
+                        <tr>
+                        <th scope="row">{{ $loop->iteration }}</th>
+                        <td>{{ $dp->no_rm }}</td>
+                        <td>
+                            @if ($dp->cito == 1)
+                            <i class='bx bxs-bell-ring mt-2 ml-1 text-danger' style="font-size: 23px;"></i>
+                            @else
+                            <i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i>
+                            @endif
+                        </td>
+                        <td>{{ $dp->nama }}</td>
+                        <!-- ganti format dengan tanggal-bulan-tahun -->
+                        <td>
+                            {{ date('d-m-Y', strtotime($dp->lahir)) }}
+                            <br>
+                            ({{ \Carbon\Carbon::parse($dp->lahir)->age }} tahun)
+                        </td>
+                        <td>{{ $dp->jenis_kelamin }}</td>
+                        <td>{{ $dp->alamat }}</td>
+                        <td> - </td>
+                        <td>
+                            @if ($dp->status == "Belum Dilayani")
+                                <span class="badge bg-danger text-white">Belum Di Layani</span>
+                            @elseif($dp->status == "Telah Dikirim ke Lab")
+                                <span class="badge bg-success text-white">Dikirim ke Lab</span>
+                            @elseif($dp->status == "Diproses")
+                                <span class="badge bg-warning text-white">Diproses</span>
+                            @endif
+                        </td>
+                        <td>
+                            <a href="#" class="btn btn-info text-white" style="font-size: 15px" id="open-pasien" data-lab="{{ $dp->no_lab }}" onclick="previewPasien('{{ $dp->no_lab }}')"><i class='bx bx-clipboard'></i></a>
+                            <a href="{{ route('pasien.destroy', $dp->no_lab) }}" class="btn btn-danger text-white" style="font-size: 15px" data-confirm-delete="true">✕</a>
+                        </td>
+                        </tr>
+                        @endforeach
+                    @endif
+                  </tbody>
+                  </table>
+                </div>
+              </div>
+          </div>
+      </div>
+
+      <div class="col-xl-5 col-lg-5">
+          <div class="card shadow mb-4">
+              <!-- Card Header - Dropdown -->
+              <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold" style="color: #96B6C5;">Preview Pasien</h6>
+                  <div class="status" id="status">
+                  </div>
+                </div>
+              <!-- Card Body -->
+              <div class="card-body p-4">
+                <div class="text-right" id="tanggal-pemeriksaan">
+                        <!-- Tanggal -->
+                </div>
+                <hr>
+                <div class="preview-pasien-close" id="preview-pasien-close" style="background-color: #e3e6f0">
+                    <p class="text-center">Pilih Pasien</p>
+                </div>
+                <div class="preview-pasien-open" id="preview-pasien-open">
+                </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  </div>
+
+</div>
+@endsection
+
+@section('modal')
+
+<!-- Modal 1-->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit Pemeriksaan</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="max-height: 700px; overflow-y: auto;" id="editPasien">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal 2 -->
+<div class="modal fade" id="exampleModalScrollable" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalScrollableTitle">Detail Pemeriksaan Pasien</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="pembayaran-pasien" style="max-height: 700px; overflow-y: auto;">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Preview Pasien -->
+<script>
+    function previewPasien(nolab) {
+        var y = document.getElementById("preview-pasien-close");
+
+        //mengambil data pasien dari database
+        fetch('/api/previewpasien/'+nolab)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP error " + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                y.style.display = "none";
+                var status = document.getElementById("status");
+                var container = document.getElementById("container-preview");
+                var tanggal = document.getElementById("tanggal-pemeriksaan");
+
+                //Status Pemeriksaan
+                if(data.data_pasien.status == "Belum Dilayani"){
+                    status.innerHTML = `<div class="ribbon-shape-dgr"><p class="mt-3 text-white">Belum Dilayani</p></div>`;
+                }else if(data.data_pasien.status == "Telah Dikirim ke Lab"){
+                    status.innerHTML = `<div class="ribbon-shape-scs"><p class="mt-3 text-white">Telah Dikirim</p></div>`;
+                }else if(data.data_pasien.status == "Diproses"){
+                    status.innerHTML = `<div class="ribbon-shape-wrn"><p class="mt-3 text-white">Diproses</p></div>`;
+                }
+
+                //ubah format tanggal created_at
+                var date = new Date(data.data_pasien.tanggal_masuk);
+                var year = date.getFullYear();
+                var month = date.getMonth()+1;
+                var dt = date.getDate();
+
+                //ambil nama hari
+                var day = date.getDay();
+
+                if (day == 0) {
+                day = "Minggu";
+                } else if (day == 1) {
+                day = "Senin";
+                } else if (day == 2) {
+                day = "Selasa";
+                } else if (day == 3) {
+                day = "Rabu";
+                } else if (day == 4) {
+                day = "Kamis";
+                } else if (day == 5) {
+                day = "Jumat";
+                } else if (day == 6) {
+                day = "Sabtu";
+                }
+
+                if (dt < 10) {
+                dt = '0' + dt;
+                }
+                if (month < 10) {
+                month = '0' + month;
+                }
+
+                var tanggal_pemeriksaan = day+', '+dt+'-' + month + '-'+year+' '+date.getHours()+':'+date.getMinutes();
+
+                //tampilkan tanggal pemeriksaan
+                tanggal.innerHTML = `<p class="h6 font-weight-normal">`+ tanggal_pemeriksaan +`</p>`;
+
+                //megnhitung umur dari tanggal lahir
+                var dob = new Date(data.data_pasien.lahir);
+                var today = new Date();
+                var age = Math.floor((today-dob) / (365.25 * 24 * 60 * 60 * 1000));
+
+                var diagnosa = data.icd10.filter(function (el) {
+                    return el.code == data.data_pasien.diagnosa;
+                });
+
+                //perulangan untuk menampilkan pemeriksaan yang di pilih
+                var departement = "";
+                var pemeriksaan = "";
+
+                for (let i = 0; i < data.id_departement_pasien.length; i++) {
+                    departement += `<p class="h6 text-gray-800">`
+                                    //buat perintah where untuk mencari id_departement
+                                    for (let j = 0; j < data.data_departement.length; j++) {
+                                        if(data.data_departement[j].id_departement == data.id_departement_pasien[i].id_departement)
+                                            departement += data.data_departement[j].nama_departement;
+                                    }
+                                    departement += `</p>
+                                    <div class="sub-detail p-2">`
+                                        for (let k = 0; k < data.data_pemeriksaan_pasien.length; k++) {
+                                            if(data.data_pemeriksaan_pasien[k].id_departement == data.id_departement_pasien[i].id_departement){
+                                                for (let l = 0; l < data.data_pemeriksaan.length; l++) {
+                                                    if(data.data_pemeriksaan_pasien[k].nama_parameter == data.data_pemeriksaan[l].nama_parameter){
+                                                        departement += `<p class="text-gray-600 offset-md-3">`+ data.data_pemeriksaan[l].nama_pemeriksaan +`</p>`;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    departement += `</div>`
+                }
+
+                var noLab = data.data_pasien.no_lab;
+
+
+                var citoMerah = `<label for="staticEmail" class="col-sm-5 col-form-label">Cito</label>
+                                <div class="col-sm-7">
+                                    <i class='bx bxs-bell-ring mt-2 ml-1 text-danger' style="font-size: 23px;"></i>
+                                </div>`;
+                var citoGray = `<label for="staticEmail" class="col-sm-5 col-form-label">Cito</label>
+                                <div class="col-sm-7">
+                                    <i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i>
+                                </div>`;
+
+                var html = `<div class="container-preview">
+                                <form action="#" class="row table-preview" style="overflow-y: scroll; max-height: 515px;">
+                                <div class="pasien col-xl-6 col-lg-12 col-sm-12 mb-3">
+                                    <p class="h5 text-gray-800 mb-2">Pasien</p>
+                                    <hr>
+                                    <div class="row">`
+                                    if(data.data_pasien.cito == 1){
+                                        html += citoMerah;
+                                    }else{
+                                        html += citoGray;
+                                    }
+                                    html +=`</div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">No Lab</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.no_lab +`">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">No RM</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.no_rm +`">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">NIK</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.nik +`">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Nama</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.nama +`">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Gender</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.jenis_kelamin +`">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Umur</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ age +` tahun">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Alamat</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.alamat +`">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Telp</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.no_telp +`">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Jenis Pasien</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.jenis_pelayanan +`">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Ruangan</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.asal_ruangan +`">
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="dokter col-xl-6 col-lg-12 col-sm-12 mb-3">
+                                    <p class="h5 text-gray-800">Dokter</p>
+                                    <hr>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Nama Dokter</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": Dr. Bande">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Ruangan</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": Abu Thalib">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Telp</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": 0812313">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Email</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": gmail.com">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-12">
+                                            <label for="exampleFormControlTextarea1">Diagnosa :</label>
+                                            <textarea class="form-control txt-area" style="resize: none; height: 160px;" id="note-1" rows="3" name="note-2" disabled>`+ diagnosa[0].name_id +`</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="detail_pemeriksaan col-12 ">
+                                    <p class="h5 text-gray-800 mb-2">Detail Pemeriksaan</p>
+                                    <hr>
+                                    <div class="row">
+                                    <div class="col-md-6">`
+                                    html += departement;
+
+                                    html += `</div>
+                                    </div>
+                                </div>
+                                </form>
+                                <hr class="sidebar-divider">
+                                <div class="mt-4 text-right small">
+                                    <a class="btn btn-outline-info font-weight-bold mx-2" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="editPasien('`+ data.data_pasien.no_lab +`')">Edit</a>
+                                    <button class="btn btn-outline-success font-weight-bold mx-2" id="btn-pembayaran" data-bs-toggle="modal" data-bs-target="#exampleModalScrollable" onclick="pembayaranPasien('`+ data.data_pasien.no_lab +`')">Pembayaran</button>
+                                    </div>
+                            </div>`
+
+                document.getElementById("preview-pasien-open").innerHTML = html;
+
+                var btn = document.getElementById("btn-pembayaran");
+
+                if(data.data_pasien.status == "Belum Dilayani"){
+                    //enable button pembayaran
+                    btn.disabled = false;
+                    btn.style.cursor = "pointer";
+                }else {
+                    //disable button pembayaran
+                    btn.disabled = true;
+                    btn.style.cursor = "not-allowed";
+                }
+
+
+            })
+            .catch(error => ('Error:', error));
+
+    }
+</script>
+
+<!-- Pembayaran Pasien -->
+<script>
+    function pembayaranPasien(nolab) {
+        var y = document.getElementById("preview-pasien-close");
+
+        //mengambil data pasien dari database
+        fetch('/api/previewpasien/'+nolab)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP error " + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                y.style.display = "none";
+                var status = document.getElementById("status");
+                var tanggal = document.getElementById("tanggal-pemeriksaan");
+
+                //Status Pemeriksaan
+                if(data.data_pasien.status == "Belum Dilayani"){
+                    status.innerHTML = `<div class="ribbon-shape-dgr"><p class="mt-3 text-white">Belum Dilayani</p></div>`;
+                }else if(data.data_pasien.status == "Diproses"){
+                    status.innerHTML = `<div class="ribbon-shape-wrn"><p class="mt-3 text-white">Diproses</p></div>`;
+                }else if(data.data_pasien.status == "Dilayani"){
+                    status.innerHTML = `<div class="ribbon-shape-scs"><p class="mt-3 text-white">Dilayani</p></div>`;
+                }
+
+                //ubah format tanggal created_at
+                var date = new Date(data.data_pasien.created_at);
+                var year = date.getFullYear();
+                var month = date.getMonth()+1;
+                var dt = date.getDate();
+
+                //ambil nama hari
+                var day = date.getDay();
+
+                if (day == 0) {
+                day = "Minggu";
+                } else if (day == 1) {
+                day = "Senin";
+                } else if (day == 2) {
+                day = "Selasa";
+                } else if (day == 3) {
+                day = "Rabu";
+                } else if (day == 4) {
+                day = "Kamis";
+                } else if (day == 5) {
+                day = "Jumat";
+                } else if (day == 6) {
+                day = "Sabtu";
+                }
+
+                if (dt < 10) {
+                dt = '0' + dt;
+                }
+                if (month < 10) {
+                month = '0' + month;
+                }
+
+                var tanggal_pemeriksaan = day+', '+dt+'-' + month + '-'+year+' '+date.getHours()+':'+date.getMinutes();
+
+                console.log(tanggal_pemeriksaan);
+
+                //tampilkan tanggal pemeriksaan
+                tanggal.innerHTML = `<p class="h6 font-weight-normal">`+ tanggal_pemeriksaan +`</p>`;
+
+                //megnhitung umur dari tanggal lahir
+                var dob = new Date(data.data_pasien.lahir);
+                var today = new Date();
+                var age = Math.floor((today-dob) / (365.25 * 24 * 60 * 60 * 1000));
+
+                var diagnosa = data.icd10.filter(function (el) {
+                    return el.code == data.data_pasien.diagnosa;
+                });
+
+                //perulangan untuk menampilkan pemeriksaan yang di pilih
+                var departement = "";
+                var pemeriksaan = "";
+
+                for (let i = 0; i < data.id_departement_pasien.length; i++) {
+                    departement += `<p class="h6 text-gray-800">`
+                                    //buat perintah where untuk mencari id_departement
+                                    for (let j = 0; j < data.data_departement.length; j++) {
+                                        if(data.data_departement[j].id_departement == data.id_departement_pasien[i].id_departement)
+                                            departement += data.data_departement[j].nama_departement;
+                                    }
+                                    departement += `</p>
+                                    <div class="sub-detail p-2">`
+                                        for (let k = 0; k < data.data_pemeriksaan_pasien.length; k++) {
+                                            if(data.data_pemeriksaan_pasien[k].id_departement == data.id_departement_pasien[i].id_departement){
+                                                for (let l = 0; l < data.data_pemeriksaan.length; l++) {
+                                                    if(data.data_pemeriksaan_pasien[k].nama_parameter == data.data_pemeriksaan[l].nama_parameter){
+                                                        departement += `<p class="text-gray-600 offset-md-3">`+ data.data_pemeriksaan[l].nama_pemeriksaan +`</p>`;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    departement += `</div>`
+                }
+
+                //mengambil data icd10 dari database
+
+
+                var citoMerah = `<label for="staticEmail" class="col-sm-5 col-form-label">Cito</label>
+                                <div class="col-sm-7">
+                                    <i class='bx bxs-bell-ring mt-2 ml-1 text-danger' style="font-size: 23px;"></i>
+                                </div>`;
+                var citoGray = `<label for="staticEmail" class="col-sm-5 col-form-label">Cito</label>
+                                <div class="col-sm-7">
+                                    <i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i>
+                                </div>`;
+
+                var html = `<form action="{{ route('pasien.kirimlab') }}" method="POST" class="row table-preview" style="overflow-y: scroll; max-height: 600px;">
+                                @csrf
+                                <div class="pasien col-xl-6 col-lg-12 col-sm-12 mb-3">
+                                    <p class="h5 text-gray-800 mb-2">Pasien</p>
+                                    <hr>
+                                    <div class="row">`
+                                    if(data.data_pasien.cito == 1){
+                                        html += citoMerah;
+                                    }else{
+                                        html += citoGray;
+                                    }
+                                    html +=`</div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">No LAB : </label>
+                                    <div class="col-sm-7">
+                                        <input type="text" name="no_lab" readonly class="form-control-plaintext" id="staticEmail" value="`+ data.data_pasien.no_lab +`">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">No RM</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.no_rm +`">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">NIK</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.nik +`">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Nama</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.nama +`">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Gender</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.jenis_kelamin +`">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Umur</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ age +` tahun">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Alamat</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.alamat +`">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Telp</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.no_telp +`">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Jenis Pasien</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.jenis_pelayanan +`">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Ruangan</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.asal_ruangan +`">
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="dokter col-xl-6 col-lg-12 col-sm-12 mb-3">
+                                    <p class="h5 text-gray-800">Dokter</p>
+                                    <hr>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Nama Dokter</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": Dr. Bande">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Ruangan</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": Abu Thalib">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Telp</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": 0812313">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <label for="staticEmail" class="col-sm-5 col-form-label">Email</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": gmail.com">
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-12">
+                                            <label for="exampleFormControlTextarea1">Diagnosa :</label>
+                                            <textarea class="form-control txt-area" style="resize: none; height: 160px;" id="note-1" rows="3" name="note-2" disabled>`+ diagnosa[0].name_id +`</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="detail_pemeriksaan col-12 ">
+                                    <p class="h5 text-gray-800 mb-2">Detail Pemeriksaan</p>
+                                    <hr>
+                                    <div class="row">
+                                    <div class="col-md-6">`
+
+                                        html += departement;
+
+                                    html += `</div>
+                                    </div>
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <p class="h5 text-gray-800 mb-2">Pembayaran</p>
+                                    <hr>
+                                    <div class="form-row">
+                                    <div class="form-group col-sm-6">
+                                        <label for="exampleFormControlSelect1">Metode Pembayaran</label>
+                                        <input type="text" class="form-control" aria-label="" name="jenispelayanan" aria-describedby="basic-addon1" value="`+ data.data_pasien.jenis_pelayanan +`" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="exampleFormControlSelect1" class="ml-3">Total</label>
+                                        <input type="number" class="form-control" aria-label="" name="hargapemeriksaan" aria-describedby="basic-addon1" value="`+ data.data_pemeriksaan_pasien[0].harga +`" readonly>
+                                    </div>
+                                    </div>
+                                    <div class="form-row">
+                                    <div class="form-group col-12 col-md-6">
+                                        <label for="exampleFormControlSelect1">Jumlah Bayar</label>
+                                        <input type="number" class="form-control" aria-label="" name="jumlahbayar" aria-describedby="basic-addon1" oninput="hitungKembalian(this.value)">
+                                    </div>
+                                    </div>
+                                    <div class="form-row">
+                                    <div class="form-group col-12 col-md-6">
+                                        <label for="exampleFormControlSelect1">Kembalian</label>
+                                        <input type="number" class="form-control" aria-label="" name="kembalian" id="kembalian" aria-describedby="basic-addon1" value="0" readonly>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer ">
+                                <button type="submit" class="btn btn-success btn-varifikasi" id="btn-varifikasi" style="cursor: not-allowed" disabled>Verifikasi</button>
+                            </form>`
+
+                document.getElementById("pembayaran-pasien").innerHTML = html;
+
+            })
+            .catch(error => ('Error:', error));
+
+    }
+</script>
+
+<!-- Edit Pasien -->
+<script>
+    function editPasien(nolab){
+        var x = document.getElementById("editPasien");
+
+        fetch('/api/previewpasien/'+nolab)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP error " + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data.data_pemeriksaan_pasien);
+                html = `<form action="{{ route('pasien.update', '`
+                html += data.data_pasien.no_lab
+                html += `')  }}" method="post">
+                    @csrf
+                    @method('PUT')
+                    <div class="d-flex justify-content-between">
+                        <p class="h5">Data Pasien</p>
+                        <div class="row" style="margin-top: -5px;">
+                            <label for="staticEmail" class="col-sm-4 col-form-label">No LAB : </label>
+                            <div class="col-lg">
+                                <input type="text" readonly class="form-control-plaintext font-weight-bold" name="nolab" id="staticEmail" value="`+ data.data_pasien.no_lab +`">
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-row">
+                        <div class="form-group col-12 col-md-6">
+                            <label for="basic-url">Nomor RM</label>
+                            <div class="input-group mb-6">
+                                <input type="text" class="form-control" aria-label="" name="norm" readonly value="`+ data.data_pasien.no_rm +`">
+                            </div>
+                        </div>
+                        <div class="form-group col-12 col-md-6">
+                            <label for="basic-url">Nomor Induk Kewarganegaraan</label>
+                            <div class="input-group mb-6">
+                                <input type="text" class="form-control" aria-label="" name="nik" value="`+ data.data_pasien.nik +`">
+                            </div>
+                        </div>
+                        <div class="form-group col-12 col-md-6">
+                            <label for="basic-url">Nama Lengkap</label>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" aria-label="" name="nama" value="`+ data.data_pasien.nama +`">
+                            </div>
+                        </div>
+                        <div class="form-group col-12 col-md-6">
+                            <!-- <label for="name" class="">Date</label> -->
+                            <label for="startDate">Tanggal Lahir</label>
+                            <input id="startDate" class="form-control" type="date" name="tanggal_lahir" value="`+ data.data_pasien.lahir +`"/>
+                        </div>
+                        <div class="form-group col-12 col-md-6">
+                            <label for="exampleFormControlSelect1">Jenis Kelamin</label>
+                            <select class="form-control" id="exampleFormControlSelect1" name="jenis_kelamin">
+                                <!-- <option >Pilih Jenis Kelamin</option> -->
+                                <option value="Laki - Laki" `
+                                if(data.data_pasien.jenis_kelamin == "Laki - Laki"){
+                                    html += `Selected`
+                                }
+                                html += `>Laki - Laki</option>
+                                <option value="Perempuan" `
+                                if(data.data_pasien.jenis_kelamin == "Perempuan"){
+                                    html += `Selected`
+                                }
+                                html += `>Perempuan</option>
+                                <option value="-" `
+                                if(data.data_pasien.jenis_kelamin == "-"){
+                                    html += `Selected`
+                                }
+                                html += `>Tidak Disebutkan</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-12 col-md-6">
+                            <label for="name">No Telepon / Hp</label>
+                            <input type="text" class="form-control" value="`+ data.data_pasien.no_telp +`" id="" name="no_telepon">
+                        </div>
+                        <div class="form-group col-12 col-md-6">
+                            <label for="name">Jenis Pasien</label>
+                            <input type="text" class="form-control" value="`+ data.data_pasien.jenis_pelayanan +`" id="" name="jenis_pelayanan" readonly>
+                        </div>
+                        <div class="form-group col-12 col-md-6">
+                            <label for="name">Ruangan</label>
+                            <input type="text" class="form-control" value="`+ data.data_pasien.asal_ruangan +`" id="" name="ruangan">
+                        </div>
+                        <div class="form-group col-12">
+                            <label for="exampleFormControlTextarea1">Alamat Lengkap</label>
+                            <textarea class="form-control" style="resize: none; height: 130px;" id="alamat" rows="3" name="alamat">`+ data.data_pasien.alamat +`</textarea>
+                        </div>
+                        <div class="form-group col-12 col-md-6"">
+                            <label for="exampleFormControlSelect1">Dokter Pengirim</label>
+                            <select class="form-control" id="exampleFormControlSelect1" name="dokter">
+                                <!-- <option selected>Pilih</option> -->
+                                <option value="1" `
+                                if(data.data_pasien.kode_dokter == "1"){
+                                    html += `Selected`
+                                }
+                                html += `>Permintaan Sendiri</option>
+                                <option value="2" `
+                                if(data.data_pasien.kode_dokter == "2"){
+                                    html += `Selected`
+                                }
+                                html += `>dr. Poli Umum</option>
+                                <option value="3" `
+                                if(data.data_pasien.kode_dokter == "3"){
+                                    html += `Selected`
+                                }
+                                html += `>dr. Poli KIA</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-12 col-md-6">
+                            <label for="name">Diagnosa</label>
+                            <input type="text" class="form-control" value="`+ data.data_pasien.diagnosa +`" id="" name="diagnosa" readonly>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mt-4">
+                        <p class="h5">Pilih Pemeriksaan</p>
+                        <div class="row" style="margin-top: -5px;">
+                            <label for="staticEmail" class="col-form-label">Total Harga : <b>Rp.</b> </label>
+                            <div class="">
+                                <input type="text" class="form-control-plaintext font-weight-bold" name="hargapemeriksaan" id="harga-pemeriksaan" value="`
+                                //ubah format angkah dengan titik data.data_pemeriksaan_pasien[0].harga
+                                var reverse = data.data_pemeriksaan_pasien[0].harga.toString().split('').reverse().join(''),
+                                ribuan = reverse.match(/\d{1,3}/g);
+                                ribuan = ribuan.join('.').split('').reverse().join('');
+                                html += ribuan;
+                                html +=`" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <div class="row pemeriksaan">`
+                        for(a = 0; a < data.data_departement.length; a++){
+                            html += `<div class="col-xl-3">
+                                <!-- Parent Pemeriksaan -->
+                                <div class="parent-pemeriksaan" id="parent-pemeriksaan">
+                                    <div class="heading heading-color btn-block  mb-3">`+ data.data_departement[a].nama_departement +`</div>
+                                    <!-- Child pemeriksaan -->
+                                    <div class="child-pemeriksaan" id="child-pemeriksaan-hematologi">`
+                                        for(b = 0; b < data.data_pemeriksaan.length; b++){
+                                            if(data.data_pemeriksaan[b].id_departement == data.data_departement[a].id_departement){
+                                                html += `<div class="form-check">
+                                                    <input class="form-check-input child-pemeriksaan" type="checkbox" name="pemeriksaan[]" value="`+ data.data_pemeriksaan[b].id_departement +`,`+ data.data_pemeriksaan[b].nama_parameter +`" id="`+ data.data_pemeriksaan[b].nama_parameter +`" onclick="checkpemeriksaan(`+ data.data_pemeriksaan[b].harga +`)" data-harga="`+ data.data_pemeriksaan[b].harga +`" `
+                                                    for(c = 0; c < data.data_pemeriksaan_pasien.length; c++){
+                                                        if(data.data_pemeriksaan[b].nama_parameter == data.data_pemeriksaan_pasien[c].nama_parameter){
+                                                            html += `checked`
+                                                        }
+                                                    }
+                                                    html += `>
+                                                    <label class="form-check-label" for="`+ data.data_pemeriksaan[b].nama_parameter +`">
+                                                        `+ data.data_pemeriksaan[b].nama_pemeriksaan +` `+ data.data_pemeriksaan[b].harga +`
+                                                    </label>
+                                                </div>`
+                                            }
+                                        }
+                                    html += `</div>
+                                </div>
+                                <hr>
+                            </div>`
+                        }
+                    html += `</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-info">Save changes</button>
+                </form>`
+
+                x.innerHTML = html;
+
+            })
+            .catch(error => ('Error:', error));
+
+    }
+</script>
+
+<!-- hitung harga otomatis saat memilih checkbox mengambil harga dari database -->
+<script type="text/javascript">
+    function checkpemeriksaan(lab) {
+        var total = 0;
+        var harga = 0;
+        var harga_pemeriksaan = document.getElementById('harga-pemeriksaan');
+        var checkboxes = document.getElementsByClassName('child-pemeriksaan');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked == true) {
+                harga = checkboxes[i].getAttribute('data-harga');
+                total = parseInt(total) + parseInt(harga);
+            }
+        }
+
+        //mengubah format angka ke rupiah
+        var reverse = total.toString().split('').reverse().join(''),
+        ribuan = reverse.match(/\d{1,3}/g);
+        ribuan = ribuan.join('.').split('').reverse().join('');
+
+        harga_pemeriksaan.value = ribuan;
+    }
+</script>
+
+<!-- menghitung kembalian -->
+<script>
+    function hitungKembalian(jumlahbayar) {
+        var kembalian = document.getElementsByName('kembalian')[0];
+        var hargapemeriksaan = document.getElementsByName('hargapemeriksaan')[0];
+        var button = document.getElementById('btn-varifikasi');
+        var total = jumlahbayar - hargapemeriksaan.value;
+
+        if(total < 0){
+            total = 0;
+            button.disabled = true;
+            button.style.cursor = "not-allowed";
+        }else{
+            total = total;
+            button.disabled = false;
+            button.style.cursor = "pointer";
+        }
+
+        kembalian.value = total;
+    }
+</script>
+
+<script src="{{ asset('js/time.js') }}"></script>
+@endsection
