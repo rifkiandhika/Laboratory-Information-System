@@ -16,7 +16,7 @@
             class="sidebar-item has-sub {{ Request::is('loket/pasien', 'loket/data-pasien', 'loket/report') ? 'active' : '' }}">
             <a href="#" class='sidebar-link'>
                 <i class="bi bi-person-badge"></i>
-                <span>Loket</span>
+                <span>Locket</span>
             </a>
             <ul class="submenu ">
                 <li class="submenu-item {{ Request::is('loket/pasien') ? 'active' : '' }} ">
@@ -26,7 +26,7 @@
                 </li>
                 <li class="submenu-item {{ Request::is('loket/data-pasien') ? 'active' : '' }}">
                     <a href="{{ route('pasien.data') }}" class="submenu-link"><i class="bi bi-clipboard-plus"></i>
-                        Data Pasien</a>
+                        Patient Data</a>
                 </li>
                 <li class="submenu-item {{ Request::is('loket/report') ? 'active' : '' }} ">
                     <a href="{{ route('report.index') }}" class="submenu-link"><i class="bi bi-clipboard2-pulse"></i>
@@ -39,8 +39,8 @@
         {{-- Laboratorium --}}
         <li class="sidebar-item has-sub {{ Request::is('') ? 'active' : '' }}">
             <a href="#" class='sidebar-link'>
-                <i class="bi bi-person-badge"></i>
-                <span>Laboratorium</span>
+                <i class="bi bi-droplet-half"></i>
+                <span>Laboratory</span>
             </a>
             <ul class="submenu ">
                 <li class="submenu-item {{ Request::is('loket/pasien') ? 'active' : '' }} ">
@@ -66,7 +66,7 @@
                 </li>
                 <li class="submenu-item {{ Request::is('loket/report') ? 'active' : '' }} ">
                     <a href="{{ route('report.index') }}" class="submenu-link"><i class="bi bi-clipboard2-pulse"></i>
-                        Daftar QC</a>
+                        List QC</a>
                 </li>
             </ul>
         </li>
@@ -74,7 +74,7 @@
         <li class="sidebar-item {{ Request::is('') ? 'active' : '' }} ">
             <a href="{{ url('/dashboard') }}" class='sidebar-link'>
                 <i class="bi bi-grid-fill"></i>
-                <span>Dokter</span>
+                <span>Doctor</span>
             </a>
 
         </li>
@@ -95,7 +95,7 @@
                 </li>
                 <li class="submenu-item {{ Request::is('dokter') ? 'active' : '' }}">
                     <a href="{{ route('dokter.index') }}" class="submenu-link"><i class="bi bi-heart-pulse"></i>
-                        Dokter</a>
+                        Doctor</a>
                 </li>
                 <li class="submenu-item {{ Request::is('poli') ? 'active' : '' }} ">
                     <a href="{{ route('poli.index') }}" class="submenu-link"><i class="bi bi-tag"></i>
@@ -110,7 +110,7 @@
         </li> --}}
         <li class="submenu-item {{ Request::is('pemeriksaan') ? 'active' : '' }} ">
             <a href="{{ route('pemeriksaan.index') }}" class="submenu-link"><i class="bi bi-clipboard-data"></i>
-                Pemeriksaan</a>
+                Inspection</a>
         </li>
         {{-- Setting --}}
 

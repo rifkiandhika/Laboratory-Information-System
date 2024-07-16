@@ -6,7 +6,7 @@
             <div class="container-fluid">
                 <!-- Page Heading -->
                 <div class="d-sm-flex mb-3">
-                    <h1 class="h3 mb-0 text-gray-600">Data Poli</h1>
+                    <h1 class="h3 mb-0 text-gray-600">Poli Data</h1>
                 </div>
 
                 <div class="row">
@@ -17,7 +17,7 @@
                                     <!-- Button trigger modal -->
                                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#exampleModal">
-                                        + Tambah Poli
+                                        + Add Poli
                                     </button>
 
                                     <!-- Modal -->
@@ -26,7 +26,7 @@
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel">Tambah Poli</h5>
+                                                    <h5 class="modal-title" id="exampleModalLabel">Add Poli</h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                         aria-label="Close"></button>
                                                 </div>
@@ -34,15 +34,15 @@
                                                     @csrf
                                                     <div class="modal-body">
                                                         <div class="poli">
-                                                            <label for="poli"><b>Nama Poli</b></label>
+                                                            <label for="poli"><b>Poli Name</b></label>
                                                             <input class="form-control" placeholder="Poli Gigi"
                                                                 type="text" name="nama_poli">
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Tutup</button>
-                                                        <button type="submit" class="btn btn-primary">Simpan</button>
+                                                            data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Save</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -57,8 +57,8 @@
                                         <thead style="font-size: 12px;">
                                             <tr>
                                                 <th scope="col">No</th>
-                                                <th scope="col">Poli</th>
-                                                <th scope="col">Aksi</th>
+                                                <th scope="col">Poli Name</th>
+                                                <th scope="col">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody style="font-size: 14px">
@@ -95,7 +95,7 @@
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="editModalLabel">Edit Poli</h5>
+                                                <h5 class="modal-title" id="editModalLabel">Poli Edit</h5>
                                                 <button type="button" class="close" data-bs-dismiss="modal"
                                                     aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
@@ -114,7 +114,7 @@
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary"
                                                         data-bs-dismiss="modal">Close</button>
-                                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                                    <button type="submit" class="btn btn-primary">Save</button>
                                                 </div>
                                             </form>
                                         </div>

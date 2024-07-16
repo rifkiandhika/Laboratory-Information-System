@@ -6,7 +6,7 @@
             <div class="container-fluid">
                 <!-- Page Heading -->
                 <div class="d-sm-flex mb-3">
-                    <h1 class="h3 mb-0 text-gray-600">Data Pemeriksaan</h1>
+                    <h1 class="h3 mb-0 text-gray-600">Inspection Data</h1>
                 </div>
 
                 <div class="row">
@@ -17,7 +17,7 @@
                                     <!-- Button trigger modal -->
                                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#exampleModal">
-                                        + Tambah Pemeriksaan
+                                        + Add Inspection
                                     </button>
 
                                     <!-- Modal -->
@@ -26,7 +26,7 @@
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel">Tambah Pemeriksaan</h5>
+                                                    <h5 class="modal-title" id="exampleModalLabel">Add Inspection</h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                         aria-label="Close"></button>
                                                 </div>
@@ -34,12 +34,12 @@
                                                     @csrf
                                                     <div class="modal-body">
                                                         <div class="namaparameter">
-                                                            <label for="nama-parameter"><b>Nama Parameter</b></label>
+                                                            <label for="nama-parameter"><b>Parameter Name</b></label>
                                                             <input class="form-control" placeholder="HDL-CHOL"
                                                                 type="text" name="nama_parameter">
                                                         </div>
                                                         <div class="nama-pemeriksaan">
-                                                            <label for="nama-pemeriksaan"><b>Nama Pemeriksaan</b></label>
+                                                            <label for="nama-pemeriksaan"><b>Inspection Name</b></label>
                                                             <input class="form-control" placeholder="Gula Darah"
                                                                 type="text" name="nama_pemeriksaan">
                                                         </div>
@@ -57,15 +57,15 @@
                                                             </select>
                                                         </div>
                                                         <div class="harga">
-                                                            <label for="harga"><b>Harga</b></label>
+                                                            <label for="harga"><b>Price</b></label>
                                                             <input class="form-control" placeholder="35.000" type="number"
                                                                 name="harga">
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Tutup</button>
-                                                        <button type="submit" class="btn btn-primary">Simpan</button>
+                                                            data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Save</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -80,11 +80,11 @@
                                         <thead style="font-size: 12px;">
                                             <tr>
                                                 <th scope="col">No</th>
-                                                <th scope="col">Nama Parameter</th>
-                                                <th scope="col">Nama Pemeriksaan</th>
+                                                <th scope="col">Parameter Name</th>
+                                                <th scope="col">Inspection Name</th>
                                                 <th scope="col">Department</th>
-                                                <th scope="col">Harga</th>
-                                                <th scope="col">Aksi</th>
+                                                <th scope="col">Price</th>
+                                                <th scope="col">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody style="font-size: 14px">
@@ -126,7 +126,7 @@
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="editModalLabel">Edit Dokter</h5>
+                                                    <h5 class="modal-title" id="editModalLabel">Inspection Edit</h5>
                                                     <button type="button" class="close" data-bs-dismiss="modal"
                                                         aria-label="Close">
                                                         <span aria-hidden="true">&times;</span>
@@ -137,12 +137,12 @@
                                                     @method('PUT')
                                                     <div class="modal-body">
                                                         <div class="namaparameter">
-                                                            <label for="nama-parameter"><b>Nama Parameter</b></label>
+                                                            <label for="nama-parameter"><b>Parameter Name</b></label>
                                                             <input class="form-control" type="text" id="Parameter"
                                                                 name="nama_parameter" required>
                                                         </div>
                                                         <div class="namapemeriksaan">
-                                                            <label for="nama-pemeriksaan"><b>Nama Pemeriksaan</b></label>
+                                                            <label for="nama-pemeriksaan"><b>Inspection Name</b></label>
                                                             <input class="form-control" id="Pemeriksaan" type="text"
                                                                 name="nama_pemeriksaan" required>
                                                         </div>
@@ -162,7 +162,7 @@
 
                                                         </div>
                                                         <div class="harga">
-                                                            <label for="harga"><b>Harga</b></label>
+                                                            <label for="harga"><b>Price</b></label>
                                                             <input class="form-control" id="Harga" type="number"
                                                                 name="harga" required>
                                                         </div>

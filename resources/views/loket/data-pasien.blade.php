@@ -26,7 +26,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between mb-3">
                                 <a href="{{ route('pasien.create') }}" class="btn btn-outline-primary">
-                                    <i class='bx bx-plus'></i> + Tambah Pasien Baru
+                                    <i class='bx bx-plus'></i> + Add Patient
                                 </a>
                             </div>
                             <div class="table-responsive">
@@ -35,10 +35,10 @@
                                         <tr>
                                             <th scope="col">No</th>
                                             <th scope="col">NIK</th>
-                                            <th scope="col">Nama</th>
-                                            <th scope="col">Jenis Kelamin</th>
-                                            <th scope="col">No.Telfon</th>
-                                            <th scope="col">Alamat</th>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Gender</th>
+                                            <th scope="col">Phone Number</th>
+                                            <th scope="col">Address</th>
                                             <th scope="col" class="text-center">Action</th>
                                         </tr>
                                     </thead>

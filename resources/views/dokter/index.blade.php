@@ -7,7 +7,7 @@
                 <!-- Page Heading -->
                 <div class="d-sm-flex mb-3">
                     <div class="row">
-                        <h1 class="h3 mb-0 text-gray-600">Data Dokter</h1>
+                        <h1 class="h3 mb-0 text-gray-600">Doctor Data</h1>
                     </div>
                 </div>
 
@@ -19,7 +19,7 @@
                                     <!-- Button trigger modal -->
                                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#exampleModal">
-                                        + Tambah Dokter
+                                        + Add Doctor
                                     </button>
 
                                     <!-- Modal -->
@@ -28,7 +28,7 @@
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel">Dokter</h5>
+                                                    <h5 class="modal-title" id="exampleModalLabel">Doctor</h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                         aria-label="Close"></button>
                                                 </div>
@@ -36,12 +36,12 @@
                                                     @csrf
                                                     <div class="modal-body">
                                                         <div class="kodedokter">
-                                                            <label for="kode-dokter"><b>Kode Dokter</b></label>
+                                                            <label for="kode-dokter"><b>Doctor Code</b></label>
                                                             <input class="form-control" placeholder="D01094" type="text"
                                                                 name="kode_dokter">
                                                         </div>
                                                         <div class="namadokter">
-                                                            <label for="nama-dokter"><b>Nama Dokter</b></label>
+                                                            <label for="nama-dokter"><b>Doctor Name</b></label>
                                                             <input class="form-control" placeholder="Abdul Mughni"
                                                                 type="text" name="nama_dokter">
                                                         </div>
@@ -58,7 +58,7 @@
                                                             </select>
                                                         </div>
                                                         <div class="no-telp">
-                                                            <label for="telp"><b>No.Telfon</b></label>
+                                                            <label for="telp"><b>Phone Number</b></label>
                                                             <input class="form-control" placeholder="08xxxxxx"
                                                                 type="number" name="no_telp">
                                                         </div>
@@ -70,8 +70,8 @@
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Tutup</button>
-                                                        <button type="submit" class="btn btn-primary">Simpan</button>
+                                                            data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Save</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -84,13 +84,13 @@
                                     <table class="w " id="myTable">
                                         <thead style="font-size: 12px;">
                                             <tr>
-                                                <th scope="col">No</th>
-                                                <th scope="col">Kode Dokter</th>
-                                                <th scope="col">Nama Dokter</th>
+                                                <th scope="col">No.</th>
+                                                <th scope="col">Doctor Code</th>
+                                                <th scope="col">Doctor Name</th>
                                                 <th scope="col">Poli</th>
-                                                <th scope="col">No.Telfon</th>
+                                                <th scope="col">Phone Number</th>
                                                 <th scope="col">Email</th>
-                                                <th scope="col">Aksi</th>
+                                                <th scope="col">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody style="font-size: 14px">
@@ -134,7 +134,7 @@
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="editModalLabel">Edit Dokter</h5>
+                                                    <h5 class="modal-title" id="editModalLabel">Doctor Edit</h5>
                                                     <button type="button" class="close" data-bs-dismiss="modal"
                                                         aria-label="Close">
                                                         <span aria-hidden="true">&times;</span>
@@ -145,12 +145,12 @@
                                                     @method('PUT')
                                                     <div class="modal-body">
                                                         <div class="kodedokter">
-                                                            <label for="kodedokter"><b>Kode Dokter</b></label>
+                                                            <label for="kodedokter"><b>Doctor Code</b></label>
                                                             <input class="form-control" type="text" id="kodedokter"
                                                                 name="kode_dokter" required>
                                                         </div>
                                                         <div class="namadokter">
-                                                            <label for="namadokter"><b>Nama Dokter</b></label>
+                                                            <label for="namadokter"><b>Doctor Name</b></label>
                                                             <input class="form-control" id="namadokter" type="text"
                                                                 name="nama_dokter" required>
                                                         </div>
@@ -169,7 +169,7 @@
 
                                                         </div>
                                                         <div class="no-telp">
-                                                            <label for="poli"><b>No.Telfon</b></label>
+                                                            <label for="poli"><b>Phone Number</b></label>
                                                             <input class="form-control" id="telp" type="number"
                                                                 name="no_telp" required>
                                                         </div>
@@ -181,8 +181,8 @@
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Tutup</button>
-                                                        <button type="submit" class="btn btn-primary">Simpan</button>
+                                                            data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Save</button>
                                                     </div>
                                                 </form>
                                             </div>

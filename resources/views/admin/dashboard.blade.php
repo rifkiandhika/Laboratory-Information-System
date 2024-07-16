@@ -18,7 +18,7 @@
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
                                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                        Jumlah Pasien Masuk (Harian)</div>
+                                        Number of incoming patients (Daily)</div>
                                     <div class="h3 mt-3 font-weight-bold text-gray-600">150</div>
                                 </div>
                                 <div class="col-auto">
@@ -58,17 +58,17 @@
                                     </div>
                                     <div class="h3 mt-3 font-weight-bold text-gray-600">250</div>
                                     <!-- <div class="row no-gutters align-items-center">
-                                                                                                                                                                <div class="col-auto">
-                                                                                                                                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
-                                                                                                                                                                </div>
-                                                                                                                                                                <div class="col">
-                                                                                                                                                                    <div class="progress progress-sm mr-2">
-                                                                                                                                                                        <div class="progress-bar bg-info" role="progressbar"
-                                                                                                                                                                            style="width: 50%" aria-valuenow="50" aria-valuemin="0"
-                                                                                                                                                                            aria-valuemax="100"></div>
-                                                                                                                                                                    </div>
-                                                                                                                                                                </div>
-                                                                                                                                                            </div> -->
+                                                                                                                                                                                <div class="col-auto">
+                                                                                                                                                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
+                                                                                                                                                                                </div>
+                                                                                                                                                                                <div class="col">
+                                                                                                                                                                                    <div class="progress progress-sm mr-2">
+                                                                                                                                                                                        <div class="progress-bar bg-info" role="progressbar"
+                                                                                                                                                                                            style="width: 50%" aria-valuenow="50" aria-valuemin="0"
+                                                                                                                                                                                            aria-valuemax="100"></div>
+                                                                                                                                                                                    </div>
+                                                                                                                                                                                </div>
+                                                                                                                                                                            </div> -->
                                 </div>
                                 <div class="col-auto">
                                     <i class="bx bxs-user-check fa-3x text-gray-300"></i>
@@ -106,11 +106,11 @@
                                     <thead style="font-size: 12px;">
                                         <tr>
                                             <th scope="col">No</th>
-                                            <th scope="col">Nama</th>
+                                            <th scope="col">Name</th>
                                             <th scope="col">Username</th>
                                             <th scope="col">Email</th>
                                             <th scope="col">Role</th>
-                                            <th scope="col">Akses</th>
+                                            <th scope="col">Access</th>
                                             <th scope="col">Joined At</th>
                                         </tr>
                                     </thead>
