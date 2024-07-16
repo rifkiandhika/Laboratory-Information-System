@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('pemeriksaan_pasiens', function (Blueprint $table) {
             $table->id();
             $table->string('no_lab');
-            $table->text('id_departement');
-            $table->text('nama_parameter');
+            $table->text('id_parameter');
+            $table->text('id_departement')->nullable();
+            $table->text('nama_parameter')->nullable();
             $table->integer('harga');
             $table->timestamps();
         });

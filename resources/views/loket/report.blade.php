@@ -1,13 +1,14 @@
-@extends('master')
+<title>Report</title>
+@extends('layouts.admin')
 
 @section('title', 'Report')
 
 @section('content')
-<div class="content">
-          <div class="container-fluid">
+    <div class="content">
+        <div class="container-fluid">
             <!-- Page Heading -->
             <div class="d-sm-flex  my-3">
-              <h1 class="h3 mb-0 text-gray-600">Report</h1>
+                <h1 class="h3 mb-0 text-gray-600">Report</h1>
             </div>
             <!-- Content Row -->
             <!-- Area chart example-->
@@ -44,11 +45,11 @@
             <!-- Form Area -->
         </div>
 
-<!-- Page level plugins -->
-<script src="{{ asset('bootstrap/vendor/chart.js/Chart.min.js') }}"></script>
+        <!-- Page level plugins -->
+        <script src="{{ asset('bootstrap/vendor/chart.js/Chart.min.js') }}"></script>
 
-<!-- Page level custom scripts -->
-<script src="{{ asset('bootstrap/js/demo/chart-area-demo.js') }}"></script>
-<script src="{{ asset('bootstrap/js/demo/chart-pie-demo.js') }}"></script>
-<script src="{{ asset('bootstrap/js/demo/chart-bar-demo.js') }}"></script>
-@endsection
+        <!-- Page level custom scripts -->
+        <script src="{{ asset('bootstrap/js/demo/chart-area-demo.js') }}"></script>
+        <script src="{{ asset('bootstrap/js/demo/chart-pie-demo.js') }}"></script>
+        <script src="{{ asset('bootstrap/js/demo/chart-bar-demo.js') }}"></script>
+    @endsection

@@ -14,29 +14,31 @@ class user extends Seeder
      */
     public function run(): void
     {
-        // DB::table('users')->insert([
-        //     'name' => 'Muhammad Christiano Olyvian Barini',
-        //     'username' => 'analyst',
-        //     'title' => 'analyst',
-        //     'email' => 'analyst@gmail.com',
-        //     'password' => Hash::make('password'),
-        //     'role' => 'analyst',
-        // ]);
-        // DB::table('users')->insert([
-        //     'name' => 'Muhammad Christiano Olyvian Barini',
-        //     'username' => 'loket',
-        //     'title' => 'loket',
-        //     'email' => 'loket@gmail.com',
-        //     'password' => Hash::make('password'),
-        //     'role' => 'loket',
-        // ]);
         DB::table('users')->insert([
-            'name' => 'Muhammad Christiano Olyvian Barini',
+            'name' => 'UserAnalyst',
+            'username' => 'analyst',
+            'title' => 'analyst',
+            'email' => 'analyst@gmail.com',
+            'password' => Hash::make('password'),
+            'role' => 'analyst',
+        ]);
+        DB::table('users')->insert([
+            'name' => 'UserLoket',
+            'username' => 'loket',
+            'title' => 'loket',
+            'email' => 'loket@gmail.com',
+            'password' => Hash::make('password'),
+            'role' => 'loket',
+        ]);
+        DB::table('users')->insert([
+            'name' => 'UserAdmin',
             'username' => 'admin',
             'title' => 'admin',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('password'),
             'role' => 'admin',
         ]);
+
+        
     }
 }

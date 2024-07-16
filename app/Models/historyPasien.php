@@ -14,5 +14,6 @@ class historyPasien extends Model
         'proses',
         'tempat',
         'waktu_proses',
+        'note'
     ];
 }

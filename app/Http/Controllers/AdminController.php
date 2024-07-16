@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\dokter;
 use Illuminate\Http\Request;
 use app\Models\User;
+use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
@@ -12,9 +13,5 @@ class AdminController extends Controller
         $users = User::all();
         return view("admin/dashboard", compact('users'));
     }
-
-    public function dokter(){
-        $dokters = dokter::all();
-        return view("admin.dokter", compact('dokters'));
-    }
+    
 }

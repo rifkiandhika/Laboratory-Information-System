@@ -15,10 +15,14 @@ return new class extends Migration
             $table->id();
             $table->string('kode_dokter');
             $table->string('nama_dokter');
-            $table->string('poli');
+            $table->string('id_poli');
             $table->string('no_telp');
             $table->string('email');
             $table->timestamps();
+
+            
+            // Cascade delete
+            // $table->foreign('id_poli')->references('id')->on('dokters')->onDelete('cascade');
         });
     }
 

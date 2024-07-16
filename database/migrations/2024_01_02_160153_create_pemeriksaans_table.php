@@ -12,12 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pemeriksaans', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->string('nama_parameter');
             $table->string('nama_pemeriksaan');
             $table->string('id_departement');
             $table->integer('harga');
             $table->timestamps();
+
+            // // Cascade delete
+            // $table->foreign('id_departement')->references('id')->on('departments')->onDelete('cascade');
         });
     }
 
