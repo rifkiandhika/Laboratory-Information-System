@@ -21,5 +21,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/previewpasien/{lab}', [pasienController::class, 'getDataPasien']);
+Route::get('/get-data-pasien/{lab}', [pasienController::class, 'getDataPasien']);
 
 route::get('/collection/post', [spesimentHendlingController::class, 'postCollection']);

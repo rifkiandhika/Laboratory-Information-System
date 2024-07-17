@@ -4,12 +4,11 @@
 @section('title', 'Data Pasien')
 
 @section('content')
-
     <div class="content" id="scroll-content">
         <div class="container-fluid">
             <!-- Page Heading -->
             <div class="d-sm-flex  my-3">
-                <h1 class="h3 mb-0 text-gray-600">Data Pasien</h1>
+                <h1 class="h3 mb-0 text-gray-600">Patient Data</h1>
             </div>
 
             <!-- Content Row -->
@@ -20,15 +19,11 @@
                     <div class="card shadow mb-4">
                         <!-- Card Header - Dropdown -->
                         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <h6 class="m-0 font-weight-bold" style="color: #96B6C5;">Data Pasien</h6>
+                            <h6 class="m-0 font-weight-bold" style="color: #96B6C5;">Patient Data</h6>
                         </div>
                         <!-- Card Body -->
+
                         <div class="card-body">
-                            <div class="d-flex justify-content-between mb-3">
-                                <a href="{{ route('pasien.create') }}" class="btn btn-outline-primary">
-                                    <i class='bx bx-plus'></i> + Add Patient
-                                </a>
-                            </div>
                             <div class="table-responsive">
                                 <table class="table table-striped table-bordered" id="myTable">
                                     <thead>
@@ -36,6 +31,7 @@
                                             <th scope="col">No</th>
                                             <th scope="col">NIK</th>
                                             <th scope="col">Name</th>
+                                            <th scope="col">Date Of Birth</th>
                                             <th scope="col">Gender</th>
                                             <th scope="col">Phone Number</th>
                                             <th scope="col">Address</th>
@@ -43,27 +39,12 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <th scope="row">1</th>
-                                            <td>35654846874</td>
-                                            <td>Rifki Andhika</td>
-                                            <td>Laki - Laki</td>
-                                            <td>08963548648</td>
-                                            <td>Jl.Candirenggo</td>
-                                            <td><button class="btn btn-info text-white"><i class="bi bi-clipboard "></i>
-                                                </button></td>
-                                        </tr>
-                                        @php
-                                            $no = 1;
-                                        @endphp
-                                        @foreach ($data_pasien as $dp)
-                                            <tr class="mt-2">
-                                                <th scope="row">{{ $no++ }}</th>
-                                                <td>35654846874</td>
-                                                <td>Rifki Andhika</td>
-                                                <td>Laki - Laki</td>
-                                                <td>08963548648</td>
-                                                <td>Jl.Candirenggo</td>
+                                        @foreach ($data_pasien as $x => $dp)
+                                            <tr>
+                                                <th scope="row">{{ $x + 1 }}</th>
+                                                {{-- <th scope="row">{{ $dp->id }}</th> --}}
+                                                <td>{{ $dp->nik }}</td>
+                                                <td>{{ $dp->nama }}</td>
                                                 <td>
                                                     @php
                                                         //mengubah format tanggal
@@ -79,16 +60,78 @@
                                                         echo $tanggal . ' / ' . $umur . ' tahun ';
                                                     @endphp
                                                 </td>
-                                                <td>
-                                                    <a href="#" class="btn btn-sm btn-outline-teal"
-                                                        style="font-size: 15px" id="open-pasien"
-                                                        data-lab="{{ $dp->no_lab }}"
-                                                        onclick="previewPasien('{{ $dp->no_lab }}')">Preview</a>
-                                                </td>
+                                                <td>{{ $dp->jenis_kelamin }}</td>
+                                                <td>{{ $dp->no_telp }}</td>
+                                                <td>{{ $dp->alamat }}</td>
+                                                <td><button data-bs-toggle="modal" data-bs-target="#editDataPasien"
+                                                        class="btn btn-info btn-edit text-white"
+                                                        data-id="{{ $dp->id }}"><i class="bi bi-clipboard "></i>
+                                                    </button></td>
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
+                            </div>
+                            <div class="modal fade" id="editdataPasien" tabindex="-1" role="dialog"
+                                aria-labelledby="editModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editModalLabel">Patient Edit</h5>
+                                            <button type="button" class="close" data-bs-dismiss="modal"
+                                                aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <form id="editFormPasien" method="POST">
+                                            @csrf
+                                            @method('PUT')
+                                            <div class="modal-body">
+                                                <div class="form-group">
+                                                    <label for="Nik">Nik</label>
+                                                    <input type="text" class="form-control" id="Nik" name="nik"
+                                                        required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="name">Name</label>
+                                                    <input type="text" class="form-control" id="Name" name="nama"
+                                                        required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="tanggallahir">Date Of Birth</label>
+                                                    <input id="startDate" type="date" class="form-control" name="lahir"
+                                                        required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="Gender">Gender</label>
+                                                    <select id="Gender" name="jenis_kelamin" class="form-control">
+                                                        <option value="" selected disabled hidden>Pilih Jenis Kelamin
+                                                        </option>
+                                                        <option value="Laki - Laki">Laki - Laki</option>
+                                                        <option value="Perempuan">Perempuan</option>
+                                                    </select>
+                                                    {{-- <input type="text" class="form-control" id="Gender"
+                                                        name="jenis_kelamin" required> --}}
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="phone">Phone Number</label>
+                                                    <input type="text" class="form-control" id="Phone" name="no_telp"
+                                                        required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="address">Address</label>
+                                                    <input type="text" class="form-control" id="Address" name="alamat"
+                                                        required>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Save</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -99,13 +142,67 @@
 
     </div>
 @endsection
-@section('modal')
-    <!-- Modal 1-->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+@push('script')
+    <script>
+        $(function() {
+            $('.btn-edit').on('click', function() {
+                // let data = $(this).data('content');
+                // var nik = $(this).data('nik');
+                // var name = $(this).data('name');
+                // var tanggal = $(this).data('tanggal');
+                // var gender = $(this).data('gender');
+                // var phone = $(this).data('telp');
+                // var address = $(this).data('address');
+
+                const id = this.getAttribute('data-id');
+                // console.log(id);
+                $('#editFormPasien').attr('action', "{{ url('/loket/data-pasien') }}/" + id);
+
+
+                fetch(`/api/get-data-pasien/${id}`).then(response => {
+                    if (!response.ok) {
+                        throw new Error("HTTP error " + response.status);
+                    }
+                    return response.json();
+                }).then(res => {
+                    if (res.status === 'success') {
+                        const {
+                            nik,
+                            nama,
+                            lahir,
+                            jenis_kelamin,
+                            no_telp,
+                            alamat
+                        } = res.data;
+
+                        $('#Nik').val(nik);
+                        $('#Name').val(nama);
+                        $('#startDate').val(lahir);
+                        $('#Gender').val(jenis_kelamin);
+                        $('#Phone').val(no_telp);
+                        $('#Address').val(alamat);
+                    }
+                });
+
+                // Form edit 
+                // .catch(error => {
+                //     console.error('Error fetching data:', error);
+                // });
+
+                // show the modal
+                // $('#editDataPasien').modal('show');
+            });
+        })
+    </script>
+@endpush
+
+
+<!-- Modal 1-->
+{{-- <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Detail Pasien</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Patient Detail</h5>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -113,7 +210,7 @@
                 <div class="modal-body" style="max-height: 700px; overflow-y: auto;">
                     <form action="#" method="post">
                         <div class="d-flex justify-content-between">
-                            <p class="h5">Data Pasien</p>
+                            <p class="h5">Patient Data</p>
                             <div class="row" style="margin-top: -5px;">
                                 <label for="staticEmail" class="col-sm-4 col-form-label">No LAB</label>
                                 <div class="col-lg">
@@ -435,8 +532,6 @@
             </div>
         </div>
     </div>
-
-
     <!-- Preview Pasien -->
     <script>
         function previewPasien(nolab) {
@@ -715,9 +810,9 @@
                 .catch(error => ('Error:', error));
 
         }
-    </script>
+    </script> --}}
 
-    {{-- <script>
+{{-- <script>
     const one = document.querySelector('.one');
     const two = document.querySelector('.two');
     const three = document.querySelector('.three');
@@ -775,4 +870,3 @@
     }
 
 </script> --}}
-@endsection

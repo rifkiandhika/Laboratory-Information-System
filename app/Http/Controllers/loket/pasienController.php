@@ -22,6 +22,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\dokter;
 use App\Models\Pemeriksaan;
+use Exception;
 
 class pasienController extends Controller
 {
@@ -33,17 +34,17 @@ class pasienController extends Controller
         // $data_pasien_cito = pasien::where('cito', 1)->where('status', 'Belum Dilayani')->get();
         // $data_pasien = pasien::where('cito', 0)->where('status', 'Belum Dilayani')->get();
         $data_pasien = pasien::where('status', 'Belum Dilayani')->orderBy('cito', 'desc')->paginate(20);
-        $data = pasien::with('dokter')->get();
         // $data_pemeriksaan_pasien = pemeriksaan_pasien::all();
         // dd($data_pasien);
         // $data_departement = Department::all();
         // $data_pemeriksaan = Pemeriksaan::all();
 
+
         $title = 'Menghapus data Pasien!';
         $text = "Anda yakin untuk menghapus data ini?";
         confirmDelete($title, $text);
 
-        return view('loket.index', compact('data_pasien', 'data'));
+        return view('loket.index', compact('data_pasien'));
     }
 
     /**
@@ -283,59 +284,71 @@ class pasienController extends Controller
     // }
 
     public function getDataPasien(Request $request, $lab){
-        $data_pasien = pasien::where('no_lab', $lab)->first();
-        $data_pemeriksaan_pasien = pemeriksaan_pasien::where('no_lab', $lab)->get();
-        $id_departement_pasien = pemeriksaan_pasien::where('no_lab', $lab)->distinct()->get(['id_departement']);
-        // $icd10 = icd10::all() ?? [];
-        $icd10 = [];
-        $data_departement = Department::all();
-        $data_pemeriksaan = Pemeriksaan::all();
-        $history_pasien = historyPasien::where('no_lab', $lab)->where('proses', 'Disetujui oleh analis lab')->get();
-        $dataTabung = tabung::all();
+        // $data_pasien = pasien::where('no_lab', $lab)->first();
+        // $data_pemeriksaan_pasien = pemeriksaan_pasien::where('no_lab', $lab)->get();
+        // $id_departement_pasien = pemeriksaan_pasien::where('no_lab', $lab)->distinct()->get(['id_departement']);
+        // // $icd10 = icd10::all() ?? [];
+        // $icd10 = [];
+        // $data_departement = Department::all();
+        // $data_pemeriksaan = Pemeriksaan::all();
+        // $history_pasien = historyPasien::where('no_lab', $lab)->where('proses', 'Disetujui oleh analis lab')->get();
+        // $dataTabung = tabung::all();
 
-        $dataOBR = obr::where('order_number', $lab)->count();
+        // $dataOBR = obr::where('order_number', $lab)->count();
 
-        // $res = [
-        //     'success' => true,
-        //     'message' => 'Data pasien ditemukan',
-        //     'data_pasien' => $data_pasien,
-        //     'data_pemeriksaan_pasien' => $data_pemeriksaan_pasien,
-        //     'id_departement_pasien' => $id_departement_pasien,
-        //     'icd10' => $icd10,
-        //     'data_departement' => $data_departement,
-        //     'data_pemeriksaan' => $data_pemeriksaan,
-        //     'history_pasien' => $history_pasien,
-        //     'dataTabung' => $dataTabung,
-        //     'dataOBR' => $dataOBR,
-        // ];
+        // // $res = [
+        // //     'success' => true,
+        // //     'message' => 'Data pasien ditemukan',
+        // //     'data_pasien' => $data_pasien,
+        // //     'data_pemeriksaan_pasien' => $data_pemeriksaan_pasien,
+        // //     'id_departement_pasien' => $id_departement_pasien,
+        // //     'icd10' => $icd10,
+        // //     'data_departement' => $data_departement,
+        // //     'data_pemeriksaan' => $data_pemeriksaan,
+        // //     'history_pasien' => $history_pasien,
+        // //     'dataTabung' => $dataTabung,
+        // //     'dataOBR' => $dataOBR,
+        // // ];
 
-        if($data_pasien)
-        {
-            return response()->json([
-                'success' => true,
-                'message' => 'Data pasien ditemukan',
-                'data_pasien' => $data_pasien,
-                'data_pemeriksaan_pasien' => $data_pemeriksaan_pasien,
-                'id_departement_pasien' => $id_departement_pasien,
-                'icd10' => $icd10,
-                'data_departement' => $data_departement,
-                'data_pemeriksaan' => $data_pemeriksaan,
-                'history_pasien' => $history_pasien,
-                'dataTabung' => $dataTabung,
-                'dataOBR' => $dataOBR,
-            ], 200);
+        // if($data_pasien)
+        // {
+        //     return response()->json([
+        //         'success' => true,
+        //         'message' => 'Data pasien ditemukan',
+        //         'data_pasien' => $data_pasien,
+        //         'data_pemeriksaan_pasien' => $data_pemeriksaan_pasien,
+        //         'id_departement_pasien' => $id_departement_pasien,
+        //         'icd10' => $icd10,
+        //         'data_departement' => $data_departement,
+        //         'data_pemeriksaan' => $data_pemeriksaan,
+        //         'history_pasien' => $history_pasien,
+        //         'dataTabung' => $dataTabung,
+        //         'dataOBR' => $dataOBR,
+        //     ], 200);
+        // }
+        // else
+        // {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Data pasien tidak ditemukan',
+        //     ], 404);
+        // }
+
+        try{
+            // $data_pasien = pasien::with('dokter')->findOrFail($id);
+            $no_lab = pasien::where('id', $lab)->value('no_lab');
+            // $data_pasien = pasien::where('id', $lab)->with(['data_pemeriksaan_pasien.data_departement', 'data_pemeriksaan_pasien.data_pemeriksaan', 'dokter'])->first();
+            $no_lab = pasien::where('id', $lab)->value('no_lab');
+            $data_pasien = pasien::where('id', $lab)->with(['dpp.pasiens' => function($query)use($no_lab){
+                $query->where('no_lab', $no_lab);
+                $query->with('data_pemeriksaan');
+            }, 'dpp.data_departement', 'dokter'])->first();
+            
+            return response()->json(['status' => 'success', 'msg' => 'ok', 'data' => $data_pasien]);
+        }catch(Exception $e){
+
+            return response()->json(['status' => 'fail', 'msg' => 'Failed to fetch Data']);
         }
-        else
-        {
-            return response()->json([
-                'success' => false,
-                'message' => 'Data pasien tidak ditemukan',
-            ], 404);
-        }
-
-        $data_pasien = pasien::where('no_lab', $lab)->with(['data_pemeriksaan_pasien.data_departement', 'data_pemeriksaan_pasien.data_pemeriksaan'])->first();
-
-        return response()->json([$data_pasien]);
     }
 
     public function kirimLab(Request $request){
@@ -367,12 +380,7 @@ class pasienController extends Controller
         return redirect()->route('pasien.index');
     }
 
-    public function dataPasien(){
-        $data_pasien = pasien::where('status', '!=', 'Belum Dilayani')->get();
-
-        return view('loket.data-pasien', compact('data_pasien'));
-    }
-
+    
     public function previewPrint($lab){
         $data_pasien = pasien::where('no_lab', $lab)->first();
 

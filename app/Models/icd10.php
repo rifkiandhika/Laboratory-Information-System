@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class icd10 extends Model
 {
     use HasFactory;
+    protected $guarded = [];
 }

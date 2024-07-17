@@ -11,7 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create('icd10', function (Blueprint $table) {
+            $table->id();
+            $table->string('skri');
+            $table->string('str');
+            $table->string('sab');
+        });
     }
 
     /**

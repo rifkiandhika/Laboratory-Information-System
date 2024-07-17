@@ -80,8 +80,8 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                <div class="table-scroll table-pasien" style="width: 100%;  max-height: 550px;">
-                                    <table class="w " id="myTable">
+                                <div class="table-responsive">
+                                    <table class="table-striped " id="myTable">
                                         <thead style="font-size: 12px;">
                                             <tr>
                                                 <th scope="col">No.</th>
@@ -193,7 +193,6 @@
                             </div>
                         </div>
 
-                        <script src="{{ asset('js/time.js') }}"></script>
 
     </section>
 @endsection

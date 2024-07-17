@@ -12,11 +12,12 @@ class dokter extends Model
 
     public function pasien()
     {
-        return $this->hasMany(pasien::class, 'kode_dokter', 'id');
+        return $this->hasMany(Pasien::class, 'kode_dokter', 'kode_dokter');
     }
 
     public function poli(){
         return $this->belongsTo(Poli::class, 'id_poli', 'id');
     }
+
 
 }

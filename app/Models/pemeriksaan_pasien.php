@@ -22,10 +22,14 @@ class pemeriksaan_pasien extends Model
     }
 
     public function data_departement(){
-        return $this->hasMany(Department::class, 'id', 'id_departement');
+        return $this->belongsTo(Department::class, 'id_departement');
     }
 
     public function data_pemeriksaan(){
-        return $this->hasMany(Pemeriksaan::class, 'id', 'id_parameter');
+        return $this->belongsTo(Pemeriksaan::class, 'id_parameter');
+    }
+
+    public function pasiens(){
+        return $this->hasMany(pemeriksaan_pasien::class, 'id_departement', 'id_departement');
     }
 }

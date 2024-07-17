@@ -96,8 +96,8 @@
                                     </div>
                                     <div class="form-group col-12 col-md-6">
                                         <label for="name">Diagnosa</label>
-                                        <select name="diagnosa" id="diagnosa" class="form-control diagnosa">
-                                            <option value="demam-tifoid">Demam Tifoid</option>
+                                        <select name="diagnosa" id="icd10-select" class="form-control diagnosa">
+                                            <option value="Demam Tifoid">Demam Tifoid</option>
                                         </select>
                                     </div>
                                     <div class="form-group col-12 col-md-6">
@@ -214,6 +214,21 @@ $(document).ready(function(){
 });
 </script> --}}
     <!-- End Tambah form lain -->
+    {{-- <script>
+        $(document).ready(function() {
+            $.ajax({
+                url: "{{ route('get-icd10') }}",
+                method: 'GET',
+                success: function(data) {
+                    var select = $('#icd10-select');
+                    data.forEach(function(item) {
+                        select.append('<option value="' + item.id + '">' + item.code + ' - ' +
+                            item.description + '</option>');
+                    });
+                }
+            });
+        });
+    </script> --}}
 
     <!-- hitung harga otomatis saat memilih checkbox mengambil harga dari database -->
     <script type="text/javascript">

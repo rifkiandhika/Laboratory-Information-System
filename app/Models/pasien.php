@@ -15,7 +15,14 @@ class pasien extends Model
     public function data_pemeriksaan_pasien(){
         return $this->hasMany(pemeriksaan_pasien::class, 'no_lab', 'no_lab');
     }
-    public function dokter(){
-        return $this->belongsTo(dokter::class, 'kode_dokter', 'id');
+
+    public function dpp(){
+        return $this->hasMany(pemeriksaan_pasien::class, 'no_lab', 'no_lab')->groupBy('id_departement');
     }
+
+    public function dokter()
+    {
+        return $this->belongsTo(Dokter::class, 'kode_dokter', 'kode_dokter');
+    }
+    
 }

@@ -15,6 +15,8 @@ class Department extends Model
         return $this->hasMany(Pemeriksaan::class, 'id_departement');
     }
 
+    
+
     public static function boot() {
         parent::boot();
 

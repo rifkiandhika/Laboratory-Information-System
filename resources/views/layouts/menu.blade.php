@@ -25,7 +25,7 @@
                         Dashboard</a>
                 </li>
                 <li class="submenu-item {{ Request::is('loket/data-pasien') ? 'active' : '' }}">
-                    <a href="{{ route('pasien.data') }}" class="submenu-link"><i class="bi bi-clipboard-plus"></i>
+                    <a href="{{ route('data-pasien.index') }}" class="submenu-link"><i class="bi bi-clipboard-plus"></i>
                         Patient Data</a>
                 </li>
                 <li class="submenu-item {{ Request::is('loket/report') ? 'active' : '' }} ">
@@ -49,7 +49,8 @@
                         Dashboard</a>
                 </li>
                 <li class="submenu-item {{ Request::is('loket/data-pasien') ? 'active' : '' }}">
-                    <a href="{{ route('pasien.data') }}" class="submenu-link"><i class="bi bi-clipboard-plus"></i>
+                    <a href="{{ route('data-pasien.index') }}" class="submenu-link"><i
+                            class="bi bi-clipboard-plus"></i>
                         Spesiment</a>
                 </li>
                 <li class="submenu-item {{ Request::is('loket/report') ? 'active' : '' }} ">

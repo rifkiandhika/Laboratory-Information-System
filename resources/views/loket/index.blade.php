@@ -61,17 +61,17 @@
                                     </div>
                                     <div class="h3 mt-3 font-weight-bold text-gray-600">250</div>
                                     <!-- <div class="row no-gutters align-items-center">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  <div class="col-auto">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  <div class="col">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      <div class="progress progress-sm mr-2">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          <div class="progress-bar bg-info" role="progressbar"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              style="width: 50%" aria-valuenow="50" aria-valuemin="0"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              aria-valuemax="100"></div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              </div> -->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  <div class="col-auto">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  </div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  <div class="col">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      <div class="progress progress-sm mr-2">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          <div class="progress-bar bg-info" role="progressbar"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              style="width: 50%" aria-valuenow="50" aria-valuemin="0"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              aria-valuemax="100"></div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      </div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  </div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              </div> -->
                                 </div>
                                 <div class="col-auto">
                                     <i class="bx bxs-user-check fa-3x text-gray-300"></i>
@@ -123,11 +123,11 @@
                 <div class="card shadow mb-4">
                     <!-- Card Header - Dropdown -->
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold" style="color: #96B6C5;">Antrian Pasien</h6>
+                        <h6 class="m-0 font-weight-bold ml-1" style="color: #96B6C5;">Antrian Pasien</h6>
                     </div>
                     <!-- Card Body -->
                     <div class="card-body">
-                        <div class="d-flex justify-content-between mb-3">
+                        <div class="">
                             {{-- <form class="form-inline">
                                     <input class="form-control mr-sm-2" type="search" placeholder="Search"
                                         aria-label="Search">
@@ -137,8 +137,8 @@
                                 <i class='bx bx-plus'></i> + Add Inspection
                             </a>
                         </div>
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordered " id="myTable">
+                        <div class="">
+                            <table class="table table-striped table-bordered table-responsive" id="myTable">
                                 <thead>
                                     <tr>
                                         <th scope="col">No.</th>
@@ -150,7 +150,7 @@
                                         <th scope="col">Address</th>
                                         <th scope="col">Poly Origin</th>
                                         <th scope="col">Status</th>
-                                        <th scope="col">Action</th>
+                                        <th scope="col" class="col-2">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -183,84 +183,21 @@
                                             </td>
                                             <td>
                                                 <button type="button" data-bs-target="#modalPreviewPasien"
-                                                    data-bs-toggle="modal" class="btn btn-info btn-edit text-white mb-1"
-                                                    data-id="{{ $dc->id }}"
-                                                    data-cito="{{ $dc->cito == '1' ? 'text-danger' : 'text-secondary' }}"
-                                                    data-nolab="{{ $dc->no_lab }}" data-nik="{{ $dc->nik }}"
-                                                    data-nama="{{ $dc->nama }}" data-gender="{{ $dc->jenis_kelamin }}"
-                                                    data-alamat="{{ $dc->alamat }}" data-telp="{{ $dc->no_telp }}"
-                                                    data-jenispelayanan="{{ $dc->jenis_pelayanan }}"
-                                                    data-ruangan="{{ $dc->ruangan }}"
-                                                    data-dokter="{{ $dc->nama_dokter }}" data-telp="{{ $dc->no_telp }}"
-                                                    data-email="{{ $dc->email }}"
-                                                    data-diagnosa="{{ $dc->diagnosa }}"><i class='bi bi-eye'></i></button>
+                                                    data-bs-toggle="modal" class="btn btn-info btn-edit text-white "
+                                                    data-id="{{ $dc->id }}"><i class='bi bi-eye'></i></button>
+
+                                                <button type="button" data-bs-target="#modalPembayaran"
+                                                    data-bs-toggle="modal" class="btn btn-success btn-payment text-white "
+                                                    data-payment="{{ $dc->id }}"><i class='bi bi-cash'></i></button>
 
 
-                                                <a href="#cardPreviewPasien" class="btn btn-info text-white mb-1"
-                                                    id="open-pasien" data-lab="{{ $dc->no_lab }}"
-                                                    onclick="previewPasien('{{ $dc->no_lab }}')"><i
-                                                        class='bi bi-clipboard'></i></a>
                                                 <a href="{{ route('pasien.destroy', $dc->no_lab) }}"
                                                     class="btn btn-danger text-white" data-confirm-delete="true"><i
                                                         class="bi bi-x-lg"></i></a>
                                             </td>
                                         </tr>
                                     @empty
-                                        <tr>
-                                            <td colspan="10" class="text-center">Tidak ada data</td>
-                                        </tr>
                                     @endforelse
-                                    {{-- @if ($data_pasien->isEmpty() && $data_pasien->isEmpty())
-                                            <tr>
-                                                <td colspan="10" class="text-center">Tidak ada data</td>
-                                            </tr>
-                                        @else
-                                            
-                                            @foreach ($data_pasien as $dp)
-                                                <tr>
-                                                    <th scope="row">{{ $loop->iteration }}</th>
-                                                    <td>{{ $dp->no_rm }}</td>
-                                                    <td>
-                                                        @if ($dp->cito == 1)
-                                                            <i class='bx bxs-bell-ring mt-2 ml-1 text-danger'
-                                                                style="font-size: 23px;"></i>
-                                                        @else
-                                                            <i class='bx bxs-bell-ring mt-2 ml-1 text-secondary'
-                                                                style="font-size: 23px;"></i>
-                                                        @endif
-                                                    </td>
-                                                    <td>{{ $dp->nama }}</td>
-                                                    <!-- ganti format dengan tanggal-bulan-tahun -->
-                                                    <td>
-                                                        {{ date('d-m-Y', strtotime($dp->lahir)) }}
-                                                        <br>
-                                                        ({{ \Carbon\Carbon::parse($dp->lahir)->age }} tahun)
-                                                    </td>
-                                                    <td>{{ $dp->jenis_kelamin }}</td>
-                                                    <td>{{ $dp->alamat }}</td>
-                                                    <td> - </td>
-                                                    <td>
-                                                        @if ($dp->status == 'Belum Dilayani')
-                                                            <span class="badge bg-danger text-white">Belum Di Layani</span>
-                                                        @elseif($dp->status == 'Telah Dikirim ke Lab')
-                                                            <span class="badge bg-success text-white">Dikirim ke Lab</span>
-                                                        @elseif($dp->status == 'Diproses')
-                                                            <span class="badge bg-warning text-white">Diproses</span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        <a href="#" class="btn btn-info text-white"
-                                                            style="font-size: 15px" id="open-pasien"
-                                                            data-lab="{{ $dp->no_lab }}"
-                                                            onclick="previewPasien('{{ $dp->no_lab }}')"><i
-                                                                class='bx bx-clipboard'></i></a>
-                                                        <a href="{{ route('pasien.destroy', $dp->no_lab) }}"
-                                                            class="btn btn-danger text-white" style="font-size: 15px"
-                                                            data-confirm-delete="true">✕</a>
-                                                    </td>
-                                                </tr>
-                                            @endforeach 
-                                        @endif --}}
                                 </tbody>
                             </table>
                         </div>
@@ -268,124 +205,21 @@
                 </div>
             </div>
 
-            {{-- <div class="col-xl-5 col-lg-5">
-                    <div class="card shadow mb-4" id="cardPreviewPasien">
-                        <!-- Card Header - Dropdown -->
-                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <h6 class="m-0 font-weight-bold" style="color: #96B6C5;">Preview Pasien</h6>
-                            <div class="status" id="status">
-                                <div class="ribbon-shape-dgr">
-                                    <p class="mt-3 text-white">Belum Dilayani</p>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Card Body -->
-                        <div class="card-body p-4">
-                            <div class="text-end" id="tanggal-pemeriksaan">
-                                <!-- Tanggal -->
-                                <p class="h6 font-weight-normal text-muted">{{ now()->format('d F Y H:i:s') }}</p>
-                            </div>
-                            <hr>
-                            <div class="preview-pasien-close" id="preview-pasien-close"
-                                style="background-color: #e3e6f0">
-
-                            </div>
-                            <div class="preview-pasien-open" id="preview-pasien-open">
-                                <div class="row">
-                                    <div class="col-12 col-md-6">
-                                        Pasien
-                                        <hr>
-                                        <table class="table table-borderless">
-                                            <tr>
-                                                <th>Cito</th>
-                                                <td>: </td>
-                                            </tr>
-                                            <tr>
-                                                <th>No Lab</th>
-                                                <td>: </td>
-                                            </tr>
-                                            <tr>
-                                                <th>No RM</th>
-                                                <td>: </td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        Dokter
-                                        <hr>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div> --}}
-            {{-- </div> --}}
-            {{-- <div class="col-xl-12 col-lg-12">
-                <div class="card shadow mb-4" id="cardPreviewPasien">
-                    <!-- Card Header - Dropdown -->
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold" style="color: #96B6C5;">Preview Pasien</h6>
-                        <div class="status" id="status">
-                            <div class="ribbon-shape-dgr">
-                                <p class="mt-3 text-white">Belum Dilayani</p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Card Body -->
-                    <div class="card-body p-4">
-                        <div class="text-end" id="tanggal-pemeriksaan">
-                            <!-- Tanggal -->
-                            <p class="h6 font-weight-normal text-muted">{{ now()->format('d F Y H:i:s') }}</p>
-                        </div>
-                        <hr>
-                        <div class="preview-pasien-close" id="preview-pasien-close" style="background-color: #e3e6f0">
-                            {{-- <p class="text-center">Pilih Pasien</p> 
-
-                        </div>
-                        <div class="preview-pasien-open" id="preview-pasien-open">
-                            <div class="row">
-                                <div class="col-12 col-md-6">
-                                    Pasien
-                                    <hr>
-                                    <table class="table table-borderless">
-                                        <tr>
-                                            <th>Cito</th>
-                                            <td>: Lonceng</td>
-                                        </tr>
-                                        <tr>
-                                            <th>No Lab</th>
-                                            <td>: 019230123</td>
-                                        </tr>
-                                        <tr>
-                                            <th>No RM</th>
-                                            <td>: 9131923712893</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    Dokter
-                                    <hr>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
         </div>
 
     </div>
-
+    {{-- Preview Pasien --}}
     <div class="modal fade" id="modalPreviewPasien" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-            <div class="modal-content">
+            <div class="modal-content ">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalScrollableTitle">Preview Patient</h5>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" id="pembayaran-pasien" style="max-height: 700px; overflow-y: auto;">
+                <div class="modal-body" id="pembayaran-pasien" style="max-height: 700px;">
                     <div class="row">
                         <div class="col-12 col-md-5">
                             Patient
@@ -405,7 +239,7 @@
                                     <th>Cito</th>
                                     <td>
                                         <div class="flex-container">
-                                            <span class="label">:</span>
+                                            <span class="label"></span>
                                             <i class="bi bi-bell-fill" id="Cito"></i>
                                         </div>
                                     </td>
@@ -488,25 +322,19 @@
                             <table>
                                 <tr>
                                     <th>Doctor Name</th>
-                                    <td>
-                                        <div class="flex-container">
-                                            <span class="label">:</span>
-                                            <input type="text" class="form-control-plaintext input p-0"
-                                                id="Dokter">
-                                        </div>
-                                    </td>
+                                    <td> : <span id="Dokter"></span></td>
                                 </tr>
                                 <tr>
                                     <th>Room</th>
-                                    <td id="Ruangan">:</td>
+                                    <td> : <span id="Ruangandok"></span></td>
                                 </tr>
                                 <tr>
                                     <th>Phone Number</th>
-                                    <td id="Telp-dok">:</td>
+                                    <td> : <span id="Telpdok"></span></td>
                                 </tr>
                                 <tr>
                                     <th>Email</th>
-                                    <td id="Email">:</td>
+                                    <td> : <span id="Email"></span></td>
                                 </tr>
                                 <tr>
                                     <th>
@@ -518,6 +346,13 @@
                                 </tr>
                             </table>
                         </div>
+                        <div>
+                            <h5>Detail Pemeriksaan</h5>
+                            <hr>
+                            <div id="detailPemeriksaan">
+
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -527,42 +362,120 @@
             </div>
         </div>
     </div>
-@endsection
-
-@section('modal')
-
-    <!-- Modal 1-->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit Pemeriksaan</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body" style="max-height: 700px; overflow-y: auto;" id="editPasien">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- modal 2 -->
-    <div class="modal fade" id="exampleModalScrollable" tabindex="-1" role="dialog"
+    {{-- Pembayaran Pasien --}}
+    <div class="modal fade" id="modalPembayaran" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-            <div class="modal-content">
+            <div class="modal-content ">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalScrollableTitle">Detail Pemeriksaan Pasien</h5>
+                    <h5 class="modal-title" id="exampleModalScrollableTitle">Payment Patient</h5>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" id="pembayaran-pasien" style="max-height: 700px; overflow-y: auto;">
+                <div class="modal-body" id="pembayaran-pasien" style="max-height: 700px;">
+                    <div class="row">
+                        <div class="col-12 col-md-5">
+                            Patient
+                            <hr>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th scope="row">No.Lab</th>
+                                    <td>
+                                        : <span id="nolab"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>NIK</th>
+                                    <td>
+                                        : <span id="nik"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Name</th>
+                                    <td>
+                                        : <span id="nama"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Gender</th>
+                                    <td>
+                                        : <span id="gender"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Address</th>
+                                    <td>
+                                        : <span id="alamat"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Phone Number</th>
+                                    <td>
+                                        : <span id="telp"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Service</th>
+                                    <td>
+                                        : <span id="pelayanan"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Room</th>
+                                    <td>
+                                        : <span id="ruangan"></span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            Doctor
+                            <hr>
+                            <table>
+                                <tr>
+                                    <th>Doctor Name</th>
+                                    <td> : <span id="dokter"></span></td>
+                                </tr>
+                                <tr>
+                                    <th>Room</th>
+                                    <td> : <span id="ruangandokter"></span></td>
+                                </tr>
+                                <tr>
+                                    <th>Phone Number</th>
+                                    <td> : <span id="telpdokter"></span></td>
+                                </tr>
+                                <tr>
+                                    <th>Email</th>
+                                    <td> : <span id="email"></span></td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <p>Diagnosis</p>
+                                    </th>
+                                    <td>
+                                        <textarea class="form-control" disabled name="diagnosa" id="diagnosa" cols="15" rows="5"></textarea>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div>
+                            <h5>Detail Pemeriksaan</h5>
+                            <hr>
+                            {{-- <div id="detailPemeriksaan">
+
+                            </div> --}}
+                        </div>
+                    </div>
                 </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" type="button">Payment</button>
+                </div>
+
             </div>
         </div>
     </div>
+
 
 @endsection
 
@@ -570,44 +483,135 @@
 @push('script')
     <script>
         $(function() {
+            let detailPemeriksaan = document.getElementById('detailPemeriksaan');
             $('.btn-edit').on('click', function() {
-                var id = $(this).data('id');
-                var cito = $(this).data('cito');
-                var nolab = $(this).data('nolab');
-                var nik = $(this).data('nik');
-                var nama = $(this).data('nama');
-                var gender = $(this).data('gender');
-                var alamat = $(this).data('alamat');
-                var telp = $(this).data('telp');
-                var jenispelayanan = $(this).data('jenispelayanan');
-                var ruangan = $(this).data('ruangan');
-                var dokter = $(this).data('dokter');
-                var ruangan = $(this).data('ruangan');
-                var telpdok = $(this).data('no_telp');
-                var email = $(this).data('email');
-                var diagnosa = $(this).data('diagnosa');
+                const id = this.getAttribute('data-id');
 
-                // set the values modal
-                $('#Cito').val(cito);
-                $('#Nolab').val(nolab);
-                $('#Nik').val(nik);
-                $('#Nama').val(nama);
-                $('#Gender').val(gender);
-                $('#Alamat').val(alamat);
-                $('#Telp').val(telp);
-                $('#JenisPelayanan').val(jenispelayanan);
-                $('#Ruangan').val(ruangan);
-                $('#Dokter').val(dokter);
-                $('#Ruangan').val(ruangan);
-                $('#Telp-dok').val(telpdok);
-                $('#Email').val(name);
-                $('#Diagnosa').val(diagnosa);
+                fetch(`/api/get-data-pasien/${id}`).then(response => {
+                    if (!response.ok) {
+                        throw new Error("HTTP error" + response.status);
+                    }
+                    return response.json();
+                }).then(res => {
+                    if (res.status === 'success') {
+                        const {
+                            cito,
+                            no_lab,
+                            nik,
+                            nama,
+                            jenis_kelamin,
+                            no_telp,
+                            alamat,
+                            jenis_pelayanan,
+                            asal_ruangan,
+                            diagnosa,
+                        } = res.data;
 
+                        dokter = res.data.dokter;
+                        data_pemeriksaan_pasien = res.data.dpp;
+
+                        $('#Cito').val(cito == '1' ? 'text-danger' : 'text-secondary');
+                        $('#Nolab').val(no_lab);
+                        $('#Nik').val(nik);
+                        $('#Nama').val(nama);
+                        $('#Gender').val(jenis_kelamin);
+                        $('#Alamat').val(alamat);
+                        $('#Telp').val(no_telp);
+                        $('#JenisPelayanan').val(jenis_pelayanan);
+                        $('#Ruangan').val(asal_ruangan);
+                        $('#Dokter').text(dokter.nama_dokter);
+                        $('#Ruangandok').text(asal_ruangan);
+                        $('#Telpdok').text(dokter.no_telp);
+                        $('#Email').text(dokter.email);
+                        $('#Diagnosa').val(diagnosa);
+
+                        let old = 0;
+                        let detailContent = '<div class="row">';
+                        let subContent = [];
+
+                        data_pemeriksaan_pasien.forEach((e, i) => {
+                            // console.log(e.data);
+                            detailContent += `<div class="col-12 col-md-6" id="${e.id_departement}">
+                                                        <h6>${e.data_departement.nama_department}</h6>
+                                                        <ol>`;
+                            e.pasiens.forEach((e, i) => {
+                                console.log(e.data_pemeriksaan);
+                                detailContent +=
+                                    `<li>${e.data_pemeriksaan.nama_pemeriksaan}</li>`;
+                            });
+                            detailContent += `</ol></div>`;
+                        });
+                        console.log(data_pemeriksaan_pasien);
+                        detailContent += '</div>';
+                        // console.log(detailContent);
+                        detailPemeriksaan.innerHTML = detailContent;
+                        // if (data_pemeriksaan_pasien.length > 0) {
+                        //     const department = data_pemeriksaan_pasien[0].department;
+                        //     $('#Department').text(department.nama_department);
+                        // }
+
+                    }
+                });
                 // Form edit 
-                $('#modalPreviewPasien').attr('action', '/poli/' + id);
+                // $('#modalPreviewPasien').attr('action', '/poli/' + id);
 
                 // show the modal
-                $('#modalPreviewPasien').modal('show');
+                // $('#modalPreviewPasien').modal('show');
+            });
+        })
+    </script>
+
+    <script>
+        $(function() {
+            $('.btn-payment').on('click', function() {
+                const id = this.getAttribute('data-payment');
+
+                fetch(`/api/get-data-pasien/${id}`).then(response => {
+                    if (!response.ok) {
+                        throw new Error("HTTP error" + response.status);
+                    }
+                    return response.json();
+                }).then(res => {
+                    if (res.status === 'success') {
+                        const {
+                            no_lab,
+                            nik,
+                            nama,
+                            jenis_kelamin,
+                            no_telp,
+                            alamat,
+                            jenis_pelayanan,
+                            asal_ruangan,
+                            diagnosa,
+                        } = res.data;
+
+                        dokter = res.data.dokter;
+
+                        $('#nolab').text(no_lab);
+                        $('#nik').text(nik);
+                        $('#nama').text(nama);
+                        $('#gender').text(jenis_kelamin);
+                        $('#alamat').text(alamat);
+                        $('#telp').text(no_telp);
+                        $('#pelayanan').text(jenis_pelayanan);
+                        $('#ruangan').text(asal_ruangan);
+                        $('#dokter').text(dokter.nama_dokter);
+                        $('#ruangandokter').text(asal_ruangan);
+                        $('#telpdokter').text(dokter.no_telp);
+                        $('#email').text(dokter.email);
+                        $('#diagnosa').val(diagnosa);
+                        // if (data_pemeriksaan_pasien.length > 0) {
+                        //     const department = data_pemeriksaan_pasien[0].department;
+                        //     $('#Department').text(department.nama_department);
+                        // }
+
+                    }
+                });
+                // Form edit 
+                // $('#modalPreviewPasien').attr('action', '/poli/' + id);
+
+                // show the modal
+                // $('#modalPreviewPasien').modal('show');
             });
         })
     </script>
@@ -683,190 +687,6 @@
                     console.log(error);
                 });
         }
-        // function previewPasien(nolab) {
-        //     var y = document.getElementById("preview-pasien-close");
-
-        //     //mengambil data pasien dari database
-        //     fetch('/api/previewpasien/' + nolab)
-        //         .then(response => {
-        //             if (!response.ok) {
-        //                 throw new Error("HTTP error " + response.status);
-        //             }
-        //             return response.json();
-        //         })
-
-        //         .then(data => {
-        //             console.log(data); // Tambahkan log ini untuk melihat respons API
-
-        //             if (!data || !data.data_pasien) {
-        //                 throw new Error("Data pasien tidak ditemukan");
-        //             }
-        //             y.style.display = "none";
-        //             var status = document.getElementById("status");
-        //             var container = document.getElementById("preview-pasien-open");
-        //             var tanggal = document.getElementById("tanggal-pemeriksaan");
-
-        //             //Status Pemeriksaan
-        //             if (data.data_pasien.status == "Belum Dilayani") {
-        //                 status.innerHTML =
-        //                     `<div class="ribbon-shape-dgr"><p class="mt-3 text-white">Belum Dilayani</p></div>`;
-        //             } else if (data.data_pasien.status == "Telah Dikirim ke Lab") {
-        //                 status.innerHTML =
-        //                     `<div class="ribbon-shape-scs"><p class="mt-3 text-white">Telah Dikirim</p></div>`;
-        //             } else if (data.data_pasien.status == "Diproses") {
-        //                 status.innerHTML =
-        //                     `<div class="ribbon-shape-wrn"><p class="mt-3 text-white">Diproses</p></div>`;
-        //             }
-
-        //             //ubah format tanggal created_at
-        //             var date = new Date(data.data_pasien.tanggal_masuk);
-        //             var year = date.getFullYear();
-        //             var month = date.getMonth() + 1;
-        //             var dt = date.getDate();
-
-        //             //ambil nama hari
-        //             var day = date.getDay();
-        //             var days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-        //             day = days[day];
-
-        //             if (dt < 10) {
-        //                 dt = '0' + dt;
-        //             }
-        //             if (month < 10) {
-        //                 month = '0' + month;
-        //             }
-
-        //             var tanggal_pemeriksaan =
-        //                 `${day} , ${dt}-${month}-${year} ${date.getHours()}:${date.getMinutes()}`;
-
-        //             //tampilkan tanggal pemeriksaan
-        //             tanggal.innerHTML = `<p class="h6 font-weight-normal">${tanggal_pemeriksaan}</p>`;
-
-        //             //menghitung umur dari tanggal lahir
-        //             var dob = new Date(data.data_pasien.lahir);
-        //             var today = new Date();
-        //             var age = Math.floor((today - dob) / (365.25 * 24 * 60 * 60 * 1000));
-
-        //             var diagnosa = data.icd10.filter(function(el) {
-        //                 return el.code == data.data_pasien.diagnosa;
-        //             });
-
-        //             //perulangan untuk menampilkan pemeriksaan yang dipilih
-        //             var departement = "";
-
-        //             for (let i = 0; i < data.id_departement_pasien.length; i++) {
-        //                 departement += `<p class="h6 text-gray-800">`
-        //                 //buat perintah where untuk mencari id_departement
-        //                 for (let j = 0; j < data.data_departement.length; j++) {
-        //                     if (data.data_departement[j].id_departement == data.id_departement_pasien[i]
-        //                         .id_departement)
-        //                         departement += data.data_departement[j].nama_departement;
-        //                 }
-        //                 departement += `</p>
-    //                             <div class="sub-detail p-2">`
-        //                 for (let k = 0; k < data.data_pemeriksaan_pasien.length; k++) {
-        //                     if (data.data_pemeriksaan_pasien[k].id_departement == data.id_departement_pasien[i]
-        //                         .id_departement) {
-        //                         for (let l = 0; l < data.data_pemeriksaan.length; l++) {
-        //                             if (data.data_pemeriksaan_pasien[k].nama_parameter == data.data_pemeriksaan[l]
-        //                                 .nama_parameter) {
-        //                                 departement += `<p class="text-gray-600 offset-md-3">` + data
-        //                                     .data_pemeriksaan[
-        //                                         l].nama_pemeriksaan + `</p>`;
-        //                             }
-        //                         }
-        //                     }
-        //                 }
-        //                 departement += `</div>`
-        //             }
-
-        //             var noLab = data.data_pasien.no_lab;
-
-        //             var citoMerah = `<label for="staticEmail" class="col-sm-5 col-form-label">Cito</label>
-    //                         <div class="col-sm-7">
-    //                             <i class='bx bxs-bell-ring mt-2 ml-1 text-danger' style="font-size: 23px;"></i>
-    //                         </div>`;
-        //             var citoGray = `<label for="staticEmail" class="col-sm-5 col-form-label">Cito</label>
-    //                         <div class="col-sm-7">
-    //                             <i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i>
-    //                         </div>`;
-
-        //             var html = `<div class="container-preview">
-    //                         <form action="#" class="row table-preview" style="overflow-y: scroll; max-height: 515px;">
-    //                         <div class="pasien col-xl-6 col-lg-12 col-sm-12 mb-3">
-    //                             <p class="h5 text-gray-800 mb-2">Pasien</p>
-    //                             <hr>
-    //                             <div class="row">`
-        //             if (data.data_pasien.cito == 1) {
-        //                 html += citoMerah;
-        //             } else {
-        //                 html += citoGray;
-        //             }
-        //             html += `</div>
-    //                             <div class="row">
-    //                             <label for="staticEmail" class="col-sm-5 col-form-label">No Lab</label>
-    //                             <div class="col-sm-7">
-    //                                 <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data.data_pasien.no_lab}">
-    //                             </div>
-    //                             </div>
-    //                             <div class="row">
-    //                             <label for="staticEmail" class="col-sm-5 col-form-label">No RM</label>
-    //                             <div class="col-sm-7">
-    //                                 <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data.data_pasien.no_rm}">
-    //                             </div>
-    //                             </div>
-    //                             <div class="row">
-    //                             <label for="staticEmail" class="col-sm-5 col-form-label">NIK</label>
-    //                             <div class="col-sm-7">
-    //                                 <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data.data_pasien.nik}">
-    //                             </div>
-    //                             </div>
-    //                             <div class="row">
-    //                             <label for="staticEmail" class="col-sm-5 col-form-label">Nama</label>
-    //                             <div class="col-sm-7">
-    //                                 <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data.data_pasien.nama}">
-    //                             </div>
-    //                             </div>
-    //                             <div class="row">
-    //                             <label for="staticEmail" class="col-sm-5 col-form-label">Gender</label>
-    //                             <div class="col-sm-7">
-    //                                 <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data.data_pasien.jenis_kelamin}">
-    //                             </div>
-    //                             </div>
-    //                             <div class="row">
-    //                             <label for="staticEmail" class="col-sm-5 col-form-label">Umur</label>
-    //                             <div class="col-sm-7">
-    //                                 <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${age} tahun">
-    //                             </div>
-    //                             </div>
-    //                             <div class="row">
-    //                             <label for="staticEmail" class="col-sm-5 col-form-label">Diagnosa</label>
-    //                             <div class="col-sm-7">
-    //                                 <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${diagnosa[0].code} - ${diagnosa[0].nama_penyakit}">
-    //                             </div>
-    //                             </div>
-    //                             <div class="row">
-    //                             <label for="staticEmail" class="col-sm-5 col-form-label">Alamat</label>
-    //                             <div class="col-sm-7">
-    //                                 <textarea type="text" readonly class="form-control-plaintext">${data.data_pasien.alamat}</textarea>
-    //                             </div>
-    //                             </div>
-    //                         </div>
-    //                         <div class="pemeriksaan col-xl-6 col-lg-12 col-sm-12 mb-3">
-    //                             <p class="h5 text-gray-800 mb-2">Pemeriksaan</p>
-    //                             <hr>
-    //                             ${departement}
-    //                         </div>
-    //                         </form>
-    //                     </div>`
-
-        //             container.innerHTML = html;
-        //         })
-        //         .catch(error => {
-        //             y.style.display = "block";
-        //             console.error("Terjadi kesalahan:", error);
-        //         });
-        // }
     </script>
 
     <!-- Pembayaran Pasien -->
@@ -1192,8 +1012,8 @@
                         `<form action="{{ route(
                             'pasien.update',
                             '`
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                html += data.data_pasien.no_lab
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                html += `',
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                html += data.data_pasien.no_lab
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                html += `',
                         ) }}" method="post">
                     @csrf
                     @method('PUT')
