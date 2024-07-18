@@ -533,12 +533,12 @@
                             <div class="row mb-3">
                                 <div class="col-12 col-md-6"
                                     <label>Payment Method</label>
-                                    <input class="form-control" type="text" name="no_lab" value="${data_pasien.no_lab }" readonly hidden>
-                                    <input class="form-control" type="text" name="metode_pembayaran" value="${data_pasien.jenis_pelayanan }" readonly>
+                                    <input class="form-control " type="text" name="no_lab" value="${data_pasien.no_lab }" readonly hidden>
+                                    <input class="form-control bg-secondary-subtle" type="text" name="metode_pembayaran" value="${data_pasien.jenis_pelayanan }" readonly>
                                 </div>
                                 <div class="col-12 col-md-6"
                                     <label>Total Payment</label>
-                                    <input class="form-control " type="text" id="total_pembayaran" name="total_pembayaran"  value="${totalHarga}" readonly>
+                                    <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran" name="total_pembayaran"  value="${totalHarga}" readonly>
                                 </div>
                                 <div class="col-12 col-md-6"
                                     <label>Payment Amount</label>
@@ -546,7 +546,7 @@
                                 </div>
                                 <div class="col-12 col-md-6"
                                     <label>Change Money</label>
-                                    <input class="form-control " value="" id="kembalian" name="kembalian" readonly>
+                                    <input class="form-control bg-secondary-subtle" value="" id="kembalian" name="kembalian" readonly>
                                 </div>
                             </div>
                         `;

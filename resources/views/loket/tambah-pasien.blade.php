@@ -54,7 +54,7 @@
                                     <div class="form-group col-12 col-md-6">
                                         <label for="basic-url">Nomor Induk Kewarganegaraan</label>
                                         <div class="input-group mb-6">
-                                            <input type="text" class="form-control" name="nik" aria-label=""
+                                            <input type="number" class="form-control" name="nik" aria-label=""
                                                 placeholder="Masukan NIK">
                                         </div>
                                     </div>
@@ -80,7 +80,7 @@
                                     </div>
                                     <div class="form-group col-12 col-md-6">
                                         <label for="name">No Telepon / Hp</label>
-                                        <input type="text" class="form-control" value="" id=""
+                                        <input type="number" class="form-control" value="" id=""
                                             name="notelepon" placeholder="Masukan Nomor Telephone">
                                     </div>
                                     <div class="form-group col-12 col-md-6">
