@@ -357,12 +357,12 @@ class pasienController extends Controller
         pasien::where('no_lab', $request->no_lab)->update([
             'status' => 'Telah Dikirim ke Lab',
         ]);
-
+        // dd($request);
         DB::table('pembayarans')->insert([
             'no_lab' => $request->no_lab,
-            'metode_pembayaran' => $request->jenispelayanan,
-            'total_pembayaran' => $request->hargapemeriksaan,
-            'jumlah_bayar' => $request->jumlahbayar,
+            'metode_pembayaran' => $request->metode_pembayaran,
+            'total_pembayaran' => $request->total_pembayaran,
+            'jumlah_bayar' => $request->jumlah_bayar,
             'kembalian' => $request->kembalian,
             'tanggal_pembayaran' => now(),
             'created_at' => now(),
