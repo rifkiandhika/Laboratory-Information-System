@@ -80,7 +80,7 @@
                                     </div>
                                     <div class="form-group col-12 col-md-6">
                                         <label for="name">No Telepon / Hp</label>
-                                        <input type="number" class="form-control" value="" id=""
+                                        <input type="number " class="form-control" value="" id=""
                                             name="notelepon" placeholder="Masukan Nomor Telephone">
                                     </div>
                                     <div class="form-group col-12 col-md-6">
@@ -96,7 +96,7 @@
                                     </div>
                                     <div class="form-group col-12 col-md-6">
                                         <label for="name">Diagnosa</label>
-                                        <select name="diagnosa" id="icd10-select" class="form-control diagnosa">
+                                        <select name="diagnosa" id="diagnosa" class="form-control diagnosa">
                                             <option value="Demam Tifoid">Demam Tifoid</option>
                                         </select>
                                     </div>
@@ -194,6 +194,32 @@
             </div>
         </div>
     </div>
+
+
+{{-- <script>
+    $(document).ready(function() {
+        $('#diagnosa').select2({
+            placeholder: 'Pilih Diagnosa',
+            ajax: {
+                url: '{{ route('geticd10') }}',
+                dataType: 'json',
+                delay: 250,
+                processResults: function (data) {
+                    return {
+                    results:  $.map(data, function (item) {
+                        return {
+                        text: item.code + ' - ' + item.name_id,
+                        id: item.code
+                        }
+                    })
+                    };
+                },
+                cache: true
+            }
+        });
+    });
+</script> --}}
+
 
     <!-- Tambah form lain -->
     {{-- <script type="text/javascript">

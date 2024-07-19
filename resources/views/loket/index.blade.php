@@ -21,8 +21,10 @@
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
                                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                        Jumlah Pasien Masuk (Harian)</div>
-                                    <div class="h3 mt-3 font-weight-bold text-gray-600">150</div>
+                                        Pasien Masuk (Harian)</div>
+                                    <div class="h3 mt-3 font-weight-bold text-gray-600">
+                                        <h3>{{ $tanggal }}</h3>
+                                    </div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="bx bx-chart fa-3x text-gray-300"></i>
@@ -40,7 +42,9 @@
                                 <div class="col mr-2">
                                     <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                         Pasien Belum Dilayani</div>
-                                    <div class="h3 mt-3 font-weight-bold text-gray-600">10</div>
+                                    <div class="h3 mt-3 font-weight-bold text-gray-600">
+                                    <h3>{{$data}}</h3>
+                                    </div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="bx bx-info-circle fa-3x text-gray-300"></i>
@@ -180,9 +184,17 @@
                                                     data-payment="{{ $dc->id }}"><i class='bi bi-cash'></i></button>
 
 
-                                                <a href="{{ route('pasien.destroy', $dc->no_lab) }}"
-                                                    class="btn btn-danger text-white" data-confirm-delete="true"><i
-                                                        class="bi bi-x-lg"></i></a>
+                                                    <form id="delete-form-{{ $dc->id }}"
+                                                        action="{{ route('pasien.destroy', $dc->id) }}" method="POST"
+                                                        style="display: none;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+                                                    <button class="btn btn-danger"
+                                                    onclick="confirmDelete({{ $dc->id }})"><i
+                                                        class="bi bi-trash"></i></button>
+
+                                                    {{-- <a href="{{ route('print.barcode', $dc->no_lab) }}" class="btn btn-warning"><i class="bi bi-upc"></i></a> --}}
                                             </td>
                                         </tr>
                                     @empty
@@ -210,7 +222,7 @@
                 </div>
                 <div class="modal-body" id="pembayaran-pasien" style="max-height: 700px;">
                     <div class="row">
-                        <div class="col-12 col-md-5">
+                        <div class="col-12 col-md-6">
                             Patient
                             <hr>
                             <table class="table table-borderless">
@@ -218,9 +230,7 @@
                                     <th scope="row">No.Lab</th>
                                     <td>
                                         <div class="flex-container">
-                                            <span class="label">:</span>
-                                            <input type="text" class="form-control-plaintext input p-0"
-                                                id="Nolab">
+                                            :  <span class="ms-2" id="Nolab"></span>
                                         </div>
                                     </td>
                                 </tr>
@@ -228,7 +238,7 @@
                                     <th>Cito</th>
                                     <td>
                                         <div class="flex-container">
-                                            <span class="label"></span>
+                                            <span class="label">:</span>
                                             <i class="bi bi-bell-fill" id="Cito"></i>
                                         </div>
                                     </td>
@@ -237,9 +247,7 @@
                                     <th>NIK</th>
                                     <td>
                                         <div class="flex-container">
-                                            <span class="label">:</span>
-                                            <input type="text" class="form-control-plaintext input p-0"
-                                                id="Nik">
+                                          :  <span id="Nik">:</span>
                                         </div>
                                     </td>
                                 </tr>
@@ -247,9 +255,7 @@
                                     <th>Name</th>
                                     <td>
                                         <div class="flex-container">
-                                            <span class="label">:</span>
-                                            <input type="text" class="form-control-plaintext input p-0"
-                                                id="Nama">
+                                           : <span id="Nama"></span>
                                         </div>
                                     </td>
                                 </tr>
@@ -257,19 +263,15 @@
                                     <th>Gender</th>
                                     <td>
                                         <div class="flex-container">
-                                            <span class="label">:</span>
-                                            <input type="text" class="form-control-plaintext input p-0"
-                                                id="Gender">
+                                          : <span id="Gender">:</span>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>Address</th>
                                     <td>
-                                        <div class="">
-                                            <span class="label">:</span>
-                                            <input type="text" class="form-control-plaintext input p-0"
-                                                id="Alamat">
+                                        <div class="flex-container">
+                                           : <span id="Alamat"></span>
                                         </div>
                                     </td>
                                 </tr>
@@ -277,9 +279,7 @@
                                     <th>Phone Number</th>
                                     <td>
                                         <div class="flex-container">
-                                            <span class="label">:</span>
-                                            <input type="text" class="form-control-plaintext input p-0"
-                                                id="Telp">
+                                           : <span id="Telp"></span>
                                         </div>
                                     </td>
                                 </tr>
@@ -287,9 +287,7 @@
                                     <th>Service</th>
                                     <td>
                                         <div class="flex-container">
-                                            <span class="label">:</span>
-                                            <input type="text" class="form-control-plaintext input p-0"
-                                                id="JenisPelayanan">
+                                           : <span id="JenisPelayanan">:</span>
                                         </div>
                                     </td>
                                 </tr>
@@ -297,9 +295,7 @@
                                     <th>Room</th>
                                     <td>
                                         <div class="flex-container">
-                                            <span class="label">:</span>
-                                            <input type="text" class="form-control-plaintext input p-0"
-                                                id="Ruangan">
+                                           : <span id="Ruangan"></span>
                                         </div>
                                     </td>
                                 </tr>
@@ -308,35 +304,45 @@
                         <div class="col-12 col-md-6">
                             Doctor
                             <hr>
-                            <table>
-                                <tr>
-                                    <th>Doctor Name</th>
-                                    <td> : <span id="Dokter"></span></td>
-                                </tr>
-                                <tr>
-                                    <th>Room</th>
-                                    <td> : <span id="Ruangandok"></span></td>
-                                </tr>
-                                <tr>
-                                    <th>Phone Number</th>
-                                    <td> : <span id="Telpdok"></span></td>
-                                </tr>
-                                <tr>
-                                    <th>Email</th>
-                                    <td> : <span id="Email"></span></td>
-                                </tr>
-                                <tr>
-                                    <th>
-                                        <p>Diagnosis</p>
-                                    </th>
-                                    <td>
-                                        <textarea class="form-control" disabled name="diagnosa" id="Diagnosa" cols="15" rows="5"></textarea>
-                                    </td>
-                                </tr>
+                            <table class="table table-borderless">
+                                <tbody>
+                                    <tr class="mb-4">
+                                        <th scope="row">Name</th>
+                                        <td> : <span id="Dokter"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <div class="flex-container mt-2">
+                                            <th style="margin-top: 10px">Room</th>
+                                            <td> : <span id="Ruangandok"></span></td>
+                                        </div>
+                                    </tr>
+                                    <tr>
+                                        <th>Phone</th>
+                                        <td> : <span id="Telpdok"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email</th>
+                                        <td> : <span id="Email"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            Diagnosis
+                                        </th>
+                                        <td>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <textarea class="form-control" disabled name="diagnosa" id="Diagnosa" cols="20" rows="5"></textarea>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
-                        <div>
-                            <h5>Detail Pemeriksaan</h5>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <h5>Inspection Details</h5>
                             <hr>
                             <div id="detailPemeriksaan">
 
@@ -390,10 +396,14 @@
 @push('script')
     <script>
         $(function() {
+            // ngambil data dari id = detailPemeriksaan
             let detailPemeriksaan = document.getElementById('detailPemeriksaan');
+            // button preview waktu di klik mendapatkan data sesuai id
             $('.btn-edit').on('click', function() {
+                // untuk mendapatkan data sesuai idnya
                 const id = this.getAttribute('data-id');
 
+                // Memanggil API
                 fetch(`/api/get-data-pasien/${id}`).then(response => {
                     if (!response.ok) {
                         throw new Error("HTTP error" + response.status);
@@ -426,6 +436,20 @@
                         $('#Telp').val(no_telp);
                         $('#JenisPelayanan').val(jenis_pelayanan);
                         $('#Ruangan').val(asal_ruangan);
+                        const citoIcon = $('#Cito');
+                        if (cito == '1') {
+                            citoIcon.removeClass('text-secondary').addClass('text-danger');
+                        } else {
+                            citoIcon.removeClass('text-danger').addClass('text-secondary');
+                        }
+                        $('#Nolab').text(no_lab);
+                        $('#Nik').text(nik);
+                        $('#Nama').text(nama);
+                        $('#Gender').text(jenis_kelamin);
+                        $('#Alamat').text(alamat);
+                        $('#Telp').text(no_telp);
+                        $('#JenisPelayanan').text(jenis_pelayanan);
+                        $('#Ruangan').text(asal_ruangan);
                         $('#Dokter').text(dokter.nama_dokter);
                         $('#Ruangandok').text(asal_ruangan);
                         $('#Telpdok').text(dokter.no_telp);
@@ -435,7 +459,7 @@
                         let old = 0;
                         let detailContent = '<div class="row">';
                         let subContent = [];
-
+                            // memanggil data departement
                         data_pemeriksaan_pasien.forEach((e, i) => {
                             // console.log(e.data);
                             detailContent += `<div class="col-12 col-md-6" id="${e.id_departement}">
@@ -444,13 +468,14 @@
                             e.pasiens.forEach((e, i) => {
                                 console.log(e.data_pemeriksaan);
                                 detailContent +=
-                                    `<li>${e.data_pemeriksaan.nama_pemeriksaan}</li>`;
+                                    `<li>${e.data_pemeriksaan.nama_pemeriksaan}- Rp ${e.data_pemeriksaan.harga}</li>`;
                             });
                             detailContent += `</ol></div>`;
                         });
                         console.log(data_pemeriksaan_pasien);
                         detailContent += '</div>';
                         // console.log(detailContent);
+                        // menampilkan data yang diambil dari API
                         detailPemeriksaan.innerHTML = detailContent;
                         // if (data_pemeriksaan_pasien.length > 0) {
                         //     const department = data_pemeriksaan_pasien[0].department;
@@ -462,8 +487,6 @@
                 // Form edit
                 // $('#modalPreviewPasien').attr('action', '/poli/' + id);
 
-                // show the modal
-                // $('#modalPreviewPasien').modal('show');
             });
         })
     </script>

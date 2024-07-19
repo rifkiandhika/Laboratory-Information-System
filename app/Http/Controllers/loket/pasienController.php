@@ -22,6 +22,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\dokter;
 use App\Models\Pemeriksaan;
+use Carbon\Carbon;
 use Exception;
 
 class pasienController extends Controller
@@ -33,6 +34,8 @@ class pasienController extends Controller
     {
         // $data_pasien_cito = pasien::where('cito', 1)->where('status', 'Belum Dilayani')->get();
         // $data_pasien = pasien::where('cito', 0)->where('status', 'Belum Dilayani')->get();
+        $data = pasien::where('status','Belum Dilayani')->count();
+        $tanggal = pasien::whereDate('created_at', Carbon::today())->count();
         $data_pasien = pasien::where('status', 'Belum Dilayani')->orderBy('cito', 'desc')->paginate(20);
         // $data_pemeriksaan_pasien = pemeriksaan_pasien::all();
         // dd($data_pasien);
@@ -44,7 +47,7 @@ class pasienController extends Controller
         $text = "Anda yakin untuk menghapus data ini?";
         confirmDelete($title, $text);
 
-        return view('loket.index', compact('data_pasien'));
+        return view('loket.index', compact('data_pasien', 'data', 'tanggal'));
     }
 
     /**
