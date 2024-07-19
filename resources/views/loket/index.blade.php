@@ -63,7 +63,7 @@
                                     <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Pasien Telah
                                         Dilayani
                                     </div>
-                                    <div class="h3 mt-3 font-weight-bold text-gray-600">250</div>
+                                    <div class="h3 mt-3 font-weight-bold text-gray-600">6</div>
 
                                 </div>
                                 <div class="col-auto">

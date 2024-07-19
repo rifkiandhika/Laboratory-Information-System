@@ -303,7 +303,7 @@
                     <div class="col-12 col-md-6">
                         Doctor
                         <hr>
-                        <table>
+                        <table class="table table-borderless">
                             <tr>
                                 <th>Doctor Name</th>
                                 <td> : <span id="Dokter"></span></td>
