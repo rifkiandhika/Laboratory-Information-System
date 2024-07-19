@@ -401,13 +401,13 @@
                             dokter = res.data.dokter;
                             data_pemeriksaan_pasien = res.data.dpp;
                             if(status == 'Disetujui oleh analis lab'){
-                                $('#verification').attr('style',`visibility:hidden`);
-                                $('#note').attr('style',`visibility:hidden`);
-                                $('#notelabel').attr('style',`visibility:hidden`);
+                                $('#verification').attr('style',`display:none`);
+                                $('#note').attr('style',`display:none`);
+                                $('#notelabel').attr('style',`display:none`);
 
                             }
                             else{
-                                $('#verification').attr('style',`visibility:visible`);
+                                $('#verification').attr('style',`display:inherit`);
                             }
 
                             $('#form').attr('action',`approve/${id}`);
