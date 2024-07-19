@@ -84,17 +84,29 @@ class analystDasboard extends Controller
         DB::table('pasiens')->where('no_lab', $request->no_lab)->update([
             'status' => 'Disetujui oleh analis lab',
         ]);
+        if(isset($request->note)){
 
-        DB::table('history_pasiens')->insert([
-            'no_lab' => $request->no_lab,
-            'proses' => 'Disetujui oleh analis lab',
-            'tempat' => 'Laboratorium',
-            'note' => $request->note,
-            'waktu_proses' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+            DB::table('history_pasiens')->insert([
+                'no_lab' => $request->no_lab,
+                'proses' => 'Disetujui oleh analis lab',
+                'tempat' => 'Laboratorium',
+                'note' => $request->note,
+                'waktu_proses' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+        else{
+            DB::table('history_pasiens')->insert([
+                'no_lab' => $request->no_lab,
+                'proses' => 'Disetujui oleh analis lab',
+                'tempat' => 'Laboratorium',
+                'waktu_proses' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
+        }
         toast('Data di setujui','success');
         return redirect()->route('analyst.index');
     }

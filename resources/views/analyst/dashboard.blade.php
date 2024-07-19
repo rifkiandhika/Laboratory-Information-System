@@ -308,8 +308,8 @@
                 <form method="post" id="form">
                     @csrf
                     <label for="">Note</label>
-                    <textarea required class="form-control" placeholder="Note" name="note" id="" cols="30" rows="8"></textarea>
-                    <input type="hidden" id="no_lab">
+                    <textarea  class="form-control" placeholder="Note" name="note" id="" cols="30" rows="8"></textarea>
+                    <input type="hidden" id="no_lab" name="no_lab" value="">
             </div>
 
                 <div class="modal-footer">
@@ -373,6 +373,7 @@
             }).then(res => {
                 if (res.status === 'success') {
                     const {
+                        id,
                         cito,
                         no_lab,
                         nik,
@@ -388,6 +389,8 @@
                     dokter = res.data.dokter;
                     data_pemeriksaan_pasien = res.data.dpp;
 
+                    $('#form').attr('action',`approve/${id}`);
+                    $('#no_lab').attr('value',no_lab);
                     $('#Cito').val(cito == 1 ? 'text-danger' : 'text-secondary');
                     $('#Nolab').val(no_lab);
                     $('#Nik').val(nik);
