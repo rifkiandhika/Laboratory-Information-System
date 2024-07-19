@@ -405,4 +405,25 @@ class pasienController extends Controller
 
         return $pdf->stream();
     }
+
+    public function getDataDiagnosa(Request $request){
+        $keyword = $request->keyword;
+        // $data = icd10::selectRaw(DB::raw('id, str as text'))->where(function($query)use($keyword){
+        //     $query->where('skri', $keyword)->orWhere('str', 'like', '%'.$keyword.'%');
+        // })->get();
+
+        if($request->ajax()){
+            try{
+                $keyword = $request->keyword;
+                $data = icd10::selectRaw(DB::raw('str, str as text'))->where(function($query)use($keyword){
+                    $query->where('skri', $keyword)->orWhere('str', 'like', '%'.$keyword.'%');
+                })->get();
+                
+            }catch(Exception $e){
+                return response()->json(['status' => 'fail', 'msg' => 'Failed to fetch data']);
+            }
+
+            return response()->json(['status' => 'success', 'msg' => 'Data Fetched!', 'data' => $data]);
+        }
+    }
 }

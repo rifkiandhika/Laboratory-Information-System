@@ -9,4 +9,6 @@ class icd10 extends Model
 {
     use HasFactory;
     protected $guarded = [];
+
+    protected $table = 'icd10';
 }

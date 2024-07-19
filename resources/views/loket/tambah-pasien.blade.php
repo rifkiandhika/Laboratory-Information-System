@@ -97,8 +97,7 @@
                                     <div class="form-group col-12 col-md-6">
                                         <label for="name">Diagnosis</label>
                                         <select name="diagnosa" id="diagnosa" class="form-control diagnosa">
-                                            <option value="" selected hidden></option>
-                                            <option value="Demam Tifoid">Demam Tifoid</option>
+                                            <option value=""></option>
                                         </select>
                                     </div>
                                     <div class="form-group col-12 col-md-6">
@@ -250,6 +249,10 @@ $(document).ready(function(){
         });
     </script> --}}
 
+@endsection
+
+@push('script')
+
     <!-- hitung harga otomatis saat memilih checkbox mengambil harga dari database -->
     <script type="text/javascript">
         function checkpemeriksaan(lab) {
@@ -271,6 +274,31 @@ $(document).ready(function(){
 
             harga_pemeriksaan.value = ribuan;
         }
-    </script>
 
-@endsection
+        $(document).ready(function(){
+            $("#diagnosa").select2({
+                placeholder: 'Pilih Diagnosa',
+                minimumInputLength: 3,
+                ajax: {
+                    url: '{{ url("/api/get-data-diagnosa") }}',
+                    data: function(params){
+                        let data = {
+                            keyword: params.term
+                        };
+
+                        return data;
+                    },
+                    processResults: function(data){
+                        if(data.status == 'fail') return false;
+                        
+                        let res = data.data.map((e) => ({id: e.str, text: e.text}));
+                    
+                        return {
+                            results: res
+                        };
+                    }
+                }
+            });
+        });
+    </script>
+@endpush

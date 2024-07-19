@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="{{ asset('./assets/compiled/css/iconly.css') }}">
     {{-- datatables --}}
     <link rel="stylesheet" href="{{ asset('assets/extensions/datatable/datatable.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/select2/select2.min.css') }}">
     <style>
         .ribbon-shape-dgr {
             position: absolute;
@@ -166,6 +167,7 @@
     {{-- datatables --}}
     {{-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script> --}}
     <script src="{{ asset('assets/extensions/datatable/datatable.min.js') }}"></script>
+    <script src="{{ asset('vendor/select2/select2.min.js') }}"></script>
     <script>
         $(document).ready(function() {
             $("#myTable").DataTable();
