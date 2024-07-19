@@ -114,6 +114,7 @@
                         <div class="card-header py-3">
                             <div class="d-flex justify-content-between">
                                 <h6 class="m-0 font-weight-bold" style="color: #96B6C5;">Antrian Pasien</h6>
+                                <a href="#" id="konfirmasiallselecteddata" type="button" class="btn btn-success mb-3 " >Check In <i class="bi bi-check2"></i></a>
                             </div>
                         </div>
                         <div class="card-body">
@@ -124,7 +125,7 @@
                                     @endphp
                                     <thead >
 
-                                            <th scope="col"><i class="bx bx-check" style="font-size: 18px;"></i></th>
+                                        <th><input style="font-size: 20px;clear:" type="checkbox" name="" id="select_all_ids" class="form-check-input" ></th>
                                             <th scope="col">Cito</th>
                                             <th scope="col">No RM</th>
                                             <th scope="col">No Lab</th>
@@ -135,13 +136,10 @@
 
                                     </thead>
                                     <tbody style="font-size: 14px">
-                                        @foreach ($dataPasienCito as $data1)
-                                            <tr>
-                                                @if ($data1->status == "Telah Dikirim ke Lab")
-                                                <td scope="row">{{ $no++ }}</td>
-                                            @else
-                                                <td scope="row"><input type="checkbox" name="pilihan[]" class="pilih" onclick="hitung()" value="{{ $data1->no_lab }}"></td>
-                                            @endif
+                                        @foreach ($dataPasien as $data1)
+                                            <tr id="voucher{{ $data1->id }}">
+                                                <th><input style="font-size: 20px" type="checkbox" name="ids" id="checkbox" class="form-check-input checkbox_ids" value="{{ $data1->id }}"></th>
+
                                             <td>
                                                 <i class='bi bi-bell mt-2 ml-1 text-secondary' style="font-size: 23px;color:red !important"></i>
 
@@ -157,30 +155,6 @@
                                                     <button type="button" data-bs-target="#modalPreviewPasien"
                                                     data-bs-toggle="modal" class="btn btn-info btn-edit text-white "
                                                     data-id="{{ $data1->id }}"><i class='bi bi-eye'></i></button>
-                                                  </td>
-                                            </tr>
-                                        @endforeach
-                                        @foreach ($dataPasien    as $data2)
-                                            <tr>
-                                                @if ($data2->status == "Telah Dikirim ke Lab")
-                                                <td scope="row" style="visibility:hidden">{{ $no++ }}</td>
-                                            @else
-                                                <td scope="row"><input type="checkbox" name="pilihan[]" class="pilih" onclick="hitung()" value="{{ $data2->no_lab }}"></td>
-                                            @endif
-                                            <td>
-                                                <i class='bi bi-bell mt-2 ml-1 text-danger' style="font-size: 23px;color:gray !important"></i>
-                                            </td>
-                                                <td scope="row">{{ $data2->no_rm }}</td>
-                                                <td scope="row">{{ $data2->no_lab }}</td>
-                                                <td scope="row">{{ $data2->nama }}</td>
-                                                {{-- <td>{!! DNS1D::getBarcodeHTML('$ '. $data2->no_lab, 'C39') !!}</td> --}}
-                                                <td>
-                                                    <span class="badge bg-warning">{{ $data2->status }}</span>
-                                                </td>
-                                                <td class="d-flex">
-                                                    <button type="button" data-bs-target="#modalPreviewPasien"
-                                                    data-bs-toggle="modal" class="btn btn-info btn-edit text-white "
-                                                    data-id="{{ $data2->id }}"><i class='bi bi-eye'></i></button>
                                                   </td>
                                             </tr>
                                         @endforeach
@@ -345,12 +319,42 @@
 
         </div>
     </div>
-    
+
 </section>
 
 @endsection
-
 @push('script')
+<script>
+    $(function(e){
+    $("#select_all_ids").click(function(){
+        $('.checkbox_ids').prop('checked',$(this).prop('checked'));
+    });
+    $('#konfirmasiallselecteddata').click(function(e){
+        e.preventDefault();
+        var all_ids = [];
+        $('input:checkbox[name=ids]:checked').each(function(){
+            all_ids.push($(this).val());
+        });
+
+        $.ajax({
+            url:"{{ route('analyst.checkinall') }}",
+            method:"POST",
+            data:{
+                ids:all_ids,
+                _token:'{{csrf_token()}}'
+            },
+            success:function(response){
+                $.each(all_ids,function(key,val){
+                    $('#voucher'+val).remove();
+                })
+                location. reload()
+
+            }
+        })
+    })
+    });
+
+</script>
 <script>
     $(function() {
         // ngambil data dari id = detailPemeriksaan

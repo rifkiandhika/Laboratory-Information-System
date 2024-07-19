@@ -16,12 +16,8 @@ class analystDasboard extends Controller
     public function index()
     {
         $pasienharian=pasien::where('created_at',now())->get();
-        $dataPasien = pasien::where(function($query) {
-                        $query->where('status', 'Telah Dikirim ke Lab')
-                            ->orWhere('status', 'Disetujui oleh analis lab');
-                    })
-                    ->where('cito', 0)
-                    ->get();
+        $dataPasien = pasien::where('status', 'Telah Dikirim ke Lab')
+                            ->orWhere('status', 'Disetujui oleh analis lab')->orderby('cito','desc')->get();
 
         $dataPasienCito = pasien::where(function($query) {
                             $query->where('status', 'Telah Dikirim ke Lab')
@@ -103,35 +99,24 @@ class analystDasboard extends Controller
         return redirect()->route('analyst.index');
     }
 
-    public function checkin(Request $request,$id)
+    public function checkinall(Request $request)
     {
+        $ids = $request->ids;
+        pasien::whereIn('id', $ids)->update(['status' => 'Check In']);
+        $pasien = pasien::whereIn('id', $ids)->get();
 
-        // foreach($request->pilihan as $pilihan){
-        //     DB::table('pasiens')->where('no_lab', $pilihan)->update([
-        //         'status' => 'Check in',
-        //     ]);
+        foreach($pasien as $pasiens){
 
-        //     historyPasien::create([
-        //         'no_lab' => $request->no_lab,
-        //         'proses' => 'Check in',
-        //         'tempat' => 'Laboratorium',
-        //         'note' => $request->note,
-        //         'waktu_proses' => now(),
-        //     ]);
-        // }
-
-            pasien::find($id)->update([
-                'status' => 'Check In'
-            ]);
-            $no_lab=pasien::find($id)->first();
             historyPasien::create([
-                'no_lab' => $no_lab->no_lab,
-                'proses' => 'Check in',
+                'no_lab' => $pasiens->no_lab,
+                'proses' => 'Disetujui oleh analis lab',
                 'tempat' => 'Laboratorium',
-                'note' => $request->note,
                 'waktu_proses' => now(),
+                'created_at' => now(),
             ]);
+
+        }
         toast('Pasien telah Check in','success');
-        return redirect()->route('analyst.index');
+        return response()->json(['success' => 'Data berhasil Dikonfirmasi!']);
     }
 }

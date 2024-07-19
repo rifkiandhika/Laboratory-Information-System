@@ -129,6 +129,7 @@ route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function() {
     route::resource('analyst', analystDasboard::class);
     route::post('/setuju', [analystDasboard::class, 'approve'])->name('analyst.approve');
     route::post('/check_in/{id}', [analystDasboard::class, 'checkin'])->name('analyst.checkin');
+    route::post('/checkinall', [analystDasboard::class, 'checkinall'])->name('analyst.checkinall');
 
     route::resource('spesiment', spesimentHendlingController::class);
     route::post('spesiment/post', [spesimentHendlingController::class, 'postSpesiment'])->name('spesiment.post');
