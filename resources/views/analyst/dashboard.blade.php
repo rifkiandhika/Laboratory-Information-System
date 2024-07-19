@@ -138,7 +138,12 @@
                                     <tbody style="font-size: 14px">
                                         @foreach ($dataPasien as $data1)
                                             <tr id="voucher{{ $data1->id }}">
-                                                <th><input style="font-size: 20px" type="checkbox" name="ids" id="checkbox" class="form-check-input checkbox_ids" value="{{ $data1->id }}"></th>
+                                                @if ($data1->status == 'Check In')
+
+                                                <td><input style="font-size: 20px" type="checkbox" name="ids" id="checkbox" class="form-check-input checkbox_ids" value="{{ $data1->id }}"></td>
+                                                @else
+                                                <td style="visibility: hidden">{{ $no++ }}</td>
+                                                @endif
 
                                             <td>
                                                 <i class='bi bi-bell mt-2 ml-1 text-secondary' style="font-size: 23px;color:red !important"></i>
@@ -149,7 +154,13 @@
                                                 <td scope="row">{{ $data1->nama }}</td>
                                                 {{-- <td>{!! DNS1D::getBarcodeHTML('$ '. $data1->no_lab, 'C39') !!}</td> --}}
                                                 <td>
+
+                                                    @if ($data1->status == 'Disetujui oleh analis lab')
+                                                    <span class="badge bg-success">{{ $data1->status }}</span>
+                                                    @else
                                                     <span class="badge bg-warning">{{ $data1->status }}</span>
+
+                                                    @endif
                                                 </td>
                                                 <td class="d-flex">
                                                     <button type="button" data-bs-target="#modalPreviewPasien"
