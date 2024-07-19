@@ -32,7 +32,7 @@ class analystDasboard extends Controller
 
         $dataHistory = historyPasien::where('proses', '=', 'order')->get();
 
-        return view('analyst.main-lab', compact('dataPasien','pasienharian', 'dataPasienCito', 'dataHistory'));
+        return view('analyst.dashboard', compact('dataPasien','pasienharian', 'dataPasienCito', 'dataHistory'));
     }
 
     /**

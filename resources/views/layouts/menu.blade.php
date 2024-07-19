@@ -37,15 +37,15 @@
         {{-- Loket --}}
 
         {{-- Laboratorium --}}
-        <li class="sidebar-item has-sub {{ Request::is('') ? 'active' : '' }}">
+        <li class="sidebar-item has-sub {{ Request::is('/analyst/analyst') ? 'active' : '' }}">
             <a href="#" class='sidebar-link'>
                 <i class="bi bi-droplet-half"></i>
                 <span>Laboratory</span>
             </a>
             <ul class="submenu ">
-                <li class="submenu-item {{ Request::is('loket/pasien') ? 'active' : '' }} ">
+                <li class="submenu-item {{ Request::is('/analyst') ? 'active' : '' }} ">
 
-                    <a href="{{ route('pasien.index') }}" class="submenu-link"><i class="bi bi-grid-fill"></i>
+                    <a href="{{ route('analyst.index') }}" class="submenu-link"><i class="bi bi-grid-fill"></i>
                         Dashboard</a>
                 </li>
                 <li class="submenu-item {{ Request::is('loket/data-pasien') ? 'active' : '' }}">
