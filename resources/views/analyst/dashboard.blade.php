@@ -141,7 +141,7 @@
                                                 <th><input style="font-size: 20px" type="checkbox" name="ids" id="checkbox" class="form-check-input checkbox_ids" value="{{ $data1->id }}"></th>
 
                                             <td>
-                                                <i class='bi bi-bell mt-2 ml-1 text-secondary' style="font-size: 23px;color:red !important"></i>
+                                                <i class='bi bi-bell-fill {{ $data1->cito == '1' ? 'text-danger' : 'text-secondary' }}' style="font-size: 23px;color:red !important"></i>
 
                                             </td>
                                                 <td scope="row">{{ $data1->no_rm }}</td>
@@ -324,134 +324,135 @@
 
 @endsection
 @push('script')
-<script>
-    $(function(e){
-    $("#select_all_ids").click(function(){
-        $('.checkbox_ids').prop('checked',$(this).prop('checked'));
-    });
-    $('#konfirmasiallselecteddata').click(function(e){
-        e.preventDefault();
-        var all_ids = [];
-        $('input:checkbox[name=ids]:checked').each(function(){
-            all_ids.push($(this).val());
-        });
-
-        $.ajax({
-            url:"{{ route('analyst.checkinall') }}",
-            method:"POST",
-            data:{
-                ids:all_ids,
-                _token:'{{csrf_token()}}'
-            },
-            success:function(response){
-                $.each(all_ids,function(key,val){
-                    $('#voucher'+val).remove();
-                })
-                location. reload()
-
-            }
-        })
-    })
-    });
-
-</script>
-<script>
-    $(function() {
-        // ngambil data dari id = detailPemeriksaan
-        let detailPemeriksaan = document.getElementById('detailPemeriksaan');
-        // button preview waktu di klik mendapatkan data sesuai id
-        $('.btn-edit').on('click', function() {
-            // untuk mendapatkan data sesuai idnya
-            const id = this.getAttribute('data-id');
-
-            // Memanggil API
-            fetch(`/api/get-data-pasien/${id}`).then(response => {
-                if (!response.ok) {
-                    throw new Error("HTTP error" + response.status);
-                }
-                return response.json();
-            }).then(res => {
-                if (res.status === 'success') {
-                    const {
-                        id,
-                        cito,
-                        no_lab,
-                        nik,
-                        nama,
-                        jenis_kelamin,
-                        no_telp,
-                        alamat,
-                        jenis_pelayanan,
-                        asal_ruangan,
-                        diagnosa,
-                    } = res.data;
-
-                    dokter = res.data.dokter;
-                    data_pemeriksaan_pasien = res.data.dpp;
-
-                    $('#form').attr('action',`approve/${id}`);
-                    $('#no_lab').attr('value',no_lab);
-                    $('#Cito').val(cito == 1 ? 'text-danger' : 'text-secondary');
-                    $('#Nolab').val(no_lab);
-                    $('#Nik').val(nik);
-                    $('#Nama').val(nama);
-                    $('#Gender').val(jenis_kelamin);
-                    $('#Alamat').val(alamat);
-                    $('#Telp').val(no_telp);
-                    $('#JenisPelayanan').val(jenis_pelayanan);
-                    $('#Ruangan').val(asal_ruangan);
-                    const citoIcon = $('#Cito');
-                    if (cito == '1') {
-                        citoIcon.removeClass('text-secondary').addClass('text-danger');
-                    } else {
-                        citoIcon.removeClass('text-danger').addClass('text-secondary');
-                    }
-                    $('#Nolab').text(no_lab);
-                    $('#Nik').text(nik);
-                    $('#Nama').text(nama);
-                    $('#Gender').text(jenis_kelamin);
-                    $('#Alamat').text(alamat);
-                    $('#Telp').text(no_telp);
-                    $('#JenisPelayanan').text(jenis_pelayanan);
-                    $('#Ruangan').text(asal_ruangan);
-                    $('#Dokter').text(dokter.nama_dokter);
-                    $('#Ruangandok').text(asal_ruangan);
-                    $('#Telpdok').text(dokter.no_telp);
-                    $('#Email').text(dokter.email);
-                    $('#Diagnosa').val(diagnosa);
-
-                    let old = 0;
-                    let detailContent = '<div class="row">';
-                    let subContent = [];
-                        // memanggil data departement
-                    data_pemeriksaan_pasien.forEach((e, i) => {
-                        // console.log(e.data);
-                        detailContent += `<div class="col-12 col-md-6" id="${e.id_departement}">
-                                                    <h6>${e.data_departement.nama_department}</h6>
-                                                    <ol>`;
-                        e.pasiens.forEach((e, i) => {
-                            console.log(e.data_pemeriksaan);
-                            detailContent +=
-                                `<li>${e.data_pemeriksaan.nama_pemeriksaan}- Rp ${e.data_pemeriksaan.harga}</li>`;
-                        });
-                        detailContent += `</ol></div>`;
-                    });
-                    console.log(data_pemeriksaan_pasien);
-                    detailContent += '</div>';
-                    // console.log(detailContent);
-                    // menampilkan data yang diambil dari API
-                    detailPemeriksaan.innerHTML = detailContent;
-                    // if (data_pemeriksaan_pasien.length > 0) {
-                    //     const department = data_pemeriksaan_pasien[0].department;
-                    //     $('#Department').text(department.nama_department);
-                    // }
-
-                }
+            <script>
+            $(function(e){
+            $("#select_all_ids").click(function(){
+                $('.checkbox_ids').prop('checked',$(this).prop('checked'));
             });
-            // Form edit
-            // $('#modalPreviewPasien').attr('action', '/poli/' + id);
+            $('#konfirmasiallselecteddata').click(function(e){
+                e.preventDefault();
+                var all_ids = [];
+                $('input:checkbox[name=ids]:checked').each(function(){
+                    all_ids.push($(this).val());
+                });
 
-        });
-    })
-</script>
+                $.ajax({
+                    url:"{{ route('analyst.checkinall') }}",
+                    method:"POST",
+                    data:{
+                        ids:all_ids,
+                        _token:'{{csrf_token()}}'
+                    },
+                    success:function(response){
+                        $.each(all_ids,function(key,val){
+                            $('#voucher'+val).remove();
+                        })
+                        location. reload()
+
+                    }
+                })
+            })
+            });
+
+            </script>
+            <script>
+            $(function() {
+                // ngambil data dari id = detailPemeriksaan
+                let detailPemeriksaan = document.getElementById('detailPemeriksaan');
+                // button preview waktu di klik mendapatkan data sesuai id
+                $('.btn-edit').on('click', function() {
+                    // untuk mendapatkan data sesuai idnya
+                    const id = this.getAttribute('data-id');
+
+                    // Memanggil API
+                    fetch(`/api/get-data-pasien/${id}`).then(response => {
+                        if (!response.ok) {
+                            throw new Error("HTTP error" + response.status);
+                        }
+                        return response.json();
+                    }).then(res => {
+                        if (res.status === 'success') {
+                            const {
+                                id,
+                                cito,
+                                no_lab,
+                                nik,
+                                nama,
+                                jenis_kelamin,
+                                no_telp,
+                                alamat,
+                                jenis_pelayanan,
+                                asal_ruangan,
+                                diagnosa,
+                            } = res.data;
+
+                            dokter = res.data.dokter;
+                            data_pemeriksaan_pasien = res.data.dpp;
+
+                            $('#form').attr('action',`approve/${id}`);
+                            $('#no_lab').attr('value',no_lab);
+                            $('#Cito').val(cito == 1 ? 'text-danger' : 'text-secondary');
+                            $('#Nolab').val(no_lab);
+                            $('#Nik').val(nik);
+                            $('#Nama').val(nama);
+                            $('#Gender').val(jenis_kelamin);
+                            $('#Alamat').val(alamat);
+                            $('#Telp').val(no_telp);
+                            $('#JenisPelayanan').val(jenis_pelayanan);
+                            $('#Ruangan').val(asal_ruangan);
+                            const citoIcon = $('#Cito');
+                            if (cito == '1') {
+                                citoIcon.removeClass('text-secondary').addClass('text-danger');
+                            } else {
+                                citoIcon.removeClass('text-danger').addClass('text-secondary');
+                            }
+                            $('#Nolab').text(no_lab);
+                            $('#Nik').text(nik);
+                            $('#Nama').text(nama);
+                            $('#Gender').text(jenis_kelamin);
+                            $('#Alamat').text(alamat);
+                            $('#Telp').text(no_telp);
+                            $('#JenisPelayanan').text(jenis_pelayanan);
+                            $('#Ruangan').text(asal_ruangan);
+                            $('#Dokter').text(dokter.nama_dokter);
+                            $('#Ruangandok').text(asal_ruangan);
+                            $('#Telpdok').text(dokter.no_telp);
+                            $('#Email').text(dokter.email);
+                            $('#Diagnosa').val(diagnosa);
+
+                            let old = 0;
+                            let detailContent = '<div class="row">';
+                            let subContent = [];
+                                // memanggil data departement
+                            data_pemeriksaan_pasien.forEach((e, i) => {
+                                // console.log(e.data);
+                                detailContent += `<div class="col-12 col-md-6" id="${e.id_departement}">
+                                                            <h6>${e.data_departement.nama_department}</h6>
+                                                            <ol>`;
+                                e.pasiens.forEach((e, i) => {
+                                    console.log(e.data_pemeriksaan);
+                                    detailContent +=
+                                        `<li>${e.data_pemeriksaan.nama_pemeriksaan}- Rp ${e.data_pemeriksaan.harga}</li>`;
+                                });
+                                detailContent += `</ol></div>`;
+                            });
+                            console.log(data_pemeriksaan_pasien);
+                            detailContent += '</div>';
+                            // console.log(detailContent);
+                            // menampilkan data yang diambil dari API
+                            detailPemeriksaan.innerHTML = detailContent;
+                            // if (data_pemeriksaan_pasien.length > 0) {
+                            //     const department = data_pemeriksaan_pasien[0].department;
+                            //     $('#Department').text(department.nama_department);
+                            // }
+
+                        }
+                    });
+                    // Form edit
+                    // $('#modalPreviewPasien').attr('action', '/poli/' + id);
+
+                });
+            })
+            </script>
+    <script src="{{ asset('js/time.js') }}"></script>
 @endpush
