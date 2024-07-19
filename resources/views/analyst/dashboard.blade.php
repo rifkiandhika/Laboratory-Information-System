@@ -138,7 +138,7 @@
                                     <tbody style="font-size: 14px">
                                         @foreach ($dataPasien as $data1)
                                             <tr id="voucher{{ $data1->id }}">
-                                                @if ($data1->status == 'Check In')
+                                                @if ($data1->status == 'Disetujui oleh analis lab')
 
                                                 <td><input style="font-size: 20px" type="checkbox" name="ids" id="checkbox" class="form-check-input checkbox_ids" value="{{ $data1->id }}"></td>
                                                 @else
@@ -318,13 +318,13 @@
                 </div>
                 <form method="post" id="form">
                     @csrf
-                    <label for="">Note</label>
-                    <textarea  class="form-control" placeholder="Note" name="note" id="" cols="30" rows="8"></textarea>
+                    <label for="" id="notelabel">Note</label>
+                    <textarea  class="form-control" placeholder="Note" name="note"  id="note" cols="30" rows="8"></textarea>
                     <input type="hidden" id="no_lab" name="no_lab" value="">
             </div>
 
                 <div class="modal-footer">
-                    <button class="btn btn-success" type="submit">Verification</button>
+                    <button class="btn btn-success" id="verification" type="submit">Verification</button>
                 </div>
             </form>
 
@@ -395,10 +395,20 @@
                                 jenis_pelayanan,
                                 asal_ruangan,
                                 diagnosa,
+                                status,
                             } = res.data;
 
                             dokter = res.data.dokter;
                             data_pemeriksaan_pasien = res.data.dpp;
+                            if(status == 'Disetujui oleh analis lab'){
+                                $('#verification').attr('style',`visibility:hidden`);
+                                $('#note').attr('style',`visibility:hidden`);
+                                $('#notelabel').attr('style',`visibility:hidden`);
+
+                            }
+                            else{
+                                $('#verification').attr('style',`visibility:visible`);
+                            }
 
                             $('#form').attr('action',`approve/${id}`);
                             $('#no_lab').attr('value',no_lab);
