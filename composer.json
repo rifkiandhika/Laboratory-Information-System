@@ -11,8 +11,9 @@
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
-        "milon/barcode": "^10.0",
-        "realrashid/sweet-alert": "^7.2",
+        "milon/barcode": "^11.0",
+        "realrashid/sweet-alert": "^7.1",
+        "retinens/laravel-toastr": "^1.2",
         "spatie/laravel-permission": "^6.9"
     },
     "require-dev": {

@@ -41,7 +41,7 @@ route::resource('login', userController::class);
 route::post('login-proses', [userController::class, 'proses'])->name('login.proses');
 route::get('/logout', [userController::class, 'logout'])->name('logout');
 
-
+//admin
 route::middleware('auth')->group(function(){
     route::get('/dashboard', [AdminController::class, "index"])->name('admin.dashboard');
     // route::get('/dokter', [AdminController::class, "dokter"])->name('dokter');
@@ -52,7 +52,7 @@ route::middleware('auth')->group(function(){
     Route::resource('pemeriksaan', PemeriksaanController::class);
     Route::resource('role', RoleController::class);
     Route::resource('permission', PermissionController::class);
-    
+
 });
 
 // route::group(['prefix' => 'demo', 'middleware' => ['auth']], function() {
@@ -127,8 +127,8 @@ route::group(['prefix' => 'loket', 'middleware' => ['auth']], function() {
 
 route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function() {
     route::resource('analyst', analystDasboard::class);
-    route::post('analyst/setuju', [analystDasboard::class, 'approve'])->name('analyst.approve');
-    route::post('analyst/checkin', [analystDasboard::class, 'checkin'])->name('analyst.checkin');
+    route::post('/setuju', [analystDasboard::class, 'approve'])->name('analyst.approve');
+    route::post('/check_in/{id}', [analystDasboard::class, 'checkin'])->name('analyst.checkin');
 
     route::resource('spesiment', spesimentHendlingController::class);
     route::post('spesiment/post', [spesimentHendlingController::class, 'postSpesiment'])->name('spesiment.post');

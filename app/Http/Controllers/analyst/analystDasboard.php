@@ -15,6 +15,7 @@ class analystDasboard extends Controller
      */
     public function index()
     {
+        $pasienharian=pasien::where('created_at',now())->get();
         $dataPasien = pasien::where(function($query) {
                         $query->where('status', 'Telah Dikirim ke Lab')
                             ->orWhere('status', 'Disetujui oleh analis lab');
@@ -31,7 +32,7 @@ class analystDasboard extends Controller
 
         $dataHistory = historyPasien::where('proses', '=', 'order')->get();
 
-        return view('analyst.main-lab', compact('dataPasien', 'dataPasienCito', 'dataHistory'));
+        return view('analyst.main-lab', compact('dataPasien','pasienharian', 'dataPasienCito', 'dataHistory'));
     }
 
     /**
@@ -102,22 +103,34 @@ class analystDasboard extends Controller
         return redirect()->route('analyst.index');
     }
 
-    public function checkin(Request $request)
+    public function checkin(Request $request,$id)
     {
 
-        foreach($request->pilihan as $pilihan){
-            DB::table('pasiens')->where('no_lab', $pilihan)->update([
-                'status' => 'Check in',
-            ]);
+        // foreach($request->pilihan as $pilihan){
+        //     DB::table('pasiens')->where('no_lab', $pilihan)->update([
+        //         'status' => 'Check in',
+        //     ]);
 
+        //     historyPasien::create([
+        //         'no_lab' => $request->no_lab,
+        //         'proses' => 'Check in',
+        //         'tempat' => 'Laboratorium',
+        //         'note' => $request->note,
+        //         'waktu_proses' => now(),
+        //     ]);
+        // }
+
+            pasien::find($id)->update([
+                'status' => 'Check In'
+            ]);
+            $no_lab=pasien::find($id)->first();
             historyPasien::create([
-                'no_lab' => $pilihan,
+                'no_lab' => $no_lab->no_lab,
                 'proses' => 'Check in',
                 'tempat' => 'Laboratorium',
                 'note' => $request->note,
                 'waktu_proses' => now(),
             ]);
-        }
         toast('Pasien telah Check in','success');
         return redirect()->route('analyst.index');
     }

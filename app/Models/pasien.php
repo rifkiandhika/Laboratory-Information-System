@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\Carbon;
+use App\Models\dokter;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class pasien extends Model
 {
@@ -22,7 +24,11 @@ class pasien extends Model
 
     public function dokter()
     {
-        return $this->belongsTo(Dokter::class, 'kode_dokter', 'kode_dokter');
+        return $this->belongsTo(dokter::class, 'kode_dokter', 'kode_dokter');
     }
-    
+    public function age()
+    {
+        return Carbon::parse($this->attributes['lahir'])->age;
+    }
+
 }

@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('no_lab');
             $table->string('no_rm');
-            $table->string('cito', 1)->default('0');
+            $table->integer('cito')->default(0);
             $table->string('nik');
             $table->string('jenis_pelayanan');
             $table->string('nama');
-            $table->string('lahir');
+            $table->date('lahir');
             $table->string('jenis_kelamin');
             $table->string('no_telp');
             $table->string('diagnosa');

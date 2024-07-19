@@ -39,6 +39,6 @@ class user extends Seeder
             'role' => 'admin',
         ]);
 
-        
+
     }
 }
