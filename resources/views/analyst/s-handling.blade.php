@@ -462,33 +462,32 @@
 
 <script>
     $(function(e){
-    $("#select_all_ids").click(function(){
-        $('.checkbox_ids').prop('checked',$(this).prop('checked'));
-    });
-    $('#konfirmasiallselecteddata').click(function(e){
-        e.preventDefault();
-        var all_ids = [];
-        $('input:checkbox[name=ids]:checked').each(function(){
-            all_ids.push($(this).val());
+        $("#select_all_ids").click(function(){
+            $('.checkbox_ids').prop('checked',$(this).prop('checked'));
         });
+        $('#konfirmasiallselecteddata').click(function(e){
+            e.preventDefault();
+            var all_ids = [];
+            $('input:checkbox[name=ids]:checked').each(function(){
+                all_ids.push($(this).val());
+            });
 
-        $.ajax({
-            url:"{{ route('spesiment.checkin') }}",
-            method:"POST",
-            data:{
-                ids:all_ids,
-                _token:'{{csrf_token()}}'
-            },
-            success:function(response){
-                $.each(all_ids,function(key,val){
-                    $('#checkin'+val).remove();
-                })
-                location. reload();
-                toast(response.message, 'success');
+            $.ajax({
+                url:"{{ route('spesiment.checkin') }}",
+                method:"POST",
+                data:{
+                    ids:all_ids,
+                    _token:'{{csrf_token()}}'
+                },
+                success:function(response){
+                    $.each(all_ids,function(key,val){
+                        $('#checkin'+val).remove();
+                    })
+                    location.reload()
 
-            }
+                }
+            })
         })
-    })
     });
 
 </script>

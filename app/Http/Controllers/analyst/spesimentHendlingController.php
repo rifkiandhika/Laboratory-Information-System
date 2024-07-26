@@ -356,9 +356,9 @@ class spesimentHendlingController extends Controller
         // }
 
         $ids = $request->ids;
-        $pasiens = pasien::whereIn('id', $ids)->get();
 
         pasien::whereIn('id', $ids)->update(['status' => 'Check In Spesiment']);
+        $pasiens = pasien::whereIn('id', $ids)->get();
 
         foreach ($pasiens as $pasien) {
 
@@ -370,10 +370,8 @@ class spesimentHendlingController extends Controller
                 'created_at' => now(),
             ]);
         }
-
-        return response()->json(['success' => true, 'message' => 'Pasien telah Check in dari Spesiment']);
-        // toast('Pasien telah Check in dari Spesiment', 'success');
-        // return back();
+        toast('Pasien telah check in dari Spesiment', 'success');
+        return response()->json(['success' => 'Data berhasil Dikonfirmasi!']);
 
         // $request->validate([
         //     'pilihan' => 'required|array',
