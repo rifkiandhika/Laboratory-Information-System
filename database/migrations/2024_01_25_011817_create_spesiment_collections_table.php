@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('tabung');
             $table->string('kapasitas');
             $table->string('status');
-            $table->string('note');
+            $table->string('note')->nullable()->change();
             $table->dateTime('tanggal');
             $table->timestamps();
         });

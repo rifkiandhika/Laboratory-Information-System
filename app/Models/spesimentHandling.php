@@ -14,6 +14,12 @@ class spesimentHandling extends Model
         'tabung',
         'serum',
         'status',
+        'note',
         'tanggal'
     ];
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'id_departement', 'id');
+    }
 }

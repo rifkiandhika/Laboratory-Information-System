@@ -13,9 +13,15 @@ class DepartmentController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {   
+    {
         $departments = Department::paginate(20);
         return view('department.index', compact('departments'));
+    }
+
+    public function data()
+    {
+        $departments = Department::all();
+        return response()->json($departments);
     }
 
     /**
@@ -36,7 +42,7 @@ class DepartmentController extends Controller
             'nama_department' => 'required|unique:departments,nama_department',
         ]);
         Department::create($request->all());
-        toast('Berhasil Menambahkan Data Department','success'); 
+        toast('Berhasil Menambahkan Data Department', 'success');
         return back();
     }
 
@@ -64,7 +70,7 @@ class DepartmentController extends Controller
         $request->validate([
             'nama_department' => 'required',
         ]);
-        
+
         $departments = Department::findOrfail($id);
         // dd($id);
         $departments->nama_department = $request->nama_department;
@@ -84,7 +90,7 @@ class DepartmentController extends Controller
             Alert::error('Error', 'Tidak bisa menghapus department yang masih memiliki pemeriksaan.');
             return redirect()->route('department.index');
         }
-    
+
         // Jika tidak ada pemeriksaan berelasi, hapus department
         $departments->delete();
 

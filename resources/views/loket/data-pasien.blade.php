@@ -107,7 +107,7 @@
                                                     <select id="Gender" name="jenis_kelamin" class="form-control">
                                                         <option value="" selected disabled hidden>Pilih Jenis Kelamin
                                                         </option>
-                                                        <option value="Laki - Laki">Laki - Laki</option>
+                                                        <option value="Laki²">Laki²</option>
                                                         <option value="Perempuan">Perempuan</option>
                                                     </select>
                                                     {{-- <input type="text" class="form-control" id="Gender"

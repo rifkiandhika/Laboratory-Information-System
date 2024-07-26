@@ -15,20 +15,20 @@ class analystDasboard extends Controller
      */
     public function index()
     {
-        $pasienharian=pasien::where('created_at',now())->get();
+        $pasienharian = pasien::where('created_at', now())->get();
         $dataPasien = pasien::where('status', 'Telah Dikirim ke Lab')
-                            ->orWhere('status', 'Disetujui oleh analis lab')->orderby('cito','desc')->get();
+            ->orWhere('status', 'Disetujui oleh analis lab')->orderby('cito', 'desc')->get();
 
-        $dataPasienCito = pasien::where(function($query) {
-                            $query->where('status', 'Telah Dikirim ke Lab')
-                                ->orWhere('status', 'Disetujui oleh analis lab');
-                        })
-                        ->where('cito', 1)
-                        ->get();
+        $dataPasienCito = pasien::where(function ($query) {
+            $query->where('status', 'Telah Dikirim ke Lab')
+                ->orWhere('status', 'Disetujui oleh analis lab');
+        })
+            ->where('cito', 1)
+            ->get();
 
         $dataHistory = historyPasien::where('proses', '=', 'order')->get();
 
-        return view('analyst.dashboard', compact('dataPasien','pasienharian', 'dataPasienCito', 'dataHistory'));
+        return view('analyst.dashboard', compact('dataPasien', 'pasienharian', 'dataPasienCito', 'dataHistory'));
     }
 
     /**
@@ -84,7 +84,7 @@ class analystDasboard extends Controller
         DB::table('pasiens')->where('no_lab', $request->no_lab)->update([
             'status' => 'Disetujui oleh analis lab',
         ]);
-        if(isset($request->note)){
+        if (isset($request->note)) {
 
             DB::table('history_pasiens')->insert([
                 'no_lab' => $request->no_lab,
@@ -95,8 +95,7 @@ class analystDasboard extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-        }
-        else{
+        } else {
             DB::table('history_pasiens')->insert([
                 'no_lab' => $request->no_lab,
                 'proses' => 'Disetujui oleh analis lab',
@@ -105,9 +104,8 @@ class analystDasboard extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-
         }
-        toast('Data di setujui','success');
+        toast('Data di setujui', 'success');
         return redirect()->route('analyst.index');
     }
 
@@ -117,7 +115,7 @@ class analystDasboard extends Controller
         pasien::whereIn('id', $ids)->update(['status' => 'Check In']);
         $pasien = pasien::whereIn('id', $ids)->get();
 
-        foreach($pasien as $pasiens){
+        foreach ($pasien as $pasiens) {
 
             historyPasien::create([
                 'no_lab' => $pasiens->no_lab,
@@ -126,9 +124,8 @@ class analystDasboard extends Controller
                 'waktu_proses' => now(),
                 'created_at' => now(),
             ]);
-
         }
-        toast('Pasien telah Check in','success');
+        toast('Pasien telah Check in', 'success');
         return response()->json(['success' => 'Data berhasil Dikonfirmasi!']);
     }
 }

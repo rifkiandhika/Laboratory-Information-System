@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\dokter;
 use App\Models\Poli;
 use Illuminate\Validation\Rule;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class DokterController extends Controller
 {
@@ -16,7 +17,7 @@ class DokterController extends Controller
     {
         $dokters = dokter::with('poli')->get();
         $data['polis'] = Poli::all();
-        return view("dokter.index",$data,  compact('dokters'));
+        return view("dokter.index", $data,  compact('dokters'));
     }
 
     /**
@@ -40,7 +41,7 @@ class DokterController extends Controller
             'email' => 'required|unique:dokters,email'
         ]);
         dokter::create($request->all());
-        toast('Berhasil Menambahkan Data Dokter','success'); 
+        toast('Berhasil Menambahkan Data Dokter', 'success');
         return back();
     }
 
@@ -66,13 +67,13 @@ class DokterController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'kode_dokter' => ['required', Rule::unique('dokters')->ignore($id)] ,
+            'kode_dokter' => ['required', Rule::unique('dokters')->ignore($id)],
             'nama_dokter' => 'required',
             'id_poli' => 'required',
             'no_telp' => ['required', Rule::unique('dokters')->ignore($id)],
             'email' => ['required', Rule::unique('dokters')->ignore($id)],
         ]);
-        
+
         $dokters = dokter::findOrfail($id);
         // dd($id);
         $dokters->kode_dokter = $request->kode_dokter;
@@ -92,6 +93,11 @@ class DokterController extends Controller
     public function destroy(string $id)
     {
         $dokters = dokter::findOrFail($id);
+        if ($dokters->pasien()->count() > 0) {
+            Alert::error('Error', 'Tidak bisa menghapus dokter yang masih memiliki pemeriksaan.');
+            return redirect()->route('department.index');
+        }
+
         $dokters->delete();
 
         toast('Data Berhasil di Hapus', 'success');

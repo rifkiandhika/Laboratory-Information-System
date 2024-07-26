@@ -1,4 +1,7 @@
 @extends('layouts.admin')
+@section('title')
+Dashboard|Spesiment
+@endsection
 @section('content')
 <section>
         <div class="container-fluid">
@@ -114,18 +117,18 @@
                         <div class="card-header py-3">
                             <div class="d-flex justify-content-between">
                                 <h6 class="m-0 font-weight-bold" style="color: #96B6C5;">Antrian Pasien</h6>
-                                <a href="#" id="konfirmasiallselecteddata" type="button" class="btn btn-success mb-3 " >Check In <i class="bi bi-check2"></i></a>
+                                <a href="#" id="konfirmasiallselecteddata" type="button" class="btn btn-outline-primary mb-2 mt-2 " >Check In</a>
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="table-scroll table-pasien" style="width: 100%;">
+                            <div class="table-responsive" style="width: 100%;">
                                 <table class="table table-striped table-bordered w-100 d-block d-md-table" id="myTable">
                                     @php
                                         $no=1;
                                     @endphp
                                     <thead >
 
-                                        <th><input style="font-size: 20px;clear:" type="checkbox" name="" id="select_all_ids" class="form-check-input" ></th>
+                                        <th data-dt-order="disable"><input style="font-size: 20px; cursor: pointer;clear:" type="checkbox" name="" id="select_all_ids" class="form-check-input" ></th>
                                             <th scope="col">Cito</th>
                                             <th scope="col">No RM</th>
                                             <th scope="col">No Lab</th>
@@ -140,13 +143,13 @@
                                             <tr id="voucher{{ $data1->id }}">
                                                 @if ($data1->status == 'Disetujui oleh analis lab')
 
-                                                <td><input style="font-size: 20px" type="checkbox" name="ids" id="checkbox" class="form-check-input checkbox_ids" value="{{ $data1->id }}"></td>
+                                                <td><input style="font-size: 20px; cursor: pointer;" type="checkbox" name="ids" id="checkbox" class="form-check-input checkbox_ids" value="{{ $data1->id }}"></td>
                                                 @else
                                                 <td style="visibility: hidden">{{ $no++ }}</td>
                                                 @endif
 
                                             <td>
-                                                <i class='bi bi-bell-fill {{ $data1->cito == '1' ? 'text-danger' : 'text-secondary' }}' style="font-size: 23px;color:red !important"></i>
+                                                <i class='bi bi-bell-fill {{ $data1->cito == '1' ? 'text-danger' : 'text-secondary' }}' style="font-size: 23px;"></i>
 
                                             </td>
                                                 <td scope="row">{{ $data1->no_rm }}</td>
@@ -154,12 +157,10 @@
                                                 <td scope="row">{{ $data1->nama }}</td>
                                                 {{-- <td>{!! DNS1D::getBarcodeHTML('$ '. $data1->no_lab, 'C39') !!}</td> --}}
                                                 <td>
-
-                                                    @if ($data1->status == 'Disetujui oleh analis lab')
-                                                    <span class="badge bg-success">{{ $data1->status }}</span>
-                                                    @else
-                                                    <span class="badge bg-warning">{{ $data1->status }}</span>
-
+                                                    @if($data1->status == 'Telah Dikirim ke Lab')
+                                                        <span class="badge bg-warning text-white">Sent to lab</span>
+                                                    @elseif($data1->status == 'Disetujui oleh analis lab')
+                                                        <span class="badge bg-success text-white">Approved of analyst</span>
                                                     @endif
                                                 </td>
                                                 <td class="d-flex">
@@ -188,9 +189,9 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body" id="pembayaran-pasien" style="max-height: 700px;">
+            <div class="modal-body" style="max-height: 700px;">
                 <div class="row">
-                    <div class="col-12 col-md-5">
+                    <div class="col-12 col-md-6">
                         Patient
                         <hr>
                         <table class="table table-borderless">
@@ -198,9 +199,7 @@
                                 <th scope="row">No.Lab</th>
                                 <td>
                                     <div class="flex-container">
-                                        <span class="label">:</span>
-                                        <input type="text" class="form-control-plaintext input p-0"
-                                            id="Nolab">
+                                        :  <span class="ms-2" id="Nolab"></span>
                                     </div>
                                 </td>
                             </tr>
@@ -208,7 +207,7 @@
                                 <th>Cito</th>
                                 <td>
                                     <div class="flex-container">
-                                        <span class="label"></span>
+                                        <span class="label">:</span>
                                         <i class="bi bi-bell-fill" id="Cito"></i>
                                     </div>
                                 </td>
@@ -217,9 +216,7 @@
                                 <th>NIK</th>
                                 <td>
                                     <div class="flex-container">
-                                        <span class="label">:</span>
-                                        <input type="text" class="form-control-plaintext input p-0"
-                                            id="Nik">
+                                      :  <span id="Nik">:</span>
                                     </div>
                                 </td>
                             </tr>
@@ -227,9 +224,7 @@
                                 <th>Name</th>
                                 <td>
                                     <div class="flex-container">
-                                        <span class="label">:</span>
-                                        <input type="text" class="form-control-plaintext input p-0"
-                                            id="Nama">
+                                       : <span id="Nama"></span>
                                     </div>
                                 </td>
                             </tr>
@@ -237,19 +232,15 @@
                                 <th>Gender</th>
                                 <td>
                                     <div class="flex-container">
-                                        <span class="label">:</span>
-                                        <input type="text" class="form-control-plaintext input p-0"
-                                            id="Gender">
+                                      : <span id="Gender">:</span>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <th>Address</th>
                                 <td>
-                                    <div class="">
-                                        <span class="label">:</span>
-                                        <input type="text" class="form-control-plaintext input p-0"
-                                            id="Alamat">
+                                    <div class="flex-container">
+                                       : <span id="Alamat"></span>
                                     </div>
                                 </td>
                             </tr>
@@ -257,9 +248,7 @@
                                 <th>Phone Number</th>
                                 <td>
                                     <div class="flex-container">
-                                        <span class="label">:</span>
-                                        <input type="text" class="form-control-plaintext input p-0"
-                                            id="Telp">
+                                       : <span id="Telp"></span>
                                     </div>
                                 </td>
                             </tr>
@@ -267,9 +256,7 @@
                                 <th>Service</th>
                                 <td>
                                     <div class="flex-container">
-                                        <span class="label">:</span>
-                                        <input type="text" class="form-control-plaintext input p-0"
-                                            id="JenisPelayanan">
+                                       : <span id="JenisPelayanan">:</span>
                                     </div>
                                 </td>
                             </tr>
@@ -277,9 +264,7 @@
                                 <th>Room</th>
                                 <td>
                                     <div class="flex-container">
-                                        <span class="label">:</span>
-                                        <input type="text" class="form-control-plaintext input p-0"
-                                            id="Ruangan">
+                                       : <span id="Ruangan"></span>
                                     </div>
                                 </td>
                             </tr>
@@ -335,7 +320,7 @@
 
 @endsection
 @push('script')
-            <script>
+        <script>
             $(function(e){
             $("#select_all_ids").click(function(){
                 $('.checkbox_ids').prop('checked',$(this).prop('checked'));
@@ -365,11 +350,12 @@
             })
             });
 
-            </script>
-            <script>
+        </script>
+
+        <script>
             $(function() {
                 // ngambil data dari id = detailPemeriksaan
-                let detailPemeriksaan = document.getElementById('detailPemeriksaan');
+                let detailDashboard = document.getElementById('detailDashboard');
                 // button preview waktu di klik mendapatkan data sesuai id
                 $('.btn-edit').on('click', function() {
                     // untuk mendapatkan data sesuai idnya
@@ -412,15 +398,6 @@
 
                             $('#form').attr('action',`approve/${id}`);
                             $('#no_lab').attr('value',no_lab);
-                            $('#Cito').val(cito == 1 ? 'text-danger' : 'text-secondary');
-                            $('#Nolab').val(no_lab);
-                            $('#Nik').val(nik);
-                            $('#Nama').val(nama);
-                            $('#Gender').val(jenis_kelamin);
-                            $('#Alamat').val(alamat);
-                            $('#Telp').val(no_telp);
-                            $('#JenisPelayanan').val(jenis_pelayanan);
-                            $('#Ruangan').val(asal_ruangan);
                             const citoIcon = $('#Cito');
                             if (cito == '1') {
                                 citoIcon.removeClass('text-secondary').addClass('text-danger');
@@ -435,10 +412,10 @@
                             $('#Telp').text(no_telp);
                             $('#JenisPelayanan').text(jenis_pelayanan);
                             $('#Ruangan').text(asal_ruangan);
-                            $('#Dokter').text(dokter.nama_dokter);
+                            $('#Dokter').text(dokter != null ? dokter.nama_dokter : '-');
                             $('#Ruangandok').text(asal_ruangan);
-                            $('#Telpdok').text(dokter.no_telp);
-                            $('#Email').text(dokter.email);
+                            $('#Telpdok').text(dokter != null ? dokter.no_telp : '-');
+                            $('#Email').text(dokter != null ? dokter.email : '-');
                             $('#Diagnosa').val(diagnosa);
 
                             let old = 0;
@@ -461,7 +438,7 @@
                             detailContent += '</div>';
                             // console.log(detailContent);
                             // menampilkan data yang diambil dari API
-                            detailPemeriksaan.innerHTML = detailContent;
+                            detailDashboard.innerHTML = detailContent;
                             // if (data_pemeriksaan_pasien.length > 0) {
                             //     const department = data_pemeriksaan_pasien[0].department;
                             //     $('#Department').text(department.nama_department);
@@ -474,6 +451,6 @@
 
                 });
             })
-            </script>
+        </script>
     <script src="{{ asset('js/time.js') }}"></script>
 @endpush

@@ -6,16 +6,23 @@
     vertical-align: middle;
 }
 .select2-container .select2-selection--single {
-    box-sizing: border-box;
     cursor: pointer;
     display: block;
-    height: 28px;
-    user-select: none;
-    -webkit-user-select: none;
+    width: 100%;
+    height: calc(1.5em + 0.75rem + 2px);
+    padding: 0.3rem 0.6rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #6e707e;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #d1d3e2;
+    border-radius: 0.35rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 .select2-container .select2-selection--single .select2-selection__rendered {
     display: block;
-    padding-left: 8px;
     padding-right: 20px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -183,11 +190,11 @@
 .select2-container--default
     .select2-selection--single
     .select2-selection__arrow {
-    height: 26px;
+    height: 37px;
     position: absolute;
     top: 1px;
     right: 1px;
-    width: 20px;
+    width: 30px;
 }
 .select2-container--default
     .select2-selection--single

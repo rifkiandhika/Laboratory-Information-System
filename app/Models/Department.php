@@ -15,13 +15,19 @@ class Department extends Model
         return $this->hasMany(Pemeriksaan::class, 'id_departement');
     }
 
-    
+    public function spesiment()
+    {
+        return $this->hasMany(Spesiment::class, 'id_departement');
+    }
 
-    public static function boot() {
+
+
+    public static function boot()
+    {
         parent::boot();
 
-        static::deleting(function($department) {
+        static::deleting(function ($department) {
             $department->pemeriksaan()->delete();
         });
-}
+    }
 }

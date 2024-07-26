@@ -12,6 +12,7 @@
         .print-area {
             width: 55mm;
             height: 20mm;
+            overflow: hidden;
         }
         .nama {
             text-align: center;
@@ -38,7 +39,8 @@
     <div class="print-area">
         <p class="nama">Tn. {{ $nama }}</p>
         <div class="barcode-area">
-            <img style="width: 5cm" alt='Barcode Generator TEC-IT' src='https://barcode.tec-it.com/barcode.ashx?data={{ $no_lab }}{{ $nama_barcode }}&code=Code128&translate-esc=on&unit=Fit&imagetype=Png&showhrt=no&eclevel=L&dmsize=Default&modulewidth=400'/>
+            {{-- <img style="width: 5cm" alt='Barcode Generator TEC-IT' src='https://barcode.tec-it.com/barcode.ashx?data={{ $no_lab }}{{ $nama_barcode }}&code=Code128&translate-esc=on&unit=Fit&imagetype=Png&showhrt=no&eclevel=L&dmsize=Default&modulewidth=400'/> --}}
+            {!! DNS1D::getBarcodeHTML($no_lab, 'C128', 1, 33) !!}
         </div>
         <div class="deskripsi">
             <p>K3 EDTA 01-02-2024</p>

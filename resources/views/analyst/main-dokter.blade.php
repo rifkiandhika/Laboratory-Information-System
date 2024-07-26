@@ -1,6 +1,67 @@
 @extends('master')
 @section('title', 'Dashboard Dokter')
 @section('content')
+<style>
+  .radio-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+        }
+
+        .radio-container div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bar {
+            width: 40px;
+            height: 100px;
+            margin-bottom: 5px;
+            background-color: #e0e0e0;
+            position: relative;
+            border-radius: 4px;
+        }
+
+        .bar.low::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 30%;
+            background-color: #ff6b6b;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .bar.normal::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60%;
+            background-color: #f6d55c;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .bar.high::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 70%;
+            background-color: #4ecdc4;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .accordion .card-header {
+            padding: 0.75rem 1.25rem;
+        }
+
+        .accordion .btn {
+            text-align: left;
+            width: 100%;
+        }
+</style>
 <div class="content" id="scroll-content">
     <div class="container-fluid">
       <!-- Page Heading -->
@@ -772,8 +833,8 @@
                         </div>
                       </div>
                     </div>
-                </form>
-            </div>
+                  </form>
+                  </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
             </div>

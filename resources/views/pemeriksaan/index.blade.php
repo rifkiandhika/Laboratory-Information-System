@@ -15,7 +15,7 @@
                             <div class="card-header py-3">
                                 <div class="d-flex justify-content-between">
                                     <!-- Button trigger modal -->
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
                                         data-bs-target="#exampleModal">
                                         + Add Inspection
                                     </button>

@@ -38,7 +38,5 @@ class user extends Seeder
             'password' => Hash::make('password'),
             'role' => 'admin',
         ]);
-
-
     }
 }

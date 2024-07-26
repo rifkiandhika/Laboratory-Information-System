@@ -14,6 +14,7 @@ class spesimentCollection extends Model
         'tabung',
         'kapasitas',
         'status',
+        'note',
         'tanggal'
     ];
 }

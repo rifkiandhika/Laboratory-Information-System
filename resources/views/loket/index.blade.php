@@ -130,18 +130,17 @@
                                 <i class='bx bx-plus'></i> + Add Inspection
                             </a>
                         </div>
-                        <div class="">
-                            <table class="table table-striped table-bordered table-responsive" id="myTable">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered " id="myTable">
                                 <thead>
                                     <tr>
                                         <th scope="col">No.</th>
-                                        <th scope="col">No.RM</th>
                                         <th scope="col">Cito</th>
                                         <th scope="col">Name</th>
                                         <th scope="col">Date Of Birt</th>
                                         <th scope="col">Gender</th>
                                         <th scope="col">Address</th>
-                                        <th scope="col">Poly Origin</th>
+                                        <th scope="col">Room</th>
                                         <th scope="col">Status</th>
                                         <th scope="col" class="col-2">Action</th>
                                     </tr>
@@ -150,52 +149,53 @@
                                     @forelse ($data_pasien as $x => $dc)
                                         <tr>
                                             <td scope="row">{{ $x + 1 }}</td>
-                                            <td>{{ $dc->no_rm }}</td>
                                             <td class="text-center">
                                                 <i class='bi bi-bell-fill mt-2 ml-1 {{ $dc->cito == '1' ? 'text-danger' : 'text-secondary' }}'
                                                     style="font-size: 23px;"></i>
                                             </td>
-                                            <td>{{ $dc->nama }}</td>
+                                            <td class="col-2">{{ $dc->nama }}</td>
                                             <!-- ganti format dengan tanggal-bulan-tahun -->
-                                            <td>
+                                            <td class="col-2">
                                                 {{ date('d-m-Y', strtotime($dc->lahir)) }}
                                                 <br>
                                                 ({{ \Carbon\Carbon::parse($dc->lahir)->age }} tahun)
                                             </td>
                                             <td>{{ $dc->jenis_kelamin }}</td>
                                             <td>{{ $dc->alamat }}</td>
-                                            <td> - </td>
+                                            <td>{{ $dc->asal_ruangan }}</td>
                                             <td>
                                                 @if ($dc->status == 'Belum Dilayani')
-                                                    <span class="badge bg-danger text-white">Belum Di Layani</span>
-                                                @elseif($dc->status == 'Telah Dikirim ke Lab')
-                                                    <span class="badge bg-success text-white">Dikirim ke Lab</span>
-                                                @elseif($dc->status == 'Diproses')
-                                                    <span class="badge bg-warning text-white">Diproses</span>
+                                                    <span class="badge bg-danger text-white">Waiting...</span>
                                                 @endif
                                             </td>
-                                            <td>
+                                            <td class="col-md-3">
                                                 <button type="button" data-bs-target="#modalPreviewPasien"
                                                     data-bs-toggle="modal" class="btn btn-info btn-edit text-white "
-                                                    data-id="{{ $dc->id }}"><i class='bi bi-eye'></i></button>
-
+                                                    data-id="{{ $dc->id }}"><i class='bi bi-eye'></i>
+                                                </button>
+                                                    
+                                                <a style="cursor: pointer" href="{{ route('print.barcode', $dc->no_lab) }}" class="btn btn-warning" target="_blank"><i class="bi bi-upc"></i></a>
+                                                
                                                 <button type="button" data-bs-target="#modalPembayaran"
                                                     data-bs-toggle="modal" class="btn btn-success btn-payment text-white "
-                                                    data-payment="{{ $dc->id }}"><i class='bi bi-cash'></i></button>
+                                                    data-payment="{{ $dc->id }}"><i class='bi bi-cash'></i>
+                                                </button>
 
 
-                                                    <form id="delete-form-{{ $dc->id }}"
-                                                        action="{{ route('pasien.destroy', $dc->id) }}" method="POST"
-                                                        style="display: none;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                    </form>
-                                                    <button class="btn btn-danger"
+                                                <form id="delete-form-{{ $dc->id }}"
+                                                    action="{{ route('pasien.destroy', $dc->no_lab) }}" method="POST"
+                                                    style="display: none;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
+                                                
+                                                <button class="btn btn-danger"
                                                     onclick="confirmDelete({{ $dc->id }})"><i
-                                                        class="bi bi-trash"></i></button>
+                                                    class="bi bi-trash"></i>
+                                                </button>
 
-                                                    {{-- <a href="{{ route('print.barcode', $dc->no_lab) }}" class="btn btn-warning"><i class="bi bi-upc"></i></a> --}}
-                                            </td>
+                                            
+                                                </td>
                                         </tr>
                                     @empty
                                     @endforelse
@@ -220,7 +220,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" id="pembayaran-pasien" style="max-height: 700px;">
+                <div class="modal-body"  style="max-height: 700px;">
                     <div class="row">
                         <div class="col-12 col-md-6">
                             Patient
@@ -231,6 +231,14 @@
                                     <td>
                                         <div class="flex-container">
                                             :  <span class="ms-2" id="Nolab"></span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">No.RM</th>
+                                    <td>
+                                        <div class="flex-container">
+                                            :  <span class="ms-2" id="Norm"></span>
                                         </div>
                                     </td>
                                 </tr>
@@ -351,7 +359,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-success" type="button">Verification</button>
+                    {{-- <button class="btn btn-success" type="button">Verification</button> --}}
                 </div>
 
             </div>
@@ -414,6 +422,7 @@
                         const {
                             cito,
                             no_lab,
+                            no_rm,
                             nik,
                             nama,
                             jenis_kelamin,
@@ -428,14 +437,6 @@
                         data_pemeriksaan_pasien = res.data.dpp;
 
                         $('#Cito').val(cito == 1 ? 'text-danger' : 'text-secondary');
-                        $('#Nolab').val(no_lab);
-                        $('#Nik').val(nik);
-                        $('#Nama').val(nama);
-                        $('#Gender').val(jenis_kelamin);
-                        $('#Alamat').val(alamat);
-                        $('#Telp').val(no_telp);
-                        $('#JenisPelayanan').val(jenis_pelayanan);
-                        $('#Ruangan').val(asal_ruangan);
                         const citoIcon = $('#Cito');
                         if (cito == '1') {
                             citoIcon.removeClass('text-secondary').addClass('text-danger');
@@ -443,6 +444,7 @@
                             citoIcon.removeClass('text-danger').addClass('text-secondary');
                         }
                         $('#Nolab').text(no_lab);
+                        $('#Norm').text(no_rm);
                         $('#Nik').text(nik);
                         $('#Nama').text(nama);
                         $('#Gender').text(jenis_kelamin);
@@ -450,10 +452,11 @@
                         $('#Telp').text(no_telp);
                         $('#JenisPelayanan').text(jenis_pelayanan);
                         $('#Ruangan').text(asal_ruangan);
-                        $('#Dokter').text(dokter.nama_dokter);
+                        // console.log(dokter == null);
+                        $('#Dokter').text(dokter != null ? dokter.nama_dokter : '-');
                         $('#Ruangandok').text(asal_ruangan);
-                        $('#Telpdok').text(dokter.no_telp);
-                        $('#Email').text(dokter.email);
+                        $('#Telpdok').text(dokter != null ? dokter.no_telp : '-');
+                        $('#Email').html(dokter != null ? dokter.email : '-');
                         $('#Diagnosa').val(diagnosa);
 
                         let old = 0;
@@ -544,13 +547,17 @@
                             <hr>
                             <div class="row mb-3">
                                 <div class="col-12 col-md-6"
-                                    <label>Payment Method</label>
-                                    <input class="form-control " type="text" name="no_lab" value="${data_pasien.no_lab }" readonly hidden>
-                                    <input class="form-control bg-secondary-subtle" type="text" name="metode_pembayaran" value="${data_pasien.jenis_pelayanan }" readonly>
+                                <label>Payment Method</label>
+                                <input class="form-control " type="text" name="no_lab" value="${data_pasien.no_lab }" readonly hidden>
+                                <input class="form-control bg-secondary-subtle" type="text" name="metode_pembayaran" value="${data_pasien.jenis_pelayanan }" readonly>
                                 </div>
                                 <div class="col-12 col-md-6"
-                                    <label>Total Payment</label>
-                                    <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran" name="total_pembayaran"  value="${totalHarga}" readonly>
+                                <label>Total Payment</label>
+                                <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran" name="total_pembayaran"  value="${totalHarga}" readonly>
+                                </div>
+                                <div class="col-12 col-md-6"
+                                    <label>Officer</label>
+                                    <input class="form-control" type="text" name="petugas" required>
                                 </div>
                                 <div class="col-12 col-md-6"
                                     <label>Payment Amount</label>

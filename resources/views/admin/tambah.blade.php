@@ -34,12 +34,12 @@
                           <!-- Form Row-->
                           <div class="row gx-3 mb-3">
                               <!-- Form Group (first name)-->
-                              <div class="col-md-6">
+                              <div class="">
                                   <label class="small mb-1" for="inputFirstName">First name</label>
                                   <input class="form-control" id="inputFirstName" type="text" placeholder="Enter your first name" value="" />
                               </div>
                               <!-- Form Group (last name)-->
-                              <div class="col-md-6">
+                              <div class="">
                                   <label class="small mb-1" for="inputLastName">Last name</label>
                                   <input class="form-control" id="inputLastName" type="text" placeholder="Enter your last name" value="" />
                               </div>

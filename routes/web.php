@@ -6,6 +6,8 @@ use App\Http\Controllers\auth\userController;
 use App\Http\Controllers\icd10\icd10Controller;
 use App\Http\Controllers\loket\pasienController;
 use App\Http\Controllers\analyst\analystDasboard;
+use App\Http\Controllers\analyst\DSpesimentController;
+use App\Http\Controllers\analyst\SpesimentController;
 use App\Http\Controllers\analyst\worklistController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\analyst\spesimentHendlingController;
@@ -17,6 +19,8 @@ use App\Http\Controllers\poli\PoliController;
 use App\Http\Controllers\report\ReportController;
 use App\Http\Controllers\rolepermission\PermissionController;
 use App\Http\Controllers\rolepermission\RoleController;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Response;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,10 +43,10 @@ Route::get('/demo', function () {
 
 route::resource('login', userController::class);
 route::post('login-proses', [userController::class, 'proses'])->name('login.proses');
-route::get('/logout', [userController::class, 'logout'])->name('logout');
+route::post('/logout', [userController::class, 'logout'])->name('logout');
 
 //admin
-route::middleware('auth')->group(function(){
+route::middleware('auth')->group(function () {
     route::get('/dashboard', [AdminController::class, "index"])->name('admin.dashboard');
     // route::get('/dokter', [AdminController::class, "dokter"])->name('dokter');
     // route::post('tambah-dokter', [AdminController::class, "tambahdokter"]);
@@ -52,7 +56,7 @@ route::middleware('auth')->group(function(){
     Route::resource('pemeriksaan', PemeriksaanController::class);
     Route::resource('role', RoleController::class);
     Route::resource('permission', PermissionController::class);
-
+    Route::resource('spesiments', SpesimentController::class);
 });
 
 // route::group(['prefix' => 'demo', 'middleware' => ['auth']], function() {
@@ -111,21 +115,22 @@ route::middleware('auth')->group(function(){
 //     });
 // });
 
-route::group(['prefix' => 'loket', 'middleware' => ['auth']], function() {
+route::group(['prefix' => 'loket', 'middleware' => ['auth']], function () {
 
     route::resource('pasien', pasienController::class);
     route::get('loket', [pasienController::class, 'index']);
     route::post('/pasien/kirimlab', [pasienController::class, 'kirimLab'])->name('pasien.kirimlab');
     Route::get('/result', function () {
-        return view ('analyst.result-review');
+        return view('analyst.result-review');
     });
     Route::resource('report', ReportController::class);
     Route::resource('data-pasien', DataPasienController::class);
     Route::get('get-icd10', [icd10Controller::class, 'geticd10'])->name('geticd10');
+    Route::get('print/barcode/{no_lab}', [pasienController::class, 'previewPrint'])->name('print.barcode');
     // Route::put('/data-pasien/{id}', [DataPasienController::class, 'update'])->name('data-pasien.update');
 });
 
-route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function() {
+route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
     route::resource('analyst', analystDasboard::class);
     // route::post('/setuju', [analystDasboard::class, 'approve'])->name('analyst.approve');
     route::post('/approve/{id}', [analystDasboard::class, 'approve'])->name('analyst.approve');
@@ -138,21 +143,21 @@ route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function() {
     route::resource('worklist', worklistController::class);
 
     Route::get('/result', function () {
-        return view ('analyst.result-review');
+        return view('analyst.result-review');
     });
 
     Route::get('/dashboard-dok', function () {
-        return view ('analyst.main-dokter');
+        return view('analyst.main-dokter');
     });
 
     Route::get('/quality-control', function () {
-        return view ('analyst.quality-control');
+        return view('analyst.quality-control');
     });
     Route::get('/daftar-qc', function () {
-        return view ('analyst.daftar-qc');
+        return view('analyst.daftar-qc');
     });
     Route::get('/history-qc', function () {
-        return view ('analyst.history-qc');
+        return view('analyst.history-qc');
     });
 });
 
@@ -163,6 +168,18 @@ Route::get('/print/barcode/{lab}', [pasienController::class, 'previewPrint'])->n
 
 route::get('/previewpasien/{lab}', [pasienController::class, 'getDataPasien']);
 
+Route::get('/gambar/{filename}', function ($filename) {
+    $path = storage_path('app/public/gambar/' . $filename);
 
+    if (!File::exists($path)) {
+        abort(404);
+    }
 
+    $file = File::get($path);
+    $type = File::mimeType($path);
 
+    $response = Response::make($file, 200);
+    $response->header("Content-Type", $type);
+
+    return $response;
+});

@@ -1,5 +1,8 @@
-<title>Dashboard|Admin</title>
 @extends('layouts.admin')
+
+@section('title')
+Dashboard|Admin
+@endsection
 
 @section('content')
     <div class="content" id="scroll-content">
@@ -140,9 +143,9 @@
                 </div>
             </div>
         </div>
+    </div>
+@endsection
 
-        <script src="{{ asset('js/time.js') }}"></script>
-    @endsection
-
-    @section('modal')
-    @endsection
+@push('script')
+<script src="{{ asset('js/time.js') }}"></script>
+@endpush

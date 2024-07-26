@@ -34,73 +34,81 @@
                                 </div>
                                 <hr>
                                 <div class="form-row">
-                                    <div class="form-group col-12 col-md-6">
+                                    <div class="form-group col-12">
                                         <label for="basic-url">Cito</label>
                                         <div class="form-check">
-                                            <input class="form-check-input child-pemeriksaan-hematologi" type="checkbox"
+                                            <input style="cursor: pointer" class="form-check-input child-pemeriksaan-hematologi" type="checkbox"
                                                 name="cito" value="1" id="cito">
                                             <label class="form-check-label" for="cito">
                                                 Patient Cito
                                             </label>
                                         </div>
                                     </div>
-                                    <div class="form-group col-12 col-md-6">
+                                    <div class="form-group col-12">
                                         <label for="basic-url">No RM</label>
                                         <div class="input-group mb-6">
-                                            <input type="text" class="form-control" name="norm" aria-label=""
+                                            <input type="number" class="form-control" name="norm" aria-label=""
                                                 placeholder="Masukan No RM">
                                         </div>
                                     </div>
-                                    <div class="form-group col-12 col-md-6">
+                                    <div class="form-group col-12">
                                         <label for="basic-url">Nomor Induk Kewarganegaraan</label>
                                         <div class="input-group mb-6">
                                             <input type="number" class="form-control" name="nik" aria-label=""
                                                 placeholder="Add NIK">
                                         </div>
                                     </div>
-                                    <div class="form-group col-12 col-md-6">
+                                    <div class="form-group col-12">
                                         <label for="basic-url">Full Name</label>
                                         <div class="input-group mb-3">
                                             <input type="text" class="form-control" name="nama" aria-label=""
                                                 placeholder="Add Full Name">
                                         </div>
                                     </div>
-                                    <div class="form-group col-12 col-md-6">
+                                    <div class="form-group col-12">
                                         <!-- <label for="name" class="">Date</label> -->
                                         <label for="startDate">Date Of Birth</label>
                                         <input id="startDate" class="form-control" type="date" name="tanggallahir" />
                                     </div>
-                                    <div class="form-group col-12 col-md-6">
+                                    <div class="form-group col-12">
                                         <label for="exampleFormControlSelect1">Gender</label>
                                         <select class="form-control" id="exampleFormControlSelect1" name="jeniskelamin">
                                             <option selected>Select Gender</option>
-                                            <option value="Laki - Laki">Laki - Laki</option>
+                                            <option value="Laki²">Laki²</option>
                                             <option value="Perempuan">Perempuan</option>
                                         </select>
                                     </div>
-                                    <div class="form-group col-12 col-md-6">
-                                        <label for="name">Phone Number</label>
-                                        <input type="number " class="form-control" value="" id=""
-                                            name="notelepon" placeholder="Masukan Nomor Telephone">
+                                    <div class="form-group col-12">
+                                        <label for="phonenumber">Phone Number</label>
+                                            <input type="number" class="form-control" name="notelepon" placeholder="Add Phone Number">
                                     </div>
-                                    <div class="form-group col-12 col-md-6">
-                                        <label for="exampleFormControlSelect1">Sending Doctor</label>
+                                    <div class="form-group col-12">
+                                        <label for="exampleFormControlSelect1">Doctor</label>
                                         <select class="form-control" id="exampleFormControlSelect1" name="dokter">
                                             <option selected hidden>Choose</option>
-                                            <option value="1">Permintaan Sendiri</option>
+                                            {{-- <option value="1">Permintaan Sendiri</option> --}}
                                             @foreach ($dokters as $dokter)
                                                 <option value="{{ $dokter->kode_dokter }}">{{ $dokter->nama_dokter }}
                                                 </option>
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="form-group col-12 col-md-6">
+                                    <div class="form-group col-12">
+                                        <label for="name">Room</label>
+                                        <input type="text " class="form-control"
+                                            name="asal_ruangan" placeholder="Add Room">
+                                    </div>
+                                    <div class="form-group col-12">
                                         <label for="name">Diagnosis</label>
                                         <select name="diagnosa" id="diagnosa" class="form-control diagnosa">
                                             <option value=""></option>
                                         </select>
                                     </div>
-                                    <div class="form-group col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="alamat">Full Address</label>
+                                        <textarea class="form-control ml-1" cols="119" rows="2" id="alamat" name="alamat"></textarea>
+                                    </div>
+                                    <div class="form-group col-12">
                                         <label for="basic-url">Kind Of Service</label>
                                         <div class="row">
                                             <div class="form-check ml-3">
@@ -127,10 +135,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form-group col-12 col-md-6">
-                                        <label for="alamat">Full Address</label>
-                                        <textarea class="form-control" style="resize: none; height: 70px" id="alamat" name="alamat"></textarea>
-                                    </div>
                                 </div>
                                 <p class="h5">Choose Inspection</p>
                                 <div class="row">
@@ -155,7 +159,7 @@
                                                 <div class="child-pemeriksaan" id="child-pemeriksaan-hematologi">
                                                     @foreach ($departement->pemeriksaan as $x => $pemeriksaan)
                                                         <div class="form-check">
-                                                            <input class="form-check-input child-pemeriksaan"
+                                                            <input style="cursor: pointer" class="form-check-input child-pemeriksaan"
                                                                 type="checkbox" name="pemeriksaan[]"
                                                                 value="{{ $pemeriksaan->id }}"
                                                                 id="{{ $pemeriksaan->id_departement . '-' . $x }}"
@@ -177,8 +181,7 @@
                                 <hr>
                                 <div class="mt-4 text-right small">
                                     <input class="btn btn-primary" type="submit" value="Submit">
-                                    <input class="btn btn-danger" type="reset" value="Reset">
-                                    <input class="btn btn-secondary" type="submit" value="Cancel">
+                                    <input class="btn btn-danger" type="reset" value="Reset">   
                                 </div>
                             </form>
                         </div>

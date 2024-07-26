@@ -1,63 +1,119 @@
-@extends('master')
-@section('title', 'Analyst Handling')
+@extends('layouts.admin')
+@section('title', 'Spesiment Handling')
 
 @section('content')
+<style>
+        .accordion-button::after {
+            content: '\2212'; /* Minus sign */
+            font-size: 25px;
+            color: #007bff;
+            margin-left: auto;
+        }
+        .accordion-button.collapsed::after {
+            content: '\002B'; /* Plus sign */
+        }
+        .subtext {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .detail-container {
+            display: flex;
+            gap: 20px; /* Space between items */
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100px; /* Adjust width as needed */
+        }
+
+        .detail-text {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .detail-image-container {
+            text-align: center;
+        }
+
+        .detail-image {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .detail-radio-container {
+            text-align: center;
+        }
+
+        .detail-radio {
+            margin-top: 5px;
+        }
+</style>
+
 <div class="content" id="scroll-content">
     <div class="container-fluid">
-      <!-- Page Heading -->
-      <div class="d-sm-flex  mt-3">
-        <h1 class="h3 mb-0 text-gray-600">Spesimen Handling</h1>
-      </div>
-
-      <!-- Content Row -->
-      <div class="row mt-3">
-
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Jumlah Pasien Masuk (Harian)</div>
-                            <div class="h3 mt-3 font-weight-bold text-gray-600">150</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="bx bx-chart fa-3x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Page Heading -->
+        <div class="d-sm-flex  mt-3">
+            <h1 class="h3 mb-0 text-gray-600">Spesimen Handling</h1>
         </div>
 
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Pasien Belum Dilayani</div>
-                            <div class="h3 mt-3 font-weight-bold text-gray-600">10</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="bx bx-info-circle fa-3x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- Content Row -->
+        <div class="row mt-3">
 
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Pasien Telah Dilayani
+            <!-- Earnings (Monthly) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Jumlah Pasien Masuk (Harian)</div>
+                                <div class="h3 mt-3 font-weight-bold text-gray-600">150</div>
                             </div>
-                            <div class="h3 mt-3 font-weight-bold text-gray-600">250</div>
-                            <!-- <div class="row no-gutters align-items-center">
+                            <div class="col-auto">
+                                <i class="bx bx-chart fa-3x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Earnings (Monthly) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Pasien Belum Dilayani</div>
+                                <div class="h3 mt-3 font-weight-bold text-gray-600">10</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bx bx-info-circle fa-3x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Earnings (Monthly) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Pasien Telah Dilayani
+                                </div>
+                                <div class="h3 mt-3 font-weight-bold text-gray-600">250</div>
+                                <!-- <div class="row no-gutters align-items-center">
                                 <div class="col-auto">
                                     <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
                                 </div>
@@ -69,673 +125,377 @@
                                     </div>
                                 </div>
                             </div> -->
+                            </div>
+                            <div class="col-auto">
+                                <i class="bx bxs-user-check fa-3x text-gray-300"></i>
+                            </div>
                         </div>
-                        <div class="col-auto">
-                            <i class="bx bxs-user-check fa-3x text-gray-300"></i>
+                    </div> 
+                </div>
+            </div>
+
+            <!-- Pending Requests Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-bottom-info shadow h-100 py-2">
+                    <div class="card-body d-flex justify-content-center align-items-center">
+                        <div class="row no-gutters">
+                            <p class="h1 font-weight-bold text-gray-800 mt-3" id="waktu">00:00:00</p>
+                            <span id="timeformat" class="text-gray-500 ml-2">AM</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- Content Row -->
+        <div class="row">
 
-        <!-- Pending Requests Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-bottom-info shadow h-100 py-2">
-                <div class="card-body d-flex justify-content-center align-items-center">
-                    <div class="row no-gutters">
-                        <p class="h1 font-weight-bold text-gray-800 mt-3" id="waktu">00:00:00</p>
-                        <span id="timeformat" class="text-gray-500 ml-2">AM</span>
+            <!-- Area Chart -->
+            <div class="col-xl-12 col-lg-12">
+                <div class="card shadow mb-4">
+                    <!-- Card Header - Dropdown -->
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold" style="color: #96B6C5;">Antrian Pasien</h6>
+                        <a href="#" id="konfirmasiallselecteddata"  type="button" class="btn btn-outline-primary mb-2 mt-2 ">Check In</a>
                     </div>
-                </div>
-            </div>
-        </div>
-      </div>
-      <!-- Content Row -->
-      <div class="row">
-
-        <!-- Area Chart -->
-        <div class="col-xl-7 col-lg-7">
-            <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold" style="color: #96B6C5;">Antrian Pasien</h6>
-                </div>
-                <!-- Card Body -->
-                <form action="{{ route('spesiment.checkin') }}" method="post">
-                    @csrf
+                    <!-- Card Body -->
                     <div class="card-body">
-                    <div class="d-flex justify-content-between mb-3">
-                        <div class="form-inline">
-                            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                            {{-- <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button> --}}
-                        </div>
-                        <div class="tombol d-flex justify-content-between">
-                        <!-- <button class="btn btn-sm btn-outline-secondary ml-2" id="check-all">Check All</button> -->
-                        <button type="submit" class="btn btn-sm btn-outline-info" id="check-in" hidden>Check In</button>
-                        <div class="checkbox-rect ml-3 mt-2">
-                            <input type="checkbox" id="checkbox-rect1" name="check">
-                            <label for="checkbox-rect1">Check All</label>
-                        </div>
+                        {{-- <form action="{{ route('spesiment.checkin') }}" method="post">
+                            @csrf
+                            <div class="text-end">
+                                <div class="text-end">
+                                    <button type="submit" style="margin-right: 10px;" class="btn btn-outline-primary" id="check-in" hidden>Check In</button>
+                                    <input  style="font-size: 20px" type="checkbox" class="form-check-input" id="checkbox-rect1" name="check">
+                                    <label for="checkbox-rect1" class="mt-1">Check All</label>
+                                </div>
+                            </div>
+                        </form> --}}
+                        
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered" id="myTable">
+                                    <thead>
+                                        <tr>
+                                            <th data-dt-order="disable"><input style="font-size: 20px; cursor: pointer; clear:" type="checkbox" name="check" id="select_all_ids" class="form-check-input"></th>
+                                            <th scope="col">Tanggal Order</th>
+                                            <th scope="col">Cito</th>
+                                            <th scope="col">No RM</th>
+                                            <th scope="col">No LAB</th>
+                                            <th scope="col">Nama</th>
+                                            <th scope="col">Asal Poli</th>
+                                            <th scope="col">Umur</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col" class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($dataPasienCito as $dpc)
+                                        <tr>                                 
+                                            <th id="checkin{{ $dpc->id }}">
+                                                <input style="font-size: 20px; cursor: pointer;" type="checkbox" name="ids" id="checkbox" class="form-check-input checkbox_ids" value="{{ $dpc->id }}">
+                                            </th>
+                                            <td>
+                                                @foreach ($dataHistory as $dh)
+                                                @if ($dh->no_lab == $dpc->no_lab)
+                                                {{ date('d-m-Y', strtotime($dh->waktu_proses)) }}/{{ date('H:i', strtotime($dh->waktu_proses)) }}
+                                                @endif
+                                                @endforeach
+                                            </td>
+                                            <td>
+                                                <i class='bi bi-bell-fill {{ $dpc->cito == '1' ? 'text-danger' : 'text-secondary' }}' style="font-size: 23px;"></i>
+                                            </td>
+                                            <td>{{ $dpc->no_rm }}</td>
+                                            <td>{{ $dpc->no_lab }}</td>
+                                            <td>{{ $dpc->nama }}</td>
+                                            <td>{{ $dpc->asal_ruangan }}</td>
+                                            {{-- <td>
+                                                @if ($dpc->cito == 1)
+                                                <i class='bx bxs-bell-ring mt-2 ml-1 text-danger' style="font-size: 23px;"></i>
+                                                @else
+                                                <i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i>
+                                                @endif
+                                            </td> --}}
+                                            <td>
+                                                {{ \Carbon\Carbon::parse($dpc->lahir)->age }} Tahun
+                                            </td>
+                                            <td>
+                                                @if($dpc->status == "Check In")
+                                                <span class="badge bg-danger text-white">Waiting...</span>
+                                                @elseif($dpc->status == "Spesiment")
+                                                <span class="badge bg-warning text-white">Approved</span>
+                                                @endif
+                                            </td>
+                                            <td class="col-2">
+                                                <button class="btn btn-info btn-preview" data-id={{ $dpc->id }} data-bs-target="#modalSpesimen"
+                                                    data-bs-toggle="modal" ><i class="bi bi-eye"></i></button>
+                                                <button class="btn btn-success" onclick="window.location.href='{{ route('pasien.create') }}'"><i class="bi bi-plus"></i></button>
+                                                
+                                                <form id="delete-form-{{ $dpc->id }}"
+                                                    action="{{ route('spesiment.destroy', $dpc->no_lab) }}" method="POST"
+                                                    style="display: none;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
+                                                
+                                                <button class="btn btn-danger"
+                                                    onclick="confirmDelete({{ $dpc->id }})"><i
+                                                    class="bi bi-trash"></i>
+                                                </button>
+
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                        {{-- @foreach ($dataPasien as $dp)
+                                        <tr>
+                                            @if ($dp->status == "Check in spesiment")
+                                            <th scope="row"></th>
+                                            @else
+                                            <th scope="row"><input type="checkbox" name="pilihan[]" class="pilih" onclick="hitung()" value="{{ $dp->no_lab }}"></th>
+                                            @endif
+                                            <td>
+                                                @foreach ($dataHistory as $dh)
+                                                @if ($dh->no_lab == $dp->no_lab)
+                                                {{ date('d-m-Y', strtotime($dh->waktu_proses)) }}/{{ date('H:i', strtotime($dh->waktu_proses)) }}
+                                                @endif
+                                                @endforeach
+                                            </td>
+                                            <td>{{ $dp->no_rm }}</td>
+                                            <td>{{ $dp->no_lab }}</td>
+                                            <td>{{ $dp->nama }}</td>
+                                            <td>{{ $dp->asal_ruangan }}</td>
+                                            <td>
+                                                @if ($dp->cito == 1)
+                                                <i class='bx bxs-bell-ring mt-2 ml-1 text-danger' style="font-size: 23px;"></i>
+                                                @else
+                                                <i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                {{ \Carbon\Carbon::parse($dp->lahir)->age }} tahun
+                                            </td>
+                                            <td>
+                                                @if($dp->status == "Check in")
+                                                <span class="badge bg-danger text-white">Belum Diproses</span>
+                                                @elseif($dp->status == "Spesiment")
+                                                <span class="badge bg-warning text-white">Disetujui</span>
+                                                @endif
+                                            </td>
+                                            <td class="d-flex action-tombol">
+                                                @if ($dp->status == "Check in")
+                                                <a href="#" tooltip="Preview"><i class="fa-solid fa-file mx-1 mt-2" id="open-pasien" data-lab="{{ $dp->no_lab }}" onclick="previewPasien('{{ $dp->no_lab }}')"></i></a>
+                                                @else
+                                                <a href="#"></a>
+                                                @endif
+                                                <a href="#" tooltip="Tambah Parameter"><i class="fas fa-plus mx-1 mt-2" onclick="mengambilData()"></i></a>
+                                                <a href="#" tooltip="Cetak Barcode"><i class="fas fa-barcode mx-1 mt-2"></i></a>
+                                                <a href="#" tooltip="Resample"><i class="fas fa-syringe mx-1 mt-2"></i></a>
+                                                <a href="#" tooltip="Hapus Data" flow="left"><i class="fas fa-trash mx-1 mt-2"></i></a>
+                                            </td>
+                                        </tr>
+                                        @endforeach --}}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {{-- Pemeriksaan Pasien --}}
+                    <div class="modal fade" id="modalSpesimen" tabindex="-1" role="dialog"aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalScrollableTitle">Detail Inspection Patient</h5>
+                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body" style="overflow-y: scroll" id="pembayaran-pasien" style="max-height: 700px;">
+                                    <form action="{{ route('spesiment.store') }}" method="POST">
+                                        @csrf
+                                        <div class="row">
+                                            <div>
+                                            <h5>Inspection Details</h5>
+                                            <hr>
+                                            <div id="detailSpesiment">
+                                                {{-- <input type="hidden" name="no_lab" value="{{ $dataPasien->no_lab }}"> --}}
+                                            </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-success btn-verify" id="verification" type="submit">Verification</button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                             </div>
                         </div>
                     </div>
-                    <div class="table-scroll table-pasien" style="width: 100%; overflow-y: scroll; max-height: 600px;">
-                    <table class="table table-striped tabel-pasien" style="font-size: 12px;">
-                        <thead>
-                        <tr>
-                            <th scope="col"><i class="bx bx-check" style="font-size: 18px;"></i></th>
-                            <th scope="col">Tanggal Order</th>
-                            <th scope="col">No RM</th>
-                            <th scope="col">No LAB</th>
-                            <th scope="col">Nama</th>
-                            <th scope="col">Asal Poli</th>
-                            <th scope="col">Cito</th>
-                            <th scope="col">Umur</th>
-                            <th scope="col">Status</th>
-                            <th scope="col" class="text-center">Action</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($dataPasienCito as $dpc)
-                            <tr>
-                                @if ($dpc->status == "Check in")
-                                    <th scope="row"></th>
-                                @else
-                                    <th scope="row"><input type="checkbox" name="pilihan[]" class="pilih" onclick="hitung()" value="{{ $dpc->no_lab }}"></th>
-                                @endif
-                            <td>
-                                @foreach ($dataHistory as $dh)
-                                    @if ($dh->no_lab == $dpc->no_lab)
-                                        {{ date('d-m-Y', strtotime($dh->waktu_proses)) }}/{{ date('H:i', strtotime($dh->waktu_proses)) }}
-                                    @endif
-                                @endforeach
-                            </td>
-                            <td>{{ $dpc->no_rm }}</td>
-                            <td>{{ $dpc->no_lab }}</td>
-                            <td>{{ $dpc->nama }}</td>
-                            <td>{{ $dpc->asal_ruangan }}</td>
-                            <td>
-                                @if ($dpc->cito == 1)
-                                <i class='bx bxs-bell-ring mt-2 ml-1 text-danger' style="font-size: 23px;"></i>
-                                @else
-                                <i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i>
-                                @endif
-                            </td>
-                            <td>
-                                {{ \Carbon\Carbon::parse($dpc->lahir)->age }} tahun
-                            </td>
-                            <td>
-                                @if($dpc->status == "Check in")
-                                    <span class="badge bg-danger text-white">Belum Diproses</span>
-                                @elseif($dpc->status == "Spesiment")
-                                    <span class="badge bg-warning text-white">Disetujui</span>
-                                @endif
-                            </td>
-                            <td class="d-flex action-tombol">
-                                @if ($dpc->status == "Check in")
-                                <a href="#" tooltip="Preview"><i class="fa-solid fa-file mx-1 mt-2" id="open-pasien" data-lab="{{ $dpc->no_lab }}" onclick="previewPasien('{{ $dpc->no_lab }}')"></i></a>
-                                @else
-                                <a href="#"></a>
-                                @endif
-                                <a href="#" tooltip="Tambah Parameter"><i class="fas fa-plus mx-1 mt-2"></i></a>
-                                <a href="#" tooltip="Cetak Barcode"><i class="fas fa-barcode mx-1 mt-2"></i></a>
-                                <a href="#" tooltip="Resample"><i class="fas fa-syringe mx-1 mt-2"></i></a>
-                                <a href="#" tooltip="Hapus Data" flow="left"><i class="fas fa-trash mx-1 mt-2"></i></a>
-                            </td>
-                            </tr>
-                            @endforeach
-                            @foreach ($dataPasien as $dp)
-                            <tr>
-                                @if ($dp->status == "Check in")
-                                    <th scope="row"></th>
-                                @else
-                                    <th scope="row"><input type="checkbox" name="pilihan[]" class="pilih" onclick="hitung()" value="{{ $dp->no_lab }}"></th>
-                                @endif
-                            <td>
-                                @foreach ($dataHistory as $dh)
-                                    @if ($dh->no_lab == $dp->no_lab)
-                                        {{ date('d-m-Y', strtotime($dh->waktu_proses)) }}/{{ date('H:i', strtotime($dh->waktu_proses)) }}
-                                    @endif
-                                @endforeach
-                            </td>
-                            <td>{{ $dp->no_rm }}</td>
-                            <td>{{ $dp->no_lab }}</td>
-                            <td>{{ $dp->nama }}</td>
-                            <td>{{ $dp->asal_ruangan }}</td>
-                            <td>
-                                @if ($dp->cito == 1)
-                                <i class='bx bxs-bell-ring mt-2 ml-1 text-danger' style="font-size: 23px;"></i>
-                                @else
-                                <i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i>
-                                @endif
-                            </td>
-                            <td>
-                                {{ \Carbon\Carbon::parse($dp->lahir)->age }} tahun
-                            </td>
-                            <td>
-                                @if($dp->status == "Check in")
-                                    <span class="badge bg-danger text-white">Belum Diproses</span>
-                                @elseif($dp->status == "Spesiment")
-                                    <span class="badge bg-warning text-white">Disetujui</span>
-                                @endif
-                            </td>
-                            <td class="d-flex action-tombol">
-                                @if ($dp->status == "Check in")
-                                <a href="#" tooltip="Preview"><i class="fa-solid fa-file mx-1 mt-2" id="open-pasien" data-lab="{{ $dp->no_lab }}" onclick="previewPasien('{{ $dp->no_lab }}')"></i></a>
-                                @else
-                                <a href="#"></a>
-                                @endif
-                                <a href="#" tooltip="Tambah Parameter"><i class="fas fa-plus mx-1 mt-2" onclick="mengambilData()"></i></a>
-                                <a href="#" tooltip="Cetak Barcode"><i class="fas fa-barcode mx-1 mt-2"></i></a>
-                                <a href="#" tooltip="Resample"><i class="fas fa-syringe mx-1 mt-2"></i></a>
-                                <a href="#" tooltip="Hapus Data" flow="left"><i class="fas fa-trash mx-1 mt-2"></i></a>
-                            </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                        </table>
                     </div>
-                </form>
                 </div>
             </div>
         </div>
 
-        <!-- Preview -->
-        <div class="col-xl-5 col-lg-5">
-            <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div
-                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold" style="color: #96B6C5;">Preview Pasien</h6>
-                </div>
-                <!-- Card Body -->
-                <div class="card-body p-4">
-                    <div class="text-right" id="tanggal-pemeriksaan">
-                        <!-- Tanggal -->
-                    </div>
-                    <hr>
-                    <div class="preview-pasien-close" id="preview-pasien-close" style="background-color: #e3e6f0">
-                        <p class="text-center">Pilih Pasien</p>
-                    </div>
-                    <div class="preview-pasien-open" id="preview-pasien-open">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
-  </div>
 
+    </div>
+</div>
+</div>
 
-<!-- Preview Pasien -->
+@push('script')
 <script>
-    function previewPasien(nolab) {
-        var y = document.getElementById("preview-pasien-close");
+    $(function() {
+        let detailSpesiment = document.getElementById('detailSpesiment');
+        $('.btn-preview').on('click', function() {
+            const id = this.getAttribute('data-id');
 
-        //mengambil data pasien dari database
-        fetch('/api/previewpasien/'+nolab)
-            .then(response => {
+            fetch(`/api/get-data-pasien/${id}`).then(response => {
                 if (!response.ok) {
-                    throw new Error("HTTP error " + response.status);
+                    throw new Error("HTTP error" + response.status);
                 }
                 return response.json();
-            })
-            .then(data => {
-                y.style.display = "none";
-                var status = document.getElementById("status");
-                var container = document.getElementById("container-preview");
-                var tanggal = document.getElementById("tanggal-pemeriksaan");
+            }).then(res => {
+                if (res.status === 'success') {
+                    data_pasien = res.data;
+                    data_pemeriksaan_pasien = res.data.dpp;
+                    let status = data_pasien.status;
+                     if(status == 'Spesiment'){
+                                 $('#verification').attr('style',`display:none`);
+                             }
+                             else{
+                                 $('#verification').attr('style',`display:inherit`);
+                             }
 
-                //Status Pemeriksaan
-                if(data.data_pasien.status == "Belum Dilayani"){
-                    status.innerHTML = `<div class="ribbon-shape-dgr"><p class="mt-3 text-white">Belum Dilayani</p></div>`;
-                }else if(data.data_pasien.status == "Telah Dikirim ke Lab"){
-                    status.innerHTML = `<div class="ribbon-shape-scs"><p class="mt-3 text-white">Telah Dikirim</p></div>`;
-                }else if(data.data_pasien.status == "Diproses"){
-                    status.innerHTML = `<div class="ribbon-shape-wrn"><p class="mt-3 text-white">Diproses</p></div>`;
-                }
+                    console.log(data_pasien);
+                    console.log(data_pemeriksaan_pasien);
+                    // if (!data_pasien.dokter) {
+                    // console.error('Data dokter null');
+                    // return;
+                    // }
 
-                //ubah format tanggal created_at
-                var date = new Date(data.data_pasien.tanggal_masuk);
-                var year = date.getFullYear();
-                var month = date.getMonth()+1;
-                var dt = date.getDate();
+                    let detailContent = '<div class="row">';
+                    let Tabung = {};
 
-                //ambil nama hari
-                var day = date.getDay();
-
-                if (day == 0) {
-                day = "Minggu";
-                } else if (day == 1) {
-                day = "Senin";
-                } else if (day == 2) {
-                day = "Selasa";
-                } else if (day == 3) {
-                day = "Rabu";
-                } else if (day == 4) {
-                day = "Kamis";
-                } else if (day == 5) {
-                day = "Jumat";
-                } else if (day == 6) {
-                day = "Sabtu";
-                }
-
-                if (dt < 10) {
-                dt = '0' + dt;
-                }
-                if (month < 10) {
-                month = '0' + month;
-                }
-
-                var tanggal_pemeriksaan = day+', '+dt+'-' + month + '-'+year+' '+date.getHours()+':'+date.getMinutes();
-
-                //tampilkan tanggal pemeriksaan
-                tanggal.innerHTML = `<p class="h6 font-weight-normal mt-1">`+ tanggal_pemeriksaan +`</p>`;
-
-                //megnhitung umur dari tanggal lahir
-                var dob = new Date(data.data_pasien.lahir);
-                var today = new Date();
-                var age = Math.floor((today-dob) / (365.25 * 24 * 60 * 60 * 1000));
-
-                var diagnosa = data.icd10.filter(function (el) {
-                    return el.code == data.data_pasien.diagnosa;
-                });
-
-                //perulangan untuk menampilkan pemeriksaan yang di pilih
-                var departement = "";
-                var pemeriksaan = "";
-
-                var spesCollection = "";
-                var spesHandling = "";
-
-                let jumlahDepartement = [];
-
-                console.log(data.data_departement);
-
-                for (let i = 0; i < data.id_departement_pasien.length; i++) {
-                    departement += `<p class="h6 text-gray-800">`
-                    //buat perintah where untuk mencari id_departement
-                    for (let j = 0; j < data.data_departement.length; j++) {
-                        if(data.data_departement[j].id_departement == data.id_departement_pasien[i].id_departement){
-                            console.log(data.data_departement[j].id_departement);
-                            jumlahDepartement.push(data.data_departement[j].id_departement);
-                            departement += data.data_departement[j].nama_departement;
-                        }
-                    }
-                    departement += `</p>
-                    <div class="sub-detail p-2">`
-                        for (let k = 0; k < data.data_pemeriksaan_pasien.length; k++) {
-                            if(data.data_pemeriksaan_pasien[k].id_departement == data.id_departement_pasien[i].id_departement){
-                                for (let l = 0; l < data.data_pemeriksaan.length; l++) {
-                                    if(data.data_pemeriksaan_pasien[k].nama_parameter == data.data_pemeriksaan[l].nama_parameter){
-                                        departement += `<p class="text-gray-600 offset-md-3">`+ data.data_pemeriksaan[l].nama_pemeriksaan +`</p>`;
-                                    }
-                                }
+                    data_pemeriksaan_pasien.forEach((e, i) => {
+                        // console.log(e.data);
+                        detailContent += `          <input type="hidden" name="no_lab" value="${e.no_lab}">
+                                                    <div class="col-12 col-md-6" id="${e.id_departement}">
+                                                    <h6>${e.data_departement.nama_department}</h6>
+                                                    <ol>`;
+                        e.pasiens.forEach(e => {
+                            detailContent += `<li>${e.data_pemeriksaan.nama_pemeriksaan}</li>`;
+                            if(!Tabung[e.spesiment]) {
+                                Tabung[e.spesiment] = [];
                             }
-                        }
-                    departement += `</div>`
-                }
+                            Tabung[e.spesiment] += `<li>${e.data_pemeriksaan.nama_pemeriksaan}</li>`;  
+                        });
+                        detailContent += `</ol><hr></div>`;
+                    });
+                    detailContent += '</div>';
 
-                //memanyimpan kode tabung
-                let kodeTabung = []
+                    Object.keys(Tabung).forEach(spesiment => {
 
-                for(let i = 0; i < jumlahDepartement.length; i++){
-                    for(let j = 0; j < data.data_departement.length; j++){
-                        if(jumlahDepartement[i] == data.data_departement[j].id_departement){
-                            kodeTabung.push(data.data_departement[j].kode_tabung)
-                        }
-                    }
-                }
+                      res.data.spesiment.forEach((e, i) => {
+                                let details = '';
+                        
+                                if (e.details && e.details.length > 0){
+                                    details = `<div class="detail-container col-12 col-md-6">`;
+                                    e.details.forEach(detail => {
+                                        const imageUrl = `/gambar/${detail.gambar}`;
+                                        const isChecked = (e.spesiment === 'EDTA' && detail.nama_parameter === 'Normal' ) ||
+                                                            (e.spesiment === 'CLOT-ACT' && detail.nama_parameter === 'Normal') ? 'checked' : '';
+                                        details +=  
+                                        `<div class="detail-item">
+                                            <div class="detail-text">${detail.nama_parameter}</div>
+                                            <div class="detail-image-container">
+                                                <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
+                                            </div>
+                                            <div class="detail-radio-container">
+                                                ${e.spesiment === 'EDTA' ? `<input type="radio" name="kapasitas[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}
+                                                ${e.spesiment === 'CLOT-ACT' ? `<input type="radio" name="serum[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}    
+                                            </div>
+                                        </div>`;
+                                    });
+                                    details += `</div>`
+                                }
 
-                //menghapus kode tabung yang duplikat
-                kodeTabung = [...new Set(kodeTabung)];
+                                let subtext = '';
+                                    if (e.spesiment === 'EDTA') {
+                                        title = '<h5 class="title">Spesiment Collection</h5> <hr>';
+                                    } else if (e.spesiment === 'CLOT-ACT') {
+                                        title = '<h5>Spesiment Handling</h5> <hr>';
+                                        subtext = '<div class="subtext">Serum</div>';
+                                    }
 
+                                let note = '';
+                                if (e.spesiment === 'EDTA' || e.spesiment === 'CLOT-ACT') {
+                                        note = '<p class="mb-0"><strong>Note</strong></p>';
+                                    }
 
-                //menamplikan spesimen collection
-                for(let i = 0; i < kodeTabung.length; i++){
-                    for(let j = 0; j < data.dataTabung.length; j++){
-                        if(kodeTabung[i] == data.dataTabung[j].kode_tabung){
-                            spesCollection += `<div class="akordion col-12">
-                                                <div class="akordion-content akordion-collection">
-                                                    <header>
-                                                    <span class="judul-ak">Tabung `+ data.dataTabung[j].nama_tabung +`</span>
-                                                    <i class="bx bx-plus" style="color: #D0BFFF;"></i>
-                                                    </header>
-                                                    <div class="deskripsi-ak">
-                                                    <div class="d-flex justify-content-around text-center">
-                                                        <input type="text" name="tabung[]" value="`+ data.dataTabung[j].kode_tabung +`" hidden>
-                                                        <div class="sampling-bar">
-                                                        <h2>Low</h2>
-                                                        <div class="prog-sampling" style="background: #FF6868;">
-                                                            <div class="low"></div>
-                                                        </div>
-                                                        <input type="radio" name="kapasitas_`+ data.dataTabung[j].kode_tabung +`" id="form-kapasitas" value="low" readonly>
-                                                        </div>
-                                                        <div class="sampling-bar">
-                                                        <h2>Normal</h2>
-                                                        <div class="prog-sampling" style="margin-left: 12px; background:#FFBB64;">
-                                                            <div class="normal"></div>
-                                                        </div>
-                                                        <input type="radio" name="kapasitas_`+ data.dataTabung[j].kode_tabung +`" id="form-kapasitas" value="normal">
-                                                        </div>
-                                                        <div class="sampling-bar">
-                                                        <h2>High</h2>
-                                                        <div class="prog-sampling" style="background: #8fd48e;">
-                                                            <div class="high"></div>
-                                                        </div>
-                                                        <input type="radio" name="kapasitas_`+ data.dataTabung[j].kode_tabung +`" id="form-kapasitas" value="high">
-                                                        </div>
-                                                        <div class="row">
-                                                        <div class="form-group col-12">
-                                                            <label for="exampleFormControlTextarea1">Note</label>
-                                                            <textarea class="form-control txt-area" name="note_kapasitas_`+ data.dataTabung[j].kode_tabung +`" id="form-kapasitas" style="resize: none; height: 160px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                                                        </div>
-                                                        </div>
+                                detailContent += `${title}
+                                    <div class="accordion mb-2" id="accordion${e.spesiment}">
+                                                        
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="heading${e.spesiment}">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.spesiment}" aria-expanded="true" aria-controls="collapse${e.spesiment}">
+                                                Tabung ${e.spesiment}
+                                                </button>
+                                            </h2>
+                                            <div id="collapse${e.spesiment}" class="accordion-collapse collapse" aria-labelledby="heading${e.spesiment}" data-bs-parent="#accordion${e.spesiment}">
+                                                <div class="accordion-body">
+                                                    ${subtext}
+                                                    <div class="container">
+                                                        ${details}
                                                     </div>
-                                                    </div>
+                                                    ${note}
+                                                    ${e.spesiment === 'EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
+                                                    ${e.spesiment === 'CLOT-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
+                                                    
                                                 </div>
-                                                </div>`
-                        }
-                    }
-                }
-
-                //menamplikan spesimen collection
-                for(let i = 0; i < kodeTabung.length; i++){
-                    for(let j = 0; j < data.dataTabung.length; j++){
-                        if(kodeTabung[i] == data.dataTabung[j].kode_tabung){
-                            spesHandling += `<div class="akordion-content akordion-handling">
-                                                <header>
-                                                <span class="judul-ak">Tabung `+ data.dataTabung[j].nama_tabung +`</span>
-                                                <i class="bx bx-plus" style="color: #D0BFFF;"></i>
-                                                </header>
-                                                <div class="deskripsi-ak">
-                                                <p class="h6 font-weight-bold text-center">Serum</p>
-                                                <div class="d-flex justify-content-around text-center">
-                                                    <div class="sampling-bar">
-                                                    <h2>Normal</h2>
-                                                    <div class="serum my-2">
-                                                        <img src="{{ asset('../image/Group 150.png') }}" alt="">
-                                                    </div>
-                                                    <input type="radio" name="serum_`+ data.dataTabung[j].kode_tabung +`" id="form-serum" value="normal" disabled>
-                                                    </div>
-                                                    <div class="sampling-bar">
-                                                    <h2>Hemolytic</h2>
-                                                    <div class="serum my-2">
-                                                        <img src="{{ asset('../image/Group 151.png') }}" alt="">
-                                                    </div>
-                                                    <input type="radio" name="serum_`+ data.dataTabung[j].kode_tabung +`" id="form-serum" value="hemolytic" disabled>
-                                                    </div>
-                                                    <div class="sampling-bar">
-                                                    <h2>Iteric</h2>
-                                                    <div class="serum my-2">
-                                                        <img src="{{ asset('../image/Group 152.png') }}" alt="">
-                                                    </div>
-                                                    <input type="radio" name="serum_`+ data.dataTabung[j].kode_tabung +`" id="form-serum" value="iteric" disabled>
-                                                    </div>
-                                                    <div class="sampling-bar">
-                                                    <h2>Lipemic</h2>
-                                                    <div class="serum my-2">
-                                                        <img src="{{ asset('../image/Group 153.png') }}" alt="">
-                                                    </div>
-                                                    <input type="radio" name="serum_`+ data.dataTabung[j].kode_tabung +`" id="form-serum" value="lipemic" disabled>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="form-group col-12">
-                                                    <label for="exampleFormControlTextarea1">Note</label>
-                                                    <textarea class="form-control txt-area" name="note_serum_`+ data.dataTabung[j].kode_tabung +`" id="form-serum" style="resize: none; height: 100px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini" disabled></textarea>
-                                                    </div>
-                                                </div>
-                                                </div>
-                                            </div>`
-                        }
-                    }
-                }
-
-
-
-                var citoMerah = `<label for="staticEmail" class="col-sm-5 col-form-label">Cito</label>
-                                <div class="col-sm-7">
-                                    <i class='bx bxs-bell-ring mt-2 ml-1 text-danger' style="font-size: 23px;"></i>
-                                </div>`;
-                var citoGray = `<label for="staticEmail" class="col-sm-5 col-form-label">Cito</label>
-                                <div class="col-sm-7">
-                                    <i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i>
-                                </div>`;
-
-                var html = `<form action="{{ route('spesiment.post') }}" method="POST">
-                                <div class="detail_pemeriksaan col-12">
-                                <p class="h5 text-gray-800">Detail Pemeriksaan</p>
-                                <hr>
-                                <div class="row">
-                                    <div class="col-lg-5">`
-                                html += departement;
-
-                                html += `</div>
-                                </div>
-                                <div class="row mt-2">
-                                    <div class="form-group col-12">
-                                    <label for="exampleFormControlTextarea1">Note</label>
-                                    <textarea class="form-control txt-area" style="resize: none; height: 130px; outline: none; border: none;" id="note-2" rows="3" name="note-2" readonly>`+ data.history_pasien[0].note +`</textarea>
-                                    </div>
-                                </div>
-
-                                <!-- Collection -->
-                                    @csrf
-                                    <div class="d-flex justify-content-between">
-                                        <p class="h5 text-gray-800 mt-3">Spesimen Collection</p>
-                                        <a class="btn btn-sm btn-outline-success mt-2" id="btn-collection" style="height: 40px;" onclick="ambilTanggalCollection()">Approve</a>
-                                    </div>
-                                    <hr>
-                                    <div class="row">
-                                    <label for="staticEmail" class="col-md-2 col-sm-3 col-form-label">Tanggal : </label>
-                                        <div class="col-md-10 col-sm-9">
-                                            <input type="text" readonly class="form-control-plaintext" name="tanggal_collection" id="staticEmail" value="Belum Di Approve">
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                    <input type="text" name="no_lab" value="`+ data.data_pasien.no_lab +`" hidden>`
-
-                                    html += spesCollection;
-
-                                    html += `</div>
-                                    <hr>
-
-                                    <!-- Handling -->
-                                    <div class="d-flex justify-content-between">
-                                        <p class="h5 text-gray-800 mt-3">Spesimen Handling</p>
-                                        <a class="btn btn-sm btn-outline-success mt-2" id="btn-handling" style="height: 40px;" onclick="ambilTanggalHandling()" hidden>Approve</a>
-                                    </div>
-                                    <hr>
-                                    <div class="row">
-                                    <label for="staticEmail" class="col-md-2 col-sm-3 col-form-label">Tanggal</label>
-                                        <div class="col-md-10 col-sm-9">
-                                            <input type="text" readonly class="form-control-plaintext" name="tanggal_handling" id="staticEmail" value="Belum Di Approve">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="akordion col-12">`
-                                        html += spesHandling;
-
-                                        html += `</div>
-                                    </div>
-                                    </div>
-                                    <hr class="sidebar-divider">
-                                    <div class="mt-4 text-right small">
-                                    <button type="submit" class="btn btn-sm btn-outline-success font-weight-normal mx-2" id="btn-submit-spesiment" disabled>Approve</button>`
-                                    // <button class="btn btn-sm btn-outline-danger font-weight-normal mx-2">Cancel</button>
-                                    html += `<button class="btn btn-sm btn-outline-info font-weight-normal mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal">Tambah Pemeriksaan</button>
-                                </form>
-                            </div>`
-
-                document.getElementById("preview-pasien-open").innerHTML = html;
-
-
-            })
-            .catch(error => ('Error:', error));
-
-    }
-
+                                        </div>`;
+                             });
+                     
+                    });
+                    
+                    detailSpesiment.innerHTML = detailContent;
+                    console.log(detailContent);
+                }
+            });
+        });
+    })
 </script>
 
 <script>
-    function ambilTanggalCollection(){
-        var date = new Date();
-        var year = date.getFullYear();
-        var month = date.getMonth()+1;
-        var dt = date.getDate();
+    $(function(e){
+    $("#select_all_ids").click(function(){
+        $('.checkbox_ids').prop('checked',$(this).prop('checked'));
+    });
+    $('#konfirmasiallselecteddata').click(function(e){
+        e.preventDefault();
+        var all_ids = [];
+        $('input:checkbox[name=ids]:checked').each(function(){
+            all_ids.push($(this).val());
+        });
 
-        if (dt < 10) {
-            dt = '0' + dt;
-        }
-        if (month < 10) {
-            month = '0' + month;
-        }
+        $.ajax({
+            url:"{{ route('spesiment.checkin') }}",
+            method:"POST",
+            data:{
+                ids:all_ids,
+                _token:'{{csrf_token()}}'
+            },
+            success:function(response){
+                $.each(all_ids,function(key,val){
+                    $('#checkin'+val).remove();
+                })
+                location. reload();
+                toast(response.message, 'success');
 
-        var tanggal_collection = dt+'-' + month + '-'+year+' '+date.getHours()+':'+date.getMinutes();
-
-        document.getElementsByName("tanggal_collection")[0].value = tanggal_collection;
-
-        //menghilangkan hidden pada button handling
-        document.getElementById("btn-handling").hidden = false;
-
-        //menghilangkan hidden pada button collection
-        document.getElementById("btn-collection").hidden = true;
-
-        //enable semua id form handling
-        var elements = document.querySelectorAll('[name*="serum"]');
-        for (let i = 0; i < elements.length; i++) {
-            elements[i].disabled = false;
-        }
-
-        //mencari radio button yang tidak dipilih dengan name kapasitas
-        var elements = document.querySelectorAll('[name*="kapasitas"]');
-        for (let i = 0; i < elements.length; i++) {
-            if(elements[i].checked == false){
-                elements[i].hidden = true;
             }
-        }
+        })
+    })
+    });
 
-        //disable textarea note collection
-        var elements = document.querySelectorAll('[name*="note_kapasitas"]');
-        for (let i = 0; i < elements.length; i++) {
-            elements[i].readOnly = true;
-        }
-
-    }
-
-    function ambilTanggalHandling(){
-        var date = new Date();
-        var year = date.getFullYear();
-        var month = date.getMonth()+1;
-        var dt = date.getDate();
-
-        if (dt < 10) {
-            dt = '0' + dt;
-        }
-        if (month < 10) {
-            month = '0' + month;
-        }
-
-        var tanggal_handling = dt+'-' + month + '-'+year+' '+date.getHours()+':'+date.getMinutes();
-
-        document.getElementsByName("tanggal_handling")[0].value = tanggal_handling;
-
-        //menghilangkan hidden pada button handling
-        document.getElementById("btn-handling").hidden = true;
-
-        //enable button submit spesiment
-        document.getElementById("btn-submit-spesiment").disabled = false;
-
-        //mencari radio button yang tidak dipilih dengan name serum
-        var elements = document.querySelectorAll('[name*="serum"]');
-        for (let i = 0; i < elements.length; i++) {
-            if(elements[i].checked == false){
-                elements[i].hidden = true;
-            }
-        }
-
-        //disable textarea note handling
-        var elements = document.querySelectorAll('[name*="note_serum"]');
-        for (let i = 0; i < elements.length; i++) {
-            elements[i].readOnly = true;
-        }
-    }
 </script>
 
-{{-- <script>
-    function mengambilData(){
-        //mengambil data di element input text dengan name tabung sesuai dengan jumlah input text tabung
-        const elements = document.querySelectorAll('[name*="tabung"]');
-        const count = elements.length;
-
-        let tabung = []
-
-        for(let i = 0; i < count; i++){
-            tabung.push(document.getElementsByName("tabung")[i].value)
-        }
+@endpush
 
 
-        console.log(tabung);
-    }
-</script> --}}
-
-{{-- <script>
-    $(document).ready(function() {
-        $('#submit-collection').on('click', function() {
-            var tabungCollection = document.getElementById('tabung').value;
-
-            //mengambil data di element input text dengan name tabung sesuai dengan jumlah input text tabung
-            const elements = document.querySelectorAll('[name*="tabung"]');
-            const count = elements.length;
-
-            let tabung = []
-
-            for(let i = 0; i < count; i++){
-                var data = {
-                    no_lab: document.getElementsByName("no_lab")[0].value,
-                    tabung: document.getElementsByName("tabung")[i].value,
-                    kapasitas: document.getElementsByName("kapasitas-" + document.getElementsByName("tabung")[i].value).value,
-                };
-
-                console.log(data);
-
-            }
-
-        });
-    });
-</script> --}}
-
-{{-- <script>
-    function postCollection(){
-            //mengambil data di element input text dengan name tabung sesuai dengan jumlah input text tabung
-            const elements = document.querySelectorAll('[name*="tabung"]');
-            const count = elements.length;
-
-            var form = document.getElementById("form-collection");
-
-            let tabung = []
-
-            for(let i = 0; i < count; i++){
-                var namaTabung = document.getElementsByName("tabung")[i].value;
-                var data = {
-                    no_lab: document.getElementsByName("no_lab")[0].value,
-                    tabung: document.getElementsByName("tabung")[i].value,
-                    kapasitas: document.querySelector('input[name="kapasitas-'+ document.getElementsByName("tabung")[i].value +'"]:checked').value,
-                    note: document.getElementsByName("note-" + document.getElementsByName("tabung")[i].value)[0].value,
-                };
-
-                $.ajax({
-                    url: '/api/collection/post',
-                    type: 'get',
-                    data: data,
-                    success: function (data) {
-                        alert(data.data);
-                    }
-                });
-
-            }
-    }
-</script> --}}
 
 {{-- <script>
     //event ketika element a dengan id submit-collection di klik
@@ -772,22 +532,22 @@
             //kirim data menggunakan ajax
             $.ajax({
                 url: '{{ route('collection.post') }}',
-                type: 'POST',
-                data,
-                header: {
-                    'X-CSRF-TOKEN': csrfToken,
-                },
-                success: function(data) {
-                    // Tampilkan data baru
-                    alert(data.no_lab + ' telah dibuat.');
-                },
-                error: function(error) {
-                    // Tampilkan pesan error
-                    alert(error.responseJSON.message);
-                },
-            });
-        }
-    }
+type: 'POST',
+data,
+header: {
+'X-CSRF-TOKEN': csrfToken,
+},
+success: function(data) {
+// Tampilkan data baru
+alert(data.no_lab + ' telah dibuat.');
+},
+error: function(error) {
+// Tampilkan pesan error
+alert(error.responseJSON.message);
+},
+});
+}
+}
 
 </script> --}}
 

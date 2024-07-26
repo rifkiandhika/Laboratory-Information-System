@@ -14,12 +14,19 @@ class pasien extends Model
     protected $guarded = [];
     protected $table = 'pasiens';
 
-    public function data_pemeriksaan_pasien(){
+    public function data_pemeriksaan_pasien()
+    {
         return $this->hasMany(pemeriksaan_pasien::class, 'no_lab', 'no_lab');
     }
 
-    public function dpp(){
+    public function dpp()
+    {
         return $this->hasMany(pemeriksaan_pasien::class, 'no_lab', 'no_lab')->groupBy('id_departement');
+    }
+
+    public function spesiment()
+    {
+        return $this->hasManyThrough(Spesiment::class, pemeriksaan_pasien::class, 'no_lab', 'id_departement', 'no_lab', 'id_departement')->groupBy('id_departement');
     }
 
     public function dokter()
@@ -30,5 +37,4 @@ class pasien extends Model
     {
         return Carbon::parse($this->attributes['lahir'])->age;
     }
-
 }
