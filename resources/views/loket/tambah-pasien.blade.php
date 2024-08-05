@@ -3,9 +3,8 @@
 
 @section('title', 'Tambah Pasien')
 
-<link rel="stylesheet" href="{{ asset('bootstrap/css/sb-admin-2.css') }}">
-
 @section('content')
+<section>
     <div class="content">
         <div class="container-fluid">
             <!-- Page Heading -->
@@ -27,7 +26,7 @@
                                     <div class="row" style="margin-top: -5px;">
                                         <label for="staticEmail" class="col-sm-4 col-form-label">No LAB :</label>
                                         <div class="col-lg">
-                                            <input type="text" readonly class="form-control-plaintext font-weight-bold"
+                                            <input type="text" readonly class="form-control-plaintext font-bold"
                                                 id="no-lab" name="nolab" value="{{ $no_lab }}">
                                         </div>
                                     </div>
@@ -72,7 +71,7 @@
                                     </div>
                                     <div class="form-group col-12">
                                         <label for="exampleFormControlSelect1">Gender</label>
-                                        <select class="form-control" id="exampleFormControlSelect1" name="jeniskelamin">
+                                        <select class="form-select" id="exampleFormControlSelect1" name="jeniskelamin">
                                             <option selected>Select Gender</option>
                                             <option value="Laki²">Laki²</option>
                                             <option value="Perempuan">Perempuan</option>
@@ -84,7 +83,7 @@
                                     </div>
                                     <div class="form-group col-12">
                                         <label for="exampleFormControlSelect1">Doctor</label>
-                                        <select class="form-control" id="exampleFormControlSelect1" name="dokter">
+                                        <select class="form-select" id="exampleFormControlSelect1" name="dokter">
                                             <option selected hidden>Choose</option>
                                             {{-- <option value="1">Permintaan Sendiri</option> --}}
                                             @foreach ($dokters as $dokter)
@@ -111,22 +110,22 @@
                                     <div class="form-group col-12">
                                         <label for="basic-url">Kind Of Service</label>
                                         <div class="row">
-                                            <div class="form-check ml-3">
-                                                <input class="form-check-input child-pemeriksaan-hematologi" type="radio"
+                                            <div class="ml-4">
+                                                <input style="cursor: pointer" class="form-check-input child-pemeriksaan-hematologi" type="radio"
                                                     name="jenispelayanan" value="umum" id="umum" checked>
                                                 <label class="form-check-label" for="umum">
                                                     Umum
                                                 </label>
                                             </div>
-                                            <div class="form-check ml-3">
-                                                <input class="form-check-input child-pemeriksaan-hematologi"
+                                            <div class=" ml-4">
+                                                <input style="cursor: pointer" class="form-check-input child-pemeriksaan-hematologi"
                                                     type="radio" name="jenispelayanan" value="bpjs" id="bpjs">
                                                 <label class="form-check-label" for="bpjs">
                                                     BPJS
                                                 </label>
                                             </div>
-                                            <div class="form-check ml-3">
-                                                <input class="form-check-input child-pemeriksaan-hematologi"
+                                            <div class="ml-4">
+                                                <input style="cursor: pointer" class="form-check-input child-pemeriksaan-hematologi"
                                                     type="radio" name="jenispelayanan" value="asuransi"
                                                     id="asuransi">
                                                 <label class="form-check-label" for="asuransi">
@@ -137,17 +136,8 @@
                                     </div>
                                 </div>
                                 <p class="h5">Choose Inspection</p>
-                                <div class="row">
-                                    <div class="col-8 d-flex">
-                                        <label for="staticEmail" class="col-form-label">Total Price : <b>Rp.</b> </label>
-                                        <div class="">
-                                            <input type="text" class="form-control-plaintext font-weight-bold"
-                                                name="hargapemeriksaan" id="harga-pemeriksaan" value="0" readonly>
-                                        </div>
-                                    </div>
-                                </div>
                                 <hr>
-                                <div class="row pemeriksaan">
+                                <div class="row">
                                     @foreach ($departments as $departement)
                                         <div class="col-xl-3">
                                             <!-- Parent Pemeriksaan -->
@@ -157,7 +147,7 @@
                                                 </div>
                                                 <!-- Child pemeriksaan -->
                                                 <div class="child-pemeriksaan" id="child-pemeriksaan-hematologi">
-                                                    @foreach ($departement->pemeriksaan as $x => $pemeriksaan)
+                                                    @foreach ($departement->detailDepartments as $x => $pemeriksaan)
                                                         <div class="form-check">
                                                             <input style="cursor: pointer" class="form-check-input child-pemeriksaan"
                                                                 type="checkbox" name="pemeriksaan[]"
@@ -179,7 +169,17 @@
                                     @endforeach
                                 </div>
                                 <hr>
-                                <div class="mt-4 text-right small">
+                                <div class="row pemeriksaan">
+                                    <div class="col-5 d-flex">
+                                        <label for="staticEmail" class="col-form-label">Total Price : <b>Rp.</b> </label>
+                                        <div class="">
+                                            <input type="text" class="form-control-plaintext font-bold"
+                                                name="hargapemeriksaan" id="harga-pemeriksaan" value="0" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="mt-4 text-end small">
                                     <input class="btn btn-primary" type="submit" value="Submit">
                                     <input class="btn btn-danger" type="reset" value="Reset">   
                                 </div>
@@ -190,8 +190,9 @@
             </div>
         </div>
     </div>
+</section>
 
-
+@endsection
 {{-- <script>
     $(document).ready(function() {
         $('#diagnosa').select2({
@@ -252,7 +253,6 @@ $(document).ready(function(){
         });
     </script> --}}
 
-@endsection
 
 @push('script')
 

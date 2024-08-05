@@ -19341,6 +19341,7 @@ body .bi:before,
     }
 }
 .burger-btn {
+    cursor: pointer;
     display: none;
 }
 #main {

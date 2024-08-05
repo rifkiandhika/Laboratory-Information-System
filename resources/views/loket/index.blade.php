@@ -510,9 +510,9 @@
                         data_pasien = res.data;
                         data_pemeriksaan_pasien = res.data.dpp;
 
-                        let old = 0;
+                        // let old = 0;
                         let detailContent = '<div class="row">';
-                        let subContent = [];
+                        // let subContent = [];
                         let totalHarga = 0;
 
                         //Status Pemeriksaan
@@ -553,15 +553,35 @@
                                 </div>
                                 <div class="col-12 col-md-6"
                                 <label>Total Payment</label>
-                                <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran" name="total_pembayaran"  value="${totalHarga}" readonly>
+                                    <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran_asli" name="total_pembayaran_asli" value="${totalHarga}" readonly>
                                 </div>
+                                ${data_pasien.jenis_pelayanan === 'bpjs' ? `
+                                    <div class="col-12 col-md-6">
+                                        <label>No Bpjs</label>
+                                        <input class="form-control" type="number" name="no_pasien" required />
+                                    </div>
+                                ` : ''}
+                                ${data_pasien.jenis_pelayanan === 'asuransi' ? `
+                                    <div class="col-12 col-md-6">
+                                        <label>No Asuransi</label>
+                                        <input class="form-control" type="number" name="no_pasien" required />
+                                    </div>
+                                ` : ''}
                                 <div class="col-12 col-md-6"
                                     <label>Officer</label>
                                     <input class="form-control" type="text" name="petugas" required>
                                 </div>
                                 <div class="col-12 col-md-6"
+                                    <label>Disc</label>
+                                    <input class="form-control " id="diskon" name="diskon" type="number" placeholder="Enter discount if any" value="" min="0">
+                                </div>
+                                <div class="col-12 col-md-6"
                                     <label>Payment Amount</label>
                                     <input class="form-control " id="jumlah_bayar" name="jumlah_bayar" type="number" value="">
+                                </div>
+                                <div class="col-12 col-md-6"
+                                    <label>Total Payment Disc</label>
+                                    <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran" name="total_pembayaran" value="${totalHarga}" readonly>
                                 </div>
                                 <div class="col-12 col-md-6"
                                     <label>Change Money</label>
@@ -569,35 +589,49 @@
                                 </div>
                             </div>
                         `;
-                        console.log(data_pemeriksaan_pasien);
-                        console.log(data_pasien);
+                        // console.log(data_pemeriksaan_pasien);
+                        // console.log(data_pasien);
                         detailContent += pembayaranContent;
 
                         detailPembayaran.innerHTML = detailContent;
                         console.log(detailContent);
 
-                        document.getElementById('jumlah_bayar').addEventListener('input', function() {
-                            if(this.value < 0){
-                                this.value = 0;
-                                return false;
+                        function hitungTotalPembayaran() {
+                            let totalPembayaranAsli = parseFloat(document.getElementById('total_pembayaran_asli').value);
+                            let diskon = parseFloat(document.getElementById('diskon').value) || 0;
+                            let totalSetelahDiskon = totalPembayaranAsli - diskon;
+                            if (totalSetelahDiskon < 0) {
+                                totalSetelahDiskon = 0;
                             }
+                            document.getElementById('total_pembayaran').value = totalSetelahDiskon;
+                        }
+
+                        function hitungKembalian() {
                             let totalPembayaran = parseFloat(document.getElementById('total_pembayaran').value);
-                            let jumlahBayar = parseFloat(this.value);
+                            let jumlahBayar = parseFloat(document.getElementById('jumlah_bayar').value) || 0;
                             let kembalian = jumlahBayar - totalPembayaran;
+                            document.getElementById('kembalian').value = kembalian >= 0 ? kembalian : 0;
 
-                            document.getElementById('kembalian').value = kembalian > 0 ? kembalian : 0;
-
-                            // Validasi untuk mengaktifkan atau menonaktifkan tombol submit
                             let submitButton = document.getElementById('submit-button');
                             if (jumlahBayar >= totalPembayaran) {
                                 submitButton.disabled = false;
                             } else {
                                 submitButton.disabled = true;
                             }
+                        }
+
+                        document.getElementById('jumlah_bayar').addEventListener('input', function() {
+                            hitungTotalPembayaran();
+                            hitungKembalian();
                         });
 
+                        document.getElementById('diskon').addEventListener('input', function() {
+                            hitungTotalPembayaran();
+                            hitungKembalian();
+                        });
                             document.getElementById('submit-button').disabled = true;
                     }
+                
                 });
                 // Form edit
                 // $('#modalPreviewPasien').attr('action', '/poli/' + id);

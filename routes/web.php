@@ -130,17 +130,21 @@ route::group(['prefix' => 'loket', 'middleware' => ['auth']], function () {
     // Route::put('/data-pasien/{id}', [DataPasienController::class, 'update'])->name('data-pasien.update');
 });
 
-route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
-    route::resource('analyst', analystDasboard::class);
+Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
+    Route::resource('analyst', analystDasboard::class);
     // route::post('/setuju', [analystDasboard::class, 'approve'])->name('analyst.approve');
-    route::post('/approve/{id}', [analystDasboard::class, 'approve'])->name('analyst.approve');
-    route::post('/checkinall', [analystDasboard::class, 'checkinall'])->name('analyst.checkinall');
+    Route::post('/approve/{id}', [analystDasboard::class, 'approve'])->name('analyst.approve');
+    Route::post('/checkinall', [analystDasboard::class, 'checkinall'])->name('analyst.checkinall');
 
-    route::resource('spesiment', spesimentHendlingController::class);
-    route::post('spesiment/post', [spesimentHendlingController::class, 'postSpesiment'])->name('spesiment.post');
-    route::post('spesiment/checkin', [spesimentHendlingController::class, 'checkin'])->name('spesiment.checkin');
+    Route::resource('spesiment', spesimentHendlingController::class);
+    Route::post('spesiment/post', [spesimentHendlingController::class, 'postSpesiment'])->name('spesiment.post');
+    Route::post('spesiment/checkin', [spesimentHendlingController::class, 'checkin'])->name('spesiment.checkin');
 
-    route::resource('worklist', worklistController::class);
+    Route::resource('worklist', worklistController::class);
+    Route::delete('analyst/worklist/{worklist}', [worklistController::class, 'destroy'])->name('worklist.destroy');
+    Route::post('/analyst/worklist/store', [worklistController::class, 'store'])->name('worklist.store');
+
+
 
     Route::get('/result', function () {
         return view('analyst.result-review');
@@ -164,7 +168,7 @@ route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
 route::get('/worklist/pemeriksaan', [worklistController::class, 'tampilPemeriksaan']);
 route::get('/worklist/tampildarahlengkap/{nolab}', [worklistController::class, 'tampilPemeriksaan'])->name('worklist.tampildarahlengkap');
 
-Route::get('/print/barcode/{lab}', [pasienController::class, 'previewPrint'])->name('print.barcode');
+Route::get('/print/barcode/{lab}', [pasienController::class, 'previewPrint']);
 
 route::get('/previewpasien/{lab}', [pasienController::class, 'getDataPasien']);
 

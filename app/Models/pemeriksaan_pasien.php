@@ -16,7 +16,7 @@ class pemeriksaan_pasien extends Model
 
     public function pemeriksaan()
     {
-        return $this->belongsTo(Pemeriksaan::class, 'id_departement', 'id');
+        return $this->belongsTo(DetailDepartment::class, 'id_departement', 'id');
     }
 
     public function dokter()
@@ -31,13 +31,15 @@ class pemeriksaan_pasien extends Model
 
     public function data_pemeriksaan()
     {
-        return $this->belongsTo(Pemeriksaan::class, 'id_parameter');
+        return $this->belongsTo(DetailDepartment::class, 'id_parameter');
     }
 
     public function pasiens()
     {
         return $this->hasMany(pemeriksaan_pasien::class, 'id_departement', 'id_departement');
     }
+
+
 
     public function data_spesiment()
     {

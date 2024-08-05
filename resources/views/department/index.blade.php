@@ -18,15 +18,12 @@
                                         <p class="alert alert-danger">{{ session('error') }}</p>
                                     @endif
 
-                                    <!-- Button trigger modal -->
-                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
-                                        data-bs-target="#exampleModal">
-                                        + Add Department
-                                    </button>
+                                    
+                                    <a class="btn btn-outline-primary" href="{{ route('department.create') }}">+ Add Department</a>
 
 
                                     <!-- Modal -->
-                                    <div class="modal fade" id="exampleModal" tabindex="-1"
+                                    {{-- <div class="modal fade" id="exampleModal" tabindex="-1"
                                         aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
@@ -52,7 +49,7 @@
                                                 </form>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                             <div class="card-body">
@@ -62,7 +59,8 @@
                                         <thead style="font-size: 12px;">
                                             <tr>
                                                 <th scope="col">No</th>
-                                                <th scope="col">Department Action</th>
+                                                <th scope="col">Department Name </th>
+                                                <th scope="col">Details</th>
                                                 <th scope="col">Action</th>
                                             </tr>
                                         </thead>
@@ -72,12 +70,13 @@
                                                     <td>{{ $Department->id }}</td>
                                                     <td>{{ $Department->nama_department }}</td>
                                                     <td>
+                                                        @foreach($Department->detailDepartments as $detail)
+                                                            <li>{{ $detail->kode }} - {{ $detail->nama_parameter }} - {{ $detail->nama_pemeriksaan }} - {{ $detail->harga }} - {{ $detail->nilai_statik }} - {{ $detail->nilai_satuan }}</li>
+                                                        @endforeach
+                                                    </td>
+                                                    <td>
                                                         {{-- Edit --}}
-                                                        <button class="btn btn-success btn-edit"
-                                                            data-id="{{ $Department->id }}"
-                                                            data-name="{{ $Department->nama_department }}"><i
-                                                                class="bi bi-pencil-square"></i>
-                                                            Edit</button>
+                                                        <a class="btn btn-success" href="{{ route('department.edit', $Department->id) }}"><i class="bi bi-pencil-square">Edit</i></a>
                                                         {{-- Delete --}}
                                                         <form id="delete-form-{{ $Department->id }}"
                                                             action="{{ route('department.destroy', $Department->id) }}"
@@ -95,7 +94,7 @@
                                         </tbody>
                                     </table>
                                     {{-- Edit Dokter --}}
-                                    <div class="modal fade" id="editDepartment" tabindex="-1" role="dialog"
+                                    {{-- <div class="modal fade" id="editDepartment" tabindex="-1" role="dialog"
                                         aria-labelledby="editModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
@@ -124,7 +123,7 @@
                                                 </form>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     {{-- Edit Dokter --}}
                                 </div>
                             </div>
@@ -136,7 +135,7 @@
     </section>
 @endsection
 @push('script')
-    <script>
+    {{-- <script>
         $(function() {
             $('.btn-edit').on('click', function() {
                 var id = $(this).data('id');
@@ -152,5 +151,5 @@
                 $('#editDepartment').modal('show');
             });
         })
-    </script>
+    </script> --}}
 @endpush

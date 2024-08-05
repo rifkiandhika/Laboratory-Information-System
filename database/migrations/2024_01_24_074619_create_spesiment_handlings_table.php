@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('tabung');
             $table->string('serum');
             $table->string('status');
-            $table->string('note')->nullable()->change();
+            $table->string('note')->nullable();
             $table->dateTime('tanggal');
             $table->timestamps();
         });

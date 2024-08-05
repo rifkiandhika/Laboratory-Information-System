@@ -17,9 +17,13 @@ class Department extends Model
 
     public function spesiment()
     {
-        return $this->hasMany(Spesiment::class, 'id_departement');
+        return $this->hasMany(Spesiment::class);
     }
 
+    public function detailDepartments()
+    {
+        return $this->hasMany(DetailDepartment::class);
+    }
 
 
     public static function boot()

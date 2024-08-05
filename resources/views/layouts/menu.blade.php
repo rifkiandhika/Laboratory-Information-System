@@ -34,7 +34,7 @@
         {{-- Loket --}}
 
         {{-- Laboratorium --}}
-        <li class="sidebar-item has-sub {{ Request::is('analyst/analyst', 'analyst/spesiment') ? 'active' : '' }}">
+        <li class="sidebar-item has-sub {{ Request::is('analyst/analyst', 'analyst/spesiment', 'analyst/worklist') ? 'active' : '' }}">
             <a href="#" class='sidebar-link'>
                 <i class="bi bi-droplet-half"></i>
                 <span>Laboratory</span>
@@ -49,8 +49,8 @@
                     <a href="{{ route('spesiment.index') }}" class="submenu-link"><i class="bi bi-clipboard-plus"></i>
                         Spesiment</a>
                 </li>
-                <li class="submenu-item {{ Request::is('loket/report') ? 'active' : '' }} ">
-                    <a href="{{ route('report.index') }}" class="submenu-link"><i class="bi bi-clipboard2-pulse"></i>
+                <li class="submenu-item {{ Request::is('analyst/worklist') ? 'active' : '' }} ">
+                    <a href="{{ route('worklist.index') }}" class="submenu-link"><i class="bi bi-clipboard2-pulse"></i>
                         Worklist</a>
                 </li>
                 <li class="submenu-item {{ Request::is('loket/report') ? 'active' : '' }} ">
@@ -110,10 +110,10 @@
         <a href="" class="submenu-link"><i class="bi bi-activity"></i>
             Parameter</a>
         </li> --}}
-        <li class="submenu-item {{ Request::is('pemeriksaan') ? 'active' : '' }} ">
+        {{-- <li class="submenu-item {{ Request::is('pemeriksaan') ? 'active' : '' }} ">
             <a href="{{ route('pemeriksaan.index') }}" class="submenu-link"><i class="bi bi-clipboard-data"></i>
                 Inspection</a>
-        </li>
+        </li> --}}
         {{-- Setting --}}
 
         </ul>

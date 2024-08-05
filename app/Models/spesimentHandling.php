@@ -22,4 +22,13 @@ class spesimentHandling extends Model
     {
         return $this->belongsTo(Department::class, 'id_departement', 'id');
     }
+
+    public function spesimentCollection()
+    {
+        return $this->belongsTo(spesimentCollection::class, 'no_lab', 'no_lab');
+    }
+    public function details()
+    {
+        return $this->hasMany(DetailSpesiment::class, 'id', 'serum');
+    }
 }

@@ -6,6 +6,15 @@ use App\Models\obx;
 use App\Models\pasien;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\HasilPemeriksaan;
+use App\Models\historyPasien;
+use App\Models\msh;
+use App\Models\obr;
+use App\Models\pembayaran;
+use App\Models\pemeriksaan_pasien;
+use App\Models\spesimentCollection;
+use App\Models\spesimentHandling;
+use Illuminate\Support\Facades\Log;
 
 class worklistController extends Controller
 {
@@ -14,17 +23,17 @@ class worklistController extends Controller
      */
     public function index()
     {
-        $dataPasien = pasien::where(function($query) {
+        $dataPasien = pasien::where(function ($query) {
             $query->where('status', 'Check in spesiment');
         })
-        ->where('cito', 0)
-        ->get();
+            ->where('cito', 0)
+            ->get();
 
-        $dataPasienCito = pasien::where(function($query) {
+        $dataPasienCito = pasien::where(function ($query) {
             $query->where('status', 'Check in spesiment');
         })
-        ->where('cito', 1)
-        ->get();
+            ->where('cito', 1)
+            ->get();
 
         return view('analyst.worklist', compact('dataPasien', 'dataPasienCito'));
     }
@@ -42,7 +51,41 @@ class worklistController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        // dd($request);
+        $validatedData = $request->validate([
+            'no_lab' => 'required',
+            'no_rm' => 'required',
+            'nama' => 'required',
+            'ruangan' => 'required',
+            'nama_dokter' => 'required',
+            'department.*' => 'nullable',
+            'nama_pemeriksaan.*' => 'required|array',
+            'hasil.*' => 'required|array',
+            'range.*' => 'nullable|array',
+            'flag.*' => 'nullable|array',
+            'satuan.*' => 'nullable|array',
+        ]);
+
+        foreach ($validatedData['nama_pemeriksaan'] as $x => $nama_pemeriksaan) {
+            $data = [
+                'no_lab' => $validatedData['no_lab'],
+                'no_rm' => $validatedData['no_rm'],
+                'nama' => $validatedData['nama'],
+                'ruangan' => $validatedData['ruangan'],
+                'nama_dokter' => $validatedData['nama_dokter'],
+                'nama_pemeriksaan' => $nama_pemeriksaan,
+                'hasil' => $validatedData['hasil'][$x] ?? null,
+                'range' => $validatedData['range'][$x] ?? null,
+                'flag' => $validatedData['flag'][$x] ?? null,
+                'satuan' => $validatedData['satuan'][$x] ?? null,
+            ];
+
+            HasilPemeriksaan::create($data);
+        }
+
+        toast('Data Berhasil di verifikasi', 'success');
+        return redirect()->route('worklist.index');
     }
 
     /**
@@ -74,8 +117,20 @@ class worklistController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $worklist = pasien::findOrFail($id);
+        $no_lab = $worklist->no_lab;
+        pemeriksaan_pasien::where('no_lab', $no_lab)->delete();
+        historyPasien::where('no_lab', $no_lab)->delete();
+        spesimentCollection::where('no_lab', $no_lab)->delete();
+        spesimentHandling::where('no_lab', $no_lab)->delete();
+        pembayaran::where('no_lab', $no_lab)->delete();
+        $worklist->delete();
+
+        toast('Data berhasi di Hapus!', 'success');
+        return redirect()->route('worklist.index');
     }
+
+
 
     public function tampilPemeriksaan($lab)
     {
@@ -85,10 +140,11 @@ class worklistController extends Controller
         return response()->json($nolab);
     }
 
-    public function storemsh(){
+    public function storemsh(Request $request)
+    {
         $message_type = '';
-        for($i=0; $i<count($request->message_type); $i++){
-            if($i>0){
+        for ($i = 0; $i < count($request->message_type); $i++) {
+            if ($i > 0) {
                 $message_type .= ',';
             }
             $message_type .= $request->message_type[$i][0];
@@ -110,7 +166,8 @@ class worklistController extends Controller
         ], 201);
     }
 
-    public function storeobr(){
+    public function storeobr(Request $request)
+    {
         $data = $request->all();
         $obr = obr::create($data);
 
@@ -121,11 +178,12 @@ class worklistController extends Controller
         ], 201);
     }
 
-    public function storeobx(){
-        if(is_array($request->identifier_unit)){
+    public function storeobx(Request $request)
+    {
+        if (is_array($request->identifier_unit)) {
             $identifier_unit = '';
-            for($i=0; $i<count($request->identifier_unit); $i++){
-                if($i>0){
+            for ($i = 0; $i < count($request->identifier_unit); $i++) {
+                if ($i > 0) {
                     $identifier_unit .= ',';
                 }
                 $identifier_unit .= $request->identifier_unit[$i][0];
@@ -140,7 +198,7 @@ class worklistController extends Controller
                 'identifier_range' => $request->identifier_range,
                 'identifier_flags' => $request->identifier_flags,
             ];
-        }else{
+        } else {
             $data = $request->all();
         }
         $obx = obx::create($data);

@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('spesiments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_departement');
-            $table->string('spesiment')->unique();
+            $table->string('spesiment');
+            $table->string('tabung');
             $table->string('note')->nullable();
             $table->timestamps();
         });

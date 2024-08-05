@@ -13,8 +13,25 @@ class spesimentCollection extends Model
         'no_lab',
         'tabung',
         'kapasitas',
+        'serumh',
         'status',
         'note',
         'tanggal'
     ];
+    protected $guarded = [];
+
+    public function spesimentHandlings()
+    {
+        return $this->hasMany(spesimentHandling::class, 'no_lab', 'no_lab');
+    }
+    public function details()
+    {
+        return $this->hasMany(DetailSpesiment::class, 'spesiment_id', 'id');
+    }
+    public function getDetailsByCriteria()
+    {
+        return $this->details()->where(function ($query) {
+            $query->where('id', $this->kapasitas)->orWhere('id', $this->serumh);
+        })->get();
+    }
 }

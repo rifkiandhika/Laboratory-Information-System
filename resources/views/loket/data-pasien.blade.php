@@ -29,6 +29,7 @@
                                     <thead>
                                         <tr>
                                             <th scope="col">No</th>
+                                            <th scope="col">No.RM</th>
                                             <th scope="col">NIK</th>
                                             <th scope="col">Name</th>
                                             <th scope="col">Date Of Birth</th>
@@ -43,6 +44,7 @@
                                             <tr>
                                                 <th scope="row">{{ $x + 1 }}</th>
                                                 {{-- <th scope="row">{{ $dp->id }}</th> --}}
+                                                <td>{{ $dp->no_rm }}</td>
                                                 <td>{{ $dp->nik }}</td>
                                                 <td>{{ $dp->nama }}</td>
                                                 <td>

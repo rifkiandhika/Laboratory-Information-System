@@ -192,7 +192,7 @@
                                             <th id="checkin{{ $dpc->id }}">
                                                 <input style="font-size: 20px; cursor: pointer;" type="checkbox" name="ids" id="checkbox" class="form-check-input checkbox_ids" value="{{ $dpc->id }}">
                                             </th>
-                                            <td>
+                                            <td class="col-3">
                                                 @foreach ($dataHistory as $dh)
                                                 @if ($dh->no_lab == $dpc->no_lab)
                                                 {{ date('d-m-Y', strtotime($dh->waktu_proses)) }}/{{ date('H:i', strtotime($dh->waktu_proses)) }}
@@ -223,10 +223,11 @@
                                                 <span class="badge bg-warning text-white">Approved</span>
                                                 @endif
                                             </td>
-                                            <td class="col-2">
+                                            <td class="col-3">
                                                 <button class="btn btn-info btn-preview" data-id={{ $dpc->id }} data-bs-target="#modalSpesimen"
                                                     data-bs-toggle="modal" ><i class="bi bi-eye"></i></button>
-                                                <button class="btn btn-success" onclick="window.location.href='{{ route('pasien.create') }}'"><i class="bi bi-plus"></i></button>
+                                                <button class="btn btn-warning"><i class="bi bi-upc"></i></button>
+                                                <button class="btn btn-success btn-edit" data-id={{ $dpc->id }} data-bs-target="#modalEdit" data-bs-toggle="modal"><i class="bi bi-pencil-square"></i></button>
                                                 
                                                 <form id="delete-form-{{ $dpc->id }}"
                                                     action="{{ route('spesiment.destroy', $dpc->no_lab) }}" method="POST"
@@ -317,7 +318,44 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button class="btn btn-success btn-verify" id="verification" type="submit">Verification</button>
+                                            <button class="btn btn-success btn-verify" id="verification" type="submit">Submit</button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                             </div>
+                        </div>
+                    </div>
+                    {{-- edit data --}}
+                    <div class="modal fade" id="modalEdit" tabindex="-1" role="dialog"aria-labelledby="exampleModal" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalScrollableTitle">Edit Data Patient</h5>
+                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body" style="overflow-y: scroll" id="pembayaran-pasien" style="max-height: 700px;">
+                                    <form id="editFormPasien" method="POST">
+                                        @csrf
+                                        @method('PUT')
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <label for=""><strong>NIK</strong></label>
+                                                <input type="text" name="nik" id="Nik" class="form-control">
+                                            </div>
+                                            <div class="col-12">
+                                                <label for=""><strong>Name</strong></label>
+                                                <input type="text" name="nama" id="Nama" class="form-control">
+                                            </div>
+                                            <div class="col-12 mb-3">
+                                                <label for=""><strong>Address</strong></label>
+                                                <input type="text" name="alamat" id="Alamat" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-success btn-verify" id="verification" type="submit">Submit</button>
                                         </div>
                                     </form>
                                 </div>
@@ -336,6 +374,47 @@
 </div>
 
 @push('script')
+<script>
+    $(function() {
+        // button preview waktu di klik mendapatkan data sesuai id
+        $('.btn-edit').on('click', function() {
+            // untuk mendapatkan data sesuai idnya
+            const id = this.getAttribute('data-id');
+
+            
+            $('#editFormPasien').attr('action', "{{ url('/analyst/spesiment') }}/" + id);
+
+            // Memanggil API
+            fetch(`/api/get-data-pasien/${id}`).then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP error" + response.status);
+                }
+                return response.json();
+            }).then(res => {
+                if (res.status === 'success') {
+                    const {
+                        no_lab,
+                        nik,
+                        nama,
+                        alamat,
+                    } = res.data;
+
+                    dokter = res.data.dokter;
+                    data_pemeriksaan_pasien = res.data.dpp;
+
+                    $('#Nik').val(nik);
+                    $('#Nama').val(nama);
+                    $('#Alamat').val(alamat);
+
+                }
+            });
+            // Form edit
+            // $('#modalPreviewPasien').attr('action', '/poli/' + id);
+
+        });
+    })
+</script>
+
 <script>
     $(function() {
         let detailSpesiment = document.getElementById('detailSpesiment');
@@ -395,8 +474,14 @@
                                     details = `<div class="detail-container col-12 col-md-6">`;
                                     e.details.forEach(detail => {
                                         const imageUrl = `/gambar/${detail.gambar}`;
-                                        const isChecked = (e.spesiment === 'EDTA' && detail.nama_parameter === 'Normal' ) ||
-                                                            (e.spesiment === 'CLOT-ACT' && detail.nama_parameter === 'Normal') ? 'checked' : '';
+                                        const isChecked = (e.tabung === 'EDTA' && detail.nama_parameter === 'Normal' ) ||
+                                                            (e.tabung === 'CLOTH-ACT' && detail.nama_parameter === 'Normal') ||
+                                                            (e.tabung === 'CLOT-ACT' && detail.nama_parameter === 'Normal') ? 'checked' : '';
+
+                                        // const approvedDetail = res.data.approvedDetails.find(d => d.id === detail.id);
+                                        // const approvedChecked = approvedDetail ? 'checked' : '';
+                                        // const approvedNote = approvedDetail ? approvedDetail.note : '';
+
                                         details +=  
                                         `<div class="detail-item">
                                             <div class="detail-text">${detail.nama_parameter}</div>
@@ -404,45 +489,51 @@
                                                 <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
                                             </div>
                                             <div class="detail-radio-container">
-                                                ${e.spesiment === 'EDTA' ? `<input type="radio" name="kapasitas[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}
-                                                ${e.spesiment === 'CLOT-ACT' ? `<input type="radio" name="serum[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}    
+                                                ${e.tabung === 'EDTA' ? `<input type="radio" name="kapasitas[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}
+                                                ${e.tabung === 'CLOTH-ACT' ? `<input type="radio" name="serumh[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}
+                                                ${e.tabung === 'CLOT-ACT' ? `<input type="radio" name="serum[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}    
                                             </div>
                                         </div>`;
                                     });
                                     details += `</div>`
                                 }
 
+                                let title = '';
                                 let subtext = '';
-                                    if (e.spesiment === 'EDTA') {
-                                        title = '<h5 class="title">Spesiment Collection</h5> <hr>';
-                                    } else if (e.spesiment === 'CLOT-ACT') {
-                                        title = '<h5>Spesiment Handling</h5> <hr>';
-                                        subtext = '<div class="subtext">Serum</div>';
-                                    }
-
+                                if (e.tabung === 'EDTA') {
+                                    title = '<h5 class="title">Spesiment Collection</h5> <hr>';
+                                } else if (e.spesiment === 'Spesiment Collection') {
+                                    subtext = '<div class="subtext">Serum</div>';
+                                } else if (e.spesiment === 'Spesiment Handlings') {
+                                    title = '<h5>Spesiment Handlings</h5> <hr>';
+                                    subtext = '<div class="subtext">Serum</div>';
+                                }
+                                
                                 let note = '';
-                                if (e.spesiment === 'EDTA' || e.spesiment === 'CLOT-ACT') {
+                                if (e.tabung === 'EDTA' || e.tabung === 'CLOT-ACT', 'CLOTH-ACT') {
                                         note = '<p class="mb-0"><strong>Note</strong></p>';
                                     }
 
                                 detailContent += `${title}
-                                    <div class="accordion mb-2" id="accordion${e.spesiment}">
+                                    <div class="accordion mb-2" id="accordion${e.tabung}">
                                                         
                                         <div class="accordion-item">
-                                            <h2 class="accordion-header" id="heading${e.spesiment}">
-                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.spesiment}" aria-expanded="true" aria-controls="collapse${e.spesiment}">
-                                                Tabung ${e.spesiment}
+                                            <h2 class="accordion-header" id="heading${e.tabung}">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">
+                                                Tabung ${e.tabung}
                                                 </button>
                                             </h2>
-                                            <div id="collapse${e.spesiment}" class="accordion-collapse collapse" aria-labelledby="heading${e.spesiment}" data-bs-parent="#accordion${e.spesiment}">
+                                            <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}" data-bs-parent="#accordion${e.tabung}">
                                                 <div class="accordion-body">
+                                                    
                                                     ${subtext}
                                                     <div class="container">
                                                         ${details}
                                                     </div>
                                                     ${note}
-                                                    ${e.spesiment === 'EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
-                                                    ${e.spesiment === 'CLOT-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
+                                                    ${e.tabung === 'EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
+                                                    ${e.tabung === 'CLOTH-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
+                                                    ${e.tabung === 'CLOT-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
                                                     
                                                 </div>
                                             </div>

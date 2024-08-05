@@ -16,8 +16,9 @@ return new class extends Migration
             $table->string('no_lab');
             $table->string('tabung');
             $table->string('kapasitas');
+            $table->string('serumh');
             $table->string('status');
-            $table->string('note')->nullable()->change();
+            $table->string('note')->nullable();
             $table->dateTime('tanggal');
             $table->timestamps();
         });

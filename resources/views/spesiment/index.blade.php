@@ -34,6 +34,7 @@ Spesiment
                                             <th scope="col">No</th>
                                             <th scope="col">Department</th>
                                             <th scope="col">Spesiment</th>
+                                            <th scope="col">Tabung</th>
                                             <th scope="col">Detail</th>
                                             <th scope="col">Action</th>
                                         </tr>
@@ -44,6 +45,7 @@ Spesiment
                                                 <td>{{ $x + 1 }}</td>
                                                 <td>{{ $Spesiment->department->nama_department}}</td>
                                                 <td>{{ $Spesiment->spesiment }}</td>
+                                                <td>{{ $Spesiment->tabung }}</td>
                                                 <td>
                                                     <ul>
                                                         @foreach($Spesiment->details as $detail)

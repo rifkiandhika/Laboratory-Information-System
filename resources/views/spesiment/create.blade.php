@@ -46,6 +46,10 @@ Tambah Spesiment
                                     <input type="text" name="spesiment" id="spesiment" class="form-control" required>
                                 </div>
                                 <div class="form-group">
+                                    <label for="tabung">Tabung</label>
+                                    <input type="text" name="tabung" id="tabung" class="form-control" required>
+                                </div>
+                                <div class="form-group">
                                     <label for="note">Note</label>
                                     <textarea name="note" id="note" class="form-control"></textarea>
                                 </div>

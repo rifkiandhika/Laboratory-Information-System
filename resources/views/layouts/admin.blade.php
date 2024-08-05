@@ -27,7 +27,10 @@
 
     <link rel="stylesheet" href="{{ asset('assets/compiled/css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/compiled/css/app-dark.css') }}">
+    
     @yield('css')
+
+
 </head>
 
 <body>
@@ -65,6 +68,8 @@
     <!-- CUSTOM SCRIPT -->
     <!-- <script src="{{ asset('assets/custom/js/script.js') }}"></script> -->
     @include('sweetalert::alert')
+
+
     <script>
         $(document).ready(function() {
             $("#myTable").DataTable();

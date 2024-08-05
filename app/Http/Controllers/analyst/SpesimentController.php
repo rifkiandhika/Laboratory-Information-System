@@ -43,7 +43,8 @@ class SpesimentController extends Controller
         $request->validate(
             [
                 'id_departement' => 'required',
-                'spesiment' => 'required|unique:spesiments,spesiment',
+                'spesiment' => 'required',
+                'tabung' => 'required',
                 'note' => 'nullable',
                 'nama_parameter.*' => 'required',
                 // 'nama_parameter.*' => 'required|string',
@@ -58,6 +59,7 @@ class SpesimentController extends Controller
         $spesiments = Spesiment::create([
             'id_departement' => $request->id_departement,
             'spesiment' => $request->spesiment,
+            'tabung' => $request->tabung,
             'note' => $request->note,
         ]);
 
@@ -109,7 +111,8 @@ class SpesimentController extends Controller
     {
         $request->validate([
             'id_departement' => 'required',
-            'spesiment' => 'required|unique:spesiments,spesiment,' . $id,
+            'spesiment' => 'required',
+            'tabung' => 'required',
             'note' => 'nullable',
             'nama_parameter.*' => 'required',
             'gambar.*' => 'nullable',
@@ -119,6 +122,7 @@ class SpesimentController extends Controller
         $spesiments->update([
             'id_departement' => $request->id_departement,
             'spesiment' => $request->spesiment,
+            'tabung' => $request->tabung,
             'note' => $request->note,
         ]);
 

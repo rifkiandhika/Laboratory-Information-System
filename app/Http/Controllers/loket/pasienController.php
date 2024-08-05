@@ -20,6 +20,7 @@ use App\Models\pemeriksaan_pasien;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Department;
+use App\Models\DetailDepartment;
 use App\Models\dokter;
 use App\Models\Pemeriksaan;
 use Carbon\Carbon;
@@ -109,11 +110,11 @@ class pasienController extends Controller
         $no = 0;
         foreach ($request->pemeriksaan as $pemeriksaan) {
             // dd($nama_parameter);
-            $data = Pemeriksaan::find($pemeriksaan);
+            $data = DetailDepartment::find($pemeriksaan);
             pemeriksaan_pasien::create([
                 'no_lab' => $request->nolab,
                 'id_parameter' => $pemeriksaan,
-                'id_departement' => $data->id_departement,
+                'id_departement' => $data->department_id,
                 'nama_parameter' => $data->nama_parameter,
                 'harga' => $harga,
                 'created_at' => now(),
@@ -349,10 +350,19 @@ class pasienController extends Controller
             // $no_lab = pasien::where('id', $lab)->value('no_lab');
             // $data_pasien = pasien::where('id', $lab)->with(['data_pemeriksaan_pasien.data_departement', 'data_pemeriksaan_pasien.data_pemeriksaan', 'dokter'])->first();
             $no_lab = pasien::where('id', $lab)->value('no_lab');
-            $data_pasien = pasien::where('id', $lab)->with(['dpp.pasiens' => function ($query) use ($no_lab) {
-                $query->where('no_lab', $no_lab);
-                $query->with('data_pemeriksaan');
-            }, 'dpp.data_departement', 'dokter', 'spesiment.details'])->first();
+            $data_pasien = pasien::where('id', $lab)->with([
+                'dpp.pasiens' => function ($query) use ($no_lab) {
+                    $query->where('no_lab', $no_lab);
+                    $query->with('data_pemeriksaan');
+                }, 'dpp.data_departement', 'dokter', 'history', 'spesiment.details', 'spesimentcollection', 'spesimenthandling.details'
+            ])->first();
+
+            if ($data_pasien && $data_pasien->spesimentcollection) {
+                foreach ($data_pasien->spesimentcollection as $spesimen) {
+                    // Ambil details berdasarkan kapasitas atau serumh
+                    $spesimen->details = $spesimen->getDetailsByCriteria();
+                }
+            }
 
             return response()->json(['status' => 'success', 'msg' => 'ok', 'data' => $data_pasien]);
         } catch (Exception $e) {
@@ -368,13 +378,18 @@ class pasienController extends Controller
         pasien::where('no_lab', $request->no_lab)->update([
             'status' => 'Telah Dikirim ke Lab',
         ]);
+        $no_pasien = $request->no_pasien ?? null;
+        $diskon = $request->diskon ?? 0;
         // dd($request);
         DB::table('pembayarans')->insert([
             'no_lab' => $request->no_lab,
-            'metode_pembayaran' => $request->metode_pembayaran,
-            'total_pembayaran' => $request->total_pembayaran,
             'petugas' => $request->petugas,
+            'no_pasien' => $no_pasien,
+            'metode_pembayaran' => $request->metode_pembayaran,
+            'total_pembayaran_asli' => $request->total_pembayaran_asli,
+            'total_pembayaran' => $request->total_pembayaran,
             'jumlah_bayar' => $request->jumlah_bayar,
+            'diskon' => $diskon,
             'kembalian' => $request->kembalian,
             'tanggal_pembayaran' => now(),
             'created_at' => now(),

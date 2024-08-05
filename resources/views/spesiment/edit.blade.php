@@ -46,6 +46,10 @@ Edit Spesiment
                                     <input type="text" name="spesiment" id="spesiment" class="form-control" value="{{ $spesiments->spesiment }}" required>
                                 </div>
                                 <div class="form-group">
+                                    <label for="spesiment">Spesiment</label>
+                                    <input type="text" name="tabung" id="tabung" class="form-control" value="{{ $spesiments->tabung }}" required>
+                                </div>
+                                <div class="form-group">
                                     <label for="note">Note</label>
                                     <textarea name="note" id="note" class="form-control">{{ $spesiments->note }}</textarea>
                                 </div>

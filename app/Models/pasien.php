@@ -26,13 +26,33 @@ class pasien extends Model
 
     public function spesiment()
     {
-        return $this->hasManyThrough(Spesiment::class, pemeriksaan_pasien::class, 'no_lab', 'id_departement', 'no_lab', 'id_departement')->groupBy('id_departement');
+        return $this->hasManyThrough(Spesiment::class, pemeriksaan_pasien::class, 'no_lab', 'id_departement', 'no_lab', 'id_departement')->groupBy('id');
+    }
+
+    public function spesimentcollection()
+    {
+        return $this->hasMany(spesimentCollection::class, 'no_lab', 'no_lab');
+    }
+    public function spesimenthandling()
+    {
+        return $this->hasMany(spesimentHandling::class, 'no_lab', 'no_lab');
     }
 
     public function dokter()
     {
         return $this->belongsTo(dokter::class, 'kode_dokter', 'kode_dokter');
     }
+
+    public function history()
+    {
+        return $this->hasMany(historyPasien::class, 'no_lab', 'no_lab');
+    }
+
+    public function pembayaran()
+    {
+        return $this->hasMany(pembayaran::class, 'no_lab', 'no_lab');
+    }
+
     public function age()
     {
         return Carbon::parse($this->attributes['lahir'])->age;

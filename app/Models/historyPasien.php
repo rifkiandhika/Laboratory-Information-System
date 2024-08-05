@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\pasien;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,4 +17,12 @@ class historyPasien extends Model
         'waktu_proses',
         'note'
     ];
+
+    protected $table = 'history_pasiens';
+    protected $guarded = [];
+
+    public function pasien()
+    {
+        return $this->belongsTo(pasien::class, 'no_lab', 'no_lab');
+    }
 }
