@@ -354,7 +354,7 @@ class pasienController extends Controller
                 'dpp.pasiens' => function ($query) use ($no_lab) {
                     $query->where('no_lab', $no_lab);
                     $query->with('data_pemeriksaan');
-                }, 'dpp.data_departement', 'dokter', 'history', 'spesiment.details', 'spesimentcollection', 'spesimenthandling.details'
+                }, 'dpp.data_departement', 'dokter', 'history', 'spesiment.details', 'spesimentcollection', 'spesimenthandling.details', 'hasil_pemeriksaan'
             ])->first();
 
             if ($data_pasien && $data_pasien->spesimentcollection) {

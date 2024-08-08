@@ -11,6 +11,7 @@ use App\Http\Controllers\analyst\SpesimentController;
 use App\Http\Controllers\analyst\worklistController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\analyst\spesimentHendlingController;
+use App\Http\Controllers\analyst\vDokterController;
 use App\Http\Controllers\department\DepartmentController;
 use App\Http\Controllers\DokterController;
 use App\Http\Controllers\loket\DataPasienController;
@@ -37,8 +38,8 @@ use Illuminate\Support\Facades\Response;
 
 
 
-Route::get('/demo', function () {
-    return view('demo');
+Route::get('/test', function () {
+    return view('layouts-collapsed-menu');
 });
 
 route::resource('login', userController::class);
@@ -140,9 +141,11 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
     Route::post('spesiment/post', [spesimentHendlingController::class, 'postSpesiment'])->name('spesiment.post');
     Route::post('spesiment/checkin', [spesimentHendlingController::class, 'checkin'])->name('spesiment.checkin');
 
+    Route::resource('vdokter', vDokterController::class);
     Route::resource('worklist', worklistController::class);
     Route::delete('analyst/worklist/{worklist}', [worklistController::class, 'destroy'])->name('worklist.destroy');
-    Route::post('/analyst/worklist/store', [worklistController::class, 'store'])->name('worklist.store');
+    Route::post('/worklist/checkin/{id}', [worklistController::class, 'checkin'])->name('worklist.checkin');
+
 
 
 
@@ -150,9 +153,6 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
         return view('analyst.result-review');
     });
 
-    Route::get('/dashboard-dok', function () {
-        return view('analyst.main-dokter');
-    });
 
     Route::get('/quality-control', function () {
         return view('analyst.quality-control');

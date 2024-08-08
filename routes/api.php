@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\loket\pasienController;
 use App\Http\Controllers\analyst\spesimentHendlingController;
+use App\Http\Controllers\analyst\worklistController;
 use App\Http\Controllers\department\DepartmentController;
 
 /*

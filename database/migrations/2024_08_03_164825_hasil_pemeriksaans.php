@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('no_lab');
             $table->string('no_rm');
             $table->string('nama');
-            $table->integer('ruangan');
+            $table->string('ruangan');
             $table->string('nama_dokter');
             $table->string('department')->nullable();
             $table->string('nama_pemeriksaan');

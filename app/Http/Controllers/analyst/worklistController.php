@@ -14,6 +14,7 @@ use App\Models\pembayaran;
 use App\Models\pemeriksaan_pasien;
 use App\Models\spesimentCollection;
 use App\Models\spesimentHandling;
+use App\Models\Worklist;
 use Illuminate\Support\Facades\Log;
 
 class worklistController extends Controller
@@ -51,40 +52,47 @@ class worklistController extends Controller
      */
     public function store(Request $request)
     {
-
         // dd($request);
-        $validatedData = $request->validate([
+        $request->validate([
             'no_lab' => 'required',
             'no_rm' => 'required',
             'nama' => 'required',
             'ruangan' => 'required',
             'nama_dokter' => 'required',
-            'department.*' => 'nullable',
-            'nama_pemeriksaan.*' => 'required|array',
-            'hasil.*' => 'required|array',
-            'range.*' => 'nullable|array',
-            'flag.*' => 'nullable|array',
-            'satuan.*' => 'nullable|array',
+            'nama_pemeriksaan.*' => 'required',
+            'hasil.*' => 'required',
+            'range.*' => 'nullable',
+            'satuan.*' => 'nullable',
         ]);
 
-        foreach ($validatedData['nama_pemeriksaan'] as $x => $nama_pemeriksaan) {
-            $data = [
-                'no_lab' => $validatedData['no_lab'],
-                'no_rm' => $validatedData['no_rm'],
-                'nama' => $validatedData['nama'],
-                'ruangan' => $validatedData['ruangan'],
-                'nama_dokter' => $validatedData['nama_dokter'],
-                'nama_pemeriksaan' => $nama_pemeriksaan,
-                'hasil' => $validatedData['hasil'][$x] ?? null,
-                'range' => $validatedData['range'][$x] ?? null,
-                'flag' => $validatedData['flag'][$x] ?? null,
-                'satuan' => $validatedData['satuan'][$x] ?? null,
-            ];
+        $no_lab = $request->input('no_lab');
+        $no_rm = $request->input('no_rm');
+        $nama = $request->input('nama');
+        $ruangan = $request->input('ruangan');
+        $nama_dokter = $request->input('nama_dokter');
+        $nama_pemeriksaan = $request->input('nama_pemeriksaan');
+        $hasils = $request->input('hasil');
+        $ranges = $request->input('range', []);
+        $satuans = $request->input('satuan', []);
 
-            HasilPemeriksaan::create($data);
+        if (count($nama_pemeriksaan) !== count($hasils)) {
+            return redirect()->back()->withErrors(['message' => 'Data tidak valid']);
         }
 
-        toast('Data Berhasil di verifikasi', 'success');
+        foreach ($nama_pemeriksaan as $x => $pemeriksaan) {
+            HasilPemeriksaan::create([
+                'no_lab' => $no_lab,
+                'no_rm' => $no_rm,
+                'nama' => $nama,
+                'ruangan' => $ruangan,
+                'nama_dokter' => $nama_dokter,
+                'nama_pemeriksaan' => $pemeriksaan,
+                'hasil' => $hasils[$x],
+                'range' => $ranges[$x] ?? null,
+                'satuan' => $satuans[$x] ?? null,
+            ]);
+        }
+        toast('Data berhasil di verifikasi', 'success');
         return redirect()->route('worklist.index');
     }
 
@@ -94,6 +102,26 @@ class worklistController extends Controller
     public function show(string $id)
     {
         //
+    }
+
+    public function checkin($id)
+    {
+        // Validasi dan pembaruan status
+        $pasien = pasien::find($id);
+
+        // Update status pasien
+        $pasien->update(['status' => 'Verifikasi Dokter']);
+
+        historyPasien::create([
+            'no_lab' => $pasien->no_lab,
+            'proses' => 'Verifikasi Dokter',
+            'tempat' => 'Laboratorium',
+            'waktu_proses' => now(),
+            'created_at' => now(),
+        ]);
+
+        toast('Data telah dikirim untuk diverifikasi', 'success');
+        return redirect()->route('worklist.index');
     }
 
     /**

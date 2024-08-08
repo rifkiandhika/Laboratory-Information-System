@@ -1,141 +1,129 @@
-        <li class="sidebar-title">
-            <h4>Menu</h4>
-        </li>
-
-        <li class="sidebar-item {{ Request::is('dashboard') ? 'active' : '' }} ">
-            <a href="{{ url('/dashboard') }}" class='sidebar-link'>
-                <i class="bi bi-grid-fill"></i>
-                <span>Dashboard</span>
+        <li class="menu-item {{ Request::is('dashboard') ? 'active' : '' }}">
+            <a href="{{ url('/dashboard') }}" class="menu-link">
+            <i class="menu-icon tf-icons ti ti-smart-home"></i>
+            <div data-i18n="Dashboard">Dashboard</div>
             </a>
-
         </li>
-        {{-- Loket --}}
-        <li class="sidebar-item has-sub {{ Request::is('loket/pasien', 'loket/data-pasien', 'loket/report', 'loket/pasien/create') ? 'active' : '' }}">
-            <a href="#" class='sidebar-link'>
-                <i class="bi bi-person-badge"></i>
-                <span>Locket</span>
+        <li class="menu-item {{ Request::is('loket/pasien', 'loket/data-pasien', 'loket/report', 'loket/pasien/create') ? 'active' : '' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+              <i class="menu-icon tf-icons ti ti-user-square"></i>
+              <div data-i18n="Locket">Locket</div>
             </a>
-            <ul class="submenu ">
-                <li class="submenu-item {{ Request::is('loket/pasien') ? 'active' : '' }} ">
-
-                    <a href="{{ route('pasien.index') }}" class="submenu-link"><i class="bi bi-grid-fill"></i>
-                        Dashboard</a>
-                </li>
-                <li class="submenu-item {{ Request::is('loket/data-pasien') ? 'active' : '' }}">
-                    <a href="{{ route('data-pasien.index') }}" class="submenu-link"><i class="bi bi-clipboard-plus"></i>
-                        Patient Data</a>
-                </li>
-                <li class="submenu-item {{ Request::is('loket/report') ? 'active' : '' }} ">
-                    <a href="{{ route('report.index') }}" class="submenu-link"><i class="bi bi-clipboard2-pulse"></i>
-                        Report</a>
-                </li>
+            <ul class="menu-sub">
+              <li class="menu-item {{ Request::is('loket/pasien') ? 'active' : '' }} ">
+                <a href="{{ route('pasien.index') }}" class="menu-link">
+                  <div data-i18n="Dashboard">
+                    <i class="menu-icon tf-icons ti ti-user-square"></i>Dashboard</div>
+                </a>
+              </li>
+              <li class="menu-item {{ Request::is('loket/data-pasien') ? 'active' : '' }}">
+                <a href="{{ route('data-pasien.index') }}" class="menu-link">
+                  <div data-i18n="Patient Data">Patient Data</div>
+                </a>
+              </li>
+              <li class="menu-item {{ Request::is('loket/report') ? 'active' : '' }} ">
+                <a href="{{ route('report.index') }}" class="menu-link">
+                  <div data-i18n="Report">Report</div>
+                </a>
+              </li>
             </ul>
-        </li>
-        {{-- Loket --}}
+          </li>
 
-        {{-- Laboratorium --}}
-        <li class="sidebar-item has-sub {{ Request::is('analyst/analyst', 'analyst/spesiment', 'analyst/worklist') ? 'active' : '' }}">
-            <a href="#" class='sidebar-link'>
-                <i class="bi bi-droplet-half"></i>
-                <span>Laboratory</span>
+          {{-- Laboratorium --}}
+        <li class="menu-item {{ Request::is('analyst/analyst', 'analyst/spesiment', 'analyst/worklist') ? 'active' : '' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+              <i class="menu-icon tf-icons ti ti-flask"></i>
+              <div data-i18n="Laboratory">Laboratory</div>
             </a>
-            <ul class="submenu ">
-                <li class="submenu-item {{ Request::is('analyst/analyst') ? 'active' : '' }} ">
-
-                    <a href="{{ route('analyst.index') }}" class="submenu-link"><i class="bi bi-grid-fill"></i>
-                        Dashboard</a>
-                </li>
-                <li class="submenu-item {{ Request::is('analyst/spesiment') ? 'active' : '' }}">
-                    <a href="{{ route('spesiment.index') }}" class="submenu-link"><i class="bi bi-clipboard-plus"></i>
-                        Spesiment</a>
-                </li>
-                <li class="submenu-item {{ Request::is('analyst/worklist') ? 'active' : '' }} ">
-                    <a href="{{ route('worklist.index') }}" class="submenu-link"><i class="bi bi-clipboard2-pulse"></i>
-                        Worklist</a>
-                </li>
-                <li class="submenu-item {{ Request::is('loket/report') ? 'active' : '' }} ">
-                    <a href="{{ route('report.index') }}" class="submenu-link"><i class="bi bi-clipboard2-pulse"></i>
-                        Result Review</a>
-                </li>
-                <li class="submenu-item {{ Request::is('loket/report') ? 'active' : '' }} ">
-                    <a href="{{ route('report.index') }}" class="submenu-link"><i class="bi bi-clipboard2-pulse"></i>
-                        QC</a>
-                </li>
-                <li class="submenu-item {{ Request::is('loket/report') ? 'active' : '' }} ">
-                    <a href="{{ route('report.index') }}" class="submenu-link"><i class="bi bi-clipboard2-pulse"></i>
-                        List QC</a>
-                </li>
+            <ul class="menu-sub">
+              <li class="menu-item {{ Request::is('analyst/analyst') ? 'active' : '' }}">
+                <a href="{{ route('analyst.index') }}" class="menu-link">
+                  <div data-i18n="Dashboard">Dashboard</div>
+                </a>
+              </li>
+              <li class="menu-item {{ Request::is('analyst/spesiment') ? 'active' : '' }}">
+                <a href="{{ route('spesiment.index') }}" class="menu-link">
+                  <div data-i18n="Spesiment">Spesiment</div>
+                </a>
+              </li>
+              <li class="menu-item {{ Request::is('analyst/worklist') ? 'active' : '' }} ">
+                <a href="{{ route('worklist.index') }}" class="menu-link">
+                  <div data-i18n="Worklist">Worklist</div>
+                </a>
+              </li>
+              <li class="menu-item {{ Request::is('loket/report') ? 'active' : '' }}">
+                <a href="{{ route('report.index') }}" class="menu-link">
+                  <div data-i18n="Result Review">Result Review</div>
+                </a>
+              </li>
+              <li class="menu-item {{ Request::is('loket/report') ? 'active' : '' }}">
+                <a href="{{ route('report.index') }}" class="menu-link">
+                  <div data-i18n="QC">QC</div>
+                </a>
+              </li>
+              <li class="menu-item {{ Request::is('loket/report') ? 'active' : '' }}">
+                <a href="{{ route('report.index') }}" class="menu-link">
+                  <div data-i18n="List QC">List QC</div>
+                </a>
+              </li>
             </ul>
-        </li>
-
-        <li class="sidebar-item {{ Request::is('') ? 'active' : '' }} ">
-            <a href="{{ url('/dashboard') }}" class='sidebar-link'>
-                <i class="bi bi-grid-fill"></i>
-                <span>Doctor</span>
+          </li>
+          <li class="menu-item {{ Request::is('') ? 'active' : '' }} ">
+            <a href="{{ route('vdokter.index') }}" class="menu-link">
+              <i class="menu-icon tf-icons ti ti-stethoscope"></i>
+              <div data-i18n="Doctor">Doctor</div>
             </a>
-
-        </li>
-        {{-- Laboratorium --}}
-
-        {{-- Setting --}}
-        <li class="sidebar-item has-sub {{ Request::is('dokter', 'poli', 'department', 'pemeriksaan', 'spesiments', 'detailspesiments') ? 'active' : '' }}">
-            <a href="#" class='sidebar-link'>
-                <i class="bi bi-gear"></i>
-                <span>Setting</span>
+          </li>
+          {{-- Setting --}}
+          <li class="menu-item {{ Request::is('dokter', 'poli', 'department', 'pemeriksaan', 'spesiments', 'detailspesiments') ? 'active' : '' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+              <i class="menu-icon tf-icons ti ti-settings"></i>
+              <div data-i18n="Setting">Setting</div>
             </a>
-            <ul class="submenu ">
-                <li class="submenu-item {{ Request::is('department') ? 'active' : '' }} ">
-
-                    <a href="{{ route('department.index') }}" class="submenu-link"><i class="bi bi-hospital"></i>
-                        Department</a>
-                </li>
-                
-                <li class="submenu-item {{ Request::is('spesiments') ? 'active' : '' }} ">
-                    <a href="{{ route('spesiments.index') }}" class="submenu-link"><i class="bi bi-thermometer"></i>
-                        Spesiment</a>
-                </li>
-
-                <li class="submenu-item {{ Request::is('dokter') ? 'active' : '' }}">
-                    <a href="{{ route('dokter.index') }}" class="submenu-link"><i class="bi bi-heart-pulse"></i>
-                        Doctor</a>
-                </li>
-                <li class="submenu-item {{ Request::is('poli') ? 'active' : '' }} ">
-                    <a href="{{ route('poli.index') }}" class="submenu-link"><i class="bi bi-tag"></i>
-                        Poli</a>
-                </li>
-        </li>
-        {{-- Setting --}}
-
-        {{-- <li class="submenu-item {{ Request::is('parameter') ? 'active' : '' }} ">
-        <a href="" class="submenu-link"><i class="bi bi-activity"></i>
-            Parameter</a>
-        </li> --}}
-        {{-- <li class="submenu-item {{ Request::is('pemeriksaan') ? 'active' : '' }} ">
-            <a href="{{ route('pemeriksaan.index') }}" class="submenu-link"><i class="bi bi-clipboard-data"></i>
-                Inspection</a>
-        </li> --}}
-        {{-- Setting --}}
-
-        </ul>
-
-        <li class="sidebar-item has-sub {{ Request::is('role', 'permission') ? 'active' : '' }}">
-            <a href="#" class='sidebar-link'>
-                <i class="bi bi-person-gear"></i>
-                <span>Role Permission</span>
-            </a>
-            <ul class="submenu ">
-                <li class="submenu-item {{ Request::is('role') ? 'active' : '' }} ">
-
-                    <a href="{{ route('role.index') }}" class="submenu-link"><i class="bi bi-person-lock"></i>
-                        Role</a>
-                </li>
-                <li class="submenu-item {{ Request::is('permission') ? 'active' : '' }}">
-                    <a href="{{ route('permission.index') }}" class="submenu-link"><i class="bi bi-person-check"></i>
-                        Permission</a>
-                </li>
-                <li class="submenu-item {{ Request::is('user') ? 'active' : '' }} ">
-                    <a href="" class="submenu-link"><i class="bi bi-people"></i>
-                        User</a>
-                </li>
+            <ul class="menu-sub {{ Request::is('department') ? 'active' : '' }}">
+              <li class="menu-item">
+                <a href="{{ route('department.index') }}" class="menu-link">
+                  <div data-i18n="Department">Department</div>
+                </a>
+              </li>
+              <li class="menu-item {{ Request::is('spesiments') ? 'active' : '' }}">
+                <a href="{{ route('spesiments.index') }}" class="menu-link">
+                  <div data-i18n="Spesiment">Spesiment</div>
+                </a>
+              </li>
+              <li class="menu-item {{ Request::is('dokter') ? 'active' : '' }}">
+                <a href="{{ route('dokter.index') }}" class="menu-link">
+                  <div data-i18n="Doctor">Doctor</div>
+                </a>
+              </li>
+              <li class="menu-item {{ Request::is('poli') ? 'active' : '' }}">
+                <a href="{{ route('poli.index') }}" class="menu-link">
+                  <div data-i18n="Poli">Poli</div>
+                </a>
+              </li>
             </ul>
-        </li>
+          </li>
+          {{-- Role Permission --}}
+          <li class="menu-item {{ Request::is('role', 'permission') ? 'active' : '' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+              <i class="menu-icon tf-icons ti ti-user-cog"></i>
+              <div data-i18n="Role Permission">Role Permission</div>
+            </a>
+            <ul class="menu-sub ">
+              <li class="menu-item {{ Request::is('role') ? 'active' : '' }}">
+                <a href="{{ route('role.index') }}" class="menu-link">
+                  <div data-i18n="Role">Role</div>
+                </a>
+              </li>
+              <li class="menu-item {{ Request::is('permission') ? 'active' : '' }}">
+                <a href="{{ route('permission.index') }}" class="menu-link">
+                  <div data-i18n="Permission">Permission</div>
+                </a>
+              </li>
+              <li class="menu-item {{ Request::is('user') ? 'active' : '' }}">
+                <a href="app-ecommerce-dashboard.html" class="menu-link">
+                  <div data-i18n="User">User</div>
+                </a>
+              </li>
+            </ul>
+          </li>

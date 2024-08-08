@@ -30,7 +30,7 @@ class spesimentCollection extends Model
     }
     public function getDetailsByCriteria()
     {
-        return $this->details()->where(function ($query) {
+        return DetailSpesiment::where(function ($query) {
             $query->where('id', $this->kapasitas)->orWhere('id', $this->serumh);
         })->get();
     }

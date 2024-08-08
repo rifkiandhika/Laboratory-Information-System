@@ -101,13 +101,6 @@ class spesimentHendlingController extends Controller
                     'note' => $notes[$x] ?? null,
                     'tanggal' => now(),
                 ]);
-
-                historyPasien::create([
-                    'no_lab' => $no_lab,
-                    'proses' => 'Acc Collection',
-                    'tempat' => 'Laboratorium',
-                    'waktu_proses' => now(),
-                ]);
             }
         }
 
@@ -282,10 +275,6 @@ class spesimentHendlingController extends Controller
         // }
         // try {
         $ids = $request->ids;
-        // $kapasitas = $request->input('kapasitas');
-        // $serum = $request->input('serum');
-        // $notes = $request->input('note', []);
-
         // Ambil data pasien berdasarkan id
         $pasiens = pasien::whereIn('id', $ids)->get();
 

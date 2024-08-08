@@ -179,9 +179,9 @@
                                     </div>
                                 </div>
                                 <hr>
-                                <div class="mt-4 text-end small">
-                                    <input class="btn btn-primary" type="submit" value="Submit">
-                                    <input class="btn btn-danger" type="reset" value="Reset">   
+                                <div class=" text-end">
+                                    <input class="btn btn-outline-primary" type="submit" value="Submit">
+                                    <input class="btn btn-outline-danger" type="reset" value="Reset">   
                                 </div>
                             </form>
                         </div>

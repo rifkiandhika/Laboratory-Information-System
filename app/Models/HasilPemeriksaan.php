@@ -9,6 +9,11 @@ class HasilPemeriksaan extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    protected $table = ['hasil_pemeriksaans'];
+    protected $table = 'hasil_pemeriksaans';
     protected $fillable = ['no_lab', 'no_rm', 'nama', 'ruangan', 'nama_dokter', 'department', 'nama_pemeriksaan', 'hasil', 'range', 'flag', 'satuan'];
+
+    public function pasien()
+    {
+        return $this->belongsTo(pasien::class, 'no_lab', 'no_lab');
+    }
 }

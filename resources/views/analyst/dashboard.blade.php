@@ -452,5 +452,5 @@ Dashboard|Spesiment
                 });
             })
         </script>
-    <script src="{{ asset('js/time.js') }}"></script>
 @endpush
+<script src="{{ asset('js/time.js') }}"></script>

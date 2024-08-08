@@ -53,6 +53,11 @@ class pasien extends Model
         return $this->hasMany(pembayaran::class, 'no_lab', 'no_lab');
     }
 
+    public function hasil_pemeriksaan()
+    {
+        return $this->hasMany(HasilPemeriksaan::class, 'no_lab', 'no_lab');
+    }
+
     public function age()
     {
         return Carbon::parse($this->attributes['lahir'])->age;

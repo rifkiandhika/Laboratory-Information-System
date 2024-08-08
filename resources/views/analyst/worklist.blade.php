@@ -77,24 +77,24 @@
                 <div class="card-body table-responsive mt-1">
                 <div class="preview-data-pasien" id="previewDataPasien">
                     <!-- tampilan data pasien-->
-                    <img src="{{ asset('./assets/compiled/svg/oval.svg') }}" id="loader" class="loader me-4" style="width: 3rem; display: none" alt="audio">
                     <div class="text-center bg-body-tertiary"><p>Pilih Pasien</p></div>
                 </div>
                 <hr>
                 <!-- Modal -->
-                <div class="modal fade" id="sampleHistoryModal" tabindex="-1" aria-labelledby="sampleHistoryModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="sampleHistoryModalLabel">Sample History</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="accordion" id="sampleHistoryAccordion"></div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
+                
+            </div>
+            <div class="modal fade" id="sampleHistoryModal" tabindex="-1" aria-labelledby="sampleHistoryModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="sampleHistoryModalLabel">Sample History</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="accordion" id="sampleHistoryAccordion"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
@@ -707,14 +707,17 @@
 </script> --}}
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+
     $(function() {
         $('.preview').on('click', function(event) {
             event.preventDefault();
             const id = this.getAttribute('data-id');
             const previewDataPasien = document.getElementById('previewDataPasien');
-            const loader = previewDataPasien.querySelector('#loader');
+            const loader = $('#loader');
 
-            loader.style.display = 'block';
+            // loader.style.display = 'block';
+            loader.show();
 
             fetch(`/api/get-data-pasien/${id}`)
                 .then(response => {
@@ -731,6 +734,7 @@
                         const spesimen = res.data.spesiment; // Load spesimen data
                         const scollection = res.data.spesimentcollection;
                         const shandling = res.data.spesimenthandling;
+                        const hasil = res.data.hasil_pemeriksaan;
 
                         populateModal(spesimen, scollection, shandling, history, data_pemeriksaan_pasien);
 
@@ -816,11 +820,12 @@
                                     </div>`;
 
                         detailContent += getButtonContent(data_pasien);
-                        detailContent += getTableContent(data_pemeriksaan_pasien, data_pasien);
+                        detailContent += getTableContent(data_pemeriksaan_pasien, data_pasien, hasil);
 
                         previewDataPasien.innerHTML = detailContent;
 
-                        loader.style.display = 'none';
+                        // loader.style.display = 'none';
+                        loader.hide();
                         
                         const manualButton = document.getElementById('manualButton');
                         const manualInput = document.querySelectorAll('#manualInput');
@@ -838,7 +843,7 @@
                 .catch(error => {
                     console.error('Error:', error);
                     
-                    loader.style.display = 'none';
+                    loader.hide();
                 });
         });
 
@@ -874,9 +879,9 @@
             `;
         }
 
-        function getTableContent(data_pemeriksaan_pasien, data_pasien) {
+        function getTableContent(data_pemeriksaan_pasien, data_pasien, hasil) {
             return `
-            <form action="analyst/worklist/store" method="POST">
+            <form action="{{ route('worklist.store') }}" method="POST">
                 @csrf
                 <input type="hidden" name="no_lab" value="${data_pasien.no_lab}">
                 <input type="hidden" name="no_rm" value="${data_pasien.no_rm}">
@@ -884,7 +889,7 @@
                 <input type="hidden" name="ruangan" value="${data_pasien.asal_ruangan}">
                 <input type="hidden" name="nama_dokter" value="${data_pasien.dokter.nama_dokter}">
 
-                <table class="table">
+                <table class="table" id="worklistTable">
                     <thead>
                         <tr scope="row">
                             <th class="col-3">Parameter</th>
@@ -898,34 +903,40 @@
                         </tr>
                     </thead>
                     <tbody>
+                        ${data_pemeriksaan_pasien.map(e => `
+                            <th scope="row">${e.data_departement.nama_department}</th>
+                                ${e.pasiens.map(p => {
+                                    const hasilItem = hasil.find(item => item.nama_pemeriksaan === p.data_pemeriksaan.nama_pemeriksaan);
+                                    const rowId = p.data_pemeriksaan.id;
 
-                            ${data_pemeriksaan_pasien.map(e => `
-                                <th scope="row">${e.data_departement.nama_department}</th>
-                                    ${e.pasiens.map(p => `
-                                    <tr class="mt-2">
-                                        <td>${p.data_pemeriksaan.nama_pemeriksaan}</td>
-                                        <input type="hidden" name="nama_pemeriksaan[]" value="${p.data_pemeriksaan.nama_pemeriksaan}" />
-                                        <td><input type="text" name="hasil[]" id="manualInput" class="form-control w-50 p-0 readonly-input" readonly/></td>
-                                        <td><input style="background-color" type="number" class="form-control w-50 p-0" readonly /></td>
-                                        <td><input type="number" class="form-control w-50 p-0" readonly/></td>
-                                        <td><input type="hidden" name="flag[]" class="form-control w-50 p-0" readonly/></td>
-                                        <td class="text-center"><input type="hidden" name="satuan[]" class="form-control w-50 p-0" value="${p.data_pemeriksaan.nilai_satuan}" readonly/>${p.data_pemeriksaan.nilai_satuan}</td>
-                                        <td><input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly/>1-10</td>
-                                    </tr>
-                                    `).join('')}
-                                `).join('')}
+                                 return `
+                                <tr class="mt-2" data-id="${rowId}">
+                                    <td>${p.data_pemeriksaan.nama_pemeriksaan}</td>
+                                    <input type="hidden" name="nama_pemeriksaan[]" value="${p.data_pemeriksaan.nama_pemeriksaan}" />
+                                    <td><input type="text" name="hasil[]" id="manualInput" class="form-control text-center w-50 p-0 readonly-input" value="${hasilItem ? hasilItem.hasil : ''}" readonly/></td>
+                                    <td><input type="number" name="duplo" class="form-control w-50 p-0" readonly /></td>
+                                    <td><input type="number" class="form-control w-50 p-0" readonly/></td>
+                                    <td><input type="hidden" class="form-control w-50 p-0" readonly/></td>
+                                    <td class="text-center"><input type="hidden" name="satuan[]" class="form-control w-50 p-0" value="${p.data_pemeriksaan.nilai_satuan}" readonly/>${p.data_pemeriksaan.nilai_satuan}</td>
+                                    <td><input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly/>1-10</td>
+                                </tr>
+                                `;
+                                }).join('')}
+                            `).join('')}
                     </tbody>
                 </table>
-                <div class="row mt-3">
+                <div class="row">
                     <div class="col-lg-6">
-                        <button type="submit" id="" class="btn btn-outline-info btn-block">Verifikasi Hasil</button>
+                        <button type="submit" class="btn btn-outline-info btn-block">Verifikasi Hasil</button>
+                    </div>
+            </form>      
+                    <div class="col-lg-6">
+                        <form action="worklist/checkin/${data_pasien.id}" method="POST">
+                            @csrf
+                            <button type="submit" id="verifikasiDokterPKButton" class="btn btn-outline-primary btn-block">Verifikasi Dokter PK</button>
+                        </form>
                     </div>
                 </div>
-            </form>
-                    <div class="col-lg-6">
-                        <button type="button" class="btn btn-outline-primary btn-block">Verifikasi Dokter PK</button>
-                    </div>
-                
             `;
         }
 
@@ -1048,6 +1059,12 @@
 
         }
     });
+    });
+</script>
+
+<script>
+    
+
 </script>
 
 

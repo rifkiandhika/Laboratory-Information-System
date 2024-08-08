@@ -5,13 +5,11 @@ Dashboard|Admin
 @endsection
 
 @section('content')
-    <div class="content" id="scroll-content">
-        <div class="container-fluid">
-            <!-- Page Heading -->
-            <div class="d-sm-flex ">
-                <h1 class="h3 mb-0 text-gray-600">Dashboard Admin</h1>
-            </div>
+<div class="content-wrapper">
+    <!-- Content -->
 
+    <div class="container-xxl flex-grow-1 container-p-y">
+      
             <!-- Content Row -->
             <div class="row mt-3">
                 <!-- Earnings (Monthly) Card Example -->
@@ -142,8 +140,11 @@ Dashboard|Admin
                     </div>
                 </div>
             </div>
-        </div>
     </div>
+    <!-- / Content -->
+
+    <div class="content-backdrop fade"></div>
+  </div>
 @endsection
 
 @push('script')

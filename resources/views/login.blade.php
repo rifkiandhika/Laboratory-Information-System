@@ -1,91 +1,317 @@
 <!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    
-    
-    
-    {{-- <link rel="shortcut icon" href="{{ asset('./assets/compiled/svg/favicon.svg') }}" type="image/x-icon">
-    <link rel="shortcut icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAiCAYAAADRcLDBAAAEs2lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS41LjAiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgeG1sbnM6ZXhpZj0iaHR0cDovL25zLmFkb2JlLmNvbS9leGlmLzEuMC8iCiAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyIKICAgIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIKICAgIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIKICAgIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIgogICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgZXhpZjpQaXhlbFhEaW1lbnNpb249IjMzIgogICBleGlmOlBpeGVsWURpbWVuc2lvbj0iMzQiCiAgIGV4aWY6Q29sb3JTcGFjZT0iMSIKICAgdGlmZjpJbWFnZVdpZHRoPSIzMyIKICAgdGlmZjpJbWFnZUxlbmd0aD0iMzQiCiAgIHRpZmY6UmVzb2x1dGlvblVuaXQ9IjIiCiAgIHRpZmY6WFJlc29sdXRpb249Ijk2LjAiCiAgIHRpZmY6WVJlc29sdXRpb249Ijk2LjAiCiAgIHBob3Rvc2hvcDpDb2xvck1vZGU9IjMiCiAgIHBob3Rvc2hvcDpJQ0NQcm9maWxlPSJzUkdCIElFQzYxOTY2LTIuMSIKICAgeG1wOk1vZGlmeURhdGU9IjIwMjItMDMtMzFUMTA6NTA6MjMrMDI6MDAiCiAgIHhtcDpNZXRhZGF0YURhdGU9IjIwMjItMDMtMzFUMTA6NTA6MjMrMDI6MDAiPgogICA8eG1wTU06SGlzdG9yeT4KICAgIDxyZGY6U2VxPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJwcm9kdWNlZCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWZmaW5pdHkgRGVzaWduZXIgMS4xMC4xIgogICAgICBzdEV2dDp3aGVuPSIyMDIyLTAzLTMxVDEwOjUwOjIzKzAyOjAwIi8+CiAgICA8L3JkZjpTZXE+CiAgIDwveG1wTU06SGlzdG9yeT4KICA8L3JkZjpEZXNjcmlwdGlvbj4KIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+Cjw/eHBhY2tldCBlbmQ9InIiPz5V57uAAAABgmlDQ1BzUkdCIElFQzYxOTY2LTIuMQAAKJF1kc8rRFEUxz9maORHo1hYKC9hISNGTWwsRn4VFmOUX5uZZ36oeTOv954kW2WrKLHxa8FfwFZZK0WkZClrYoOe87ypmWTO7dzzud97z+nec8ETzaiaWd4NWtYyIiNhZWZ2TvE946WZSjqoj6mmPjE1HKWkfdxR5sSbgFOr9Ll/rXoxYapQVik8oOqGJTwqPL5i6Q5vCzeo6dii8KlwpyEXFL519LjLLw6nXP5y2IhGBsFTJ6ykijhexGra0ITl5bRqmWU1fx/nJTWJ7PSUxBbxJkwijBBGYYwhBgnRQ7/MIQIE6ZIVJfK7f/MnyUmuKrPOKgZLpEhj0SnqslRPSEyKnpCRYdXp/9++msneoFu9JgwVT7b91ga+LfjetO3PQ9v+PgLvI1xkC/m5A+h7F32zoLXug38dzi4LWnwHzjeg8UGPGbFfySvuSSbh9QRqZ6H+Gqrm3Z7l9zm+h+iafNUV7O5Bu5z3L/wAdthn7QIme0YAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAJTSURBVFiF7Zi9axRBGIefEw2IdxFBRQsLWUTBaywSK4ubdSGVIY1Y6HZql8ZKCGIqwX/AYLmCgVQKfiDn7jZeEQMWfsSAHAiKqPiB5mIgELWYOW5vzc3O7niHhT/YZvY37/swM/vOzJbIqVq9uQ04CYwCI8AhYAlYAB4Dc7HnrOSJWcoJcBS4ARzQ2F4BZ2LPmTeNuykHwEWgkQGAet9QfiMZjUSt3hwD7psGTWgs9pwH1hC1enMYeA7sKwDxBqjGnvNdZzKZjqmCAKh+U1kmEwi3IEBbIsugnY5avTkEtIAtFhBrQCX2nLVehqyRqFoCAAwBh3WGLAhbgCRIYYinwLolwLqKUwwi9pxV4KUlxKKKUwxC6ZElRCPLYAJxGfhSEOCz6m8HEXvOB2CyIMSk6m8HoXQTmMkJcA2YNTHm3congOvATo3tE3A29pxbpnFzQSiQPcB55IFmFNgFfEQeahaAGZMpsIJIAZWAHcDX2HN+2cT6r39GxmvC9aPNwH5gO1BOPFuBVWAZue0vA9+A12EgjPadnhCuH1WAE8ivYAQ4ohKaagV4gvxi5oG7YSA2vApsCOH60WngKrA3R9IsvQUuhIGY00K4flQG7gHH/mLytB4C42EgfrQb0mV7us8AAMeBS8mGNMR4nwHamtBB7B4QRNdaS0M8GxDEog7iyoAguvJ0QYSBuAOcAt71Kfl7wA8DcTvZ2KtOlJEr+ByyQtqqhTyHTIeB+ONeqi3brh+VgIN0fohUgWGggizZFTplu12yW8iy/YLOGWMpDMTPXnl+Az9vj2HERYqPAAAAAElFTkSuQmCC" type="image/png"> --}}
-  <link rel="stylesheet" href="{{ asset('./assets/compiled/css/app.css ')}}">
-  <link rel="stylesheet" href="{{ asset('./assets/compiled/css/app-dark.css ')}}">
-  <link rel="stylesheet" href="{{ asset('./assets/compiled/css/auth.css') }}">
-  <style>
-    #auth-right{
-        display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 100vh;
-            background-color: #f0f0f0 !important;
-    }
-    .image{
-        filter: blur(3px);
-        -webkit-filter: blur(3px);
-        width: 100%;
-        height: auto;
-        max-width: 100%;
-        border-radius: 10px; /* Jika ingin ada border radius */
-    }
-  </style>
-</head>
+<!-- =========================================================
+* Vuexy - Bootstrap Admin Template | v2.0.0
+==============================================================
 
-<body>
-    <script src="{{ asset('assets/static/js/initTheme.js') }}"></script>
-    <div id="auth">
-        
-<div class="row h-100">
-    <div class="col-lg-5 col-12">
-        <div id="auth-left">
-            {{-- <div class="auth-logo">
-                <a href="index.html"><img src="./assets/compiled/svg/logo.svg" alt="Logo"></a>
-            </div> --}}
-            <h1 >Log in.</h1>
-            <p class="auth-subtitle mb-5">Laboratory Information System Management</p>
+* Product Page: https://1.envato.market/vuexy_admin
+* Created by: Pixinvent
+* License: You must have a valid license purchased in order to legally use the theme for your project.
+* Copyright Pixinvent (https://pixinvent.com)
+
+=========================================================
+ -->
+<!-- beautify ignore:start -->
+
+<html
+  lang="en"
+  class="light-style layout-wide customizer-hide"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../../assets/"
+  data-template="vertical-menu-template"
+  data-style="light"
+>
+  <!-- Mirrored from demos.pixinvent.com/vuexy-html-admin-template/html/vertical-menu-template/auth-login-cover.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 07 Aug 2024 08:47:49 GMT -->
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+
+    <title>Login Cover - Pages | Vuexy - Bootstrap Admin Template</title>
+
+    <meta
+      name="description"
+      content="Start your development with a Dashboard for Bootstrap 5"
+    />
+    <meta
+      name="keywords"
+      content="dashboard, bootstrap 5 dashboard, bootstrap 5 design, bootstrap 5"
+    />
+    <!-- Canonical SEO -->
+    <link rel="canonical" href="https://1.envato.market/vuexy_admin" />
+
+    <!-- ? PROD Only: Google Tag Manager (Default ThemeSelection: GTM-5DDHKGP, PixInvent: GTM-5J3LMKC) -->
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src =
+          '../../../../www.googletagmanager.com/gtm5445.html?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'dataLayer', 'GTM-5J3LMKC');
+    </script>
+    <!-- End Google Tag Manager -->
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://demos.pixinvent.com/vuexy-html-admin-template/assets/img/favicon/favicon.ico"
+    />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/" />
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&amp;ampdisplay=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="../../assets/vendor/fonts/fontawesome.css" />
+    <link rel="stylesheet" href="../../assets/vendor/fonts/tabler-icons.css" />
+    <link rel="stylesheet" href="../../assets/vendor/fonts/flag-icons.css" />
+
+    <!-- Core CSS -->
+
+    <link
+      rel="stylesheet"
+      href="../../assets/vendor/css/rtl/core.css"
+      class="template-customizer-core-css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../assets/vendor/css/rtl/theme-default.css"
+      class="template-customizer-theme-css"
+    />
+
+    <link rel="stylesheet" href="../../assets/css/demo.css" />
+
+    <!-- Vendors CSS -->
+    <link
+      rel="stylesheet"
+      href="../../assets/vendor/libs/node-waves/node-waves.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../assets/vendor/libs/typeahead-js/typeahead.css"
+    />
+    <!-- Vendor -->
+    <link
+      rel="stylesheet"
+      href="../../assets/vendor/libs/%40form-validation/form-validation.css"
+    />
+
+    <!-- Page CSS -->
+    <!-- Page -->
+    <link rel="stylesheet" href="../../assets/vendor/css/pages/page-auth.css" />
+
+    <!-- Helpers -->
+    <script src="../../assets/vendor/js/helpers.js"></script>
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+
+    <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
+    <script src="../../assets/vendor/js/template-customizer.js"></script>
+
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="../../assets/js/config.js"></script>
+  </head>
+
+  <body>
+    <!-- ?PROD Only: Google Tag Manager (noscript) (Default ThemeSelection: GTM-5DDHKGP, PixInvent: GTM-5J3LMKC) -->
+    <noscript
+      ><iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-5J3LMKC"
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"
+      ></iframe
+    ></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <!-- Content -->
+
+    <div class="authentication-wrapper authentication-cover">
+      <!-- Logo -->
+      <a href="index-2.html" class="app-brand auth-cover-brand">
+        <span class="app-brand-logo demo">
+          <svg
+            width="32"
+            height="22"
+            viewBox="0 0 32 22"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M0.00172773 0V6.85398C0.00172773 6.85398 -0.133178 9.01207 1.98092 10.8388L13.6912 21.9964L19.7809 21.9181L18.8042 9.88248L16.4951 7.17289L9.23799 0H0.00172773Z"
+              fill="#7367F0"
+            />
+            <path
+              opacity="0.06"
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M7.69824 16.4364L12.5199 3.23696L16.5541 7.25596L7.69824 16.4364Z"
+              fill="#161616"
+            />
+            <path
+              opacity="0.06"
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M8.07751 15.9175L13.9419 4.63989L16.5849 7.28475L8.07751 15.9175Z"
+              fill="#161616"
+            />
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M7.77295 16.3566L23.6563 0H32V6.88383C32 6.88383 31.8262 9.17836 30.6591 10.4057L19.7824 22H13.6938L7.77295 16.3566Z"
+              fill="#7367F0"
+            />
+          </svg>
+        </span>
+        <span class="app-brand-text demo text-heading fw-bold">Vuexy</span>
+      </a>
+      <!-- /Logo -->
+      <div class="authentication-inner row m-0">
+        <!-- /Left Text -->
+        <div class="d-none d-lg-flex col-lg-8 p-0">
+          <div
+            class="auth-cover-bg auth-cover-bg-color d-flex justify-content-center align-items-center"
+          >
+            <img
+              src="../../assets/img/illustrations/auth-login-illustration-light.png"
+              alt="auth-login-cover"
+              class="my-5 auth-illustration"
+              data-app-light-img="illustrations/auth-login-illustration-light.png"
+              data-app-dark-img="illustrations/auth-login-illustration-dark.html"
+            />
+
+            <img
+              src="../../assets/img/illustrations/bg-shape-image-light.png"
+              alt="auth-login-cover"
+              class="platform-bg"
+              data-app-light-img="illustrations/bg-shape-image-light.png"
+              data-app-dark-img="illustrations/bg-shape-image-dark.html"
+            />
+          </div>
+        </div>
+        <!-- /Left Text -->
+
+        <!-- Login -->
+        <div
+          class="d-flex col-12 col-lg-4 align-items-center authentication-bg p-sm-12 p-6"
+        >
+          <div class="w-px-400 mx-auto mt-12 pt-5">
+            <h4 class="mb-1">Welcome to Vuexy! 👋</h4>
+            <p class="mb-6">
+              Please sign-in to your account and start the adventure
+            </p>
 
             <form class="forms_form" action="{{ route('login.proses') }}" method="POST">
                 @csrf
-                <div class="form-group position-relative has-icon-left mb-4">
-                    <input type="text" class="form-control form-control-xl" placeholder="Username" name="username" required autofocus>
-                    <div class="form-control-icon">
-                        <i class="bi bi-person"></i>
-                    </div>
+              <div class="mb-6">
+                <label for="email" class="form-label">Email or Username</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="username"
+                  placeholder="Enter username"
+                  autofocus
+                />
+              </div>
+              <div class="mb-6 form-password-toggle">
+                <label class="form-label" for="password">Password</label>
+                <div class="input-group input-group-merge">
+                  <input
+                    type="password"
+                    id="password"
+                    class="form-control"
+                    name="password"
+                    placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                    aria-describedby="password"
+                  />
+                  <span class="input-group-text cursor-pointer"
+                    ><i class="ti ti-eye-off"></i
+                  ></span>
                 </div>
-                <div class="form-group position-relative has-icon-left mb-4">
-                    <input type="password" class="form-control form-control-xl" placeholder="Password" name="password" required>
-                    <div class="form-control-icon">
-                        <i class="bi bi-shield-lock"></i>
-                    </div>
-                </div>    
-                @error('error')
-                <small style="color: red">{{ $message }}</small>
-                @enderror
-                <div>
-                    <a href="#" class="font-semibold">Forgot Password ?</a>
-                </div>
-                {{-- <div class="form-check form-check-lg d-flex align-items-end">
-                    <input class="form-check-input me-2" type="checkbox" value="" id="flexCheckDefault">
-                    <label class="form-check-label text-gray-600" for="flexCheckDefault">
-                        Keep me logged in
+              </div>
+              <div class="my-8">
+                <div class="d-flex justify-content-between">
+                  <div class="form-check mb-0 ms-2">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="remember-me"
+                    />
+                    <label class="form-check-label" for="remember-me">
+                      Remember Me
                     </label>
-                </div> --}}
-                <button class="btn btn-primary btn-block btn-lg shadow-lg mt-3">Log in</button>
+                  </div>
+                  <a href="auth-forgot-password-cover.html">
+                    <p class="mb-0">Forgot Password?</p>
+                  </a>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary d-grid w-100">Sign in</button>
             </form>
+          </div>
         </div>
+        <!-- /Login -->
+      </div>
     </div>
-    <div class="col-lg-7 d-none d-lg-block">
-        <div id="auth-right">
-            <div class="image">
-            <img src="{{ asset('image/national-cancer-institute-oCLuFi9GYNA-unsplash.jpg') }}" width="900px" height="729px" alt="">
-         </div>
-        </div>
-    </div>
-</div>
 
-    </div>
-</body>
+    <!-- / Content -->
 
+    <div class="buy-now">
+      <a
+        href="https://1.envato.market/vuexy_admin"
+        target="_blank"
+        class="btn btn-danger btn-buy-now"
+        >Buy Now</a
+      >
+    </div>
+
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+
+    <script src="../../assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="../../assets/vendor/libs/popper/popper.js"></script>
+    <script src="../../assets/vendor/js/bootstrap.js"></script>
+    <script src="../../assets/vendor/libs/node-waves/node-waves.js"></script>
+    <script src="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="../../assets/vendor/libs/hammer/hammer.js"></script>
+    <script src="../../assets/vendor/libs/i18n/i18n.js"></script>
+    <script src="../../assets/vendor/libs/typeahead-js/typeahead.js"></script>
+    <script src="../../assets/vendor/js/menu.js"></script>
+
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+    <script src="../../assets/vendor/libs/%40form-validation/popular.js"></script>
+    <script src="../../assets/vendor/libs/%40form-validation/bootstrap5.js"></script>
+    <script src="../../assets/vendor/libs/%40form-validation/auto-focus.js"></script>
+
+    <!-- Main JS -->
+    <script src="../../assets/js/main.js"></script>
+
+    <!-- Page JS -->
+    <script src="../../assets/js/pages-auth.js"></script>
+  </body>
+
+  <!-- Mirrored from demos.pixinvent.com/vuexy-html-admin-template/html/vertical-menu-template/auth-login-cover.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 07 Aug 2024 08:47:50 GMT -->
 </html>
+
+<!-- beautify ignore:end -->

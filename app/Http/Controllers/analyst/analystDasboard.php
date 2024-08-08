@@ -119,7 +119,7 @@ class analystDasboard extends Controller
 
             historyPasien::create([
                 'no_lab' => $pasiens->no_lab,
-                'proses' => 'Disetujui oleh analis lab',
+                'proses' => 'Dikirim ke spesiment',
                 'tempat' => 'Laboratorium',
                 'waktu_proses' => now(),
                 'created_at' => now(),
