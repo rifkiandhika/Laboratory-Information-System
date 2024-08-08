@@ -81,7 +81,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table class="table-striped " id="myTable">
+                                    <table class="table table-striped table-bordered" id="myTable">
                                         <thead style="font-size: 12px;">
                                             <tr>
                                                 <th scope="col">No.</th>
