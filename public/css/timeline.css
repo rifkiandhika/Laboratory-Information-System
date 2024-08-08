@@ -172,15 +172,7 @@
     }
 }
 /* Accordion */
-.accordion-button::after {
-    content: "\2212"; /* Minus sign */
-    font-size: 25px;
-    color: #007bff;
-    margin-left: auto;
-}
-.accordion-button.collapsed::after {
-    content: "\002B"; /* Plus sign */
-}
+
 .subtext {
     text-align: center;
     font-size: 1.2rem;

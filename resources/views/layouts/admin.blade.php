@@ -54,6 +54,7 @@
     <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
     <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/typeahead-js/typeahead.css') }}" /> 
     <link rel="stylesheet" href="{{ asset('vendor/select2/select2.min.css') }}">
+
     
 
     <!-- Page CSS -->
@@ -101,7 +102,7 @@
     <script src="{{ asset('vendor/select2/select2.min.js') }}"></script>
     <!-- endbuild -->
     <script src="{{ asset('assets/sweetalert2/sweetalert2.min.js') }}"></script>
-   
+
     @include('sweetalert::alert')
 
 
@@ -113,7 +114,8 @@
     <script src="{{ asset('/assets/js/main.js') }}"></script>
     
     
-    
+  <script src="{{ asset('../js/ak.js') }}"></script>
+  @stack('script')
   </body>
 
 
