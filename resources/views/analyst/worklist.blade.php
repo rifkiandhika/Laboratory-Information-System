@@ -27,7 +27,7 @@
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-striped table-borderless" style="font-size: 12px;">
+                    <table class="table table-striped" style="font-size: 12px;">
                     <thead>
                         <tr>
                         <th scope="col"><i class="bi bi-check-lg" style="font-size: 18px;"></i></th>

@@ -17,11 +17,11 @@
     
     
     <!-- ? PROD Only: Google Tag Manager (Default ThemeSelection: GTM-5DDHKGP, PixInvent: GTM-5J3LMKC) -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    {{-- <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
       new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
       j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       '../../../../www.googletagmanager.com/gtm5445.html?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','GTM-5J3LMKC');</script>
+      })(window,document,'script','dataLayer','GTM-5J3LMKC');</script> --}}
     <!-- End Google Tag Manager -->
     
     <!-- Favicon -->
@@ -36,6 +36,10 @@
     <link rel="stylesheet" href="{{ asset('/assets/vendor/fonts/fontawesome.css') }}" />
     <link rel="stylesheet" href="{{ asset('/assets/vendor/fonts/tabler-icons.css') }}"/>
     <link rel="stylesheet" href="{{ asset('/assets/vendor/fonts/flag-icons.css') }}" />
+
+      {{-- Sweet alert --}}
+      <link rel="stylesheet" href="{{ asset('assets/sweetalert2/sweetalert2.min.css') }}">
+
 
     <!-- Core CSS -->
     
@@ -96,6 +100,10 @@
     <script src="{{ asset('/assets/vendor/js/menu.js') }}"></script>
     <script src="{{ asset('vendor/select2/select2.min.js') }}"></script>
     <!-- endbuild -->
+    <script src="{{ asset('assets/sweetalert2/sweetalert2.min.js') }}"></script>
+   
+    @include('sweetalert::alert')
+
 
     <!-- Vendors JS -->
     

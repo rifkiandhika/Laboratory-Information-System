@@ -24,7 +24,7 @@
         
         
         <!-- Language -->
-        <li class="nav-item dropdown-language dropdown">
+        {{-- <li class="nav-item dropdown-language dropdown">
           <a class="nav-link btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
             <i class='ti ti-language rounded-circle ti-md'></i>
           </a>
@@ -50,11 +50,11 @@
               </a>
             </li>
           </ul>
-        </li>
+        </li> --}}
         <!--/ Language -->
         
         <!-- Style Switcher -->
-        <li class="nav-item dropdown-style-switcher dropdown">
+        {{-- <li class="nav-item dropdown-style-switcher dropdown">
           <a class="nav-link btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
             <i class='ti ti-md'></i>
           </a>
@@ -75,11 +75,11 @@
               </a>
             </li>
           </ul>
-        </li>
+        </li> --}}
         <!-- / Style Switcher-->
         
         <!-- Quick links  -->
-        <li class="nav-item dropdown-shortcuts navbar-dropdown dropdown">
+        {{-- <li class="nav-item dropdown-shortcuts navbar-dropdown dropdown">
           <a class="nav-link btn btn-text-secondary btn-icon rounded-pill btn-icon dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <i class='ti ti-layout-grid-add ti-md'></i>
           </a>
@@ -157,11 +157,11 @@
               </div>
             </div>
           </div>
-        </li>
+        </li> --}}
         <!-- Quick links -->
 
         <!-- Notification -->
-        <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-2">
+        {{-- <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-2">
           <a class="nav-link btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <span class="position-relative">
               <i class="ti ti-bell ti-md"></i>
@@ -352,7 +352,7 @@
               </div>
             </li>
           </ul>
-        </li>
+        </li> --}}
         <!--/ Notification -->
 
         <!-- User -->
@@ -372,8 +372,8 @@
                     </div>
                   </div>
                   <div class="flex-grow-1">
-                    <h6 class="mb-0">John Doe</h6>
-                    <small class="text-muted">Admin</small>
+                    <h6 class="mb-0">{{ Auth::user()->username }}</h6>
+                    <small class="text-muted">{{ Auth::user()->role }}</small>
                   </div>
                 </div>
               </a>
@@ -381,7 +381,7 @@
             <li>
               <div class="dropdown-divider my-1 mx-n2"></div>
             </li>
-            <li>
+            {{-- <li>
               <a class="dropdown-item" href="pages-profile-user.html">
                 <i class="ti ti-user me-3 ti-md"></i><span class="align-middle">My Profile</span>
               </a>
@@ -412,9 +412,9 @@
                 <i class="ti ti-question-mark me-3 ti-md"></i><span class="align-middle">FAQ</span>
               </a>
             </li>
-            <li>
+            <li> --}}
               <div class="d-grid px-2 pt-2 pb-1">
-                <a class="btn btn-sm btn-danger d-flex" href="auth-login-cover.html" target="_blank">
+                <a class="btn btn-sm btn-danger d-flex" href="{{ route('logout') }}">
                   <small class="align-middle">Logout</small>
                   <i class="ti ti-logout ms-2 ti-14px"></i>
                 </a>

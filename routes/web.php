@@ -44,7 +44,7 @@ Route::get('/test', function () {
 
 route::resource('login', userController::class);
 route::post('login-proses', [userController::class, 'proses'])->name('login.proses');
-route::post('/logout', [userController::class, 'logout'])->name('logout');
+Route::post('/logout', [userController::class, 'logout'])->name('logout');
 
 //admin
 route::middleware('auth')->group(function () {
@@ -143,7 +143,7 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
 
     Route::resource('vdokter', vDokterController::class);
     Route::resource('worklist', worklistController::class);
-    Route::delete('analyst/worklist/{worklist}', [worklistController::class, 'destroy'])->name('worklist.destroy');
+    // Route::delete('analyst/worklist/{worklist}', [worklistController::class, 'destroy'])->name('worklist.destroy');
     Route::post('/worklist/checkin/{id}', [worklistController::class, 'checkin'])->name('worklist.checkin');
 
 
