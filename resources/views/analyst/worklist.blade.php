@@ -30,7 +30,7 @@
                     <table class="table table-striped" style="font-size: 12px;">
                     <thead>
                         <tr>
-                        <th scope="col"><i class="bi bi-check-lg" style="font-size: 18px;"></i></th>
+                        <th scope="col"><i class="ti ti-checkbox" style="font-size: 18px;"></i></th>
                         <th scope="col">No LAB</th>
                         <th scope="col">Nama</th>
                         <th scope="col">Cito</th>
@@ -47,7 +47,7 @@
                                 </td>
                                 <td>{{ $dpc->nama }}</td>
                                 <td class="text-center">
-                                    <i class='bi bi-bell-fill mt-2 ml-1 {{ $dpc->cito == '1' ? 'text-danger' : 'text-secondary' }}'
+                                    <i class='ti ti-bell-filled mt-2 ml-1 {{ $dpc->cito == '1' ? 'text-danger' : 'text-secondary' }}'
                                         style="font-size: 23px;"></i>
                                 </td>
                             </tr>
@@ -59,7 +59,7 @@
                                 <td>{{ $dp->nama }}</td>
                                 <td>
                                     <td class="text-center">
-                                        <i class='bi bi-bell-fill mt-2 ml-1 {{ $dp->cito == '1' ? 'text-danger' : 'text-secondary' }}'
+                                        <i class='ti ti-bell-filled mt-2 ml-1 {{ $dp->cito == '1' ? 'text-danger' : 'text-secondary' }}'
                                             style="font-size: 23px;"></i>
                                     </td>
                                 </td>
@@ -746,7 +746,7 @@
                                 <div class="timeline-item w-100">
                                     <div class="timeline-item-marker">
                                         <div class="timeline-item-marker-text">${waktuFormatted}</div>
-                                        <div class="timeline-item-marker-indicator clear text-white"><i class="bi bi-check-lg mb-2"></i></div>
+                                        <div class="timeline-item-marker-indicator clear text-white"><i class="ti ti-check"></i></div>
                                     </div>
                                     <div class="timeline-item-content">${h.proses}</div>
                                 </div>
@@ -759,54 +759,57 @@
                         // Menampilkan data pasien (hanya sekali)
                         detailContent += `
                         <div class="row mb-3">
-                            <div class="header text-center mb-3"><h4>Data Pemeriksaan Pasien</h4></div>
+                            <div class="header text-center mb-3">
+                                <h4>Data Pemeriksaan Pasien</h4>
+                            </div>
                             <hr>
-                            <div class="col-lg-7 mb-2 table-borderless">
-                                <div class="row" style="margin-bottom: -5px;">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label font-bold">Cito</label>
-                                    <div class="col-lg-2">
-                                       : <i class='bi bi-bell-fill mt-2 ml-1 text-danger' style="font-size: 23px;"></i>
+                            <div class="col-lg-7 col-md-5 col-sm-12">
+                                <!-- Left Column -->
+                                <div class="row mb-1">
+                                    <label class="col-5 col-form-label font-bold">Cito</label>
+                                    <div class="col-7">
+                                    : <i class='ti ti-bell-filled text-danger' style="font-size: 23px;"></i>
                                     </div>
                                 </div>
-                                <div class="row mt-2" style="margin-bottom: -10px;">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label font-bold">No LAB</label>
-                                    <div class="col-lg-6">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data_pasien.no_lab}">
+                                <div class="row mb-1">
+                                    <label class="col-5 col-form-label font-bold">No LAB</label>
+                                    <div class="col-7">
+                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.no_lab}">
                                     </div>
                                 </div>
-                                <div class="row mt-2" style="margin-bottom: -10px;">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label font-bold">No RM</label>
-                                    <div class="col-lg-6">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data_pasien.no_rm}">
+                                <div class="row mb-1">
+                                    <label class="col-5 col-form-label font-bold">No RM</label>
+                                    <div class="col-7">
+                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.no_rm}">
                                     </div>
                                 </div>
-                                <div class="row mt-2" style="margin-bottom: -10px;">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label font-bold">Nama</label>
-                                    <div class="col-lg-6">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data_pasien.nama}">
+                                <div class="row mb-1">
+                                    <label class="col-5 col-form-label font-bold">Nama</label>
+                                    <div class="col-7">
+                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.nama}">
                                     </div>
                                 </div>
-                                <div class="row mt-2" style="margin-bottom: -10px;">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label font-bold">Ruangan</label>
-                                    <div class="col-lg-6">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data_pasien.asal_ruangan}">
+                                <div class="row mb-1">
+                                    <label class="col-5 col-form-label font-bold">Ruangan</label>
+                                    <div class="col-7">
+                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.asal_ruangan}">
                                     </div>
                                 </div>
-                                <div class="row mt-2" style="margin-bottom: -10px;">
-                                    <label for="staticEmail" class="col-lg-5 col-form-label font-bold">Tanggal Lahir Usia</label>
-                                    <div class="col-lg-6">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data_pasien.lahir} Tahun">
+                                <div class="row mb-1">
+                                    <label class="col-5 col-form-label font-bold">Tanggal Lahir Usia</label>
+                                    <div class="col-7">
+                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.lahir} Tahun">
                                     </div>
                                 </div>
-                                <div class="row mt-2" style="margin-bottom: -10px;">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label font-bold">Dokter</label>
-                                    <div class="col-lg-6">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data_pasien.dokter.nama_dokter}">
+                                <div class="row mb-1">
+                                    <label class="col-5 col-form-label font-bold">Dokter</label>
+                                    <div class="col-7">
+                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.dokter.nama_dokter}">
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-5 table-borderless">
-                                <!-- Timeline -->
+                            <div class="col-lg-5 col-md-6 col-sm-12">
+                                <!-- Right Column - Timeline -->
                                 <div class="timeline timeline-sm">
                                     ${timelineItems}
                                 </div>
@@ -851,10 +854,10 @@
             return `
                 <div class="preview-button" id="preview-button">
                     <div class="row">
-                        <div class="col-lg-2">
+                        <div class="col-5 col-lg-3">
                             <button type="button" id="manualButton" class="btn btn-outline-secondary btn-block">Manual</button>
                         </div>
-                        <div class="col-lg-2">
+                        <div class="col-lg-3">
                             <button type="button" class="btn btn-outline-primary btn-block">Duplo</button>
                         </div>
                         <div class="col-lg-3">
@@ -1029,7 +1032,7 @@
                         note = '<p class="mb-0"><strong>Note</strong></p>';
                     }
                 accordionContent += `${detail} ${title}
-                   <div class="accordion mb-2" id="accordion${e.tabung}">                          
+                   <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">                          
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="heading${e.tabung}">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">

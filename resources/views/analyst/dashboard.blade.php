@@ -120,9 +120,9 @@ Dashboard|Spesiment
                                 <a href="#" id="konfirmasiallselecteddata" type="button" class="btn btn-outline-primary mb-2 mt-2 " >Check In</a>
                             </div>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body card-datatable">
                             <div class="table-responsive" style="width: 100%;">
-                                <table class="table table-striped table-bordered w-100 d-block d-md-table" id="myTable">
+                                <table class="table table-striped w-100 d-block d-md-table" id="myTable">
                                     @php
                                         $no=1;
                                     @endphp
@@ -149,7 +149,7 @@ Dashboard|Spesiment
                                                 @endif
 
                                             <td>
-                                                <i class='bi bi-bell-fill {{ $data1->cito == '1' ? 'text-danger' : 'text-secondary' }}' style="font-size: 23px;"></i>
+                                                <i class='ti ti-bell-filled {{ $data1->cito == '1' ? 'text-danger' : 'text-secondary' }}' style="font-size: 23px;"></i>
 
                                             </td>
                                                 <td scope="row">{{ $data1->no_rm }}</td>
@@ -163,10 +163,10 @@ Dashboard|Spesiment
                                                         <span class="badge bg-success text-white">Approved of analyst</span>
                                                     @endif
                                                 </td>
-                                                <td class="d-flex">
+                                                <td>
                                                     <button type="button" data-bs-target="#modalPreviewPasien"
                                                     data-bs-toggle="modal" class="btn btn-info btn-edit text-white "
-                                                    data-id="{{ $data1->id }}"><i class='bi bi-eye'></i></button>
+                                                    data-id="{{ $data1->id }}"><i class='ti ti-eye'></i></button>
                                                   </td>
                                             </tr>
                                         @endforeach
@@ -181,13 +181,11 @@ Dashboard|Spesiment
         {{-- Preview Pasien --}}
     <div class="modal fade" id="modalPreviewPasien" tabindex="-1" role="dialog"
     aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content ">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalScrollableTitle">Preview Patient</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title" id="sampleHistoryModalLabel">Preview Pasien</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" style="max-height: 700px;">
                 <div class="row">
@@ -307,7 +305,8 @@ Dashboard|Spesiment
                     <textarea  class="form-control" placeholder="Note" name="note"  id="note" cols="30" rows="8"></textarea>
                     <input type="hidden" id="no_lab" name="no_lab" value="">
             </div>
-
+                <br>
+                <br>
                 <div class="modal-footer">
                     <button class="btn btn-success" id="verification" type="submit">Verification</button>
                 </div>
@@ -452,5 +451,5 @@ Dashboard|Spesiment
                 });
             })
         </script>
-@endpush
 <script src="{{ asset('js/time.js') }}"></script>
+@endpush

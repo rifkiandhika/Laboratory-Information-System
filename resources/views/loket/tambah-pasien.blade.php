@@ -26,7 +26,7 @@
                                     <div class="row" style="margin-top: -5px;">
                                         <label for="staticEmail" class="col-sm-4 col-form-label">No LAB :</label>
                                         <div class="col-lg">
-                                            <input type="text" readonly class="form-control-plaintext font-bold"
+                                            <input type="text" readonly class="form-control-plaintext"
                                                 id="no-lab" name="nolab" value="{{ $no_lab }}">
                                         </div>
                                     </div>

@@ -3,15 +3,6 @@
 
 @section('content')
 <style>
-        .accordion-button::after {
-            content: '\2212'; /* Minus sign */
-            font-size: 25px;
-            color: #007bff;
-            margin-left: auto;
-        }
-        .accordion-button.collapsed::after {
-            content: '\002B'; /* Plus sign */
-        }
         .subtext {
             text-align: center;
             font-size: 1.2rem;
@@ -192,7 +183,7 @@
                                             <th id="checkin{{ $dpc->id }}">
                                                 <input style="font-size: 20px; cursor: pointer;" type="checkbox" name="ids" id="checkbox" class="form-check-input checkbox_ids" value="{{ $dpc->id }}">
                                             </th>
-                                            <td class="col-3">
+                                            <td class="col-2">
                                                 @foreach ($dataHistory as $dh)
                                                 @if ($dh->no_lab == $dpc->no_lab)
                                                 {{ date('d-m-Y', strtotime($dh->waktu_proses)) }}/{{ date('H:i', strtotime($dh->waktu_proses)) }}
@@ -200,7 +191,7 @@
                                                 @endforeach
                                             </td>
                                             <td>
-                                                <i class='bi bi-bell-fill {{ $dpc->cito == '1' ? 'text-danger' : 'text-secondary' }}' style="font-size: 23px;"></i>
+                                                <i class='ti ti-bell-filled {{ $dpc->cito == '1' ? 'text-danger' : 'text-secondary' }}' style="font-size: 23px;"></i>
                                             </td>
                                             <td>{{ $dpc->no_rm }}</td>
                                             <td>{{ $dpc->no_lab }}</td>
@@ -225,9 +216,9 @@
                                             </td>
                                             <td class="col-3">
                                                 <button class="btn btn-info btn-preview" data-id={{ $dpc->id }} data-bs-target="#modalSpesimen"
-                                                    data-bs-toggle="modal" ><i class="bi bi-eye"></i></button>
-                                                <button class="btn btn-warning"><i class="bi bi-upc"></i></button>
-                                                <button class="btn btn-success btn-edit" data-id={{ $dpc->id }} data-bs-target="#modalEdit" data-bs-toggle="modal"><i class="bi bi-pencil-square"></i></button>
+                                                    data-bs-toggle="modal" ><i class="ti ti-eye"></i></button>
+                                                <button class="btn btn-warning"><i class="ti ti-barcode"></i></button>
+                                                <button class="btn btn-success btn-edit" data-id={{ $dpc->id }} data-bs-target="#modalEdit" data-bs-toggle="modal"><i class="ti ti-edit"></i></button>
                                                 
                                                 <form id="delete-form-{{ $dpc->id }}"
                                                     action="{{ route('spesiment.destroy', $dpc->no_lab) }}" method="POST"
@@ -238,7 +229,7 @@
                                                 
                                                 <button class="btn btn-danger"
                                                     onclick="confirmDelete({{ $dpc->id }})"><i
-                                                    class="bi bi-trash"></i>
+                                                    class="ti ti-trash"></i>
                                                 </button>
 
                                             </td>
@@ -297,13 +288,11 @@
                             </div>
                             {{-- Pemeriksaan Pasien --}}
                     <div class="modal fade" id="modalSpesimen" tabindex="-1" role="dialog"aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-                            <div class="modal-content">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content ">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalScrollableTitle">Detail Inspection Patient</h5>
-                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
+                                    <h5 class="modal-title" id="sampleHistoryModalLabel">Detail Inspection Patient</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body" style="overflow-y: scroll" id="pembayaran-pasien" style="max-height: 700px;">
                                     <form action="{{ route('spesiment.store') }}" method="POST">
@@ -317,6 +306,7 @@
                                             </div>
                                             </div>
                                         </div>
+                                        <br>
                                         <div class="modal-footer">
                                             <button class="btn btn-success btn-verify" id="verification" type="submit">Submit</button>
                                         </div>
@@ -328,13 +318,11 @@
                     </div>
                     {{-- edit data --}}
                     <div class="modal fade" id="modalEdit" tabindex="-1" role="dialog"aria-labelledby="exampleModal" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-                            <div class="modal-content">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content ">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalScrollableTitle">Edit Data Patient</h5>
-                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
+                                    <h5 class="modal-title" id="sampleHistoryModalLabel">Edit Data Patient</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body" style="overflow-y: scroll" id="pembayaran-pasien" style="max-height: 700px;">
                                     <form id="editFormPasien" method="POST">
@@ -515,7 +503,7 @@
                                     }
 
                                 detailContent += `${title}
-                                    <div class="accordion mb-2" id="accordion${e.tabung}">
+                                    <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">
                                                         
                                         <div class="accordion-item">
                                             <h2 class="accordion-header" id="heading${e.tabung}">

@@ -30,7 +30,7 @@
                     <table class="table table-striped table-borderless" style="font-size: 12px;">
                     <thead>
                         <tr>
-                        <th scope="col"><i class="bi bi-check-lg" style="font-size: 18px;"></i></th>
+                        <th scope="col"><i class="ti ti-checkbox" style="font-size: 18px;"></i></th>
                         <th scope="col">No LAB</th>
                         <th scope="col">Nama</th>
                         <th scope="col">Cito</th>
@@ -59,7 +59,7 @@
                                 <td>{{ $dp->nama }}</td>
                                 <td>
                                     <td class="text-center">
-                                        <i class='bi bi-bell-fill mt-2 ml-1 {{ $dp->cito == '1' ? 'text-danger' : 'text-secondary' }}'
+                                        <i class='ti ti-bell-filled mt-2 ml-1 {{ $dp->cito == '1' ? 'text-danger' : 'text-secondary' }}'
                                             style="font-size: 23px;"></i>
                                     </td>
                                 </td>
@@ -77,7 +77,7 @@
                 <div class="card-body table-responsive mt-1">
                 <div class="preview-data-pasien" id="previewDataPasien">
                     <!-- tampilan data pasien-->
-                    <img src="{{ asset('./assets/compiled/svg/oval.svg') }}" id="loader" class="loader me-4" style="width: 3rem; display: none" alt="audio">
+                    {{-- <img src="{{ asset('./assets/compiled/svg/oval.svg') }}" id="loader" class="loader me-4" style="width: 3rem; display: none" alt="audio"> --}}
                     <div class="text-center bg-body-tertiary"><p>Pilih Pasien</p></div>
                 </div>
                 <hr>
@@ -747,7 +747,7 @@
                                 <div class="timeline-item w-100">
                                     <div class="timeline-item-marker">
                                         <div class="timeline-item-marker-text">${waktuFormatted}</div>
-                                        <div class="timeline-item-marker-indicator clear text-white"><i class="bi bi-check-lg mb-2"></i></div>
+                                        <div class="timeline-item-marker-indicator clear text-white"><i class="ti ti-check"></i></div>
                                     </div>
                                     <div class="timeline-item-content">${h.proses}</div>
                                 </div>
@@ -766,7 +766,7 @@
                                 <div class="row" style="margin-bottom: -5px;">
                                     <label for="staticEmail" class="col-sm-5 col-form-label font-bold">Cito</label>
                                     <div class="col-lg-2">
-                                       : <i class='bi bi-bell-fill mt-2 ml-1 text-danger' style="font-size: 23px;"></i>
+                                       : <i class='ti ti-bell-filled mt-2 ml-1 text-danger' style="font-size: 23px;"></i>
                                     </div>
                                 </div>
                                 <div class="row mt-2" style="margin-bottom: -10px;">
@@ -1030,7 +1030,7 @@
                         note = '<p class="mb-0"><strong>Note</strong></p>';
                     }
                 accordionContent += `${detail} ${title}
-                   <div class="accordion mb-2" id="accordion${e.tabung}">                          
+                   <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">                          
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="heading${e.tabung}">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">

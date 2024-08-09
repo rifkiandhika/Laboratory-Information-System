@@ -29,7 +29,7 @@ Add Department
                                     <h4>Department</h4>
                                     <hr>
                                     <label for="id_departement">Departement</label>
-                                    <input type="text" class="form-control" name="nama_department" id="">
+                                    <input type="text" class="form-control" name="nama_department" id="" required>
 
                                 </div>
                                 <div class="form-group">

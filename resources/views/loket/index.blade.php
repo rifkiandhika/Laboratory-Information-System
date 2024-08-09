@@ -150,7 +150,7 @@
                                         <tr>
                                             <td scope="row">{{ $x + 1 }}</td>
                                             <td class="text-center">
-                                                <i class='bi bi-bell-fill mt-2 ml-1 {{ $dc->cito == '1' ? 'text-danger' : 'text-secondary' }}'
+                                                <i class='ti ti-bell-filled {{ $dc->cito == '1' ? 'text-danger' : 'text-secondary' }}'
                                                     style="font-size: 23px;"></i>
                                             </td>
                                             <td class="col-2">{{ $dc->nama }}</td>
@@ -171,14 +171,14 @@
                                             <td class="col-md-3">
                                                 <button type="button" data-bs-target="#modalPreviewPasien"
                                                     data-bs-toggle="modal" class="btn btn-info btn-edit text-white "
-                                                    data-id="{{ $dc->id }}"><i class='bi bi-eye'></i>
+                                                    data-id="{{ $dc->id }}"><i class='ti ti-edit'></i>
                                                 </button>
                                                     
-                                                <a style="cursor: pointer" href="{{ route('print.barcode', $dc->no_lab) }}" class="btn btn-warning" target="_blank"><i class="bi bi-upc"></i></a>
+                                                <a style="cursor: pointer" href="{{ route('print.barcode', $dc->no_lab) }}" class="btn btn-warning" target="_blank"><i class="ti ti-barcode"></i></a>
                                                 
                                                 <button type="button" data-bs-target="#modalPembayaran"
                                                     data-bs-toggle="modal" class="btn btn-success btn-payment text-white "
-                                                    data-payment="{{ $dc->id }}"><i class='bi bi-cash'></i>
+                                                    data-payment="{{ $dc->id }}"><i class='ti ti-cash-banknote'></i>
                                                 </button>
 
 
@@ -191,7 +191,7 @@
                                                 
                                                 <button class="btn btn-danger"
                                                     onclick="confirmDelete({{ $dc->id }})"><i
-                                                    class="bi bi-trash"></i>
+                                                    class="ti ti-trash"></i>
                                                 </button>
 
                                             
@@ -212,13 +212,11 @@
     {{-- Preview Pasien --}}
     <div class="modal fade" id="modalPreviewPasien" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content ">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalScrollableTitle">Preview Patient</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <h5 class="modal-title" id="sampleHistoryModalLabel">Preview Pasien</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body"  style="max-height: 700px;">
                     <div class="row">
@@ -368,13 +366,11 @@
     {{-- Pembayaran Pasien --}}
     <div class="modal fade" id="modalPembayaran" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content ">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalScrollableTitle">Payment Patient</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <h5 class="modal-title" id="sampleHistoryModalLabel">Preview Pasien</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="pembayaran-pasien" style="max-height: 700px;">
                     <form action="{{ route('pasien.kirimlab') }}" method="POST">
