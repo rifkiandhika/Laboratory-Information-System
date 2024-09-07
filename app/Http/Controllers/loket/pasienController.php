@@ -38,6 +38,8 @@ class pasienController extends Controller
         $data = pasien::where('status', 'Belum Dilayani')->count();
         $tanggal = pasien::whereDate('created_at', Carbon::today())->count();
         $data_pasien = pasien::where('status', 'Belum Dilayani')->orderBy('cito', 'desc')->paginate(20);
+        $payment = pasien::where('status', 'Telah Dibayar')->orderBy('cito', 'desc')->paginate(20);
+        $dikembalikan = pasien::where('status', 'Dikembalikan Analyst')->orderBy('cito', 'desc')->paginate(20);
         // $data_pemeriksaan_pasien = pemeriksaan_pasien::all();
         // dd($data_pasien);
         // $data_departement = Department::all();
@@ -45,7 +47,7 @@ class pasienController extends Controller
 
 
 
-        return view('loket.index', compact('data_pasien', 'data', 'tanggal'));
+        return view('loket.index', compact('data_pasien', 'data', 'tanggal', 'payment', 'dikembalikan'));
     }
 
     /**
@@ -147,62 +149,128 @@ class pasienController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($no_lab)
     {
-        //
+        // $pasien = pasien::findOrFail($no_lab);
+        $data_pasien = pasien::where('no_lab', $no_lab)->with([
+            'dpp.pasiens' => function ($query) use ($no_lab) {
+                $query->where('no_lab', $no_lab)->with('data_pemeriksaan');
+            },
+            'dpp.data_departement',
+            'dokter',
+            'pemeriksaan_pasien' => function ($query) {
+                $query->with('data_pemeriksaan');
+            }
+        ])->first();
+
+        if (!$data_pasien) {
+            // Jika pasien tidak ditemukan, redirect ke halaman daftar pasien dengan pesan error
+            return redirect()->route('pasien.index')->with('error', 'Data pasien tidak ditemukan.');
+        }
+
+        $dokters = dokter::all();
+
+        $departments = Department::with('detailDepartments')->get();
+
+        // Ambil ID pemeriksaan yang sudah dipilih dari tabel pemeriksaan_pasien
+        $selectedInspections = $data_pasien->pemeriksaan_pasien->pluck('id_parameter')->toArray();
+
+
+
+        // Menghitung total harga pemeriksaan yang sudah dipilih
+        // $totalHarga = $data_pasien->dpp->sum('pasiens.harga');
+
+
+        // return response()->json($data_pasien);
+        return view('loket.edit', compact('data_pasien', 'dokters', 'departments', 'selectedInspections'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $lab)
+    public function update(Request $request, $no_lab)
     {
+        $cito = $request->cito ? 1 : 0;
 
         $harga = str_replace('.', '', $request->hargapemeriksaan);
 
-        $harga = (int)$harga;
+        // $harga = (int)$harga;
 
-        pasien::where('no_lab', $request->nolab)->update([
+        $pasien = pasien::findOrFail($no_lab);
+
+        $pasien->update([
+            'no_rm' => $request->norm,
+            'cito' => $cito,
             'nik' => $request->nik,
-            'jenis_pelayanan' => $request->jenis_pelayanan,
+            'jenis_pelayanan' => $request->jenispelayanan,
             'nama' => $request->nama,
-            'lahir' => $request->tanggal_lahir,
-            'jenis_kelamin' => $request->jenis_kelamin,
-            'no_telp' => $request->no_telepon,
+            'lahir' => $request->tanggallahir,
+            'jenis_kelamin' => $request->jeniskelamin,
+            'no_telp' => $request->notelepon,
             'kode_dokter' => $request->dokter,
-            'asal_ruangan' => $request->ruangan,
+            'asal_ruangan' => $request->asal_ruangan,
             'diagnosa' => $request->diagnosa,
-            'tanggal_masuk' => now(),
             'alamat' => $request->alamat,
         ]);
 
-        pemeriksaan_pasien::where('no_lab', $request->nolab)->delete();
+        // pemeriksaan_pasien::where('no_lab', $request->nolab)->delete();
 
-        foreach ($request->pemeriksaan as $pemeriksaan) {
-            $pemeriksaan_temp = explode(',', $pemeriksaan);
+        // foreach ($request->pemeriksaan as $pemeriksaan) {
+        //     $pemeriksaan_temp = explode(',', $pemeriksaan);
 
-            $id_departement[] = $pemeriksaan_temp[0];
+        //     $id_departement[] = $pemeriksaan_temp[0];
 
-            $nama_parameter[] = $pemeriksaan_temp[1];
+        //     $nama_parameter[] = $pemeriksaan_temp[1];
+        // }
+
+        // $no = 0;
+        // foreach ($request->pemeriksaan as $x => $pemeriksaan) {
+        //     pemeriksaan_pasien::create([
+        //         'no_lab' => $request->nolab,
+        //         'id_departement' => explode(',', $pemeriksaan)[1],
+        //         'nama_parameter' => $nama_parameter[$no],
+        //         'harga' => $harga,
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ]);
+
+        //     $no++;
+        // }
+
+        if ($pasien->status === 'Dikembalikan Analyst') {
+            // Tambahkan hanya pemeriksaan baru tanpa menyertakan pemeriksaan lama
+            foreach ($request->pemeriksaan as $pemeriksaan) {
+                $existingPemeriksaan = pemeriksaan_pasien::where('no_lab', $pasien->no_lab)
+                    ->where('id_parameter', $pemeriksaan)
+                    ->first();
+
+                if (!$existingPemeriksaan) {
+                    $data = DetailDepartment::find($pemeriksaan);
+                    pemeriksaan_pasien::create([
+                        'no_lab' => $pasien->no_lab,
+                        'id_parameter' => $pemeriksaan,
+                        'id_departement' => $data->department_id,
+                        'nama_parameter' => $data->nama_parameter,
+                        'harga' => $harga,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
         }
 
-        $no = 0;
-        foreach ($request->pemeriksaan as $x => $pemeriksaan) {
-            pemeriksaan_pasien::create([
-                'no_lab' => $request->nolab,
-                'id_departement' => explode(',', $pemeriksaan)[1],
-                'nama_parameter' => $nama_parameter[$no],
-                'harga' => $harga,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        // historyPasien::where('no_lab', $request->nolab)->update([
+        //     'waktu_proses' => now(),
+        // ]);
 
-            $no++;
-        }
+        // historyPasien::create([
+        //     'no_lab' => $pasien->no_lab,
+        //     'proses' => 'Update',
+        //     'tempat' => 'Loket',
+        //     'waktu_proses' => now(),
+        //     'note' => $request->note ?? ''
+        // ]);
 
-        historyPasien::where('no_lab', $request->nolab)->update([
-            'waktu_proses' => now(),
-        ]);
 
         toast('Berhasil mengubah data pasien', 'success');
         return redirect()->route('pasien.index');
@@ -230,61 +298,6 @@ class pasienController extends Controller
         return redirect()->route('pasien.index');
     }
 
-    public function getIcd10(Request $request)
-    {
-        //     if ($request->get('query')) {
-        //         $query = $request->get('query');
-        //         $data = icd10::where('code', 'LIKE', "%{$query}%")->orWhere('name_id', 'LIKE', "%{$query}%")->get();
-        //         $output = '<ul class="dropdown-menu diagnosa-auto" style="display:block; position:absolute">';
-        //         foreach ($data as $row) {
-        //             $output .= '
-        //             <li><a href="#">' . $row->code . ' ' . $row->name_id . '</a></li>
-        //             ';
-        //         }
-        //         $output .= '</ul>';
-        //         echo $output;
-        //     }
-        // }
-
-        // public function getDataPasien($lab)
-        // {
-        //     $data_pasien = pasien::where('no_lab', $lab)->first();
-        //     $data_pemeriksaan_pasien = pemeriksaan_pasien::where('no_lab', $lab)->get();
-        //     $id_departement_pasien = pemeriksaan_pasien::where('no_lab', $lab)->distinct()->get(['id_departement']);
-        //     // $icd10 = icd10::all() ?? [];
-        //     $icd10 = [];
-        //     $data_departement = Department::all();
-        //     $data_pemeriksaan = Pemeriksaan::all();
-        //     $history_pasien = historyPasien::where('no_lab', $lab)->where('proses', 'Disetujui oleh analis lab')->get();
-        //     $dataTabung = tabung::all();
-
-        //     $dataOBR = obr::where('order_number', $lab)->count();
-
-        //     if($data_pasien)
-        //     {
-        //         return response()->json([
-        //             'success' => true,
-        //             'message' => 'Data pasien ditemukan',
-        //             'data_pasien' => $data_pasien,
-        //             'data_pemeriksaan_pasien' => $data_pemeriksaan_pasien,
-        //             'id_departement_pasien' => $id_departement_pasien,
-        //             'icd10' => $icd10,
-        //             'data_departement' => $data_departement,
-        //             'data_pemeriksaan' => $data_pemeriksaan,
-        //             'history_pasien' => $history_pasien,
-        //             'dataTabung' => $dataTabung,
-        //             'dataOBR' => $dataOBR,
-        //         ], 200);
-        //     }
-        //     else
-        //     {
-        //         return response()->json([
-        //             'success' => false,
-        //             'message' => 'Data pasien tidak ditemukan',
-        //         ], 404);
-        //     }
-        // }
-    }
     public function getDataPasien(Request $request, $lab)
     {
         // $data_pasien = pasien::where('no_lab', $lab)->first();
@@ -354,7 +367,15 @@ class pasienController extends Controller
                 'dpp.pasiens' => function ($query) use ($no_lab) {
                     $query->where('no_lab', $no_lab);
                     $query->with('data_pemeriksaan');
-                }, 'dpp.data_departement', 'dokter', 'history', 'spesiment.details', 'spesimentcollection', 'spesimenthandling.details', 'hasil_pemeriksaan'
+                },
+                'dpp.data_departement',
+                'dokter',
+                'pembayaran',
+                'history',
+                'spesiment.details',
+                'spesimentcollection',
+                'spesimenthandling.details',
+                'hasil_pemeriksaan'
             ])->first();
 
             if ($data_pasien && $data_pasien->spesimentcollection) {
@@ -373,11 +394,21 @@ class pasienController extends Controller
 
     public function kirimLab(Request $request)
     {
-        $data_pasien = pasien::where('no_lab', $request->nolab)->first();
+        $data_pasien = pasien::all();
+        $status = 'Telah Dibayar';
+        $history_proses = 'Payment';
+        // dd($data_pasien);
+        foreach ($data_pasien as $pasien) {
+            if ($pasien->status === 'Dikembalikan Analyst') {
+                $status = 'Telah Dibayar';
+                $history_proses = 'Additional Inspection Payment';
 
-        pasien::where('no_lab', $request->no_lab)->update([
-            'status' => 'Telah Dikirim ke Lab',
-        ]);
+                $pasien->update([
+                    'status' => $status,
+                ]);
+            }
+        }
+
         $no_pasien = $request->no_pasien ?? null;
         $diskon = $request->diskon ?? 0;
         // dd($request);
@@ -398,13 +429,33 @@ class pasienController extends Controller
 
         historyPasien::create([
             'no_lab' => $request->no_lab,
-            'proses' => 'Payment',
+            'proses' => $history_proses,
             'tempat' => 'Loket',
             'waktu_proses' => now(),
         ]);
 
-        toast('Berhasil mengirim data pasien ke Lab', 'success');
+        toast('Pembayaran Berhasil!!', 'success');
         return redirect()->route('pasien.index');
+    }
+
+    public function checkin(Request $request)
+    {
+        $ids = $request->ids;
+        pasien::whereIn('id', $ids)->update(['status' => 'Check In']);
+        $pasien = pasien::whereIn('id', $ids)->get();
+
+        foreach ($pasien as $pasiens) {
+
+            historyPasien::create([
+                'no_lab' => $pasiens->no_lab,
+                'proses' => 'Dikirim ke spesiment',
+                'tempat' => 'Laboratorium',
+                'waktu_proses' => now(),
+                'created_at' => now(),
+            ]);
+        }
+        toast('Pasien telah Check in', 'success');
+        return response()->json(['success' => 'Data berhasil Dikonfirmasi!']);
     }
 
 

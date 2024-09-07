@@ -75,7 +75,7 @@ Tambah Spesiment
                                                         <input type="file" name="gambar[]" class="form-control" required>
                                                     </td>
                                                     <td>
-                                                        <button type="button" class="btn btn-success btn-add"><i class="bi bi-plus-lg"></i></button>
+                                                        <button type="button" class="btn btn-success btn-add"><i class="ti ti-plus"></i></button>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -129,8 +129,8 @@ function btnFunction(){
                             <input type="file" name="gambar[]" class="form-control" required>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-success btn-add"><i class="bi bi-plus-lg"></i></button>
-                            <button type="button" class="btn btn-danger btn-remove"><i class="bi bi-dash-lg"></i></button>
+                            <button type="button" class="btn btn-success btn-add"><i class="ti ti-plus"></i></button>
+                            <button type="button" class="btn btn-danger btn-remove"><i class="ti ti-minus"></i></button>
                         </td>
                     </tr>`;
         $("#tableDetail > tbody:last-child").append(row);

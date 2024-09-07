@@ -1,6 +1,113 @@
-@extends('master')
+@extends('layouts.admin')
 @section('title', 'Result Review')
 @section('content')
+<link rel="stylesheet" href="{{ asset('css/timeline.css') }}">
+<style>
+    @media print {
+        body {
+    background-color: #ccc; /* Warna abu-abu untuk background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+}
+    iframe {
+        overflow: auto;
+        width: 100%; /* Atur sesuai keinginan */
+        height: 90vh; /* Atur sesuai keinginan */
+        margin: 20px auto; /* Agar iframe berada di tengah */
+        display: block;
+        border: 10px solid #fff; /* Simulasi margin kertas */
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Bayangan untuk efek lebih realistis */
+    }
+    .step-wizard-list {
+    background: #fff;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+    color: lightslategray;
+    list-style-type: none;
+    border-radius: 10px;
+    display: flex;
+    padding: 20px 10px;
+    position: relative;
+    z-index: 10;
+    max-width: 100%; /* Membatasi lebar maksimal sesuai dengan ukuran modal */
+    overflow: auto; /* Menambahkan scroll horizontal jika konten terlalu besar */
+    margin-bottom: 10px; /* Memberikan ruang untuk scrollbar */
+}
+
+.step-wizard-item {
+    padding: 0 10px; /* Mengurangi padding untuk item agar lebih kompak */
+    flex-basis: 0;
+    flex-grow: 1;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    min-width: 120px; /* Kurangi ukuran minimum agar lebih fleksibel */
+    position: relative;
+}
+
+@media (max-width: 576px) {
+    .step-wizard-item {
+        min-width: 100px; /* Mengatur ulang ukuran untuk layar kecil */
+    }
+}
+ .step-wizard-item + .step-wizard-item:after{
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 19px;
+    background: #13ee88;
+    width: 100%;
+    height: 2px;
+    transform: translateX(-50%);
+    z-index: -10;
+ }
+ .progress-count{
+    height: 40px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: 600;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+    color: transparent;
+ }
+ .progress-count::after{
+    content: "";
+    height: 35px;
+    width: 35px;
+    background: #13ee88;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    z-index: -10;
+ }
+ .progress-count::before{
+    content: "";
+    height: 10px;
+    width: 20px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    position: absolute;
+    left: 50%;
+    top: 45%;
+    transform: translate(-50%, -60%) rotate(-45deg);
+    transform-origin: center center;
+ }
+ .progress-label{
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 10px;
+ }
+  </style>
 <div class="content" id="scroll-content">
     <div class="container-fluid">
       <!-- Page Heading -->
@@ -19,18 +126,14 @@
               <!-- Card Body -->
               <div class="card-body">
                 <div class="d-flex justify-content-between mb-3 pr-3">
-                  <form class="form-inline">
-                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success btn-sm my-2 my-sm-0" type="submit">Search</button>
-                  </form>
                 </div>
-                <div class="table-scroll table-pasien" style="overflow-y: scroll; max-height: 595px;">
-                <table class="table table-striped tabel-pasien" style="font-size: 12px;">
+                <div class="tab">
+                <table class="table table-striped table-responsive" style="font-size: 12px;" id="myTable">
                   <thead>
                     <tr>
-                      <th scope="col">No</th>
+                      <th scope="col" class="text-center">No</th>
                       <th scope="col">Tanggal Order</th>
-                      <th scope="col">No RM</th>
+                      <th scope="col" class="text-center">No RM</th>
                       <th scope="col">No LAB</th>
                       <th scope="col">Nama</th>
                       <th scope="col">Asal Poli</th>
@@ -42,153 +145,97 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <th scope="row">1</th>
-                      <td>12-12-12/ 13.30</td>
-                      <td>01.01.02</td>
-                      <td>LAB123442</td>
-                      <td>Jeff Hardi</td>
-                      <td>KIA</td>
-                      <td><i class='bx bxs-bell-ring mt-2 ml-1 text-danger' style="font-size: 23px;"></i></td>
-                      <td>20 tahun</td>
-                      <td>Jl. Latar Candi Indonesia Barat 1312</td>
-                      <td><span class="badge bg-danger text-white">Belum Dilayani</span></td>
-                      <td class="">
-                        <button href="#" class="btn btn-sm btn-outline-warning mr-2" data-bs-toggle="modal" data-bs-target="#exampleModal">Sample History</button>
-                        <button href="#" class="btn btn-sm btn-outline-primary ">Print Result</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">2</th>
-                      <td>12-12-12/ 13.30</td>
-                      <td>01.01.04</td>
-                      <td>LAB123432</td>
-                      <td>Dediyanto Iskandar</td>
-                      <td>Umum</td>
-                      <td><i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i></td>
-                      <td>34 tahun</td>
-                      <td>Jl. Latar Candi Indonesia Barat 1312</td>
-                      <td><span class="badge bg-danger text-white">Belum Dilayani</span></td>
-                      <td class="">
-                        <button href="#" class="btn btn-sm btn-outline-warning mr-2" data-bs-toggle="modal" data-bs-target="#exampleModal">Sample History</button>
-                        <button href="#" class="btn btn-sm btn-outline-primary ">Print Result</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">3</th>
-                      <td>12-12-12/ 13.30</td>
-                      <td>01.01.04</td>
-                      <td>LAB123421</td>
-                      <td>Undertaker</td>
-                      <td>IGD</td>
-                      <td><i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i></td>
-                      <td>31 tahun</td>
-                      <td>Jl. Latar Candi Indonesia Barat 1312</td>
-                      <td><span class="badge bg-danger text-white">Belum Dilayani</span></td>
-                      <td class="">
-                        <button href="#" class="btn btn-sm btn-outline-warning mr-2" data-bs-toggle="modal" data-bs-target="#exampleModal">Sample History</button>
-                        <button href="#" class="btn btn-sm btn-outline-primary ">Print Result</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">4</th>
-                      <td>12-12-12/ 13.30</td>
-                      <td>01.01.02</td>
-                      <td>LAB123442</td>
-                      <td>John China</td>
-                      <td>Mawar</td>
-                      <td><i class='bx bxs-bell-ring mt-2 ml-1 text-danger' style="font-size: 23px;"></i></td>
-                      <td>44 tahun</td>
-                      <td>Jl. Latar Candi Indonesia Barat 1312</td>
-                      <td><span class="badge bg-danger text-white">Belum Dilayani</span></td>
-                      <td class="">
-                        <button href="#" class="btn btn-sm btn-outline-warning mr-2" data-bs-toggle="modal" data-bs-target="#exampleModal">Sample History</button>
-                        <button href="#" class="btn btn-sm btn-outline-primary ">Print Result</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">5</th>
-                      <td>12-12-12/ 13.30</td>
-                      <td>01.01.04</td>
-                      <td>LAB123421</td>
-                      <td>Undertaker</td>
-                      <td>IGD</td>
-                      <td><i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i></td>
-                      <td>31 tahun</td>
-                      <td>Jl. Latar Candi Indonesia Barat 1312</td>
-                      <td><span class="badge bg-danger text-white">Belum Dilayani</span></td>
-                      <td class="">
-                        <button href="#" class="btn btn-sm btn-outline-warning mr-2" data-bs-toggle="modal" data-bs-target="#exampleModal">Sample History</button>
-                        <button href="#" class="btn btn-sm btn-outline-primary ">Print Result</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">6</th>
-                      <td>12-12-12/ 13.30</td>
-                      <td>01.01.04</td>
-                      <td>LAB123421</td>
-                      <td>Undertaker</td>
-                      <td>IGD</td>
-                      <td><i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i></td>
-                      <td>31 tahun</td>
-                      <td>Jl. Latar Candi Indonesia Barat 1312</td>
-                      <td><span class="badge bg-danger text-white">Belum Dilayani</span></td>
-                      <td class="">
-                        <button href="#" class="btn btn-sm btn-outline-warning mr-2" data-bs-toggle="modal" data-bs-target="#exampleModal">Sample History</button>
-                        <button href="#" class="btn btn-sm btn-outline-primary ">Print Result</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">7</th>
-                      <td>12-12-12/ 13.30</td>
-                      <td>01.01.04</td>
-                      <td>LAB123421</td>
-                      <td>Undertaker</td>
-                      <td>IGD</td>
-                      <td><i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i></td>
-                      <td>31 tahun</td>
-                      <td>Jl. Latar Candi Indonesia Barat 1312</td>
-                      <td><span class="badge bg-danger text-white">Belum Dilayani</span></td>
-                      <td class="">
-                        <button href="#" class="btn btn-sm btn-outline-warning mr-2" data-bs-toggle="modal" data-bs-target="#exampleModal">Sample History</button>
-                        <button href="#" class="btn btn-sm btn-outline-primary ">Print Result</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">8</th>
-                      <td>12-12-12/ 13.30</td>
-                      <td>01.01.04</td>
-                      <td>LAB123421</td>
-                      <td>Undertaker</td>
-                      <td>IGD</td>
-                      <td><i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i></td>
-                      <td>31 tahun</td>
-                      <td>Jl. Latar Candi Indonesia Barat 1312</td>
-                      <td><span class="badge bg-warning text-white">Diproses</span></td>
-                      <td class="">
-                        <button href="#" class="btn btn-sm btn-outline-warning mr-2" data-bs-toggle="modal" data-bs-target="#exampleModal">Sample History</button>
-                        <button href="#" class="btn btn-sm btn-outline-primary ">Print Result</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">9</th>
-                      <td>12-12-12/ 13.30</td>
-                      <td>01.01.04</td>
-                      <td>LAB123421</td>
-                      <td>Undertaker</td>
-                      <td>IGD</td>
-                      <td><i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i></td>
-                      <td>31 tahun</td>
-                      <td>Jl. Latar Candi Indonesia Barat 1312</td>
-                      <td><span class="badge bg-success text-white">Dilayani</span></td>
-                      <td class="">
-                        <button href="#" class="btn btn-sm btn-outline-warning mr-2" data-bs-toggle="modal" data-bs-target="#exampleModal">Sample History</button>
-                        <button href="#" class="btn btn-sm btn-outline-primary ">Print Result</button>
-                      </td>
-                    </tr>
+                        @foreach ( $dataPasien as $x => $dpc )
+                            <tr>
+                                <th class="text-center" scope="row">{{ $x + 1 }}</th>
+                                <td>
+                                    @foreach ($dataHistory as $dh)
+                                    @if ($dh->no_lab == $dpc->no_lab)
+                                    {{ date('d-m-Y', strtotime($dh->waktu_proses)) }}/{{ date('H:i', strtotime($dh->waktu_proses)) }}
+                                    @endif
+                                    @endforeach
+                                </td>
+                                <td class="text-center">{{ $dpc->no_rm }}</td>
+                                <td>{{ $dpc->no_lab }}</td>
+                                <td>{{ $dpc->nama }}</td>
+                                <td>{{ $dpc->asal_ruangan }}</td>
+                                <td>
+                                    <i class='ti ti-bell-filled {{ $dpc->cito == '1' ? 'text-danger' : 'text-secondary' }}' style="font-size: 23px;"></i>
+                                </td>
+                                <td>
+                                    {{ \Carbon\Carbon::parse($dpc->lahir)->age }} Tahun
+                                </td>
+                                <td>{{ $dpc->alamat }}</td>
+                                <td>
+                                    @if($dpc->status == "Result Review")
+                                    <span class="badge bg-danger text-white">Waiting...</span>
+                                    @else
+                                    @endif
+                                </td>
+                                <td>
+                                    {{-- <button class="btn btn-info btn-preview" data-id={{ $dpc->id }} data-bs-target="#modalSpesimen"
+                                        data-bs-toggle="modal" ><i class="ti ti-eye"></i></button>
+                                    <button class="btn btn-warning"><i class="ti ti-barcode"></i></button>
+                                    <button class="btn btn-success btn-edit" data-id={{ $dpc->id }} data-bs-target="#modalEdit" data-bs-toggle="modal"><i class="ti ti-edit"></i></button>
+                                    
+                                    <form id="delete-form-{{ $dpc->id }}"
+                                        action="{{ route('spesiment.destroy', $dpc->no_lab) }}" method="POST"
+                                        style="display: none;">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
+                                    
+                                    <button class="btn btn-danger"
+                                        onclick="confirmDelete({{ $dpc->id }})"><i
+                                        class="ti ti-trash"></i>
+                                    </button> --}}
+                                        <button href="#" class="btn btn-sm btn-outline-warning mr-2 preview" data-id={{ $dpc->id }} data-bs-toggle="modal" data-bs-target="#sampleHistoryModal">Sample History</button>
+                                        {{-- <a style="cursor: pointer; font-size: 14px" href="{{ route('print.pasien', $dpc->no_lab) }}" class="btn btn-outline-primary p-1 mr-2" target="_blank">Print Result</a> --}}
+                                        <button class="btn btn-sm btn-outline-primary" onclick="window.open('{{ route('print.pasien', $dpc->no_lab) }}', '_blank')">Print Result</button>
+                                        {{-- <button class="btn btn-sm btn-outline-primary" data-id={{ $dpc->no_lab }} data-bs-toggle="modal"data-bs-target="#printResult">Print Result</button> --}}
+
+                                                
+                                </td>
+                            </tr>
+                        @endforeach
                   </tbody>
                   </table>
                 </div>
+                {{-- Sample History --}}
+                <div class="modal fade" id="sampleHistoryModal" tabindex="-1" aria-labelledby="sampleHistoryModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="sampleHistoryModalLabel">Sample History</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div id="previewDataPasien"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{-- Print Result --}}
+                {{-- <div class="modal fade" id="printResult" tabindex="-1" aria-labelledby="printResultLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="printResultLabel">Preview Cetak Hasil</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <iframe src="{{ route('print.pasien', $dpc->no_lab) }}" frameborder="0"></iframe>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                <button type="button" class="btn btn-primary">Print</button>
+                            </div>
+                        </div>
+                    </div>
+                </div> --}}
               </div>
           </div>
       </div>
@@ -197,436 +244,330 @@
 
   </div>
 @endsection
-@section('modal')
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">History Sampling</h5>
-          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body py-0" style="max-height: 700px; overflow-y: auto;">
-         <hr>
-             <form action="#" class="row">
-                <div class="detail_pemeriksaan col-12">
-                    <div class="d-flex justify-content-between">
-                        <p class="h6 text-gray-800">Detail Sampling</p>
-                        <p class="h6 text-gray-600">Senin, 12 Jan 2023 / 19.50</p>
-                    </div>
+@push('script')
+{{-- <script>
+    function loadIframe() {
+        document.getElementById('printIframe').src = '{{ route('print.pasien', $dpc->no_lab) }}';
+    }
+</script> --}}
+{{-- Print Result --}}
+{{-- <script>
+     $('.print').on('click', function(event) {
+        event.preventDefault();
+        const id = this.getAttribute('data-id');
+        const previewDataPasien = document.getElementById('printPasien');
+        const loader = $('#loader');
+
+        loader.show();
+
+        fetch(`/api/get-data-pasien/${id}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP error " + response.status);
+                }
+                return response.json();
+            })
+            .then(res => {
+                console.log(res);
+                if (res.status === 'success') {
+                    const data_pasien = res.data;
+                    const data_pemeriksaan_pasien = res.data.dpp;
+                    const history = res.data.history;
+                    const spesimen = res.data.spesiment; // Load spesimen data
+                    const scollection = res.data.spesimentcollection;
+                    const shandling = res.data.spesimenthandling;
+                    const hasil = res.data.hasil_pemeriksaan;
+
+                    let detailContent = `
+                        <div class="row mb-3">
+                            <div class="header text-center mb-3">
+                                <h4>Data Pemeriksaan Pasien</h4>
+                            </div>
+                            <hr>
+                            <div class="col-lg-7 col-md-5 col-sm-12">
+                                <div class="row mb-1">
+                                    <label class="col-5 col-form-label fw-bold">Cito</label>
+                                    <div class="col-7">
+                                        : <i class='ti ti-bell-filled text-danger' style="font-size: 23px;"></i>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <label class="col-5 col-form-label fw-bold">No LAB</label>
+                                    <div class="col-7">
+                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.no_lab}">
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <label class="col-5 col-form-label fw-bold">No RM</label>
+                                    <div class="col-7">
+                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.no_rm}">
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <label class="col-5 col-form-label fw-bold">Nama</label>
+                                    <div class="col-7">
+                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.nama}">
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <label class="col-5 col-form-label fw-bold">Ruangan</label>
+                                    <div class="col-7">
+                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.asal_ruangan}">
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <label class="col-5 col-form-label fw-bold">Tanggal Lahir Usia</label>
+                                    <div class="col-7">
+                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.lahir} Tahun">
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <label class="col-5 col-form-label fw-bold">Dokter</label>
+                                    <div class="col-7">
+                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.dokter.nama_dokter}">
+                                    </div>
+                                </div>
+                            </div>
+                    `;
+
+                    // detailContent += accordionContent;
+                    previewDataPasien.innerHTML = detailContent;
+
+                    loader.hide();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                loader.hide();
+            });
+    });
+</script> --}}
+{{-- Sample History --}}
+<script>
+     $('.preview').on('click', function(event) {
+        event.preventDefault();
+        const id = this.getAttribute('data-id');
+        const previewDataPasien = document.getElementById('previewDataPasien');
+        const loader = $('#loader');
+
+        loader.show();
+
+        fetch(`/api/get-data-pasien/${id}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP error " + response.status);
+                }
+                return response.json();
+            })
+            .then(res => {
+                console.log(res);
+                if (res.status === 'success') {
+                    const data_pasien = res.data;
+                    const data_pemeriksaan_pasien = res.data.dpp;
+                    const history = res.data.history;
+                    const spesimen = res.data.spesiment; // Load spesimen data
+                    const scollection = res.data.spesimentcollection;
+                    const shandling = res.data.spesimenthandling;
+                    const hasil = res.data.hasil_pemeriksaan;
+
+                    // Populate Modal
+                    let accordionContent = '';
+
+                    accordionContent += `
                     <hr>
-                    <div class="row">
-                     <div class="col-lg-5">
-                      <div class="d-flex justify-content-between">
-                        <p class="h6 text-gray-800 col-12 ml-0">Darah Lengkap</p>
-                        <p class="h6 text-gray-800 col-12">Tabung K3 EDTA</p>
-                      </div>
-                      <div class="sub-detail"">
-                        <p class="text-gray-600 offset-md-3">Leukosit</p>
-                        <p class="text-gray-600 offset-md-3" style="margin-top: -10px;">Eritrosit</p>
-                        <p class="text-gray-600 offset-md-3" style="margin-top: -10px;">Hemoglobin</p>
-                        <p class="text-gray-600 offset-md-3" style="margin-top: -10px;">more...</p>
-                      </div>
-                      <div class="d-flex justify-content-between">
-                        <p class="h6 text-gray-800 col-12">Creatinin</p>
-                        <p class="h6 text-gray-800 col-12">Tabung Merah</p>
-                      </div>
-                      <div class="sub-detail"">
-                        <p class="text-gray-600 offset-md-3">Leukosit</p>
-                        <p class="text-gray-600 offset-md-3" style="margin-top: -10px;">Eritrosit</p>
-                        <p class="text-gray-600 offset-md-3" style="margin-top: -10px;">Hemoglobin</p>
-                        <p class="text-gray-600 offset-md-3" style="margin-top: -10px;">more...</p>
-                       </div>
-                       <div class="d-flex justify-content-between">
-                        <p class="h6 text-gray-800 col-12">Urea (Bun)</p>
-                        <p class="h6 text-gray-800 col-12">Tabung Hijau</p>
-                       </div>
-                       <div class="sub-detail"">
-                       </div>
-                     </div>
-                    </div>
-                    <div class="row mt-2">
-                     <div class="form-group col-12">
-                        <label for="exampleFormControlTextarea1">Note</label>
-                        <textarea class="form-control txt-area" style="resize: none; height: 130px; outline: none; border: none;" id="note-2" rows="3" name="note-2" placeholder="Kimia Klinik tidak dapat diambil sampel dikarenakan pembuluh darah kembut kembut" readonly></textarea>
-                     </div>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                     <p class="h6 text-gray-800 mt-3">Spesimen Collection</p>
-                     <p class="h6 text-gray-600 mt-3">Senin, 12 Jan 2023 / 20.00</p>
-                    </div>
+                    <h5>Detail Sampling</h5>
                     <hr>
-                    <div class="row">
-                        <div class="akordion col-12">
-                            <div class="akordion-content">
-                                <header>
-                                    <span class="judul-ak">Tabung K3 EDTA</span>
-                                    <i class="bx bx-plus" style="color: #D0BFFF;"></i>
-                                </header>
-                                <div class="deskripsi-ak">
-                                    <div class="d-flex justify-content-around text-center">
-                                        <div class="sampling-bar">
-                                            <h2>Low</h2>
-                                            <div class="prog-sampling" style="background: #FF6868;">
-                                            <div class="low"></div>
-                                            </div>
-                                            <input type="radio" name="prog" value="low">
-                                        </div>
-                                        <div class="sampling-bar">
-                                            <h2>Normal</h2>
-                                            <div class="prog-sampling" style="margin-left: 12px; background:#FFBB64;">
-                                            <div class="normal"></div>
-                                            </div>
-                                            <input type="radio" name="prog" value="normal">
-                                        </div>
-                                        <div class="sampling-bar">
-                                            <h2>High</h2>
-                                            <div class="prog-sampling" style="background: #8fd48e;">
-                                            <div class="high"></div>
-                                            </div>
-                                            <input type="radio" name="prog" value="high">
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col-12">
-                                            <label for="exampleFormControlTextarea1">Note</label>
-                                            <textarea class="form-control txt-area" style="resize: none; height: 160px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                                            </div>
-                                        </div>
+                    <h5>History</h5>
+                    <ul class="step-wizard-list mt-4">
+                        ${history.map((h, index) => `
+                            <li class="step-wizard-item">
+                                <span class="progress-count">${index + 1}</span>
+                                <span class="progress-label">${h.proses}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                    `;
+
+                    spesimen.forEach(e => {
+                        let details = '';
+                        let detailsData = [];
+                        let kapasitas, serumh, serum;
+
+                        if (e.tabung === 'EDTA') {
+                            const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key && item.tabung === 'EDTA');
+                            if (collectionItem) {
+                                detailsData = collectionItem.details.filter(detail => 
+                                    e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                                );
+                                kapasitas = collectionItem.kapasitas;
+                            }
+                        } else if (e.tabung === 'K3') {
+                            const collectionItem = scollection.find(item => 
+                                item.no_lab === e.laravel_through_key && item.tabung === 'K3'
+                            );
+                            if (collectionItem) {
+                                detailsData = collectionItem.details.filter(detail => 
+                                    e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                                );
+                                serumh = collectionItem.serumh;
+                            }
+                        } else if (e.tabung === 'CLOT-ACT') {
+                            const handlingItem = shandling.find(item => item.no_lab === e.laravel_through_key);
+                            if (handlingItem) {
+                                detailsData = handlingItem.details.filter(detail => 
+                                    e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                                );
+                                serum = handlingItem.serum;
+                            }
+                        }
+
+                        if (e.details && e.details.length > 0) {
+                            details = `<div class="detail-container col-12 col-md-6">`;
+                            e.details.forEach(detail => {
+                                const imageUrl = `/gambar/${detail.gambar}`;
+                                let isChecked = '';
+                                let isDisabled = 'disabled';
+
+                                const matchedDetail = detailsData.find(d => d.id === detail.id);
+                                if (matchedDetail) {
+                                    if (e.tabung === 'EDTA' && kapasitas == detail.id) {
+                                        isChecked = 'checked';
+                                        isDisabled = '';
+                                    } else if (e.tabung === 'K3' && serumh == detail.id) {
+                                        isChecked = 'checked';
+                                        isDisabled = '';
+                                    } else if (e.tabung === 'CLOT-ACT' && serum == detail.id) {
+                                        isChecked = 'checked';
+                                        isDisabled = '';
+                                    }
+                                }
+
+                                details += `
+                                <div class="detail-item">
+                                    <div class="detail-text">${detail.nama_parameter}</div>
+                                    <div class="detail-image-container">
+                                        <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
                                     </div>
-                                </div>
-                            </div>
-                            <div class="akordion-content">
-                                <header>
-                                    <span class="judul-ak">Tabung Clot Act</span>
-                                    <i class="bx bx-plus" style="color: #FF8080;"></i>
-                                </header>
-                                <div class="deskripsi-ak">
-                                    <div class="d-flex justify-content-around text-center">
-                                        <div class="sampling-bar">
-                                            <h2>Low</h2>
-                                            <div class="prog-sampling" style="background: #FF6868;">
-                                            <div class="low"></div>
-                                            </div>
-                                            <input type="radio" name="prog" value="low">
-                                        </div>
-                                        <div class="sampling-bar">
-                                            <h2>Normal</h2>
-                                            <div class="prog-sampling" style="margin-left: 12px; background:#FFBB64;">
-                                            <div class="normal"></div>
-                                            </div>
-                                            <input type="radio" name="prog" value="normal">
-                                        </div>
-                                        <div class="sampling-bar">
-                                            <h2>High</h2>
-                                            <div class="prog-sampling" style="background: #8fd48e;">
-                                            <div class="high"></div>
-                                            </div>
-                                            <input type="radio" name="prog" value="high">
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col-12">
-                                            <label for="exampleFormControlTextarea1">Note</label>
-                                            <textarea class="form-control txt-area" style="resize: none; height: 160px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                                            </div>
-                                        </div>
+                                    <div class="detail-radio-container">
+                                        <input type="radio" name="${e.tabung}" class="detail.radio" value="${detail.id}" ${isChecked} ${isDisabled} />  
                                     </div>
-                                </div>
-                            </div>
-                            <div class="akordion-content">
-                                <header>
-                                    <span class="judul-ak">Tabung Urine</span>
-                                    <i class="bx bx-plus" style="color: #F2BED1;"></i>
-                                </header>
-                                <div class="deskripsi-ak">
-                                    <div class="d-flex justify-content-around text-center">
-                                        <div class="sampling-bar">
-                                            <h2>Low</h2>
-                                            <div class="prog-sampling" style="background: #FF6868;">
-                                            <div class="low"></div>
+                                </div>`;
+                            });
+                            details += `</div>`;
+                        }
+
+                        let title = '';
+                        let subtext = '';
+
+                        if (e.tabung === 'EDTA') {
+                            title = '<h5 class="title">Spesiment Collection</h5> <hr>';
+                        }else
+
+                        if (e.tabung === 'K3') {
+                            title = '<h5 class="title">Spesiment Collection</h5> <hr>';
+                        }else
+
+                        if (e.tabung === 'CLOT-ACT') {
+                            title = '<h5 class="title mt-3">Spesiment Handlings</h5> <hr>';
+                            subtext = '<div class="subtext">Serum</div>';
+                        }
+
+                        let note = '';
+                        if (e.tabung === 'EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'K3') {
+                            note = '<p class="mb-0"><strong>Note</strong></p>';
+                        }
+
+                        accordionContent += `${title}
+                            <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">
+                                                
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading${e.tabung}">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">
+                                        Tabung ${e.tabung}
+                                        </button>
+                                    </h2>
+                                    <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}" data-bs-parent="#accordion${e.tabung}">
+                                        <div class="accordion-body">
+                                            
+                                            ${subtext}
+                                            <div class="container">
+                                                ${details}
                                             </div>
-                                            <input type="radio" name="prog" value="low">
-                                        </div>
-                                        <div class="sampling-bar">
-                                            <h2>Normal</h2>
-                                            <div class="prog-sampling" style="margin-left: 12px; background:#FFBB64;">
-                                            <div class="normal"></div>
-                                            </div>
-                                            <input type="radio" name="prog" value="normal">
-                                        </div>
-                                        <div class="sampling-bar">
-                                            <h2>High</h2>
-                                            <div class="prog-sampling" style="background: #8fd48e;">
-                                            <div class="high"></div>
-                                            </div>
-                                            <input type="radio" name="prog" value="high">
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col-12">
-                                            <label for="exampleFormControlTextarea1">Note</label>
-                                            <textarea class="form-control txt-area" style="resize: none; height: 160px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="akordion-content">
-                                <header>
-                                    <span class="judul-ak">Litium Heparin</span>
-                                    <i class="bx bx-plus" style="color: #A1EEBD;"></i>
-                                </header>
-                                <div class="deskripsi-ak">
-                                    <div class="d-flex justify-content-around text-center">
-                                        <div class="sampling-bar">
-                                            <h2>Low</h2>
-                                            <div class="prog-sampling" style="background: #FF6868;">
-                                            <div class="low"></div>
-                                            </div>
-                                            <input type="radio" name="prog" value="low">
-                                        </div>
-                                        <div class="sampling-bar">
-                                            <h2>Normal</h2>
-                                            <div class="prog-sampling" style="margin-left: 12px; background:#FFBB64;">
-                                            <div class="normal"></div>
-                                            </div>
-                                            <input type="radio" name="prog" value="normal">
-                                        </div>
-                                        <div class="sampling-bar">
-                                            <h2>High</h2>
-                                            <div class="prog-sampling" style="background: #8fd48e;">
-                                            <div class="high"></div>
-                                            </div>
-                                            <input type="radio" name="prog" value="high">
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col-12">
-                                            <label for="exampleFormControlTextarea1">Note</label>
-                                            <textarea class="form-control txt-area" style="resize: none; height: 160px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                                            </div>
+                                            ${note}
+                                            ${e.tabung === 'EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
+                                            ${e.tabung === 'K3' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
+                                            ${e.tabung === 'CLOT-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
+                                            
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        </div>
-                        <hr>
-                        <div class="d-flex justify-content-between">
-                            <p class="h6 text-gray-800 mt-3">Spesimen Handling</p>
-                            <p class="h6 text-gray-600 mt-3">Senin, 12 Jan 2023 / 20.50</p>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="akordion col-12">
-                                <div class="akordion-content">
-                                    <header>
-                                        <span class="judul-ak">Tabung K3 EDTA</span>
-                                        <i class="bx bx-plus" style="color: #D0BFFF;"></i>
-                                    </header>
-                                    <div class="deskripsi-ak">
-                                        <p class="h6 font-weight-bold text-center">Serum</p>
-                                            <div class="d-flex justify-content-around text-center">
-                                                <div class="sampling-bar">
-                                                    <h2>Normal</h2>
-                                                    <div class="serum my-2">
-                                                    <img src="../image/Group 150.png" alt="">
-                                                    </div>
-                                                    <input type="radio" name="serum" value="normal">
-                                                </div>
-                                                <div class="sampling-bar">
-                                                    <h2>Hemolytic</h2>
-                                                    <div class="serum my-2">
-                                                    <img src="../image/Group 151.png" alt="">
-                                                    </div>
-                                                    <input type="radio" name="serum" value="hemolytic">
-                                                </div>
-                                                <div class="sampling-bar">
-                                                    <h2>Iteric</h2>
-                                                    <div class="serum my-2">
-                                                    <img src="../image/Group 152.png" alt="">
-                                                    </div>
-                                                    <input type="radio" name="serum" value="iteric">
-                                                </div>
-                                                <div class="sampling-bar">
-                                                    <h2>Lipemic</h2>
-                                                    <div class="serum my-2">
-                                                    <img src="../image/Group 153.png" alt="">
-                                                    </div>
-                                                    <input type="radio" name="serum" value="lipemic">
-                                                </div>
-                                            </div>
-                                        <div class="row">
-                                            <div class="form-group col-12">
-                                                <label for="exampleFormControlTextarea1">Note</label>
-                                                <textarea class="form-control txt-area" style="resize: none; height: 100px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            <div class="akordion-content">
-                            <header>
-                                <span class="judul-ak">Tabung Clot Act</span>
-                                <i class="bx bx-plus" style="color: #FF8080;"></i>
-                            </header>
-                            <div class="deskripsi-ak">
-                                <p class="h6 font-weight-bold text-center">Serum</p>
-                                <div class="d-flex justify-content-around text-center">
-                                <div class="sampling-bar">
-                                    <h2>Normal</h2>
-                                    <div class="serum my-2">
-                                    <img src="../image/Group 150.png" alt="">
-                                    </div>
-                                    <input type="radio" name="serum" value="normal">
-                                </div>
-                                <div class="sampling-bar">
-                                    <h2>Hemolytic</h2>
-                                    <div class="serum my-2">
-                                    <img src="../image/Group 151.png" alt="">
-                                    </div>
-                                    <input type="radio" name="serum" value="hemolytic">
-                                </div>
-                                <div class="sampling-bar">
-                                    <h2>Iteric</h2>
-                                    <div class="serum my-2">
-                                    <img src="../image/Group 152.png" alt="">
-                                    </div>
-                                    <input type="radio" name="serum" value="iteric">
-                                </div>
-                                <div class="sampling-bar">
-                                    <h2>Lipemic</h2>
-                                    <div class="serum my-2">
-                                    <img src="../image/Group 153.png" alt="">
-                                    </div>
-                                    <input type="radio" name="serum" value="lipemic">
-                                </div>
-                                </div>
-                                <div class="row">
-                                <div class="form-group col-12">
-                                    <label for="exampleFormControlTextarea1">Note</label>
-                                    <textarea class="form-control txt-area" style="resize: none; height: 100px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                                </div>
-                                </div>
-                            </div>
-                            </div>
-                            <div class="akordion-content">
-                            <header>
-                                <span class="judul-ak">Tabung Urine</span>
-                                <i class="bx bx-plus" style="color: #F2BED1;"></i>
-                            </header>
-                            <div class="deskripsi-ak">
-                                <p class="h6 font-weight-bold text-center">Serum</p>
-                                <div class="d-flex justify-content-around text-center">
-                                <div class="sampling-bar">
-                                    <h2>Normal</h2>
-                                    <div class="serum mb-2">
-                                    <img src="../image/Group 150.png" alt="">
-                                    </div>
-                                    <input type="radio" name="serum" value="normal">
-                                </div>
-                                <div class="sampling-bar">
-                                    <h2>Hemolytic</h2>
-                                    <div class="serum my-2">
-                                    <img src="../image/Group 151.png" alt="">
-                                    </div>
-                                    <input type="radio" name="serum" value="hemolytic">
-                                </div>
-                                <div class="sampling-bar">
-                                    <h2>Iteric</h2>
-                                    <div class="serum my-2">
-                                    <img src="../image/Group 152.png" alt="">
-                                    </div>
-                                    <input type="radio" name="serum" value="iteric">
-                                </div>
-                                <div class="sampling-bar">
-                                    <h2>Lipemic</h2>
-                                    <div class="serum my-2">
-                                    <img src="../image/Group 153.png" alt="">
-                                    </div>
-                                    <input type="radio" name="serum" value="lipemic">
-                                </div>
-                                </div>
-                                <div class="row">
-                                <div class="form-group col-12">
-                                    <label for="exampleFormControlTextarea1">Note</label>
-                                    <textarea class="form-control txt-area" style="resize: none; height: 100px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                                </div>
-                                </div>
-                            </div>
-                            </div>
-                            <div class="akordion-content">
-                            <header>
-                                <span class="judul-ak">Litium Heparin</span>
-                                <i class="bx bx-plus" style="color: #A1EEBD;"></i>
-                            </header>
-                            <div class="deskripsi-ak">
-                                <p class="h6 font-weight-bold text-center">Serum</p>
-                                <div class="d-flex justify-content-around text-center">
-                                <div class="sampling-bar">
-                                    <h2>Normal</h2>
-                                    <div class="serum my-2">
-                                    <img src="../image/Group 150.png" alt="">
-                                    </div>
-                                    <input type="radio" name="serum" value="normal">
-                                </div>
-                                <div class="sampling-bar">
-                                    <h2>Hemolytic</h2>
-                                    <div class="serum my-2">
-                                    <img src="../image/Group 151.png" alt="">
-                                    </div>
-                                    <input type="radio" name="serum" value="hemolytic">
-                                </div>
-                                <div class="sampling-bar">
-                                    <h2>Iteric</h2>
-                                    <div class="serum my-2">
-                                    <img src="../image/Group 152.png" alt="">
-                                    </div>
-                                    <input type="radio" name="serum" value="iteric">
-                                </div>
-                                <div class="sampling-bar">
-                                    <h2>Lipemic</h2>
-                                    <div class="serum my-2">
-                                    <img src="../image/Group 153.png" alt="">
-                                    </div>
-                                    <input type="radio" name="serum" value="lipemic">
-                                </div>
-                                </div>
-                                <div class="row">
-                                <div class="form-group col-12">
-                                    <label for="exampleFormControlTextarea1">Note</label>
-                                    <textarea class="form-control txt-area" style="resize: none; height: 100px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                                </div>
-                                </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <hr>
-                      <div class="d-flex justify-content-between">
-                        <div class="flex-row">
-                            <p class="h6 text-gray-800 my-3">Tanggal Verifikasi</p>
-                            <div class="form-group col-sm-12 px-1">
-                                <label for="exampleFormControlTextarea1">Note</label>
-                                <textarea class="form-control txt-area" style="resize: none; height: 100px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                            </div>
-                            <p class="h6 font-weight-bold text-center mt-3">Analyst</p>
-                        </div>
-                        <div class="flex-row">
-                            <p class="h6 text-gray-800 my-3">Senin, 12 Jan 2023 / 22.00</p>
-                            <div class="form-group col-sm-12 px-1">
-                                <label for="exampleFormControlTextarea1">Note</label>
-                                <textarea class="form-control txt-area" style="resize: none; height: 100px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                            </div>
-                            <p class="h6 font-weight-bold text-center mt-3">Dokter PK</p>
-                        </div>
-                      </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-      </div>
-    </div>
-</div>
+                                </div>`;
+                    });
+                    
+
+                    // let detailContent = `
+                    //     <div class="row mb-3">
+                    //         <div class="header text-center mb-3">
+                    //             <h4>Data Pemeriksaan Pasien</h4>
+                    //         </div>
+                    //         <hr>
+                    //         <div class="col-lg-7 col-md-5 col-sm-12">
+                    //             <div class="row mb-1">
+                    //                 <label class="col-5 col-form-label fw-bold">Cito</label>
+                    //                 <div class="col-7">
+                    //                     : <i class='ti ti-bell-filled text-danger' style="font-size: 23px;"></i>
+                    //                 </div>
+                    //             </div>
+                    //             <div class="row mb-1">
+                    //                 <label class="col-5 col-form-label fw-bold">No LAB</label>
+                    //                 <div class="col-7">
+                    //                     <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.no_lab}">
+                    //                 </div>
+                    //             </div>
+                    //             <div class="row mb-1">
+                    //                 <label class="col-5 col-form-label fw-bold">No RM</label>
+                    //                 <div class="col-7">
+                    //                     <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.no_rm}">
+                    //                 </div>
+                    //             </div>
+                    //             <div class="row mb-1">
+                    //                 <label class="col-5 col-form-label fw-bold">Nama</label>
+                    //                 <div class="col-7">
+                    //                     <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.nama}">
+                    //                 </div>
+                    //             </div>
+                    //             <div class="row mb-1">
+                    //                 <label class="col-5 col-form-label fw-bold">Ruangan</label>
+                    //                 <div class="col-7">
+                    //                     <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.asal_ruangan}">
+                    //                 </div>
+                    //             </div>
+                    //             <div class="row mb-1">
+                    //                 <label class="col-5 col-form-label fw-bold">Tanggal Lahir Usia</label>
+                    //                 <div class="col-7">
+                    //                     <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.lahir} Tahun">
+                    //                 </div>
+                    //             </div>
+                    //             <div class="row mb-1">
+                    //                 <label class="col-5 col-form-label fw-bold">Dokter</label>
+                    //                 <div class="col-7">
+                    //                     <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.dokter.nama_dokter}">
+                    //                 </div>
+                    //             </div>
+                    //         </div>
+                    // `;
+
+                    // detailContent += accordionContent;
+                    previewDataPasien.innerHTML = accordionContent;
+
+                    loader.hide();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                loader.hide();
+            });
+});
+</script>
 <script src="{{ asset('../js/ak.js') }}"></script>
-@endsection
+@endpush

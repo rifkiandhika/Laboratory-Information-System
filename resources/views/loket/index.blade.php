@@ -2,7 +2,18 @@
 @extends('layouts.admin')
 
 @section('title', 'Loket')
-
+<style>
+    ::-webkit-scrollbar {
+        width: 5px; 
+    }
+    ::-webkit-scrollbar-thumb {
+        background: lightgray;
+        border-radius: 10px;
+    }
+    .scrollbox{
+        overflow: auto;
+    }
+</style>
 @section('content')
     <div class="content" id="scroll-content">
         <div class="container-fluid">
@@ -120,7 +131,7 @@
                     </div>
                     <!-- Card Body -->
                     <div class="card-body">
-                        <div class="">
+                        <div class="py-3 d-flex flex-row align-items-center justify-content-between">
                             {{-- <form class="form-inline">
                                     <input class="form-control mr-sm-2" type="search" placeholder="Search"
                                         aria-label="Search">
@@ -129,11 +140,14 @@
                             <a href="{{ route('pasien.create') }}" class="btn btn-outline-primary">
                                 <i class='bx bx-plus'></i> + Add Inspection
                             </a>
+                            
+                        <a href="#" id="konfirmasiallselecteddata" type="button" class="btn btn-outline-info" >Check In</a>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-striped table-bordered " id="myTable">
                                 <thead>
                                     <tr>
+                                        <th class="sorting_disabled"><input style="font-size: 20px; cursor: pointer;clear:" type="checkbox" name="" id="select_all_ids" class="form-check-input" ></th>
                                         <th scope="col">No.</th>
                                         <th scope="col">Cito</th>
                                         <th scope="col">Name</th>
@@ -146,9 +160,15 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse ($data_pasien as $x => $dc)
-                                        <tr>
-                                            <td scope="row">{{ $x + 1 }}</td>
+                                    @php
+                                        $counter = 1; // Inisialisasi counter untuk nomor urut
+                                    @endphp
+                                    @forelse ($data_pasien as $dc)
+                                    <tr>
+                                        <th>
+                                            <input style="font-size: 20px; cursor: pointer; display: none" type="checkbox" class="form-check-input checkbox_ids" value="{{ $dc->id }}">
+                                        </th>
+                                            <td scope="row">{{ $counter }}</td>
                                             <td class="text-center">
                                                 <i class='ti ti-bell-filled {{ $dc->cito == '1' ? 'text-danger' : 'text-secondary' }}'
                                                     style="font-size: 23px;"></i>
@@ -174,13 +194,13 @@
                                                     data-id="{{ $dc->id }}"><i class='ti ti-edit'></i>
                                                 </button>
                                                     
-                                                <a style="cursor: pointer" href="{{ route('print.barcode', $dc->no_lab) }}" class="btn btn-warning" target="_blank"><i class="ti ti-barcode"></i></a>
-                                                
                                                 <button type="button" data-bs-target="#modalPembayaran"
                                                     data-bs-toggle="modal" class="btn btn-success btn-payment text-white "
                                                     data-payment="{{ $dc->id }}"><i class='ti ti-cash-banknote'></i>
                                                 </button>
 
+                                                <a style="cursor: pointer" href="{{ route('print.barcode', $dc->no_lab) }}" class="btn btn-secondary disabled" target="_blank"><i class="ti ti-barcode"></i></a>
+                                                
 
                                                 <form id="delete-form-{{ $dc->id }}"
                                                     action="{{ route('pasien.destroy', $dc->no_lab) }}" method="POST"
@@ -197,6 +217,129 @@
                                             
                                                 </td>
                                         </tr>
+                                        @php
+                                            $counter++; // Tambah counter setelah setiap iterasi
+                                        @endphp
+                                    @empty
+                                    @endforelse
+
+                                    @forelse ($payment as $pm)
+                                    <tr>
+                                        <th id="checkin{{ $pm->id }}">
+                                            <input style="font-size: 20px; cursor: pointer;" type="checkbox" name="ids" id="checkbox" class="form-check-input checkbox_ids" value="{{ $pm->id }}">
+                                        </th>
+                                            <td scope="row">{{ $counter }}</td>
+                                            <td class="text-center">
+                                                <i class='ti ti-bell-filled {{ $pm->cito == '1' ? 'text-danger' : 'text-secondary' }}'
+                                                    style="font-size: 23px;"></i>
+                                            </td>
+                                            <td class="col-2">{{ $pm->nama }}</td>
+                                            <!-- ganti format dengan tanggal-bulan-tahun -->
+                                            <td class="col-2">
+                                                {{ date('d-m-Y', strtotime($pm->lahir)) }}
+                                                <br>
+                                                ({{ \Carbon\Carbon::parse($pm->lahir)->age }} tahun)
+                                            </td>
+                                            <td>{{ $pm->jenis_kelamin }}</td>
+                                            <td>{{ $pm->alamat }}</td>
+                                            <td>{{ $pm->asal_ruangan }}</td>
+                                            <td>
+                                                @if ($pm->status == 'Telah Dibayar')
+                                                    <span class="badge bg-success text-white">Payment</span>
+                                                @endif
+                                            </td>
+                                            <td class="col-md-3">
+                                                <button type="button" data-bs-target="#modalPreviewPasien"
+                                                    data-bs-toggle="modal" class="btn btn-info btn-edit text-white "
+                                                    data-id="{{ $pm->id }}"><i class='ti ti-edit'></i>
+                                                </button>
+                                                    
+                                                <button type="button" data-bs-target="#modalPembayaran"
+                                                    data-bs-toggle="modal" class="btn btn-secondary disabled btn-payment text-white" 
+                                                    data-payment="{{ $pm->id }}"><i class='ti ti-cash-banknote'></i>
+                                                </button>
+
+                                                <a style="cursor: pointer" href="{{ route('print.barcode', $pm->no_lab) }}" class="btn btn-warning" target="_blank"><i class="ti ti-barcode"></i></a>
+                                                
+
+                                                <form id="delete-form-{{ $pm->id }}"
+                                                    action="{{ route('pasien.destroy', $pm->no_lab) }}" method="POST"
+                                                    style="display: none;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
+                                                
+                                                <button class="btn btn-danger"
+                                                    onclick="confirmDelete({{ $pm->id }})"><i
+                                                    class="ti ti-trash"></i>
+                                                </button>
+
+                                            
+                                                </td>
+                                        </tr>
+                                        @php
+                                            $counter++; // Tambah counter setelah setiap iterasi
+                                        @endphp
+                                    @empty
+                                    @endforelse
+
+                                    @forelse ($dikembalikan as $dk)
+                                    <tr>
+                                        <th id="checkin{{ $dk->id }}">
+                                            <input style="font-size: 20px; cursor: pointer; display: none" type="checkbox" class="form-check-input checkbox_ids" value="{{ $dk->id }}">
+                                        </th>
+                                            <td scope="row">{{ $counter }}</td>
+                                            <td class="text-center">
+                                                <i class='ti ti-bell-filled {{ $dk->cito == '1' ? 'text-danger' : 'text-secondary' }}'
+                                                    style="font-size: 23px;"></i>
+                                            </td>
+                                            <td class="col-2">{{ $dk->nama }}</td>
+                                            <!-- ganti format dengan tanggal-bulan-tahun -->
+                                            <td class="col-2">
+                                                {{ date('d-m-Y', strtotime($dk->lahir)) }}
+                                                <br>
+                                                ({{ \Carbon\Carbon::parse($dk->lahir)->age }} tahun)
+                                            </td>
+                                            <td>{{ $dk->jenis_kelamin }}</td>
+                                            <td>{{ $dk->alamat }}</td>
+                                            <td>{{ $dk->asal_ruangan }}</td>
+                                            <td>
+                                                @if ($dk->status == 'Dikembalikan Analyst')
+                                                    <span class="badge bg-warning text-white">Returned by analyst</span>
+                                                @endif
+                                            </td>
+                                            <td class="col-md-3">
+                                                <button type="button" data-bs-target="#modalPreviewPasien"
+                                                    data-bs-toggle="modal" class="btn btn-info btn-edit text-white "
+                                                    data-id="{{ $dk->id }}"><i class='ti ti-edit'></i>
+                                                </button>
+                                                    
+                                                <button type="button" data-bs-target="#modalPembayaran"
+                                                    data-bs-toggle="modal" class="btn btn-success btn-payment text-white" 
+                                                    data-payment="{{ $dk->id }}"><i class='ti ti-cash-banknote'></i>
+                                                </button>
+
+                                                <a style="cursor: pointer" href="{{ route('print.barcode', $dk->no_lab) }}" class="btn btn-warning" target="_blank"><i class="ti ti-barcode"></i></a>
+                                                
+
+                                                <form id="delete-form-{{ $dk->id }}"
+                                                    action="{{ route('pasien.destroy', $dk->no_lab) }}" method="POST"
+                                                    style="display: none;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
+                                                
+                                                <button class="btn btn-danger"
+                                                    onclick="confirmDelete({{ $dk->id }})"><i
+                                                    class="ti ti-trash"></i>
+                                                </button>
+
+                                            
+                                                </td>
+                                        </tr>
+                                        @php
+                                            $counter++; // Tambah counter setelah setiap iterasi
+                                        @endphp
                                     @empty
                                     @endforelse
                                 </tbody>
@@ -218,8 +361,8 @@
                     <h5 class="modal-title" id="sampleHistoryModalLabel">Preview Pasien</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body"  style="max-height: 700px;">
-                    <div class="row">
+                <div class="modal-body scrollbox" style="max-height: 550px;">
+                    <div class="row scrollbox-inner">
                         <div class="col-12 col-md-6">
                             Patient
                             <hr>
@@ -245,7 +388,7 @@
                                     <td>
                                         <div class="flex-container">
                                             <span class="label">:</span>
-                                            <i class="bi bi-bell-fill" id="Cito"></i>
+                                            <i class="ti ti-bell-filled" id="Cito"></i>
                                         </div>
                                     </td>
                                 </tr>
@@ -357,7 +500,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    {{-- <button class="btn btn-success" type="button">Verification</button> --}}
+                    <a style="cursor: pointer" id="editBtn" class="btn btn-outline-primary">Edit</a>
                 </div>
 
             </div>
@@ -369,7 +512,7 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content ">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="sampleHistoryModalLabel">Preview Pasien</h5>
+                    <h5 class="modal-title" id="sampleHistoryModalLabel">Preview Patient</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="pembayaran-pasien" style="max-height: 700px;">
@@ -377,14 +520,14 @@
                         @csrf
                         <div class="row">
                          <div>
-                            <h5>Inspection Details</h5>
+                            <h5>Payment</h5>
                             <hr>
                             <div id="detailPembayaran">
                             </div>
                          </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-success " id="submit-button" type="submit">Payment</button>
+                            <button class="btn btn-success" id="submit-button" type="submit">Payment</button>
                         </div>
                     </form>
                 </div>
@@ -400,14 +543,11 @@
 @push('script')
     <script>
         $(function() {
-            // ngambil data dari id = detailPemeriksaan
             let detailPemeriksaan = document.getElementById('detailPemeriksaan');
-            // button preview waktu di klik mendapatkan data sesuai id
+            
             $('.btn-edit').on('click', function() {
-                // untuk mendapatkan data sesuai idnya
                 const id = this.getAttribute('data-id');
 
-                // Memanggil API
                 fetch(`/api/get-data-pasien/${id}`).then(response => {
                     if (!response.ok) {
                         throw new Error("HTTP error" + response.status);
@@ -431,7 +571,12 @@
 
                         dokter = res.data.dokter;
                         data_pemeriksaan_pasien = res.data.dpp;
+                        const history = res.data.history;
+                        // console.log(res.data.history);
+                        // Mencari riwayat dengan proses 'Dikembalikan oleh analyst'
+                        const historyItem = history.find(h => h.proses === 'Dikembalikan oleh analyst');
 
+                        // Menampilkan informasi pasien
                         $('#Cito').val(cito == 1 ? 'text-danger' : 'text-secondary');
                         const citoIcon = $('#Cito');
                         if (cito == '1') {
@@ -448,49 +593,50 @@
                         $('#Telp').text(no_telp);
                         $('#JenisPelayanan').text(jenis_pelayanan);
                         $('#Ruangan').text(asal_ruangan);
-                        // console.log(dokter == null);
                         $('#Dokter').text(dokter != null ? dokter.nama_dokter : '-');
                         $('#Ruangandok').text(asal_ruangan);
                         $('#Telpdok').text(dokter != null ? dokter.no_telp : '-');
                         $('#Email').html(dokter != null ? dokter.email : '-');
                         $('#Diagnosa').val(diagnosa);
 
-                        let old = 0;
+                        // Menampilkan detail pemeriksaan dan note (jika ada)
                         let detailContent = '<div class="row">';
-                        let subContent = [];
-                            // memanggil data departement
                         data_pemeriksaan_pasien.forEach((e, i) => {
-                            // console.log(e.data);
                             detailContent += `<div class="col-12 col-md-6" id="${e.id_departement}">
-                                                        <h6>${e.data_departement.nama_department}</h6>
-                                                        <ol>`;
+                                                <h6>${e.data_departement.nama_department}</h6>
+                                                <ol>`;
                             e.pasiens.forEach((e, i) => {
-                                console.log(e.data_pemeriksaan);
-                                detailContent +=
-                                    `<li>${e.data_pemeriksaan.nama_pemeriksaan}- Rp ${e.data_pemeriksaan.harga}</li>`;
+                                detailContent += `<li>${e.data_pemeriksaan.nama_pemeriksaan}- Rp ${e.data_pemeriksaan.harga}</li>`;
                             });
                             detailContent += `</ol></div>`;
                         });
-                        console.log(data_pemeriksaan_pasien);
                         detailContent += '</div>';
-                        // console.log(detailContent);
-                        // menampilkan data yang diambil dari API
-                        detailPemeriksaan.innerHTML = detailContent;
-                        // if (data_pemeriksaan_pasien.length > 0) {
-                        //     const department = data_pemeriksaan_pasien[0].department;
-                        //     $('#Department').text(department.nama_department);
-                        // }
 
+                        // Jika terdapat note dari analyst, tampilkan di bawah detail pemeriksaan
+                        if (historyItem && historyItem.note) {
+                            detailContent += `
+                                <div class="col-lg-12">
+                                    <h6 class="fw-bold mt-2">Note dari Analyst</h6>
+                                    <textarea id="noteTextarea" class="form-control" rows="3" placeholder="${historyItem.note}" disabled></textarea>
+                                </div>
+                            `;
+                        }
+
+                        detailPemeriksaan.innerHTML = detailContent;
+
+                        // Menyesuaikan URL untuk tombol edit
+                        var editBtn = document.getElementById('editBtn');
+                        var editUrl = "{{ route('pasien.viewedit', ':no_lab') }}";
+                        editUrl = editUrl.replace(':no_lab', no_lab);
+                        editBtn.href = editUrl;
                     }
                 });
-                // Form edit
-                // $('#modalPreviewPasien').attr('action', '/poli/' + id);
-
             });
         })
     </script>
 
-    <script>
+
+    {{-- <script>
         $(function() {
             let detailPembayaran = document.getElementById('detailPembayaran');
             $('.btn-payment').on('click', function() {
@@ -506,22 +652,12 @@
                         data_pasien = res.data;
                         data_pemeriksaan_pasien = res.data.dpp;
 
+                        // console.log(res.data.pembayaran);
+
                         // let old = 0;
                         let detailContent = '<div class="row">';
                         // let subContent = [];
                         let totalHarga = 0;
-
-                        //Status Pemeriksaan
-                            if (data_pasien.status == "Belum Dilayani") {
-                                status.innerHTML =
-                                    `<div class="ribbon-shape-dgr"><p class="mt-3 text-white">Belum Dilayani</p></div>`;
-                            } else if (data_pasien.status == "Diproses") {
-                                status.innerHTML =
-                                    `<div class="ribbon-shape-wrn"><p class="mt-3 text-white">Diproses</p></div>`;
-                            } else if (data_pasien.status == "Dilayani") {
-                                status.innerHTML =
-                                    `<div class="ribbon-shape-scs"><p class="mt-3 text-white">Dilayani</p></div>`;
-                            }
 
                         data_pemeriksaan_pasien.forEach((e, i) => {
                             // console.log(e.data);
@@ -529,7 +665,7 @@
                                                         <h6>${e.data_departement.nama_department}</h6>
                                                         <ol>`;
                             e.pasiens.forEach((e, i) => {
-                                console.log(e.data_pemeriksaan);
+                                // console.log(e.data_pemeriksaan);
                                 detailContent +=
                                     `<li>${e.data_pemeriksaan.nama_pemeriksaan} - Rp ${e.data_pemeriksaan.harga}</li>`;
                                     totalHarga += e.data_pemeriksaan.harga;
@@ -542,12 +678,12 @@
                             <h5>Payment Details</h5>
                             <hr>
                             <div class="row mb-3">
-                                <div class="col-12 col-md-6"
+                                <div class="col-12 col-md-6">
                                 <label>Payment Method</label>
                                 <input class="form-control " type="text" name="no_lab" value="${data_pasien.no_lab }" readonly hidden>
                                 <input class="form-control bg-secondary-subtle" type="text" name="metode_pembayaran" value="${data_pasien.jenis_pelayanan }" readonly>
                                 </div>
-                                <div class="col-12 col-md-6"
+                                <div class="col-12 col-md-6">
                                 <label>Total Payment</label>
                                     <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran_asli" name="total_pembayaran_asli" value="${totalHarga}" readonly>
                                 </div>
@@ -563,23 +699,23 @@
                                         <input class="form-control" type="number" name="no_pasien" required />
                                     </div>
                                 ` : ''}
-                                <div class="col-12 col-md-6"
+                                <div class="col-12 col-md-6">
                                     <label>Officer</label>
                                     <input class="form-control" type="text" name="petugas" required>
                                 </div>
-                                <div class="col-12 col-md-6"
+                                <div class="col-12 col-md-6">
                                     <label>Disc</label>
                                     <input class="form-control " id="diskon" name="diskon" type="number" placeholder="Enter discount if any" value="" min="0">
                                 </div>
-                                <div class="col-12 col-md-6"
+                                <div class="col-12 col-md-6">
                                     <label>Payment Amount</label>
                                     <input class="form-control " id="jumlah_bayar" name="jumlah_bayar" type="number" value="">
                                 </div>
-                                <div class="col-12 col-md-6"
+                                <div class="col-12 col-md-6">
                                     <label>Total Payment Disc</label>
                                     <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran" name="total_pembayaran" value="${totalHarga}" readonly>
                                 </div>
-                                <div class="col-12 col-md-6"
+                                <div class="col-12 col-md-6">
                                     <label>Change Money</label>
                                     <input class="form-control bg-secondary-subtle" value="" id="kembalian" name="kembalian" readonly>
                                 </div>
@@ -590,7 +726,7 @@
                         detailContent += pembayaranContent;
 
                         detailPembayaran.innerHTML = detailContent;
-                        console.log(detailContent);
+                        // console.log(detailContent);
 
                         function hitungTotalPembayaran() {
                             let totalPembayaranAsli = parseFloat(document.getElementById('total_pembayaran_asli').value);
@@ -626,6 +762,11 @@
                             hitungKembalian();
                         });
                             document.getElementById('submit-button').disabled = true;
+                            
+                            // Hide the payment button if already paid
+                            if (data_pasien.status === 'Telah Dibayar') {
+                                document.querySelector('.btn-payment').style.disabled = 'true';
+                            }
                     }
                 
                 });
@@ -636,608 +777,475 @@
                 // $('#modalPreviewPasien').modal('show');
             });
         })
-    </script>
-
-
-
-    <!-- Preview Pasien -->
-    {{-- <script>
-        function previewPasien(nolab) {
-            var y = document.getElementById("preview-pasien-close");
-
-            fetch('/api/previewpasien/' + nolab)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("HTTP error " + response.status);
-                    }
-                    return response.json();
-                })
-
-                .then(data => {
-                    console.log(data); // Tambahkan log ini untuk melihat respons API
-
-                    if (!data || !data.data_pasien) {
-                        throw new Error("Data pasien tidak ditemukan");
-                    }
-                    y.style.display = "none";
-                    var status = document.getElementById("status");
-                    var container = document.getElementById("preview-pasien-open");
-                    var tanggal = document.getElementById("tanggal-pemeriksaan");
-
-                    //Status Pemeriksaan
-                    if (data.data_pasien.status == "Belum Dilayani") {
-                        status.innerHTML =
-                            `<div class="ribbon-shape-dgr"><p class="mt-3 text-white">Belum Dilayani</p></div>`;
-                    } else if (data.data_pasien.status == "Telah Dikirim ke Lab") {
-                        status.innerHTML =
-                            `<div class="ribbon-shape-scs"><p class="mt-3 text-white">Telah Dikirim</p></div>`;
-                    } else if (data.data_pasien.status == "Diproses") {
-                        status.innerHTML =
-                            `<div class="ribbon-shape-wrn"><p class="mt-3 text-white">Diproses</p></div>`;
-                    }
-
-                    //ubah format tanggal created_at
-                    var date = new Date(data.data_pasien.tanggal_masuk);
-                    var year = date.getFullYear();
-                    var month = date.getMonth() + 1;
-                    var dt = date.getDate();
-
-                    //ambil nama hari
-                    var day = date.getDay();
-                    var days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-                    day = days[day];
-
-                    if (dt < 10) {
-                        dt = '0' + dt;
-                    }
-                    if (month < 10) {
-                        month = '0' + month;
-                    }
-
-                    var tanggal_pemeriksaan =
-                        `${day} , ${dt}-${month}-${year} ${date.getHours()}:${date.getMinutes()}`;
-
-                    //tampilkan tanggal pemeriksaan
-                    tanggal.innerHTML = `<p class="h6 font-weight-normal">${tanggal_pemeriksaan}</p>`;
-
-                    //menghitung umur dari tanggal lahir
-                    var dob = new Date(data.data_pasien.lahir);
-                    var today = new Date();
-                    var age = Math.floor((today - dob) / (365.25 * 24 * 60 * 60 * 1000));
-
-
-                }).catch(function(error) {
-                    console.log(error);
-                });
-        }
     </script> --}}
 
-    <!-- Pembayaran Pasien -->
     {{-- <script>
-        function pembayaranPasien(nolab) {
-            var y = document.getElementById("payment");
+        $(function() {
+            let detailPembayaran = document.getElementById('detailPembayaran');
+            $('.btn-payment').on('click', function() {
+                const id = this.getAttribute('data-payment');
 
-            //mengambil data pasien dari database
-            fetch('/api/get-data-pemeriksaan/'${id})
-                .then(response => {
+                fetch(`/api/get-data-pasien/${id}`).then(response => {
                     if (!response.ok) {
-                        throw new Error("HTTP error " + response.status);
+                        throw new Error("HTTP error" + response.status);
                     }
                     return response.json();
-                })
-                .then(data => {
-                    y.style.display = "none";
-                    var status = document.getElementById("status");
-                    var tanggal = document.getElementById("tanggal-pemeriksaan");
+                }).then(res => {
+                    if (res.status === 'success') {
+                        data_pasien = res.data;
+                        data_pemeriksaan_pasien = res.data.dpp;
+                        const pembayaranTerakhir = new Date(res.data.pembayaran[0].tanggal_pembayaran); // Ambil pembayaran terakhir
+                        console.log(res.data.pembayaran);
 
-                    //Status Pemeriksaan
-                    if (data.data_pasien.status == "Belum Dilayani") {
-                        status.innerHTML =
-                            `<div class="ribbon-shape-dgr"><p class="mt-3 text-white">Belum Dilayani</p></div>`;
-                    } else if (data.data_pasien.status == "Diproses") {
-                        status.innerHTML =
-                            `<div class="ribbon-shape-wrn"><p class="mt-3 text-white">Diproses</p></div>`;
-                    } else if (data.data_pasien.status == "Dilayani") {
-                        status.innerHTML =
-                            `<div class="ribbon-shape-scs"><p class="mt-3 text-white">Dilayani</p></div>`;
-                    }
+                        let detailContent = '<div class="row">';
+                        let totalHarga = 0;
+                        let departmentIds = new Set();
 
-                    //ubah format tanggal created_at
-                    var date = new Date(data.data_pasien.created_at);
-                    var year = date.getFullYear();
-                    var month = date.getMonth() + 1;
-                    var dt = date.getDate();
-
-                    //ambil nama hari
-                    var day = date.getDay();
-
-                    if (day == 0) {
-                        day = "Minggu";
-                    } else if (day == 1) {
-                        day = "Senin";
-                    } else if (day == 2) {
-                        day = "Selasa";
-                    } else if (day == 3) {
-                        day = "Rabu";
-                    } else if (day == 4) {
-                        day = "Kamis";
-                    } else if (day == 5) {
-                        day = "Jumat";
-                    } else if (day == 6) {
-                        day = "Sabtu";
-                    }
-
-                    if (dt < 10) {
-                        dt = '0' + dt;
-                    }
-                    if (month < 10) {
-                        month = '0' + month;
-                    }
-
-                    var tanggal_pemeriksaan = day + ', ' + dt + '-' + month + '-' + year + ' ' + date.getHours() + ':' +
-                        date.getMinutes();
-
-                    console.log(tanggal_pemeriksaan);
-
-                    //tampilkan tanggal pemeriksaan
-                    tanggal.innerHTML = `<p class="h6 font-weight-normal">` + tanggal_pemeriksaan + `</p>`;
-
-                    //megnhitung umur dari tanggal lahir
-                    // var dob = new Date(data.data_pasien.lahir);
-                    // var today = new Date();
-                    // var age = Math.floor((today - dob) / (365.25 * 24 * 60 * 60 * 1000));
-
-                    // var diagnosa = data.icd10.filter(function(el) {
-                    //     return el.code == data.data_pasien.diagnosa;
-                    // });
-
-                    //perulangan untuk menampilkan pemeriksaan yang di pilih
-                    var departement = "";
-                    var pemeriksaan = "";
-
-                    for (let i = 0; i < data.id_departement_pasien.length; i++) {
-                        departement += `<p class="h6 text-gray-800">`
-                        //buat perintah where untuk mencari id_departement
-                        for (let j = 0; j < data.data_departement.length; j++) {
-                            if (data.data_departement[j].id_departement == data.id_departement_pasien[i].id_departement)
-                                departement += data.data_departement[j].nama_departement;
-                        }
-                        departement += `</p>
-                                    <div class="sub-detail p-2">`
-                        for (let k = 0; k < data.data_pemeriksaan_pasien.length; k++) {
-                            if (data.data_pemeriksaan_pasien[k].id_departement == data.id_departement_pasien[i]
-                                .id_departement) {
-                                for (let l = 0; l < data.data_pemeriksaan.length; l++) {
-                                    if (data.data_pemeriksaan_pasien[k].nama_parameter == data.data_pemeriksaan[l]
-                                        .nama_parameter) {
-                                        departement += `<p class="text-gray-600 offset-md-3">` + data.data_pemeriksaan[
-                                            l].nama_pemeriksaan + `</p>`;
-                                    }
+                        data_pemeriksaan_pasien.forEach((e, i) => {
+                            const createdAt = new Date(e.created_at);
+                            if (createdAt > pembayaranTerakhir) {
+                                if (!departmentIds.has(e.id_departement)) {
+                                    departmentIds.add(e.id_departement);
+                                    detailContent += `<div class="col-12 col-md-6" id="${e.id_departement}">
+                                                        <h6>${e.data_departement.nama_department}</h6>
+                                                        <ol>`;
                                 }
+                                
+                                e.pasiens.forEach((pemeriksaan, j) => {
+                                    detailContent += `<li>${pemeriksaan.data_pemeriksaan.nama_pemeriksaan} - Rp ${pemeriksaan.data_pemeriksaan.harga}</li>`;
+                                    totalHarga += pemeriksaan.data_pemeriksaan.harga;
+                                });
+                                detailContent += `</ol><hr></div>`;
                             }
-                        }
-                        departement += `</div>`
-                    }
-
-                    //mengambil data icd10 dari database
-
-
-                    // var citoMerah = `<label for="staticEmail" class="col-sm-5 col-form-label">Cito</label>
-                    //             <div class="col-sm-7">
-                    //                 <i class='bx bxs-bell-ring mt-2 ml-1 text-danger' style="font-size: 23px;"></i>
-                    //             </div>`;
-                    // var citoGray = `<label for="staticEmail" class="col-sm-5 col-form-label">Cito</label>
-                    //             <div class="col-sm-7">
-                    //                 <i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i>
-                    //             </div>`;
-
-                    var html = `<form action="{{ route('pasien.kirimlab') }}" method="POST" class="row table-preview" style="overflow-y: scroll; max-height: 600px;">
-                                @csrf
-                                <div class="pasien col-xl-6 col-lg-12 col-sm-12 mb-3">
-                                    <p class="h5 text-gray-800 mb-2">Pasien</p>
+                        });
+                        
+                        detailContent += '</div>';
+                        let pembayaranContent = `
+                            <h5>Payment Details</h5>
                                     <hr>
-                                    <div class="row">`
-                    if (data.data_pasien.cito == 1) {
-                        html += citoMerah;
-                    } else {
-                        html += citoGray;
-                    }
-                    html +=
-                        `</div>
-                                    <div class="row">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label">No LAB : </label>
-                                    <div class="col-sm-7">
-                                        <input type="text" name="no_lab" readonly class="form-control-plaintext" id="staticEmail" value="` +
-                        data.data_pasien.no_lab +
-                        `">
-                                    </div>
-                                    </div>
-                                    <div class="row">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label">No RM</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ` +
-                        data.data_pasien
-                        .no_rm +
-                        `">
-                                    </div>
-                                    </div>
-                                    <div class="row">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label">NIK</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ` +
-                        data.data_pasien.nik +
-                        `">
-                                    </div>
-                                    </div>
-                                    <div class="row">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label">Nama</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ` +
-                        data
-                        .data_pasien.nama +
-                        `">
-                                    </div>
-                                    </div>
-                                    <div class="row">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label">Gender</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ` +
-                        data
-                        .data_pasien.jenis_kelamin +
-                        `">
-                                    </div>
-                                    </div>
-                                    <div class="row">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label">Umur</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ` +
-                        age +
-                        ` tahun">
-                                    </div>
-                                    </div>
-                                    <div class="row">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label">Alamat</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ` +
-                        data.data_pasien.alamat +
-                        `">
-                                    </div>
-                                    </div>
-                                    <div class="row">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label">Telp</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ` +
-                        data.data_pasien.no_telp +
-                        `">
-                                    </div>
-                                    </div>
-                                    <div class="row">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label">Jenis Pasien</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ` +
-                        data.data_pasien.jenis_pelayanan +
-                        `">
-                                    </div>
-                                    </div>
-                                    <div class="row">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label">Ruangan</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ` +
-                        data.data_pasien.asal_ruangan +
-                        `">
-                                    </div>
-                                    </div>
-                                </div>
-                                <div class="dokter col-xl-6 col-lg-12 col-sm-12 mb-3">
-                                    <p class="h5 text-gray-800">Dokter</p>
-                                    <hr>
-                                    <div class="row">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label">Nama Dokter</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": Dr. Bande">
-                                    </div>
-                                    </div>
-                                    <div class="row">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label">Ruangan</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": Abu Thalib">
-                                    </div>
-                                    </div>
-                                    <div class="row">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label">Telp</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": 0812313">
-                                    </div>
-                                    </div>
-                                    <div class="row">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label">Email</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": gmail.com">
-                                    </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="form-group col-12">
-                                            <label for="exampleFormControlTextarea1">Diagnosa :</label>
-                                            <textarea class="form-control txt-area" style="resize: none; height: 160px;" id="note-1" rows="3" name="note-2" disabled>` +
-                        diagnosa[0].name_id + `</textarea>
+                                    <div class="row mb-3">
+                                        <div class="col-12 col-md-6">
+                                        <label>Payment Method</label>
+                                        <input class="form-control " type="text" name="no_lab" value="${data_pasien.no_lab }" readonly hidden>
+                                        <input class="form-control bg-secondary-subtle" type="text" name="metode_pembayaran" value="${data_pasien.jenis_pelayanan }" readonly>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                        <label>Total Payment</label>
+                                            <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran_asli" name="total_pembayaran_asli" value="${totalHarga}" readonly>
+                                        </div>
+                                        ${data_pasien.jenis_pelayanan === 'bpjs' ? `
+                                            <div class="col-12 col-md-6">
+                                                <label>No Bpjs</label>
+                                                <input class="form-control" type="number" name="no_pasien" required />
+                                            </div>
+                                        ` : ''}
+                                        ${data_pasien.jenis_pelayanan === 'asuransi' ? `
+                                            <div class="col-12 col-md-6">
+                                                <label>No Asuransi</label>
+                                                <input class="form-control" type="number" name="no_pasien" required />
+                                            </div>
+                                        ` : ''}
+                                        <div class="col-12 col-md-6">
+                                            <label>Officer</label>
+                                            <input class="form-control" type="text" name="petugas" required>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <label>Disc</label>
+                                            <input class="form-control " id="diskon" name="diskon" type="number" placeholder="Enter discount if any" value="" min="0">
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <label>Payment Amount</label>
+                                            <input class="form-control " id="jumlah_bayar" name="jumlah_bayar" type="number" value="">
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <label>Total Payment Disc</label>
+                                            <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran" name="total_pembayaran" value="${totalHarga}" readonly>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <label>Change Money</label>
+                                            <input class="form-control bg-secondary-subtle" value="" id="kembalian" name="kembalian" readonly>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="detail_pemeriksaan col-12 ">
-                                    <p class="h5 text-gray-800 mb-2">Detail Pemeriksaan</p>
-                                    <hr>
-                                    <div class="row">
-                                    <div class="col-md-6">`
+                        `;
+                        detailContent += pembayaranContent;
 
-                    html += departement;
+                        detailPembayaran.innerHTML = detailContent;
 
-                    html +=
-                        `</div>
-                                    </div>
-                                </div>
-                                <div class="col-12 mt-3">
-                                    <p class="h5 text-gray-800 mb-2">Pembayaran</p>
-                                    <hr>
-                                    <div class="form-row">
-                                    <div class="form-group col-sm-6">
-                                        <label for="exampleFormControlSelect1">Metode Pembayaran</label>
-                                        <input type="text" class="form-control" aria-label="" name="jenispelayanan" aria-describedby="basic-addon1" value="` +
-                        data.data_pasien.jenis_pelayanan +
-                        `" readonly>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="exampleFormControlSelect1" class="ml-3">Total</label>
-                                        <input type="number" class="form-control" aria-label="" name="hargapemeriksaan" aria-describedby="basic-addon1" value="` +
-                        data.data_pemeriksaan_pasien[0].harga + `" readonly>
-                                    </div>
-                                    </div>
-                                    <div class="form-row">
-                                    <div class="form-group col-12 col-md-6">
-                                        <label for="exampleFormControlSelect1">Jumlah Bayar</label>
-                                        <input type="number" class="form-control" aria-label="" name="jumlahbayar" aria-describedby="basic-addon1" oninput="hitungKembalian(this.value)">
-                                    </div>
-                                    </div>
-                                    <div class="form-row">
-                                    <div class="form-group col-12 col-md-6">
-                                        <label for="exampleFormControlSelect1">Kembalian</label>
-                                        <input type="number" class="form-control" aria-label="" name="kembalian" id="kembalian" aria-describedby="basic-addon1" value="0" readonly>
-                                    </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer ">
-                                <button type="submit" class="btn btn-success btn-varifikasi" id="btn-varifikasi" style="cursor: not-allowed" disabled>Verifikasi</button>
-                            </form>`
+                        function hitungTotalPembayaran() {
+                                    let totalPembayaranAsli = parseFloat(document.getElementById('total_pembayaran_asli').value);
+                                    let diskon = parseFloat(document.getElementById('diskon').value) || 0;
+                                    let totalSetelahDiskon = totalPembayaranAsli - diskon;
+                                    if (totalSetelahDiskon < 0) {
+                                        totalSetelahDiskon = 0;
+                                    }
+                                    document.getElementById('total_pembayaran').value = totalSetelahDiskon;
+                                }
 
-                    document.getElementById("pembayaran-pasien").innerHTML = html;
+                                function hitungKembalian() {
+                                    let totalPembayaran = parseFloat(document.getElementById('total_pembayaran').value);
+                                    let jumlahBayar = parseFloat(document.getElementById('jumlah_bayar').value) || 0;
+                                    let kembalian = jumlahBayar - totalPembayaran;
+                                    document.getElementById('kembalian').value = kembalian >= 0 ? kembalian : 0;
 
-                })
-                .catch(error => ('Error:', error));
-
-        }
-    </script> --}}
-
-    <!-- Edit Pasien -->
-    {{-- <script>
-        function editPasien(nolab) {
-            var x = document.getElementById("editPasien");
-
-            fetch('/api/previewpasien/' + nolab)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("HTTP error " + response.status);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(data.data_pemeriksaan_pasien);
-                    html =
-                        `<form action="{{ route(
-                            'pasien.update',
-                            '`
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                html += data.data_pasien.no_lab
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                html += `',
-                        ) }}" method="post">
-                    @csrf
-                    @method('PUT')
-                    <div class="d-flex justify-content-between">
-                        <p class="h5">Data Pasien</p>
-                        <div class="row" style="margin-top: -5px;">
-                            <label for="staticEmail" class="col-sm-4 col-form-label">No LAB : </label>
-                            <div class="col-lg">
-                                <input type="text" readonly class="form-control-plaintext font-weight-bold" name="nolab" id="staticEmail" value="` +
-                        data.data_pasien.no_lab + `">
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="form-row">
-                        <div class="form-group col-12 col-md-6">
-                            <label for="basic-url">Nomor RM</label>
-                            <div class="input-group mb-6">
-                                <input type="text" class="form-control" aria-label="" name="norm" readonly value="` +
-                        data.data_pasien.no_rm + `">
-                            </div>
-                        </div>
-                        <div class="form-group col-12 col-md-6">
-                            <label for="basic-url">Nomor Induk Kewarganegaraan</label>
-                            <div class="input-group mb-6">
-                                <input type="text" class="form-control" aria-label="" name="nik" value="` + data
-                        .data_pasien.nik + `">
-                            </div>
-                        </div>
-                        <div class="form-group col-12 col-md-6">
-                            <label for="basic-url">Nama Lengkap</label>
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" aria-label="" name="nama" value="` + data
-                        .data_pasien.nama + `">
-                            </div>
-                        </div>
-                        <div class="form-group col-12 col-md-6">
-                            <!-- <label for="name" class="">Date</label> -->
-                            <label for="startDate">Tanggal Lahir</label>
-                            <input id="startDate" class="form-control" type="date" name="tanggal_lahir" value="` + data
-                        .data_pasien.lahir + `"/>
-                        </div>
-                        <div class="form-group col-12 col-md-6">
-                            <label for="exampleFormControlSelect1">Jenis Kelamin</label>
-                            <select class="form-control" id="exampleFormControlSelect1" name="jenis_kelamin">
-                                <!-- <option >Pilih Jenis Kelamin</option> -->
-                                <option value="Laki - Laki" `
-                    if (data.data_pasien.jenis_kelamin == "Laki - Laki") {
-                        html += `Selected`
-                    }
-                    html += `>Laki - Laki</option>
-                                <option value="Perempuan" `
-                    if (data.data_pasien.jenis_kelamin == "Perempuan") {
-                        html += `Selected`
-                    }
-                    html += `>Perempuan</option>
-                                <option value="-" `
-                    if (data.data_pasien.jenis_kelamin == "-") {
-                        html += `Selected`
-                    }
-                    html += `>Tidak Disebutkan</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-12 col-md-6">
-                            <label for="name">No Telepon / Hp</label>
-                            <input type="text" class="form-control" value="` + data.data_pasien.no_telp + `" id="" name="no_telepon">
-                        </div>
-                        <div class="form-group col-12 col-md-6">
-                            <label for="name">Jenis Pasien</label>
-                            <input type="text" class="form-control" value="` + data.data_pasien.jenis_pelayanan + `" id="" name="jenis_pelayanan" readonly>
-                        </div>
-                        <div class="form-group col-12 col-md-6">
-                            <label for="name">Ruangan</label>
-                            <input type="text" class="form-control" value="` + data.data_pasien.asal_ruangan +
-                        `" id="" name="ruangan">
-                        </div>
-                        <div class="form-group col-12">
-                            <label for="exampleFormControlTextarea1">Alamat Lengkap</label>
-                            <textarea class="form-control" style="resize: none; height: 130px;" id="alamat" rows="3" name="alamat">` +
-                        data.data_pasien.alamat + `</textarea>
-                        </div>
-                        <div class="form-group col-12 col-md-6"">
-                            <label for="exampleFormControlSelect1">Dokter Pengirim</label>
-                            <select class="form-control" id="exampleFormControlSelect1" name="dokter">
-                                <!-- <option selected>Pilih</option> -->
-                                <option value="1" `
-                    if (data.data_pasien.kode_dokter == "1") {
-                        html += `Selected`
-                    }
-                    html += `>Permintaan Sendiri</option>
-                                <option value="2" `
-                    if (data.data_pasien.kode_dokter == "2") {
-                        html += `Selected`
-                    }
-                    html += `>dr. Poli Umum</option>
-                                <option value="3" `
-                    if (data.data_pasien.kode_dokter == "3") {
-                        html += `Selected`
-                    }
-                    html += `>dr. Poli KIA</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-12 col-md-6">
-                            <label for="name">Diagnosa</label>
-                            <input type="text" class="form-control" value="` + data.data_pasien.diagnosa +
-                        `" id="" name="diagnosa" readonly>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="d-flex justify-content-between mt-4">
-                        <p class="h5">Pilih Pemeriksaan</p>
-                        <div class="row" style="margin-top: -5px;">
-                            <label for="staticEmail" class="col-form-label">Total Harga : <b>Rp.</b> </label>
-                            <div class="">
-                                <input type="text" class="form-control-plaintext font-weight-bold" name="hargapemeriksaan" id="harga-pemeriksaan" value="`
-                    //ubah format angkah dengan titik data.data_pemeriksaan_pasien[0].harga
-                    var reverse = data.data_pemeriksaan_pasien[0].harga.toString().split('').reverse().join(''),
-                        ribuan = reverse.match(/\d{1,3}/g);
-                    ribuan = ribuan.join('.').split('').reverse().join('');
-                    html += ribuan;
-                    html += `" readonly>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-
-                    <div class="row pemeriksaan">`
-                    for (a = 0; a < data.data_departement.length; a++) {
-                        html += `<div class="col-xl-3">
-                                <!-- Parent Pemeriksaan -->
-                                <div class="parent-pemeriksaan" id="parent-pemeriksaan">
-                                    <div class="heading heading-color btn-block  mb-3">` + data.data_departement[a]
-                            .nama_departement + `</div>
-                                    <!-- Child pemeriksaan -->
-                                    <div class="child-pemeriksaan" id="child-pemeriksaan-hematologi">`
-                        for (b = 0; b < data.data_pemeriksaan.length; b++) {
-                            if (data.data_pemeriksaan[b].id_departement == data.data_departement[a].id_departement) {
-                                html +=
-                                    `<div class="form-check">
-                                                    <input class="form-check-input child-pemeriksaan" type="checkbox" name="pemeriksaan[]" value="` +
-                                    data.data_pemeriksaan[b].id_departement + `,` + data.data_pemeriksaan[b]
-                                    .nama_parameter + `" id="` + data.data_pemeriksaan[b].nama_parameter +
-                                    `" onclick="checkpemeriksaan(` + data.data_pemeriksaan[b].harga +
-                                    `)" data-harga="` + data.data_pemeriksaan[b].harga + `" `
-                                for (c = 0; c < data.data_pemeriksaan_pasien.length; c++) {
-                                    if (data.data_pemeriksaan[b].nama_parameter == data.data_pemeriksaan_pasien[c]
-                                        .nama_parameter) {
-                                        html += `checked`
+                                    let submitButton = document.getElementById('submit-button');
+                                    if (jumlahBayar >= totalPembayaran) {
+                                        submitButton.disabled = false;
+                                    } else {
+                                        submitButton.disabled = true;
                                     }
                                 }
-                                html += `>
-                                                    <label class="form-check-label" for="` + data.data_pemeriksaan[b]
-                                    .nama_parameter + `">
-                                                        ` + data.data_pemeriksaan[b].nama_pemeriksaan + ` ` + data
-                                    .data_pemeriksaan[b].harga + `
-                                                    </label>
-                                                </div>`
+
+                                document.getElementById('jumlah_bayar').addEventListener('input', function() {
+                                    hitungTotalPembayaran();
+                                    hitungKembalian();
+                                });
+
+                                document.getElementById('diskon').addEventListener('input', function() {
+                                    hitungTotalPembayaran();
+                                    hitungKembalian();
+                                });
+                                    document.getElementById('submit-button').disabled = true;
+                                    
+                                    // Hide the payment button if already paid
+                                    if (data_pasien.status === 'Telah Dibayar') {
+                                        document.querySelector('.btn-payment').style.disabled = 'true';
+                                    }
+                    }
+                });
+            });
+        });
+
+    </script> --}}
+
+    {{-- <script>
+        $(function() {
+            let detailPembayaran = document.getElementById('detailPembayaran');
+            $('.btn-payment').on('click', function() {
+                const id = this.getAttribute('data-payment');
+
+                fetch(`/api/get-data-pasien/${id}?t=${new Date().getTime()}`).then(response => {
+                    if (!response.ok) {
+                        throw new Error("HTTP error" + response.status);
+                    }
+                    return response.json();
+                }).then(res => {
+                    console.log(res);
+                    if (res.status === 'success') {
+                        data_pasien = res.data;
+                        data_pemeriksaan_pasien = res.data.dpp;
+
+                        let detailContent = '<div class="row">';
+                        let totalHarga = 0;
+                        let departmentIds = new Set();
+
+                        data_pemeriksaan_pasien.forEach((e, i) => {
+                            if (e.status === 'baru') { // Filter untuk hanya menampilkan status "baru"
+                            console.log(e);
+                                if (!departmentIds.has(e.id_departement)) {
+                                    departmentIds.add(e.id_departement);
+                                    detailContent += `<div class="col-12 col-md-6" id="${e.id_departement}">
+                                                        <h6>${e.data_departement.nama_department}</h6>
+                                                        <ol>`;
+                                }
+                                
+                                e.pasiens.forEach((pemeriksaan, j) => {
+                                    detailContent += `<li>${pemeriksaan.data_pemeriksaan.nama_pemeriksaan} - Rp ${pemeriksaan.data_pemeriksaan.harga}</li>`;
+                                    totalHarga += pemeriksaan.data_pemeriksaan.harga;
+                                });
+                                detailContent += `</ol><hr></div>`;
+                            }
+                        });
+                        
+                        detailContent += '</div>';
+                        let pembayaranContent = `
+                            <h5>Payment Details</h5>
+                                    <hr>
+                                    <div class="row mb-3">
+                                        <div class="col-12 col-md-6">
+                                        <label>Payment Method</label>
+                                        <input class="form-control " type="text" name="no_lab" value="${data_pasien.no_lab }" readonly hidden>
+                                        <input class="form-control bg-secondary-subtle" type="text" name="metode_pembayaran" value="${data_pasien.jenis_pelayanan }" readonly>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                        <label>Total Payment</label>
+                                            <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran_asli" name="total_pembayaran_asli" value="${totalHarga}" readonly>
+                                        </div>
+                                        ${data_pasien.jenis_pelayanan === 'bpjs' ? `
+                                            <div class="col-12 col-md-6">
+                                                <label>No Bpjs</label>
+                                                <input class="form-control" type="number" name="no_pasien" required />
+                                            </div>
+                                        ` : ''}
+                                        ${data_pasien.jenis_pelayanan === 'asuransi' ? `
+                                            <div class="col-12 col-md-6">
+                                                <label>No Asuransi</label>
+                                                <input class="form-control" type="number" name="no_pasien" required />
+                                            </div>
+                                        ` : ''}
+                                        <div class="col-12 col-md-6">
+                                            <label>Officer</label>
+                                            <input class="form-control" type="text" name="petugas" required>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <label>Disc</label>
+                                            <input class="form-control " id="diskon" name="diskon" type="number" placeholder="Enter discount if any" value="" min="0">
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <label>Payment Amount</label>
+                                            <input class="form-control " id="jumlah_bayar" name="jumlah_bayar" type="number" value="">
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <label>Total Payment Disc</label>
+                                            <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran" name="total_pembayaran" value="${totalHarga}" readonly>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <label>Change Money</label>
+                                            <input class="form-control bg-secondary-subtle" value="" id="kembalian" name="kembalian" readonly>
+                                        </div>
+                                    </div>
+                        `;
+                        detailContent += pembayaranContent;
+
+                        detailPembayaran.innerHTML = detailContent;
+
+                        function hitungTotalPembayaran() {
+                            let totalPembayaranAsli = parseFloat(document.getElementById('total_pembayaran_asli').value);
+                            let diskon = parseFloat(document.getElementById('diskon').value) || 0;
+                            let totalSetelahDiskon = totalPembayaranAsli - diskon;
+                            if (totalSetelahDiskon < 0) {
+                                totalSetelahDiskon = 0;
+                            }
+                            document.getElementById('total_pembayaran').value = totalSetelahDiskon;
+                        }
+
+                        function hitungKembalian() {
+                            let totalPembayaran = parseFloat(document.getElementById('total_pembayaran').value);
+                            let jumlahBayar = parseFloat(document.getElementById('jumlah_bayar').value) || 0;
+                            let kembalian = jumlahBayar - totalPembayaran;
+                            document.getElementById('kembalian').value = kembalian >= 0 ? kembalian : 0;
+
+                            let submitButton = document.getElementById('submit-button');
+                            if (jumlahBayar >= totalPembayaran) {
+                                submitButton.disabled = false;
+                            } else {
+                                submitButton.disabled = true;
                             }
                         }
-                        html += `</div>
-                                </div>
-                                <hr>
-                            </div>`
+
+                        document.getElementById('jumlah_bayar').addEventListener('input', function() {
+                            hitungTotalPembayaran();
+                            hitungKembalian();
+                        });
+
+                        document.getElementById('diskon').addEventListener('input', function() {
+                            hitungTotalPembayaran();
+                            hitungKembalian();
+                        });
+                        document.getElementById('submit-button').disabled = true;
+                        
+                        // Hide the payment button if already paid
+                        if (data_pasien.status === 'Telah Dibayar') {
+                            document.querySelector('.btn-payment').style.disabled = 'true';
+                        }
                     }
-                    html += `</div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-info">Save changes</button>
-                </form>`
+                });
+            });
+        });
 
-                    x.innerHTML = html;
-
-                })
-                .catch(error => ('Error:', error));
-
-        }
     </script> --}}
+    <script>
+        $(function() {
+            let detailPembayaran = document.getElementById('detailPembayaran');
+            $('.btn-payment').on('click', function() {
+                const id = this.getAttribute('data-payment');
 
-    <!-- hitung harga otomatis saat memilih checkbox mengambil harga dari database -->
-    {{-- <script type="text/javascript">
-        function checkpemeriksaan(lab) {
-            var total = 0;
-            var harga = 0;
-            var harga_pemeriksaan = document.getElementById('harga-pemeriksaan');
-            var checkboxes = document.getElementsByClassName('child-pemeriksaan');
-            for (var i = 0; i < checkboxes.length; i++) {
-                if (checkboxes[i].checked == true) {
-                    harga = checkboxes[i].getAttribute('data-harga');
-                    total = parseInt(total) + parseInt(harga);
+                fetch(`/api/get-data-pasien/${id}?t=${new Date().getTime()}`).then(response => {
+                    if (!response.ok) {
+                        throw new Error("HTTP error" + response.status);
+                    }
+                    return response.json();
+                }).then(res => {
+                    if (res.status === 'success') {
+                        let data_pasien = res.data;
+                        let data_pemeriksaan_pasien = res.data.dpp;
+
+                        let detailContent = '<div class="row">';
+                        let totalHarga = 0;
+                        let departmentIds = new Set();
+
+                        // Memfilter data dengan status "baru" dari `pasiens`
+                        data_pemeriksaan_pasien.forEach((e) => {
+                            let filteredPasiens = e.pasiens.filter(pemeriksaan => pemeriksaan.status === 'baru');
+
+                            if (filteredPasiens.length > 0) {
+                                let departmentName = e.data_departement.nama_department;
+
+                                if (!departmentIds.has(e.id_departement)) {
+                                    departmentIds.add(e.id_departement);
+                                    detailContent += `<div class="col-12 col-md-6" id="${e.id_departement}">
+                                                        <h6>${departmentName}</h6>
+                                                        <ol>`;
+                                }
+
+                                filteredPasiens.forEach((pemeriksaan) => {
+                                    detailContent += `<li>${pemeriksaan.data_pemeriksaan.nama_pemeriksaan} - Rp ${pemeriksaan.data_pemeriksaan.harga}</li>`;
+                                    totalHarga += pemeriksaan.data_pemeriksaan.harga;
+                                });
+
+                                detailContent += `</ol><hr></div>`;
+                            }
+                        });
+
+                        detailContent += '</div>';
+                        let pembayaranContent = `
+                            <h5>Payment Details</h5>
+                            <hr>
+                            <div class="row mb-3">
+                                <div class="col-12 col-md-6">
+                                    <label>Payment Method</label>
+                                    <input class="form-control " type="text" name="no_lab" value="${data_pasien.no_lab}" readonly hidden>
+                                    <input class="form-control bg-secondary-subtle" type="text" name="metode_pembayaran" value="${data_pasien.jenis_pelayanan}" readonly>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label>Total Payment</label>
+                                    <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran_asli" name="total_pembayaran_asli" value="${totalHarga}" readonly>
+                                </div>
+                                ${data_pasien.jenis_pelayanan === 'bpjs' ? `
+                                    <div class="col-12 col-md-6">
+                                        <label>No Bpjs</label>
+                                        <input class="form-control" id="no_pasien" name="no_pasien" type="number"  required />
+                                    </div>
+                                ` : ''}
+                                ${data_pasien.jenis_pelayanan === 'asuransi' ? `
+                                    <div class="col-12 col-md-6">
+                                        <label>No Asuransi</label>
+                                        <input class="form-control" id="no_pasien" name="no_pasien" type="number" required />
+                                    </div>
+                                ` : ''}
+                                <div class="col-12 col-md-6">
+                                    <label>Officer</label>
+                                    <input class="form-control" type="text" name="petugas" required>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label>Disc</label>
+                                    <input class="form-control " id="diskon" name="diskon" type="number" placeholder="Enter discount if any" value="" min="0">
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label>Payment Amount</label>
+                                    <input class="form-control " id="jumlah_bayar" name="jumlah_bayar" type="number" value="">
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label>Total Payment Disc</label>
+                                    <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran" name="total_pembayaran" value="${totalHarga}" readonly>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label>Change Money</label>
+                                    <input class="form-control bg-secondary-subtle" value="" id="kembalian" name="kembalian" readonly>
+                                </div>
+                            </div>
+                        `;
+                        detailContent += pembayaranContent;
+
+                        detailPembayaran.innerHTML = detailContent;
+
+                        function hitungTotalPembayaran() {
+                            let totalPembayaranAsli = parseFloat(document.getElementById('total_pembayaran_asli').value);
+                            let diskon = parseFloat(document.getElementById('diskon').value) || 0;
+                            let totalSetelahDiskon = totalPembayaranAsli - diskon;
+                            if (totalSetelahDiskon < 0) {
+                                totalSetelahDiskon = 0;
+                            }
+                            document.getElementById('total_pembayaran').value = totalSetelahDiskon;
+                        }
+
+                        function hitungKembalian() {
+                            let totalPembayaran = parseFloat(document.getElementById('total_pembayaran').value);
+                            let jumlahBayar = parseFloat(document.getElementById('jumlah_bayar').value) || 0;
+                            let kembalian = jumlahBayar - totalPembayaran;
+                            document.getElementById('kembalian').value = kembalian >= 0 ? kembalian : 0;
+
+                            let submitButton = document.getElementById('submit-button');
+                            if (jumlahBayar >= totalPembayaran) {
+                                submitButton.disabled = false;
+                            } else {
+                                submitButton.disabled = true;
+                            }
+                        }
+
+                        document.getElementById('jumlah_bayar').addEventListener('input', function() {
+                            hitungTotalPembayaran();
+                            hitungKembalian();
+                        });
+
+                        document.getElementById('diskon').addEventListener('input', function() {
+                            hitungTotalPembayaran();
+                            hitungKembalian();
+                        });
+                        document.getElementById('submit-button').disabled = true;
+
+                        if (data_pasien.status === 'Telah Dibayar') {
+                            document.querySelector('.btn-payment').disabled = true;
+                        }
+
+                        // Jika status pasien 'Dikembalikan Analyst', ambil data no_pasien dari API
+                        if (data_pasien.status === 'Dikembalikan Analyst') {
+                            fetch(`/api/get-data-pasien/${id}`).then(response => response.json())
+                            .then(data => {
+                                let pembayaranArray = data.data.pembayaran;
+
+                                // Pastikan pembayaranArray adalah array dan memiliki elemen
+                                if (Array.isArray(pembayaranArray) && pembayaranArray.length > 0) {
+                                    let pembayaran = pembayaranArray[0]; // Ambil elemen pertama dari array
+                                    let no_pasien = pembayaran.no_pasien; // Ambil no_pasien dari objek
+                                    let nopasienInput = document.getElementById('no_pasien');
+
+                                    if (data_pasien.jenis_pelayanan === 'bpjs' || data_pasien.jenis_pelayanan === 'asuransi') {
+                                        nopasienInput.value = no_pasien;
+                                        nopasienInput.disabled = true;
+                                    }
+                                } else {
+                                    console.error('Pembayaran is an empty array or not an array');
+                                }
+                            }).catch(error => console.error('Error fetching no_pasien:', error));
+                        }
+                    }
+                });
+            });
+        });
+
+    </script>
+    
+<script>
+    $(function(e){
+        $("#select_all_ids").click(function(){
+            $('.checkbox_ids').prop('checked',$(this).prop('checked'));
+        });
+        $('#konfirmasiallselecteddata').click(function(e){
+            e.preventDefault();
+            var all_ids = [];
+            $('input:checkbox[name=ids]:checked').each(function(){
+                all_ids.push($(this).val());
+            });
+
+            $.ajax({
+                url:"{{ route('pasien.checkin') }}",
+                method:"POST",
+                data:{
+                    ids:all_ids,
+                    _token:'{{csrf_token()}}'
+                },
+                success:function(response){
+                    $.each(all_ids,function(key,val){
+                        $('#checkin'+val).remove();
+                    })
+                    location.reload()
+
                 }
-            }
+            })
+        })
+    });
 
-            //mengubah format angka ke rupiah
-            var reverse = total.toString().split('').reverse().join(''),
-                ribuan = reverse.match(/\d{1,3}/g);
-            ribuan = ribuan.join('.').split('').reverse().join('');
-
-            harga_pemeriksaan.value = ribuan;
-        }
-    </script> --}}
+</script>
 
     <!-- menghitung kembalian -->
     <script>

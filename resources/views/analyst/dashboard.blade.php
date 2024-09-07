@@ -128,7 +128,7 @@ Dashboard|Spesiment
                                     @endphp
                                     <thead >
 
-                                        <th data-dt-order="disable"><input style="font-size: 20px; cursor: pointer;clear:" type="checkbox" name="" id="select_all_ids" class="form-check-input" ></th>
+                                        <th class="sorting_disabled"><input style="font-size: 20px; cursor: pointer;clear:" type="checkbox" name="" id="select_all_ids" class="form-check-input" ></th>
                                             <th scope="col">Cito</th>
                                             <th scope="col">No RM</th>
                                             <th scope="col">No Lab</th>
@@ -302,11 +302,9 @@ Dashboard|Spesiment
                 <form method="post" id="form">
                     @csrf
                     <label for="" id="notelabel">Note</label>
-                    <textarea  class="form-control" placeholder="Note" name="note"  id="note" cols="30" rows="8"></textarea>
+                    <textarea  class="form-control" placeholder="Note" name="note"  id="note" cols="30" rows="4"></textarea>
                     <input type="hidden" id="no_lab" name="no_lab" value="">
             </div>
-                <br>
-                <br>
                 <div class="modal-footer">
                     <button class="btn btn-success" id="verification" type="submit">Verification</button>
                 </div>

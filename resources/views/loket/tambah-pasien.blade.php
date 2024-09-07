@@ -24,65 +24,65 @@
                                 <div class="d-flex justify-content-between">
                                     <p class="h5">Patient Data</p>
                                     <div class="row" style="margin-top: -5px;">
-                                        <label for="staticEmail" class="col-sm-4 col-form-label">No LAB :</label>
+                                        <label for="staticEmail" class="col-sm-4 col-form-label fw-bold">No LAB :</label>
                                         <div class="col-lg">
-                                            <input type="text" readonly class="form-control-plaintext"
+                                            <input type="text" readonly class="form-control-plaintext fw-bold"
                                                 id="no-lab" name="nolab" value="{{ $no_lab }}">
                                         </div>
                                     </div>
                                 </div>
                                 <hr>
-                                <div class="form-row">
+                                <div class="row">
                                     <div class="form-group col-12">
-                                        <label for="basic-url">Cito</label>
+                                        <label for="basic-url" class="fw-bold">Cito</label>
                                         <div class="form-check">
                                             <input style="cursor: pointer" class="form-check-input child-pemeriksaan-hematologi" type="checkbox"
                                                 name="cito" value="1" id="cito">
-                                            <label class="form-check-label" for="cito">
+                                            <label class="form-check-label fw-bold" for="cito">
                                                 Patient Cito
                                             </label>
                                         </div>
                                     </div>
-                                    <div class="form-group col-12">
-                                        <label for="basic-url">No RM</label>
+                                    <div class="col-6 col-md-6">
+                                        <label for="basic-url" class="fw-bold">No RM</label>
                                         <div class="input-group mb-6">
                                             <input type="number" class="form-control" name="norm" aria-label=""
                                                 placeholder="Masukan No RM">
                                         </div>
                                     </div>
-                                    <div class="form-group col-12">
-                                        <label for="basic-url">Nomor Induk Kewarganegaraan</label>
+                                    <div class="col-6 col-md-6">
+                                        <label for="basic-url" class="fw-bold">Nomor Induk Kewarganegaraan</label>
                                         <div class="input-group mb-6">
                                             <input type="number" class="form-control" name="nik" aria-label=""
                                                 placeholder="Add NIK">
                                         </div>
                                     </div>
-                                    <div class="form-group col-12">
-                                        <label for="basic-url">Full Name</label>
-                                        <div class="input-group mb-3">
+                                    <div class="col-md-6">
+                                        <label for="basic-url" class="fw-bold">Full Name</label>
+                                        <div class="input-group mb-6">
                                             <input type="text" class="form-control" name="nama" aria-label=""
                                                 placeholder="Add Full Name">
                                         </div>
                                     </div>
-                                    <div class="form-group col-12">
+                                    <div class="col-md-6 mb-6">
                                         <!-- <label for="name" class="">Date</label> -->
-                                        <label for="startDate">Date Of Birth</label>
+                                        <label for="startDate" class="fw-bold">Date Of Birth</label>
                                         <input id="startDate" class="form-control" type="date" name="tanggallahir" />
                                     </div>
-                                    <div class="form-group col-12">
-                                        <label for="exampleFormControlSelect1">Gender</label>
+                                    <div class="col-md-6 mb-6">
+                                        <label for="exampleFormControlSelect1" class="fw-bold">Gender</label>
                                         <select class="form-select" id="exampleFormControlSelect1" name="jeniskelamin">
                                             <option selected>Select Gender</option>
                                             <option value="Laki²">Laki²</option>
                                             <option value="Perempuan">Perempuan</option>
                                         </select>
                                     </div>
-                                    <div class="form-group col-12">
-                                        <label for="phonenumber">Phone Number</label>
+                                    <div class="col-md-6 mb-6">
+                                        <label for="phonenumber" class="fw-bold">Phone Number</label>
                                             <input type="number" class="form-control" name="notelepon" placeholder="Add Phone Number">
                                     </div>
-                                    <div class="form-group col-12">
-                                        <label for="exampleFormControlSelect1">Doctor</label>
+                                    <div class="col-md-6 mb-6">
+                                        <label for="exampleFormControlSelect1" class="fw-bold">Doctor</label>
                                         <select class="form-select" id="exampleFormControlSelect1" name="dokter">
                                             <option selected hidden>Choose</option>
                                             {{-- <option value="1">Permintaan Sendiri</option> --}}
@@ -92,32 +92,32 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="form-group col-12">
-                                        <label for="name">Room</label>
+                                    <div class="col-md-6 mb-6">
+                                        <label for="name" class="fw-bold">Room</label>
                                         <input type="text " class="form-control"
                                             name="asal_ruangan" placeholder="Add Room">
                                     </div>
-                                    <div class="form-group col-12">
-                                        <label for="name">Diagnosis</label>
+                                    <div class="col-md-6 mb-6">
+                                        <label for="name" class="fw-bold">Diagnosis</label>
                                         <select name="diagnosa" id="diagnosa" class="form-control diagnosa">
                                             <option value=""></option>
                                         </select>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="alamat">Full Address</label>
-                                        <textarea class="form-control ml-1" cols="119" rows="2" id="alamat" name="alamat"></textarea>
+                                    <div class="col-md-6">
+                                        <label for="alamat" class="fw-bold">Full Address</label>
+                                        <textarea class="form-control ml-1" cols="119" rows="1" id="alamat" name="alamat"></textarea>
                                     </div>
                                     <div class="form-group col-12">
                                         <label for="basic-url">Kind Of Service</label>
                                         <div class="row">
-                                            <div class="ml-4">
+                                            <div class="ml-4 mb-2">
                                                 <input style="cursor: pointer" class="form-check-input child-pemeriksaan-hematologi" type="radio"
                                                     name="jenispelayanan" value="umum" id="umum" checked>
                                                 <label class="form-check-label" for="umum">
                                                     Umum
                                                 </label>
                                             </div>
-                                            <div class=" ml-4">
+                                            <div class=" ml-4 mb-2">
                                                 <input style="cursor: pointer" class="form-check-input child-pemeriksaan-hematologi"
                                                     type="radio" name="jenispelayanan" value="bpjs" id="bpjs">
                                                 <label class="form-check-label" for="bpjs">
@@ -135,18 +135,26 @@
                                         </div>
                                     </div>
                                 </div>
-                                <p class="h5">Choose Inspection</p>
                                 <hr>
                                 <div class="row">
+                                    <div class="col-md-8">
+                                        <h5>Choose Inspection</h5>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" id="searchInspection" class="form-control mb-3" placeholder="Search...">
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row" id="inspectionList">
                                     @foreach ($departments as $departement)
-                                        <div class="col-xl-3">
+                                        <div class="col-xl-3 inspection-item">
                                             <!-- Parent Pemeriksaan -->
-                                            <div class="parent-pemeriksaan" id="parent-pemeriksaan">
-                                                <div class="heading heading-color btn-block  mb-3">
+                                            <div class="parent-pemeriksaan">
+                                                <div class="heading heading-color btn-block mb-3">
                                                     <strong>{{ $departement->nama_department }}</strong>
                                                 </div>
                                                 <!-- Child pemeriksaan -->
-                                                <div class="child-pemeriksaan" id="child-pemeriksaan-hematologi">
+                                                <div class="child-pemeriksaan">
                                                     @foreach ($departement->detailDepartments as $x => $pemeriksaan)
                                                         <div class="form-check">
                                                             <input style="cursor: pointer" class="form-check-input child-pemeriksaan"
@@ -180,8 +188,8 @@
                                 </div>
                                 <hr>
                                 <div class=" text-end">
-                                    <input class="btn btn-outline-primary" type="submit" value="Submit">
-                                    <input class="btn btn-outline-danger" type="reset" value="Reset">   
+                                    <button class="btn btn-outline-primary" type="submit">Submit</button>
+                                    <button class="btn btn-outline-danger" type="reset">Reset</button>   
                                 </div>
                             </form>
                         </div>
@@ -255,6 +263,38 @@ $(document).ready(function(){
 
 
 @push('script')
+
+    <script>
+        $(document).ready(function() {
+        $('#searchInspection').on('keyup', function() {
+            var value = $(this).val().toLowerCase();
+            
+            // Loop through the list of departments
+            $('#inspectionList .parent-pemeriksaan').each(function() {
+                var found = false;
+
+                // Check each pemeriksaan within the department
+                $(this).find('.form-check-label').each(function() {
+                    var text = $(this).text().toLowerCase();
+                    if (text.includes(value)) {
+                        found = true;
+                        $(this).closest('.form-check').show();
+                    } else {
+                        $(this).closest('.form-check').hide();
+                    }
+                });
+
+                // If no pemeriksaan is found within the department, hide the department
+                if (found) {
+                    $(this).closest('.col-xl-3').show();
+                } else {
+                    $(this).closest('.col-xl-3').hide();
+                }
+            });
+        });
+    });
+
+    </script>
 
     <!-- hitung harga otomatis saat memilih checkbox mengambil harga dari database -->
     <script type="text/javascript">

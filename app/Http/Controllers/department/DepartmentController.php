@@ -130,35 +130,54 @@ class DepartmentController extends Controller
             'nama_department' => $request->nama_department,
         ]);
 
-        // Hapus detail lama
-        $departments->detailDepartments()->delete();
+        // Ambil semua detail lama yang ada di database
+        $existingDetails = $departments->detailDepartments->keyBy('kode')->toArray();
 
-        // Tambahkan detail baru
+        // Tambahkan atau update detail baru
         $array_length = count($request->nama_parameter);
         for ($x = 0; $x < $array_length; $x++) {
-            if (
-                isset($request->kode[$x]) &&
-                isset($request->nama_parameter[$x]) &&
-                isset($request->nama_pemeriksaan[$x]) &&
-                isset($request->harga[$x]) &&
-                isset($request->nilai_statik[$x]) &&
-                isset($request->nilai_satuan[$x])
-            ) {
-                $detail = new DetailDepartment();
-                $detail->department_id = $departments->id;
-                $detail->kode = $request->kode[$x];
-                $detail->nama_parameter = $request->nama_parameter[$x];
-                $detail->nama_pemeriksaan = $request->nama_pemeriksaan[$x];
-                $detail->harga = $request->harga[$x];
-                $detail->nilai_statik = $request->nilai_statik[$x];
-                $detail->nilai_satuan = $request->nilai_satuan[$x];
-                $detail->save();
+            $kode = $request->kode[$x];
+
+            // Cek apakah kode sudah ada dalam detail lama
+            if (isset($existingDetails[$kode])) {
+                // Jika kode sudah ada, kita update datanya
+                $detail = DetailDepartment::where('department_id', $departments->id)
+                    ->where('kode', $kode)
+                    ->first();
+
+                $detail->update([
+                    'nama_parameter' => $request->nama_parameter[$x],
+                    'nama_pemeriksaan' => $request->nama_pemeriksaan[$x],
+                    'harga' => $request->harga[$x],
+                    'nilai_statik' => $request->nilai_statik[$x],
+                    'nilai_satuan' => $request->nilai_satuan[$x],
+                ]);
+
+                // Hapus dari daftar detail lama karena sudah diupdate
+                unset($existingDetails[$kode]);
+            } else {
+                // Jika kode belum ada, buat detail baru
+                DetailDepartment::create([
+                    'department_id' => $departments->id,
+                    'kode' => $kode,
+                    'nama_parameter' => $request->nama_parameter[$x],
+                    'nama_pemeriksaan' => $request->nama_pemeriksaan[$x],
+                    'harga' => $request->harga[$x],
+                    'nilai_statik' => $request->nilai_statik[$x],
+                    'nilai_satuan' => $request->nilai_satuan[$x],
+                ]);
             }
+        }
+
+        // Jika ada detail lama yang tidak ada dalam input baru, Anda bisa menghapusnya
+        foreach ($existingDetails as $detail) {
+            DetailDepartment::where('id', $detail['id'])->delete();
         }
 
         toast('Berhasil Memperbarui Data Department', 'success');
         return redirect()->route('department.index');
     }
+
 
     /**
      * Remove the specified resource from storage.

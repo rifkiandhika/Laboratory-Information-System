@@ -80,7 +80,7 @@ Edit Spesiment
                                                             @endif
                                                         </td>
                                                         <td>
-                                                            <button type="button" class="btn btn-success btn-add"><i class="bi bi-plus-lg"></i></button>
+                                                            <button type="button" class="btn btn-success btn-add"><i class="ti ti-plus"></i></button>
                                                         </td>
                                                     </tr>
                                                 @endforeach
@@ -88,8 +88,8 @@ Edit Spesiment
                                         </table>
                                     </div>
                                 </div>
-                                <div class="text-end">
-                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                <div class="text-end mt-3">
+                                    <button type="submit" class="btn btn-outline-primary">Submit</button>
                                 </div>
                             </form>
                         </div>
@@ -115,8 +115,8 @@ Edit Spesiment
                                 <input type="file" name="gambar[]" class="form-control" required>
                             </td>
                             <td>
-                                <button type="button" class="btn btn-success btn-add"><i class="bi bi-plus-lg"></i></button>
-                                <button type="button" class="btn btn-danger btn-remove"><i class="bi bi-dash-lg"></i></button>
+                                <button type="button" class="btn btn-success btn-add"><i class="ti ti-plus"></i></button>
+                                <button type="button" class="btn btn-danger btn-remove"><i class="ti ti-minus"></i></button>
                             </td>
                         </tr>`;
             $("#tableDetail > tbody:last-child").append(row);

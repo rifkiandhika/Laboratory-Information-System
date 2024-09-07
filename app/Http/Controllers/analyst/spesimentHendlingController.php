@@ -95,7 +95,7 @@ class spesimentHendlingController extends Controller
             foreach ($serumh as $x => $serumh) {
                 spesimentCollection::create([
                     'no_lab' => $no_lab,
-                    'tabung' => 'CLOTH-ACT',
+                    'tabung' => 'K3',
                     'serumh' => $serumh,
                     'status' => 'Acc',
                     'note' => $notes[$x] ?? null,
@@ -257,149 +257,139 @@ class spesimentHendlingController extends Controller
         // return redirect()->route('spesiment.index');
     }
 
+    // public function checkin(Request $request)
+    // {
+    //     $ids = $request->ids;
+    //     // Ambil data pasien berdasarkan id
+    //     $pasiens = pasien::whereIn('id', $ids)->get();
+
+    //     foreach ($pasiens as $pasien) {
+
+    //         //     // dd($pasien);
+    //         //     // Cek apakah status pasien "waiting"
+    //         if ($pasien->status == 'Check In') {
+    //             // Simpan data ke spesimentCollection jika kapasitas ada
+    //             foreach ($pasien->data_pemeriksaan_pasien as $pemeriksaan) {
+
+    //                 if ($pemeriksaan->id) {
+    //                     // KONDISI UNTUK INPUT SPESIMENT COLLECTION
+    //                     spesimentCollection::create([
+    //                         'no_lab' => $pasien->no_lab,
+    //                         'tabung' => 'EDTA',
+    //                         'kapasitas' => 2, // 2 untuk normal dari tabel details
+    //                         'status' => 'Acc',
+    //                         // 'note' => null,
+    //                         'tanggal' => now(),
+    //                     ]);
+    //                     $proses = 'Acc Collection';
+    //                 } else if ($pemeriksaan->id) {
+    //                     // KONDISI UNTUK INPUT SPESIMENT COLLECTION
+    //                     spesimentCollection::create([
+    //                         'no_lab' => $pasien->no_lab,
+    //                         'tabung' => 'CLOTH-ACT',
+    //                         'serumh' => 4, // 2 untuk normal dari tabel details
+    //                         'status' => 'Acc',
+    //                         // 'note' => null,
+    //                         'tanggal' => now(),
+    //                     ]);
+    //                     $proses = 'Acc Collection';
+    //                 } else if ($pemeriksaan->id) {
+    //                     // KONDISI UNTUK INPUT SPESIMENT HANDLING
+    //                     spesimentHandling::create([
+    //                         'no_lab' => $pasien->no_lab,
+    //                         'tabung' => 'CLOT-ACT',
+    //                         'serum' => 8, // 4 untuk normal dari tabel details
+    //                         'status' => 'Acc',
+    //                         // 'note' => null,
+    //                         'tanggal' => now(),
+    //                     ]);
+    //                     $proses = 'Acc Handling';
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     pasien::whereIn('id', $ids)->update(['status' => 'Check In Spesiment']);
+    //     $pasiens = pasien::whereIn('id', $ids)->get();
+
+    //     foreach ($pasiens as $pasien) {
+
+    //         historyPasien::create([
+    //             'no_lab' => $pasien->no_lab,
+    //             'proses' => 'Check in spesiment',
+    //             'tempat' => 'Laboratorium',
+    //             'waktu_proses' => now(),
+    //             'created_at' => now(),
+    //         ]);
+    //     }
+    //     toast('Pasien telah check in dari Spesiment', 'success');
+    //     return response()->json(['success' => 'Data berhasil Dikonfirmasi!']);
+    // }
     public function checkin(Request $request)
     {
-        // foreach ($request->pilihan as $pilihan) {
-
-        //     pasien::where('no_lab', $pilihan)->update([
-        //         'status' => 'Check in Spesiment',
-        //     ]);
-
-        //     historyPasien::create([
-        //         'no_lab' => $pilihan,
-        //         'proses' => 'Check in spesiment',
-        //         'tempat' => 'Laboratorium',
-        //         'note' => 'nullable',
-        //         'waktu_proses' => now(),
-        //     ]);
-        // }
-        // try {
-        $ids = $request->ids;
         // Ambil data pasien berdasarkan id
+        $ids = $request->ids;
         $pasiens = pasien::whereIn('id', $ids)->get();
 
         foreach ($pasiens as $pasien) {
 
-            //     // dd($pasien);
-            //     // Cek apakah status pasien "waiting"
+            // Cek apakah status pasien "Check In"
             if ($pasien->status == 'Check In') {
-                // Simpan data ke spesimentCollection jika kapasitas ada
-                foreach ($pasien->data_pemeriksaan_pasien as $pemeriksaan) {
 
-                    if ($pemeriksaan->id_departement == 1) {
-                        // KONDISI UNTUK INPUT SPESIMENT COLLECTION
+                // Loop melalui setiap data pemeriksaan pasien
+                foreach ($pasien->spesiment as $spesiment) {
+
+                    if ($spesiment->tabung === 'EDTA') {
+                        // KONDISI UNTUK INPUT SPESIMENT COLLECTION DENGAN TABUNG EDTA
                         spesimentCollection::create([
                             'no_lab' => $pasien->no_lab,
                             'tabung' => 'EDTA',
-                            'kapasitas' => 2, // 2 untuk normal dari tabel details
+                            'kapasitas' => 13, // Ini nilai contoh, sesuaikan dengan kebutuhan
                             'status' => 'Acc',
-                            // 'note' => null,
                             'tanggal' => now(),
                         ]);
-                        $proses = 'Acc Collection';
-                    } else if ($pemeriksaan->id_departement == 1) {
-                        // KONDISI UNTUK INPUT SPESIMENT COLLECTION
+                    } else if ($spesiment->tabung === 'CLOTH-ACT') {
+                        // KONDISI UNTUK INPUT SPESIMENT COLLECTION DENGAN TABUNG CLOTH-ACT
                         spesimentCollection::create([
                             'no_lab' => $pasien->no_lab,
-                            'tabung' => 'CLOTH-ACT',
-                            'serumh' => 4, // 2 untuk normal dari tabel details
+                            'tabung' => 'K3',
+                            'serumh' => 15, // Ini nilai contoh, sesuaikan dengan kebutuhan
                             'status' => 'Acc',
-                            // 'note' => null,
                             'tanggal' => now(),
                         ]);
-                        $proses = 'Acc Collection';
-                    } else if ($pemeriksaan->id_departement == 2) {
-                        // KONDISI UNTUK INPUT SPESIMENT HANDLING
+                    } else if ($spesiment->tabung === 'CLOT-ACT') {
+                        // KONDISI UNTUK INPUT SPESIMENT HANDLING DENGAN TABUNG CLOT-ACT
                         spesimentHandling::create([
                             'no_lab' => $pasien->no_lab,
                             'tabung' => 'CLOT-ACT',
-                            'serum' => 8, // 4 untuk normal dari tabel details
+                            'serum' => 19, // Ini nilai contoh, sesuaikan dengan kebutuhan
                             'status' => 'Acc',
-                            // 'note' => null,
                             'tanggal' => now(),
                         ]);
-                        $proses = 'Acc Handling';
                     }
+                }
+
+                // Update status pasien
+                pasien::whereIn('id', $ids)->update(['status' => 'Check In Spesiment']);
+                $pasiens = pasien::whereIn('id', $ids)->get();
+
+                // Buat catatan riwayat pasien
+                foreach ($pasiens as $pasien) {
+
+                    historyPasien::create([
+                        'no_lab' => $pasien->no_lab,
+                        'proses' => 'Check in spesiment',
+                        'tempat' => 'Laboratorium',
+                        'waktu_proses' => now(),
+                        'created_at' => now(),
+                    ]);
                 }
             }
         }
-
-
-        // historyPasien::create([
-        //     'no_lab' => $pasien->no_lab,
-        //     'proses' => 'Acc Collection',
-        //     'tempat' => 'Laboratorium',
-        //     'waktu_proses' => now(),
-        // ]);
-
-        //         // if (!empty($kapasitas)) {
-        //         //     foreach ($kapasitas as $x => $kapasitas) {
-        //         //         spesimentCollection::create([
-        //         //             'no_lab' => $pasien->no_lab,
-        //         //             'tabung' => 'EDTA',
-        //         //             'kapasitas' => $kapasitas,
-        //         //             'status' => 'Acc',
-        //         //             'note' => $notes[$x] ?? null,
-        //         //             'tanggal' => now(),
-        //         //         ]);
-
-        //         //         historyPasien::create([
-        //         //             'no_lab' => $pasien->no_lab,
-        //         //             'proses' => 'Acc Collection',
-        //         //             'tempat' => 'Laboratorium',
-        //         //             'waktu_proses' => now(),
-        //         //         ]);
-        //         //     }
-        //         // }
-
-        //         // // Simpan data ke spesimentHandling jika serum ada
-        //         // if (!empty($serum)) {
-        //         //     foreach ($serum as $x => $serum) {
-        //         //         spesimentHandling::create([
-        //         //             'no_lab' => $pasien->no_lab,
-        //         //             'tabung' => 'CLOT-ACT',
-        //         //             'serum' => $serum,
-        //         //             'status' => 'Acc',
-        //         //             'note' => $notes[$x] ?? null,
-        //         //             'tanggal' => now(),
-        //         //         ]);
-
-        //         //         historyPasien::create([
-        //         //             'no_lab' => $pasien->no_lab,
-        //         //             'proses' => 'Acc Handling',
-        //         //             'tempat' => 'Laboratorium',
-        //         //             'waktu_proses' => now(),
-        //         //         ]);
-        //         //     }
-        //         // }
-        //     }
-        // }
-
-        //     pasien::whereIn('id', $ids)->update(['status' => 'Check In Spesiment']);
-
-        //     foreach ($pasiens as $pasien) {
-
-        //         historyPasien::create([
-        //             'no_lab' => $pasien->no_lab,
-        //             'proses' => 'Check in spesiment',
-        //             'tempat' => 'Laboratorium',
-        //             'waktu_proses' => now(),
-        //             'created_at' => now(),
-        //         ]);
-        //     }
-
-
-        //     toast('Pasien telah Check in dari Spesiment', 'success');
-        //     return response()->json(['success' => 'Data berhasil Dikonfirmasi!']);
-        // } catch (Exception $e) {
-        //     return response()->json(['fail' => $e->getMessage()]);
-        // }
-
-        // $ids = $request->ids;
-
         pasien::whereIn('id', $ids)->update(['status' => 'Check In Spesiment']);
         $pasiens = pasien::whereIn('id', $ids)->get();
 
+        // Buat catatan riwayat pasien
         foreach ($pasiens as $pasien) {
 
             historyPasien::create([
@@ -412,28 +402,32 @@ class spesimentHendlingController extends Controller
         }
         toast('Pasien telah check in dari Spesiment', 'success');
         return response()->json(['success' => 'Data berhasil Dikonfirmasi!']);
+    }
 
-        // $request->validate([
-        //     'pilihan' => 'required|array',
-        //     'pilihan.*' => 'exists:pasiens,no_lab'
-        // ]);
+    public function back(Request $request, $id)
+    {
+        $request->validate([
+            'note' => 'required|string|max:255',
+        ]);
 
-        // foreach ($request->pilihan as $pilihan) {
-        //     pasien::where('no_lab', $pilihan)->update([
-        //         'status' => 'Check in Spesiment',
-        //     ]);
+        $pasien = pasien::find($id);
 
-        //     historyPasien::create([
-        //         'no_lab' => $pilihan,
-        //         'proses' => 'Check in spesiment',
-        //         'tempat' => 'Laboratorium',
-        //         'note' => 'nullable',
-        //         'waktu_proses' => now(),
-        //     ]);
+        // Update status pasien
+        $pasien->update(['status' => 'Dikembalikan Analyst']);
 
+        pemeriksaan_pasien::where('no_lab', $pasien->no_lab)
+            ->update(['status' => 'lama']);
 
-        //     toast('Pasien telah Check in dari Spesiment', 'success');
-        //     return redirect()->route('spesiment.index');
-        // }
+        historyPasien::create([
+            'no_lab' => $pasien->no_lab,
+            'proses' => 'Dikembalikan oleh analyst',
+            'tempat' => 'Laboratorium',
+            'note' => $request->input('note'),
+            'waktu_proses' => now(),
+            'created_at' => now(),
+        ]);
+
+        toast('Data telah dikembalikan ke loket', 'success');
+        return redirect()->route('spesiment.index');
     }
 }

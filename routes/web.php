@@ -6,7 +6,10 @@ use App\Http\Controllers\auth\userController;
 use App\Http\Controllers\icd10\icd10Controller;
 use App\Http\Controllers\loket\pasienController;
 use App\Http\Controllers\analyst\analystDasboard;
+use App\Http\Controllers\analyst\DqcController;
 use App\Http\Controllers\analyst\DSpesimentController;
+use App\Http\Controllers\analyst\QcController;
+use App\Http\Controllers\analyst\resultController;
 use App\Http\Controllers\analyst\SpesimentController;
 use App\Http\Controllers\analyst\worklistController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
@@ -38,8 +41,15 @@ use Illuminate\Support\Facades\Response;
 
 
 
-Route::get('/test', function () {
-    return view('layouts-collapsed-menu');
+// Route::get('/test', function () {
+//     return view('Note/test');
+// });
+
+// Route::get('/print-view/print-pasien', function () {
+//     return view('print-view.print-pasien');
+// });
+Route::get('/', function () {
+    return redirect('/login');
 });
 
 route::resource('login', userController::class);
@@ -128,35 +138,45 @@ route::group(['prefix' => 'loket', 'middleware' => ['auth']], function () {
     Route::resource('data-pasien', DataPasienController::class);
     Route::get('get-icd10', [icd10Controller::class, 'geticd10'])->name('geticd10');
     Route::get('print/barcode/{no_lab}', [pasienController::class, 'previewPrint'])->name('print.barcode');
-    // Route::put('/data-pasien/{id}', [DataPasienController::class, 'update'])->name('data-pasien.update');
+    Route::get('/pasien/edit/{no_lab}', [pasienController::class, 'edit'])->name('pasien.viewedit');
+    Route::put('/pasien/{id}', [pasienController::class, 'update'])->name('pasien.updatedata');
+    Route::post('pasien/checkin', [pasienController::class, 'checkin'])->name('pasien.checkin');
+    // Route::post('pasien.update', [pasienController::class, 'update'])->name('pasien.update');
 });
 
 Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
+    // Route Dashboard
     Route::resource('analyst', analystDasboard::class);
     // route::post('/setuju', [analystDasboard::class, 'approve'])->name('analyst.approve');
     Route::post('/approve/{id}', [analystDasboard::class, 'approve'])->name('analyst.approve');
     Route::post('/checkinall', [analystDasboard::class, 'checkinall'])->name('analyst.checkinall');
-
+    // Route Spesiment
     Route::resource('spesiment', spesimentHendlingController::class);
     Route::post('spesiment/post', [spesimentHendlingController::class, 'postSpesiment'])->name('spesiment.post');
     Route::post('spesiment/checkin', [spesimentHendlingController::class, 'checkin'])->name('spesiment.checkin');
-
-    Route::resource('vdokter', vDokterController::class);
+    Route::post('/spesiment/back/{id}', [spesimentHendlingController::class, 'back'])->name('spesiment.back');
+    // Route Worklist
     Route::resource('worklist', worklistController::class);
-    // Route::delete('analyst/worklist/{worklist}', [worklistController::class, 'destroy'])->name('worklist.destroy');
+    Route::delete('analyst/worklist/{worklist}', [worklistController::class, 'destroy']);
     Route::post('/worklist/checkin/{id}', [worklistController::class, 'checkin'])->name('worklist.checkin');
+    // Route Dokter
+    Route::resource('vdokter', vDokterController::class);
+    Route::post('/dokter/back/{id}', [vDokterController::class, 'back'])->name('dokter.back');
+    Route::post('/dokter/send/{id}', [vDokterController::class, 'sentToReview']);
+    // Route Result Review
+    Route::resource('result', resultController::class);
+
+    Route::get('print/pasien/{no_lab}', [resultController::class, 'print'])->name('print.pasien');
+
+    // Route::get('/print', [resultController::class, 'print']);
+    // Route::get('/analyst/result/{result}', [ResultController::class, 'show'])->name('result.show');
+    Route::resource('Qc', QcController::class);
+    Route::resource('Dqc', DqcController::class);
 
 
-
-
-    Route::get('/result', function () {
-        return view('analyst.result-review');
-    });
-
-
-    Route::get('/quality-control', function () {
-        return view('analyst.quality-control');
-    });
+    // Route::get('/quality-control', function () {
+    //     return view('analyst.quality-control');
+    // });
     Route::get('/daftar-qc', function () {
         return view('analyst.daftar-qc');
     });
@@ -165,8 +185,8 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
     });
 });
 
-route::get('/worklist/pemeriksaan', [worklistController::class, 'tampilPemeriksaan']);
-route::get('/worklist/tampildarahlengkap/{nolab}', [worklistController::class, 'tampilPemeriksaan'])->name('worklist.tampildarahlengkap');
+// route::get('/worklist/pemeriksaan', [worklistController::class, 'tampilPemeriksaan']);
+// route::get('/worklist/tampildarahlengkap/{nolab}', [worklistController::class, 'tampilPemeriksaan'])->name('worklist.tampildarahlengkap');
 
 Route::get('/print/barcode/{lab}', [pasienController::class, 'previewPrint']);
 

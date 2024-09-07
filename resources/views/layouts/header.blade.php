@@ -5,11 +5,7 @@
         <i class="ti ti-menu-2 ti-md"></i>
       </a>
     </div>
-    
-
     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-
-      
       <!-- Search -->
       <div class="navbar-nav align-items-center">
         {{-- <h3>Laboratory Information System Management</h3> --}}
@@ -381,43 +377,45 @@
             <li>
               <div class="dropdown-divider my-1 mx-n2"></div>
             </li>
-            {{-- <li>
-              <a class="dropdown-item" href="pages-profile-user.html">
-                <i class="ti ti-user me-3 ti-md"></i><span class="align-middle">My Profile</span>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="pages-account-settings-account.html">
-                <i class="ti ti-settings me-3 ti-md"></i><span class="align-middle">Settings</span>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="pages-account-settings-billing.html">
-                <span class="d-flex align-items-center align-middle">
-                  <i class="flex-shrink-0 ti ti-file-dollar me-3 ti-md"></i><span class="flex-grow-1 align-middle">Billing</span>
-                  <span class="flex-shrink-0 badge bg-danger d-flex align-items-center justify-content-center">4</span>
-                </span>
-              </a>
-            </li>
-            <li>
-              <div class="dropdown-divider my-1 mx-n2"></div>
-            </li>
-            <li>
-              <a class="dropdown-item" href="pages-pricing.html">
-                <i class="ti ti-currency-dollar me-3 ti-md"></i><span class="align-middle">Pricing</span>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="pages-faq.html">
-                <i class="ti ti-question-mark me-3 ti-md"></i><span class="align-middle">FAQ</span>
-              </a>
-            </li>
-            <li> --}}
+                {{-- <li>
+                  <a class="dropdown-item" href="pages-profile-user.html">
+                    <i class="ti ti-user me-3 ti-md"></i><span class="align-middle">My Profile</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="pages-account-settings-account.html">
+                    <i class="ti ti-settings me-3 ti-md"></i><span class="align-middle">Settings</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="pages-account-settings-billing.html">
+                    <span class="d-flex align-items-center align-middle">
+                      <i class="flex-shrink-0 ti ti-file-dollar me-3 ti-md"></i><span class="flex-grow-1 align-middle">Billing</span>
+                      <span class="flex-shrink-0 badge bg-danger d-flex align-items-center justify-content-center">4</span>
+                    </span>
+                  </a>
+                </li>
+                <li>
+                  <div class="dropdown-divider my-1 mx-n2"></div>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="pages-pricing.html">
+                    <i class="ti ti-currency-dollar me-3 ti-md"></i><span class="align-middle">Pricing</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="pages-faq.html">
+                    <i class="ti ti-question-mark me-3 ti-md"></i><span class="align-middle">FAQ</span>
+                  </a>
+                </li>
+                <li> --}}
               <div class="d-grid px-2 pt-2 pb-1">
-                <a class="btn btn-sm btn-danger d-flex" href="{{ route('logout') }}">
-                  <small class="align-middle">Logout</small>
-                  <i class="ti ti-logout ms-2 ti-14px"></i>
-                </a>
+                <form action="{{ route('logout') }}" method="post">
+                  @csrf
+                  <button type="submit" class="btn btn-danger w-100">
+                    <i class="ti ti-logout ms-2 ti-14px"></i>Logout</button>
+                  <small class="align-middle"></small>
+                </form>
               </div>
             </li>
           </ul>

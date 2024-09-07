@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('id_departement')->nullable();
             $table->text('nama_parameter')->nullable();
             $table->integer('harga');
+            $table->string('status')->default('baru')->nullable(false);
             $table->timestamps();
         });
     }

@@ -57,6 +57,14 @@ class pasien extends Model
     {
         return $this->hasMany(HasilPemeriksaan::class, 'no_lab', 'no_lab');
     }
+    public function data_pemeriksaan()
+    {
+        return $this->belongsTo(DetailDepartment::class, 'id_parameter');
+    }
+    public function pemeriksaan_pasien()
+    {
+        return $this->hasMany(pemeriksaan_pasien::class, 'no_lab', 'no_lab');
+    }
 
     public function age()
     {

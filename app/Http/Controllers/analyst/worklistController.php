@@ -24,19 +24,27 @@ class worklistController extends Controller
      */
     public function index()
     {
-        $dataPasien = pasien::where(function ($query) {
-            $query->where('status', 'Check in spesiment');
-        })
-            ->where('cito', 0)
-            ->get();
+        $dataPasienCito = pasien::where('status', 'Check in spesiment')->orderBy('cito', 'desc')->paginate(20);
+        $verifikasi = pasien::where('status', 'Verifikasi')->orderBy('cito', 'desc')->paginate(20);
 
-        $dataPasienCito = pasien::where(function ($query) {
-            $query->where('status', 'Check in spesiment');
-        })
-            ->where('cito', 1)
-            ->get();
+        // $dataPasien = pasien::where(function ($query) {
+        //     $query->where('status', 'Check in spesiment');
+        // })
+        //     ->where('cito', 0)
+        //     ->get();
 
-        return view('analyst.worklist', compact('dataPasien', 'dataPasienCito'));
+        // $dataPasienCito = pasien::where(function ($query) {
+        //     $query->where('status', 'Check in spesiment');
+        // })
+        //     ->where('cito', 1)
+        //     ->get();
+
+        $dikembalikan = pasien::where('status', 'Dikembalikan')->orderBy('cito', 'desc')->paginate(20);
+        // $dikembalikan = pasien::where(function ($query) {
+        //     $query->where('status', 'Dikembalikan');
+        // })->get();
+
+        return view('analyst.worklist', compact('dataPasienCito', 'dikembalikan', 'verifikasi'));
     }
 
     /**
@@ -80,18 +88,36 @@ class worklistController extends Controller
         }
 
         foreach ($nama_pemeriksaan as $x => $pemeriksaan) {
-            HasilPemeriksaan::create([
-                'no_lab' => $no_lab,
-                'no_rm' => $no_rm,
-                'nama' => $nama,
-                'ruangan' => $ruangan,
-                'nama_dokter' => $nama_dokter,
-                'nama_pemeriksaan' => $pemeriksaan,
-                'hasil' => $hasils[$x],
-                'range' => $ranges[$x] ?? null,
-                'satuan' => $satuans[$x] ?? null,
-            ]);
+            $existingHasil = HasilPemeriksaan::where('no_lab', $no_lab)
+                ->where('nama_pemeriksaan', $pemeriksaan)
+                ->first();
+            if ($existingHasil) {
+                // Jika data sudah ada, lakukan update
+                $existingHasil->update([
+                    'hasil' => $hasils[$x],
+                    'range' => $ranges[$x] ?? $existingHasil->range,
+                    'satuan' => $satuans[$x] ?? $existingHasil->satuan,
+                ]);
+            } else {
+                HasilPemeriksaan::create([
+                    'no_lab' => $no_lab,
+                    'no_rm' => $no_rm,
+                    'nama' => $nama,
+                    'ruangan' => $ruangan,
+                    'nama_dokter' => $nama_dokter,
+                    'nama_pemeriksaan' => $pemeriksaan,
+                    'hasil' => $hasils[$x],
+                    'range' => $ranges[$x] ?? null,
+                    'satuan' => $satuans[$x] ?? null,
+                ]);
+            }
         }
+
+        $pasien = pasien::where('no_lab', $no_lab)->where('status', 'Check In Spesiment')->first();
+        if ($pasien) {
+            $pasien->update(['status' => 'Verifikasi']);
+        }
+
         toast('Data berhasil di verifikasi', 'success');
         return redirect()->route('worklist.index');
     }
@@ -109,16 +135,32 @@ class worklistController extends Controller
         // Validasi dan pembaruan status
         $pasien = pasien::find($id);
 
-        // Update status pasien
-        $pasien->update(['status' => 'Verifikasi Dokter']);
+        // Cek apakah status sebelumnya adalah "Verifikasi Dokter"
+        if ($pasien->status === 'Dikembalikan') {
+            // Update status menjadi "Diverifikasi Ulang"
+            $pasien->update(['status' => 'Diverifikasi Ulang']);
 
-        historyPasien::create([
-            'no_lab' => $pasien->no_lab,
-            'proses' => 'Verifikasi Dokter',
-            'tempat' => 'Laboratorium',
-            'waktu_proses' => now(),
-            'created_at' => now(),
-        ]);
+            // Tambahkan catatan ke history
+            historyPasien::create([
+                'no_lab' => $pasien->no_lab,
+                'proses' => 'Diverifikasi Ulang',
+                'tempat' => 'Laboratorium',
+                'waktu_proses' => now(),
+                'created_at' => now(),
+            ]);
+        } else {
+            // Update status pasien ke "Verifikasi Dokter"
+            $pasien->update(['status' => 'Verifikasi Dokter']);
+
+            // Tambahkan catatan ke history
+            historyPasien::create([
+                'no_lab' => $pasien->no_lab,
+                'proses' => 'Verifikasi Dokter',
+                'tempat' => 'Laboratorium',
+                'waktu_proses' => now(),
+                'created_at' => now(),
+            ]);
+        }
 
         toast('Data telah dikirim untuk diverifikasi', 'success');
         return redirect()->route('worklist.index');
@@ -160,13 +202,13 @@ class worklistController extends Controller
 
 
 
-    public function tampilPemeriksaan($lab)
-    {
-        $nolab = null;
-        $nolab = $lab;
-        $data = pasien::all();
-        return response()->json($nolab);
-    }
+    // public function tampilPemeriksaan($lab)
+    // {
+    //     $nolab = null;
+    //     $nolab = $lab;
+    //     $data = pasien::all();
+    //     return response()->json($nolab);
+    // }
 
     public function storemsh(Request $request)
     {

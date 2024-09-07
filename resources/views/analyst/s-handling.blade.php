@@ -3,6 +3,16 @@
 
 @section('content')
 <style>
+    ::-webkit-scrollbar {
+        width: 5px; 
+    }
+    ::-webkit-scrollbar-thumb {
+        background: lightgray;
+        border-radius: 10px;
+    }
+    .scrollbox{
+        overflow: auto;
+    }
         .subtext {
             text-align: center;
             font-size: 1.2rem;
@@ -165,7 +175,7 @@
                                 <table class="table table-striped table-bordered" id="myTable">
                                     <thead>
                                         <tr>
-                                            <th data-dt-order="disable"><input style="font-size: 20px; cursor: pointer; clear:" type="checkbox" name="check" id="select_all_ids" class="form-check-input"></th>
+                                            <th class="sorting_disabled"><input style="font-size: 20px; cursor: pointer; clear:" type="checkbox" name="check" id="select_all_ids" class="form-check-input"></th>
                                             <th scope="col">Tanggal Order</th>
                                             <th scope="col">Cito</th>
                                             <th scope="col">No RM</th>
@@ -195,7 +205,7 @@
                                             </td>
                                             <td>{{ $dpc->no_rm }}</td>
                                             <td>{{ $dpc->no_lab }}</td>
-                                            <td>{{ $dpc->nama }}</td>
+                                            <td class="col-2">{{ $dpc->nama }}</td>
                                             <td>{{ $dpc->asal_ruangan }}</td>
                                             {{-- <td>
                                                 @if ($dpc->cito == 1)
@@ -204,7 +214,7 @@
                                                 <i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i>
                                                 @endif
                                             </td> --}}
-                                            <td>
+                                            <td class="col-1">
                                                 {{ \Carbon\Carbon::parse($dpc->lahir)->age }} Tahun
                                             </td>
                                             <td>
@@ -214,12 +224,23 @@
                                                 <span class="badge bg-warning text-white">Approved</span>
                                                 @endif
                                             </td>
-                                            <td class="col-3">
+                                            <td class="col-4">
                                                 <button class="btn btn-info btn-preview" data-id={{ $dpc->id }} data-bs-target="#modalSpesimen"
                                                     data-bs-toggle="modal" ><i class="ti ti-eye"></i></button>
                                                 <button class="btn btn-warning"><i class="ti ti-barcode"></i></button>
+
                                                 <button class="btn btn-success btn-edit" data-id={{ $dpc->id }} data-bs-target="#modalEdit" data-bs-toggle="modal"><i class="ti ti-edit"></i></button>
                                                 
+                                                
+                                                <form id="spesimentBack-{{ $dpc->id }}"
+                                                    action="{{ route('spesiment.back', $dpc->id) }}" method="POST"
+                                                    style="display: none;">
+                                                    @csrf
+                                                </form>
+                                                <button class="btn btn-primary" onclick="confirmBack({{ $dpc->id }})"><i class="ti ti-arrow-back-up"></i></button>
+                                                {{-- <form action="" method="post">
+                                                </form> --}}
+
                                                 <form id="delete-form-{{ $dpc->id }}"
                                                     action="{{ route('spesiment.destroy', $dpc->no_lab) }}" method="POST"
                                                     style="display: none;">
@@ -294,7 +315,7 @@
                                     <h5 class="modal-title" id="sampleHistoryModalLabel">Detail Inspection Patient</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
-                                <div class="modal-body" style="overflow-y: scroll" id="pembayaran-pasien" style="max-height: 700px;">
+                                <div class="modal-body" style=" max-height: 600px; overflow-y: auto" id="pembayaran-pasien">
                                     <form action="{{ route('spesiment.store') }}" method="POST">
                                         @csrf
                                         <div class="row">
@@ -362,6 +383,39 @@
 </div>
 
 @push('script')
+
+<script>
+    function confirmBack(id) {
+      Swal.fire({
+          title: 'Apakah Anda yakin?',
+          text: "Data akan dikirim kembali ke loket?",
+          icon: 'warning',
+          input: 'textarea',
+          inputPlaceholder: 'Tambahkan catatan di sini...',
+          showCancelButton: true,
+          confirmButtonText: 'Ya, Kirim!',
+          cancelButtonText: 'Batal',
+          inputValidator: (value) => {
+            if (!value) {
+                  return 'Note wajib diisi!'; // Pesan kesalahan jika input kosong
+              }
+              return null;
+          }
+      }).then((result) => {
+          if (result.isConfirmed) {
+              if (result.value) {
+                  let noteInput = document.createElement('input');
+                  noteInput.type = 'hidden';
+                  noteInput.name = 'note';
+                  noteInput.value = result.value;
+                  document.getElementById(`spesimentBack-${id}`).appendChild(noteInput);
+              }
+              document.getElementById(`spesimentBack-${id}`).submit();
+          }
+      });
+  }
+  </script>
+
 <script>
     $(function() {
         // button preview waktu di klik mendapatkan data sesuai id
@@ -463,7 +517,7 @@
                                     e.details.forEach(detail => {
                                         const imageUrl = `/gambar/${detail.gambar}`;
                                         const isChecked = (e.tabung === 'EDTA' && detail.nama_parameter === 'Normal' ) ||
-                                                            (e.tabung === 'CLOTH-ACT' && detail.nama_parameter === 'Normal') ||
+                                                            (e.tabung === 'K3' && detail.nama_parameter === 'Normal' ) ||
                                                             (e.tabung === 'CLOT-ACT' && detail.nama_parameter === 'Normal') ? 'checked' : '';
 
                                         // const approvedDetail = res.data.approvedDetails.find(d => d.id === detail.id);
@@ -478,7 +532,7 @@
                                             </div>
                                             <div class="detail-radio-container">
                                                 ${e.tabung === 'EDTA' ? `<input type="radio" name="kapasitas[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}
-                                                ${e.tabung === 'CLOTH-ACT' ? `<input type="radio" name="serumh[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}
+                                                ${e.tabung === 'K3' ? `<input type="radio" name="serumh[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''  }
                                                 ${e.tabung === 'CLOT-ACT' ? `<input type="radio" name="serum[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}    
                                             </div>
                                         </div>`;
@@ -488,20 +542,25 @@
 
                                 let title = '';
                                 let subtext = '';
+
                                 if (e.tabung === 'EDTA') {
                                     title = '<h5 class="title">Spesiment Collection</h5> <hr>';
-                                } else if (e.spesiment === 'Spesiment Collection') {
-                                    subtext = '<div class="subtext">Serum</div>';
-                                } else if (e.spesiment === 'Spesiment Handlings') {
-                                    title = '<h5>Spesiment Handlings</h5> <hr>';
+                                }else
+
+                                if (e.tabung === 'K3') {
+                                    title = '<h5 class="title">Spesiment Collection</h5> <hr>';
+                                }else
+
+                                if (e.tabung === 'CLOT-ACT') {
+                                    title = '<h5 class="title mt-3">Spesiment Handlings</h5> <hr>';
                                     subtext = '<div class="subtext">Serum</div>';
                                 }
-                                
-                                let note = '';
-                                if (e.tabung === 'EDTA' || e.tabung === 'CLOT-ACT', 'CLOTH-ACT') {
-                                        note = '<p class="mb-0"><strong>Note</strong></p>';
-                                    }
 
+                                let note = '';
+                                if (e.tabung === 'EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'K3') {
+                                    note = '<p class="mb-0"><strong>Note</strong></p>';
+                                }
+                                
                                 detailContent += `${title}
                                     <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">
                                                         
@@ -520,7 +579,7 @@
                                                     </div>
                                                     ${note}
                                                     ${e.tabung === 'EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
-                                                    ${e.tabung === 'CLOTH-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
+                                                    ${e.tabung === 'K3' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
                                                     ${e.tabung === 'CLOT-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
                                                     
                                                 </div>

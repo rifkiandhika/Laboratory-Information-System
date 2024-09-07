@@ -3,6 +3,102 @@
 
 @section('content')
 <link rel="stylesheet" href="{{ asset('css/timeline.css') }}">
+<style>
+    @keyframes fadeInOut {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+.blinking-icon {
+    animation: fadeInOut 2s infinite;
+}
+
+ .step-wizard-list {
+    background: #fff;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+    color: lightslategray;
+    list-style-type: none;
+    border-radius: 10px;
+    display: flex;
+    padding: 20px 10px;
+    position: relative;
+    z-index: 10;
+    max-width: 100%; /* Membatasi lebar maksimal sesuai dengan ukuran modal */
+    overflow: auto; /* Menambahkan scroll horizontal jika konten terlalu besar */
+}
+
+
+.step-wizard-item {
+    padding: 0 10px; /* Mengurangi padding untuk item agar lebih kompak */
+    flex-basis: 0;
+    flex-grow: 1;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    min-width: 120px; /* Kurangi ukuran minimum agar lebih fleksibel */
+    position: relative;
+}
+
+@media (max-width: 576px) {
+    .step-wizard-item {
+        min-width: 100px; /* Mengatur ulang ukuran untuk layar kecil */
+    }
+}
+ .step-wizard-item + .step-wizard-item:after{
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 19px;
+    background: #13ee88;
+    width: 100%;
+    height: 2px;
+    transform: translateX(-50%);
+    z-index: -10;
+ }
+ .progress-count{
+    height: 40px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: 600;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+    color: transparent;
+ }
+ .progress-count::after{
+    content: "";
+    height: 35px;
+    width: 35px;
+    background: #13ee88;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    z-index: -10;
+ }
+ .progress-count::before{
+    content: "";
+    height: 10px;
+    width: 20px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    position: absolute;
+    left: 50%;
+    top: 45%;
+    transform: translate(-50%, -60%) rotate(-45deg);
+    transform-origin: center center;
+ }
+ .progress-label{
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 10px;
+ }
+</style>
 <section>
     <div class="content" id="scroll-content">
         <div class="container-fluid">
@@ -31,17 +127,17 @@
                     <thead>
                         <tr>
                         <th scope="col"><i class="ti ti-checkbox" style="font-size: 18px;"></i></th>
-                        <th scope="col">No LAB</th>
+                        <th scope="col" colspan="2">No LAB</th>
                         <th scope="col">Nama</th>
                         <th scope="col">Cito</th>
                         </tr>
                     </thead>
                     <tbody>
+                        {{-- Data Pasien --}}
                         @foreach ( $dataPasienCito as $dpc )
                             <tr>
-                                
-                                <th scope="row"><input class="form-check-input mt-2" style="font-size: 15px; cursor: pointer;" type="checkbox"  name="pilih"></th>
-                                <td>
+                                <th scope="row"><i class="ti ti-clock text-warning"></i></th>
+                                <td colspan="2">
                                     <a href="#" class="preview" data-id={{ $dpc->id }}>{{ $dpc->no_lab }}</a>
                                     
                                 </td>
@@ -52,19 +148,51 @@
                                 </td>
                             </tr>
                         @endforeach
-                        @foreach ( $dataPasien as $dp )
+                        {{-- Pasien Diverifikasi --}}
+                        @foreach ( $verifikasi as $v )
+                            <tr>
+                                <th scope="row"><i class="ti ti-circle-check text-success"></i></th>
+                                <td colspan="2">
+                                    <a href="#" class="preview" data-id={{ $v->id }}>{{ $v->no_lab }}</a>
+                                    
+                                </td>
+                                <td>{{ $v->nama }}</td>
+                                <td class="text-center">
+                                    <i class='ti ti-bell-filled mt-2 ml-1 {{ $v->cito == '1' ? 'text-danger' : 'text-secondary' }}'
+                                        style="font-size: 23px;"></i>
+                                </td>
+                            </tr>
+                        @endforeach
+                        {{-- Pasien Dikembalikan --}}
+                        @foreach ( $dikembalikan as $dk )
+                            <tr>
+                                
+                                <th scope="row"><i class="ti ti-alert-triangle text-danger blinking-icon"></i></th>
+                                {{-- <input class="form-check-input mt-2" style="font-size: 15px; cursor: pointer;" type="checkbox"  name="pilih"> --}}
+                                <td  colspan="2">
+                                    <a href="#" class="preview" data-id={{ $dk->id }}>{{ $dk->no_lab }}</a>
+                                    
+                                </td>
+                                <td>{{ $dk->nama }}</td>
+                                <td class="text-center">
+                                    <i class='ti ti-bell-filled mt-2 ml-1 {{ $dk->cito == '1' ? 'text-danger' : 'text-secondary' }}'
+                                        style="font-size: 23px;"></i>
+                                </td>
+                            </tr>
+                        @endforeach
+                        {{-- @foreach ( $dikembalikan as $dk )
                             <tr>
                                 <th scope="row"><input class="form-check-input mt-2" style="font-size: 15px; cursor: pointer;" type="checkbox"  name="pilih"></th>
-                                <td><a href="#" class="preview" data-id={{ $dp->id }}>{{ $dp->no_lab }}</a></td>
-                                <td>{{ $dp->nama }}</td>
+                                <td><a href="#" class="preview" data-id={{ $dk->id }}>{{ $dk->no_lab }}</a></td>
+                                <td>{{ $dk->nama }}</td>
                                 <td>
                                     <td class="text-center">
-                                        <i class='ti ti-bell-filled mt-2 ml-1 {{ $dp->cito == '1' ? 'text-danger' : 'text-secondary' }}'
+                                        <i class='ti ti-bell-filled mt-2 ml-1 {{ $dk->cito == '1' ? 'text-danger' : 'text-secondary' }}'
                                             style="font-size: 23px;"></i>
                                     </td>
                                 </td>
                             </tr>
-                        @endforeach
+                        @endforeach --}}
                     </tbody>
                     </table>
                     </div>
@@ -77,7 +205,7 @@
                 <div class="card-body table-responsive mt-1">
                 <div class="preview-data-pasien" id="previewDataPasien">
                     <!-- tampilan data pasien-->
-                    <div class="text-center bg-body-tertiary"><p>Pilih Pasien</p></div>
+                    <div style="background-color: #F5F7F8" class="text-center"><p>Pilih Pasien</p></div>
                 </div>
                 <hr>
                 <!-- Modal -->
@@ -503,213 +631,24 @@
 <!-- Preview Pasien -->
 @push('script')
 <script>
-    const checkit = document.getElementById('checkbox-rect1');
-    const pilih = document.getElementsByName('pilih');
-
-    checkit.addEventListener('click', function(){
-      if(this.checked){
-        for(var i=0; i<pilih.length; i++){
-          pilih[i].checked = true;
-        }
-      }else{
-        for(var i=0; i<pilih.length; i++){
-          pilih[i].checked = false;
-        }
-      }
-    });
-  </script>
-{{-- <script>
-    $(function() {
-        $('.preview').on('click', function(event) {
-            event.preventDefault();
-            const id = this.getAttribute('data-id');
-            const previewDataPasien = document.getElementById('previewDataPasien');
-            const loader = previewDataPasien.querySelector('#loader');
-
-            loader.style.display = 'block';
-
-            fetch(`/api/get-data-pasien/${id}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("HTTP error " + response.status);
-                    }
-                    return response.json();
-                })
-                .then(res => {
-                    if (res.status === 'success') {
-                        const data_pasien = res.data;
-                        const data_pemeriksaan_pasien = res.data.dpp;
-                        const history = res.data.history;
-                        
-                        const timelineItems = history.map(h => {
-                            const waktu = new Date(h.waktu_proses);
-                            const waktuFormatted = waktu.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                            return `
-                                <div class="timeline-item w-100">
-                                    <div class="timeline-item-marker">
-                                        <div class="timeline-item-marker-text">${waktuFormatted}</div>
-                                        <div class="timeline-item-marker-indicator clear text-white"><i class="bi bi-check-lg mb-2"></i></div>
-                                    </div>
-                                    <div class="timeline-item-content">${h.proses}</div>
-                                </div>
-                            `;
-                        }).join('');
-
-                        console.log(data_pasien);
-                        console.log(data_pemeriksaan_pasien);
-
-                        let detailContent = '<div class="row">';
-
-                        // Menampilkan data pasien (hanya sekali)
-                        detailContent += `
-                        <div class="row mb-3">
-                            <div class="header text-center mb-3"><h4>Data Pemeriksaan Pasien</h4></div>
-                            <hr>
-                            <div class="col-lg-7 mb-2 table-borderless">
-                                <div class="row" style="margin-bottom: -5px;">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label font-bold">Cito</label>
-                                    <div class="col-lg-2">
-                                       : <i class='bi bi-bell-fill mt-2 ml-1 text-danger' style="font-size: 23px;"></i>
-                                    </div>
-                                </div>
-                                <div class="row mt-2" style="margin-bottom: -10px;">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label font-bold">No LAB</label>
-                                    <div class="col-lg-6">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data_pasien.no_lab}">
-                                    </div>
-                                </div>
-                                <div class="row mt-2" style="margin-bottom: -10px;">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label font-bold">No RM</label>
-                                    <div class="col-lg-6">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data_pasien.no_rm}">
-                                    </div>
-                                </div>
-                                <div class="row mt-2" style="margin-bottom: -10px;">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label font-bold">Nama</label>
-                                    <div class="col-lg-6">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data_pasien.nama}">
-                                    </div>
-                                </div>
-                                <div class="row mt-2" style="margin-bottom: -10px;">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label font-bold">Ruangan</label>
-                                    <div class="col-lg-6">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data_pasien.asal_ruangan}">
-                                    </div>
-                                </div>
-                                <div class="row mt-2" style="margin-bottom: -10px;">
-                                    <label for="staticEmail" class="col-lg-5 col-form-label font-bold">Tanggal Lahir Usia</label>
-                                    <div class="col-lg-6">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data_pasien.lahir} Tahun">
-                                    </div>
-                                </div>
-                                <div class="row mt-2" style="margin-bottom: -10px;">
-                                    <label for="staticEmail" class="col-sm-5 col-form-label font-bold">Dokter</label>
-                                    <div class="col-lg-6">
-                                        <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data_pasien.dokter.nama_dokter}">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-5 table-borderless">
-                                <!-- Timeline -->
-                                <div class="timeline timeline-sm">
-                                    ${timelineItems}
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        `;
-
-                        detailContent += `</div> 
-                                        </div>
-                                    </div>`;
-
-                        detailContent += getButtonContent();
-                        detailContent += getTableContent(data_pemeriksaan_pasien);
-
-                        previewDataPasien.innerHTML = detailContent;
-
-                        loader.style.display = 'none';
-                        console.log(detailContent);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    
-                    loader.style.display = 'none';
-                });
-        });
-        function getButtonContent() {
-            return `
-                <div class="preview-button" id="preview-button">
-                    <div class="row">
-                        <div class="col-lg-2">
-                            <button type="button" class="btn btn-outline-secondary btn-block">Manual</button>
-                        </div>
-                        <div class="col-lg-2">
-                            <button type="button" class="btn btn-outline-primary btn-block">Duplo</button>
-                        </div>
-                        <div class="col-lg-3">
-                            <button type="button" class="btn btn-outline-info btn-block" data-bs-toggle="modal" data-bs-target="#sampleHistoryModal">Sample History</button>
-                        </div>
-                        <div class="col-lg-2">
-                            <button type="button" class="btn btn-outline-danger btn-block">Delete</button>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-            `;
-        }
-
-        function getTableContent(data_pemeriksaan_pasien) {
-            return `
-                <table class="table">
-                    <thead>
-                        <tr scope="row">
-                            <th class="col-3" >Parameter</th>
-                            <th class="col-3">Hasil</th>
-                            <!-- Kondisi Duplo -->
-                            <th class="col-2">D1</th>
-                            <th class="col-2">D2</th>
-                            <th class="col-2">Flag</th>
-                            <th class="col-3">Satuan</th>
-                            <th class="col-3">Range</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    ${data_pemeriksaan_pasien.map(e => `
-                    <th scope="row">${e.data_departement.nama_department}</th>
-                        ${e.pasiens.map(p => `
-                        <tr class="mt-2">
-                            <td>${p.data_pemeriksaan.nama_pemeriksaan}</td>
-                            <td><input type="number" class="form-control w-50 p-0" /></td>
-                            <td><input style="background-color" type="number" class="form-control w-50 p-0" readonly /></td>
-                            <td><input type="number" class="form-control w-50 p-0" readonly/></td>
-                            <td></td>
-                            <td>test</td>
-                            <td>1-10</td>
-                        </tr>
-                        `).join('')}
-                    `).join('')}
-                    </tbody>
-                </table>
-                <div class="row mt-3">
-                    <div class="col-lg-6">
-                        <button type="button" class="btn btn-outline-info btn-block">Verifikasi Hasil</button>
-                    </div>
-                    <div class="col-lg-6">
-                        <button type="button" class="btn btn-outline-primary btn-block">Verifikasi Dokter PK</button>
-                    </div>
-                </div>
-            `;
-        }
-    });
-</script> --}}
-
-<script>
     document.addEventListener('DOMContentLoaded', function() {
 
     $(function() {
+        // {{-- fungsi menghitung usia --}}
+        function calculateAge(birthDate) {
+            const birth = new Date(birthDate);
+            const today = new Date();
+            let age = today.getFullYear() - birth.getFullYear();
+            const monthDiff = today.getMonth() - birth.getMonth();
+
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+
+            return age;
+        }
+        // fungsi preview
+
         $('.preview').on('click', function(event) {
             event.preventDefault();
             const id = this.getAttribute('data-id');
@@ -766,43 +705,43 @@
                             <div class="col-lg-7 col-md-5 col-sm-12">
                                 <!-- Left Column -->
                                 <div class="row mb-1">
-                                    <label class="col-5 col-form-label font-bold">Cito</label>
+                                    <label class="col-5 col-form-label fw-bold">Cito</label>
                                     <div class="col-7">
                                     : <i class='ti ti-bell-filled text-danger' style="font-size: 23px;"></i>
                                     </div>
                                 </div>
                                 <div class="row mb-1">
-                                    <label class="col-5 col-form-label font-bold">No LAB</label>
+                                    <label class="col-5 col-form-label fw-bold">No LAB</label>
                                     <div class="col-7">
                                         <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.no_lab}">
                                     </div>
                                 </div>
                                 <div class="row mb-1">
-                                    <label class="col-5 col-form-label font-bold">No RM</label>
+                                    <label class="col-5 col-form-label fw-bold">No RM</label>
                                     <div class="col-7">
                                         <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.no_rm}">
                                     </div>
                                 </div>
                                 <div class="row mb-1">
-                                    <label class="col-5 col-form-label font-bold">Nama</label>
+                                    <label class="col-5 col-form-label fw-bold">Nama</label>
                                     <div class="col-7">
                                         <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.nama}">
                                     </div>
                                 </div>
                                 <div class="row mb-1">
-                                    <label class="col-5 col-form-label font-bold">Ruangan</label>
+                                    <label class="col-5 col-form-label fw-bold">Ruangan</label>
                                     <div class="col-7">
                                         <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.asal_ruangan}">
                                     </div>
                                 </div>
                                 <div class="row mb-1">
-                                    <label class="col-5 col-form-label font-bold">Tanggal Lahir Usia</label>
+                                    <label class="col-5 col-form-label fw-bold">Tanggal Lahir Usia</label>
                                     <div class="col-7">
-                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.lahir} Tahun">
+                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.lahir}, ${calculateAge(data_pasien.lahir)} Tahun">
                                     </div>
                                 </div>
                                 <div class="row mb-1">
-                                    <label class="col-5 col-form-label font-bold">Dokter</label>
+                                    <label class="col-5 col-form-label fw-bold">Dokter</label>
                                     <div class="col-7">
                                         <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.dokter.nama_dokter}">
                                     </div>
@@ -830,8 +769,12 @@
                         // loader.style.display = 'none';
                         loader.hide();
                         
+                        // undisabled tombol manual button
                         const manualButton = document.getElementById('manualButton');
                         const manualInput = document.querySelectorAll('#manualInput');
+                        const submitButton = document.querySelector('#disabled');
+
+                        submitButton.disabled = true;
 
                         manualButton.addEventListener('click', () => {
                             manualInput.forEach(input => {
@@ -839,8 +782,16 @@
                                 input.classList.remove('readonly-input');
                                 input.focus(); // Optional: Focus on the first input
                             });
+                            submitButton.disabled = false;
                         });
-                        // Populate modal with accordion content
+                        // undisabled tombol manual button
+                        // undisabled tombol verifikasi dokter
+                        const verifikasiButton = document.getElementById('verifikasiDokterPKButton');
+                        if (data_pasien.status === 'Verifikasi') {
+                            verifikasiButton.disabled = false;
+                        } else {
+                            verifikasiButton.disabled = true;
+                        }
                     }
                 })
                 .catch(error => {
@@ -854,16 +805,16 @@
             return `
                 <div class="preview-button" id="preview-button">
                     <div class="row">
-                        <div class="col-5 col-lg-3">
-                            <button type="button" id="manualButton" class="btn btn-outline-secondary btn-block">Manual</button>
+                        <div class="col-lg-3 mb-3">
+                            <button type="button" id="manualButton" class="btn btn-outline-secondary btn-block w-100">Manual</button>
                         </div>
-                        <div class="col-lg-3">
-                            <button type="button" class="btn btn-outline-primary btn-block">Duplo</button>
+                        <div class="col-lg-3 mb-3">
+                            <button type="button" class="btn btn-outline-primary btn-block w-100">Duplo</button>
                         </div>
-                        <div class="col-lg-3">
-                            <button type="button" class="btn btn-outline-info btn-block" data-bs-toggle="modal" data-bs-target="#sampleHistoryModal">Sample History</button>
+                        <div class="col-lg-3 mb-3">
+                            <button type="button" class="btn btn-outline-info btn-block w-100" data-bs-toggle="modal" data-bs-target="#sampleHistoryModal">Sample History<span class="badge bg-danger" style="display: none;">!</span></button>
                         </div>
-                        <div class="col-lg-3">
+                        <div class="col-lg-3 mb-3">
                             <form id="delete-form-${data_pasien.id}"
                                 action="analyst/worklist/${data_pasien.id}" method="POST"
                                 style="display: none;">
@@ -871,14 +822,13 @@
                                 @method('DELETE')
                             </form>
                                                     
-                            <button class="btn btn-outline-danger"
+                            <button class="btn btn-outline-danger w-100"
                                 onclick="confirmDelete(${data_pasien.id})">
                                 Delete
                             </button>
                         </div>
                     </div>
                 </div>
-                <hr>
             `;
         }
 
@@ -892,51 +842,54 @@
                 <input type="hidden" name="ruangan" value="${data_pasien.asal_ruangan}">
                 <input type="hidden" name="nama_dokter" value="${data_pasien.dokter.nama_dokter}">
 
-                <table class="table" id="worklistTable">
-                    <thead>
-                        <tr scope="row">
-                            <th class="col-3">Parameter</th>
-                            <th class="col-3">Hasil</th>
-                            <!-- Kondisi Duplo -->
-                            <th class="col-2">D1</th>
-                            <th class="col-2">D2</th>
-                            <th class="col-2">Flag</th>
-                            <th class="col-3">Satuan</th>
-                            <th class="col-3">Range</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${data_pemeriksaan_pasien.map(e => `
-                            <th scope="row">${e.data_departement.nama_department}</th>
-                                ${e.pasiens.map(p => {
-                                    const hasilItem = hasil.find(item => item.nama_pemeriksaan === p.data_pemeriksaan.nama_pemeriksaan);
-                                    const rowId = p.data_pemeriksaan.id;
+                <div id="tabel-pemeriksaan" class="table-responsive">
+                    <table class="table table-striped" id="worklistTable">
+                        <thead>
+                            <tr scope="row">
+                                <th class="col-3">Parameter</th>
+                                <th class="col-3 ml-2">Hasil</th>
+                                <!-- Kondisi Duplo -->
+                                <th class="col-3">D1</th>
+                                <th class="col-3">D2</th>
+                                <th class="col-2">Flag</th>
+                                <th class="col-2">Satuan</th>
+                                <th class="col-2">Range</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data_pemeriksaan_pasien.map(e => `
+                                <th scope="row">${e.data_departement.nama_department}</th>
+                                        <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                    ${e.pasiens.map(p => {
+                                        const hasilItem = hasil.find(item => item.nama_pemeriksaan === p.data_pemeriksaan.nama_pemeriksaan);
+                                        const rowId = p.data_pemeriksaan.id;
 
-                                 return `
-                                <tr class="mt-2" data-id="${rowId}">
-                                    <td>${p.data_pemeriksaan.nama_pemeriksaan}</td>
-                                    <input type="hidden" name="nama_pemeriksaan[]" value="${p.data_pemeriksaan.nama_pemeriksaan}" />
-                                    <td><input type="text" name="hasil[]" id="manualInput" class="form-control text-center w-50 p-0 readonly-input" value="${hasilItem ? hasilItem.hasil : ''}" readonly/></td>
-                                    <td><input type="number" name="duplo" class="form-control w-50 p-0" readonly /></td>
-                                    <td><input type="number" class="form-control w-50 p-0" readonly/></td>
-                                    <td><input type="hidden" class="form-control w-50 p-0" readonly/></td>
-                                    <td class="text-center"><input type="hidden" name="satuan[]" class="form-control w-50 p-0" value="${p.data_pemeriksaan.nilai_satuan}" readonly/>${p.data_pemeriksaan.nilai_satuan}</td>
-                                    <td><input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly/>1-10</td>
-                                </tr>
-                                `;
-                                }).join('')}
-                            `).join('')}
-                    </tbody>
-                </table>
+                                    return `
+                                    <tr class="mt-2" data-id="${rowId}">
+                                        <td>${p.data_pemeriksaan.nama_pemeriksaan}</td>
+                                        <input type="hidden" name="nama_pemeriksaan[]" value="${p.data_pemeriksaan.nama_pemeriksaan}" />
+                                        <td><input type="text" name="hasil[]" id="manualInput" class="form-control text-center w-50 p-0 readonly-input" value="${hasilItem ? hasilItem.hasil : ''}" required readonly/></td>
+                                        <td><input type="text" name="duplo" class="form-control text-center w-50 p-0" readonly /></td>
+                                        <td><input type="text" class="form-control text-center w-50 p-0" readonly/></td>
+                                        <td><input type="hidden" class="form-control p-0" readonly/></td>
+                                        <td class="text-center"><input type="hidden" name="satuan[]" class="form-control w-50 p-0" value="${p.data_pemeriksaan.nilai_satuan}" readonly/>${p.data_pemeriksaan.nilai_satuan}</td>
+                                        <td><input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly/>1-10</td>
+                                    </tr>
+                                    `;
+                                    }).join('')}
+                                `).join('')}
+                        </tbody>
+                    </table>
+                </div>
                 <div class="row">
-                    <div class="col-lg-6">
-                        <button type="submit" class="btn btn-outline-info btn-block">Verifikasi Hasil</button>
+                    <div class="col-lg-6 mb-3 mt-2">
+                        <button id="disabled" type="submit" class="btn btn-outline-info btn-block w-100">Verifikasi Hasil</button>
                     </div>
             </form>      
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 mt-2">
                         <form action="worklist/checkin/${data_pasien.id}" method="POST">
                             @csrf
-                            <button type="submit" id="verifikasiDokterPKButton" class="btn btn-outline-primary btn-block">Verifikasi Dokter PK</button>
+                            <button type="submit" id="verifikasiDokterPKButton" class="btn btn-outline-primary btn-block w-100">Verifikasi Dokter PK</button>
                         </form>
                     </div>
                 </div>
@@ -945,7 +898,40 @@
 
         function populateModal(spesimen, scollection, shandling, history, data_pemeriksaan_pasien) {
             const accordion = document.getElementById('sampleHistoryAccordion');
+            const historyItem = history.find(h => h.proses === 'Dikembalikan oleh dokter');
+
+            // const horizontalItems = history.map(h => {
+            //                 const waktu = new Date(h.waktu_proses);
+            //                 const waktuFormatted = waktu.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            //                 return `
+            //                         <ul class="step-wizard-list">
+            //                             <li class="step-wizard-item">
+            //                                 <span class="progress-count">1</span>
+            //                                 <span class="progress-label">${h.proses}</span>
+            //                             </li>
+            //                         </ul>
+            //                 `;
+            // }).join('');
+            
             let accordionContent = '';
+            let noteContent = '';
+
+            
+            accordionContent += `
+                <hr>
+                <h5>Detail Sampling</h5>
+                <hr>
+                <h5>History</h5>
+                <ul class="step-wizard-list mt-4">
+                    ${history.map((h, index) => `
+                        <li class="step-wizard-item">
+                            <span class="progress-count">${index + 1}</span>
+                            <span class="progress-label">${h.proses}</span>
+                        </li>
+                    `).join('')}
+                </ul>
+            `;
 
             spesimen.forEach(e => {
                 let details = '';
@@ -954,27 +940,43 @@
                 let processTime = '';
 
                 const checkInSpesimen = history.find(h => h.status === 'Check in spesiment');
-                if (checkInSpesimen) {
-                    processTime = checkInSpesimen.waktu_proses; // Assuming waktu_proses contains the process time
-                }
-
                 if (e.tabung === 'EDTA') {
+                // Cari item dalam spesiment collection yang memiliki no_lab yang sesuai dengan laravel_through_key
                 const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key);
                 if (collectionItem) {
-                    detailsData = collectionItem.details || [];
+                    // Cocokkan details dari collectionItem dengan details dari spesimen
+                    detailsData = collectionItem.details.filter(detail => 
+                        e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                    );
                     kapasitas = collectionItem.kapasitas;
                 }
-                }else if (e.tabung === 'CLOTH-ACT') {
-                    const collectionItem = scollection.find(item => item.id === e.id);
-                    if (collectionItem) {
-                        detailsData = collectionItem.details || [];
-                        serumh = collectionItem.serumh;
-                    }
+                } else if (e.tabung === 'K3') {
+                // Cari item dalam spesiment collection yang memiliki no_lab dan tabung yang sesuai
+                const collectionItem = scollection.find(item => 
+                    item.no_lab === e.laravel_through_key && item.tabung === 'K3'
+                );
+                console.log('K3 collectionItem:', collectionItem); // Debugging
 
+                if (collectionItem) {
+                    console.log('K3 collectionItem.details:', collectionItem.details); // Debugging
+                    console.log('K3 e.details:', e.details); // Debugging
+
+                    // Cocokkan details dari collectionItem dengan details dari spesimen
+                    detailsData = collectionItem.details.filter(detail => 
+                        e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                    );
+                    console.log('K3 matched detailsData:', detailsData); // Debugging
+
+                    serumh = collectionItem.serumh;
+                }
                 }else if (e.tabung === 'CLOT-ACT') {
+                    // Untuk CLOT-ACT, cari item dalam spesimen handling yang memiliki no_lab yang sesuai dengan laravel_through_key
                     const handlingItem = shandling.find(item => item.no_lab === e.laravel_through_key);
                     if (handlingItem) {
-                        detailsData = handlingItem.details || [];
+                        // Cocokkan details dari handlingItem dengan details dari spesimen
+                        detailsData = handlingItem.details.filter(detail => 
+                            e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                        );
                         serum = handlingItem.serum;
                     }
                 }
@@ -992,7 +994,7 @@
                             if (e.tabung === 'EDTA' && kapasitas == detail.id) {
                                 isChecked = 'checked';
                                 isDisabled = '';
-                            } else if (e.tabung === 'CLOTH-ACT' && serumh == detail.id) {
+                            } else if (e.tabung === 'K3' && serumh == detail.id) {
                                 isChecked = 'checked';
                                 isDisabled = '';
                             } else if (e.tabung === 'CLOT-ACT' && serum == detail.id) {
@@ -1017,21 +1019,25 @@
                 let title = '';
                 let detail = '';
                 let subtext = '';
+
                 if (e.tabung === 'EDTA') {
-                    detail = `<h5 class="title">Detail Sampling</h5><hr>`
                     title = '<h5 class="title">Spesiment Collection</h5> <hr>';
-                } else if (e.spesiment === 'Spesiment Collection') {
+                }else
+
+                if (e.tabung === 'CLOTH-ACT') {
                     subtext = '<div class="subtext">Serum</div>';
-                } else if (e.spesiment === 'Spesiment Handlings') {
-                    title = '<h5>Spesiment Handlings</h5> <hr>';
+                }else
+
+                if (e.tabung === 'CLOT-ACT') {
+                    title = '<h5 class="title mt-3">Spesiment Handlings</h5> <hr>';
                     subtext = '<div class="subtext">Serum</div>';
                 }
-                
+
                 let note = '';
-                if (e.tabung === 'EDTA' || e.tabung === 'CLOT-ACT', 'CLOTH-ACT') {
-                        note = '<p class="mb-0"><strong>Note</strong></p>';
-                    }
-                accordionContent += `${detail} ${title}
+                if (e.tabung === 'EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'CLOTH-ACT') {
+                    note = '<p class="mb-0"><strong>Note</strong></p>';
+                }
+                accordionContent += ` ${title}
                    <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">                          
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="heading${e.tabung}">
@@ -1047,9 +1053,9 @@
                                         ${details}
                                     </div>
                                     ${note}
-                                    ${e.tabung === 'EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
-                                    ${e.tabung === 'CLOTH-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
-                                    ${e.tabung === 'CLOT-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
+                                    ${e.tabung === 'EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
+                                    ${e.tabung === 'CLOTH-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
+                                    ${e.tabung === 'CLOT-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null"disabled></textarea>` : ''}
                                     
                                 </div>
                             </div>
@@ -1058,7 +1064,17 @@
                 `;
             });
 
-            accordion.innerHTML = accordionContent;
+            if (historyItem && historyItem.note) {
+            accordionContent += `
+                <div class="col-lg-12">
+                    <label class="fw-bold mt-2">Note</label>
+                    <textarea id="noteTextarea" class="form-control" row="3" placeholder="${historyItem.note}" disabled></textarea>
+                </div>
+            `;
+            }
+            
+        accordion.innerHTML = accordionContent;
+        
 
         }
     });

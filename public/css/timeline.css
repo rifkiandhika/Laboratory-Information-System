@@ -5,6 +5,47 @@
     position: relative;
 }
 
+::-webkit-scrollbar {
+    height: 5px;
+}
+::-webkit-scrollbar-thumb {
+    background: lightgray;
+    border-radius: 10px;
+}
+
+/* untuk form agar tetap sesuai ukurannya */
+#tabel-pemeriksaan .form-control {
+    min-width: 80px; /* Sesuaikan dengan kebutuhan Anda */
+    width: 100%;
+}
+
+/* CSS untuk menyesuaikan tampilan pada perangkat kecil */
+@media (max-width: 576px) {
+    #tabel-pemeriksaan .table-responsive .form-control {
+        min-width: 100px;
+        width: 100%;
+    }
+}
+
+/* Flexbox untuk mengatur kolom */
+#tabel-pemeriksaan .table-responsive td {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#tabel-pemeriksaan .table-responsive .form-control {
+    flex: 1;
+    min-width: 100px;
+    margin: 0 5px;
+}
+
+/* End */
+
+/* Timeline Horizontal */
+
+/* End */
+
 .loader {
     position: absolute;
     left: 50%;
@@ -114,6 +155,80 @@
     padding-bottom: 0 !important;
 }
 
+@media (max-width: 768px) {
+    .timeline {
+        display: none;
+    }
+}
+/* Custom */
+/* Timeline Container */
+#timeline-modal {
+    display: none;
+    padding: 10px 0;
+    overflow-x: auto; /* Tambahkan scroll horizontal jika diperlukan */
+    position: relative;
+}
+
+/* Timeline Horizontal Class */
+.timeline-horizontal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+/* Garis Horizontal di Tengah Timeline */
+.timeline-horizontal::before {
+    content: "";
+    position: absolute;
+    top: 50%; /* Garis di tengah container */
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #ccc;
+    z-index: 1; /* Garis di bawah marker */
+}
+
+/* Setiap Item di Timeline */
+.custom-timeline-item {
+    position: relative;
+    text-align: center;
+    z-index: 2; /* Agar item berada di atas garis */
+    flex-basis: 100px; /* Ukuran default tiap item */
+    margin-right: 20px; /* Jarak antar item */
+}
+
+/* Marker pada Setiap Item */
+.custom-timeline-item-marker {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #007bff;
+    position: relative;
+    z-index: 3; /* Memastikan marker berada di atas garis */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Teks Waktu pada Marker */
+.custom-timeline-item-marker-text {
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+/* Ikon di Marker */
+.timeline-item-marker-indicator {
+    font-size: 10px;
+    color: white;
+}
+
+/* Konten pada Setiap Item */
+
+/* Responsiveness (Tampilan Mobile) */
+
+/* End */
+
 @media (min-width: 576px) {
     .timeline .timeline-item .timeline-item-marker {
         flex-direction: row;
@@ -135,7 +250,7 @@
     }
 }
 
-@media screen and (max-width: 980px) {
+/* @media screen and (max-width: 980px) {
     .main-progress ul {
         flex-direction: column;
         margin: auto;
@@ -170,7 +285,7 @@
         font-weight: 500;
         font-size: 12px;
     }
-}
+} */
 /* Accordion */
 
 .subtext {
