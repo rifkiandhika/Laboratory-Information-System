@@ -773,6 +773,21 @@
                         const manualButton = document.getElementById('manualButton');
                         const manualInput = document.querySelectorAll('#manualInput');
                         const submitButton = document.querySelector('#disabled');
+                        const verifikasiHasil = document.getElementById('verifikasiHasil');
+                        const verifikasi = document.getElementById('verifikasi');
+
+                        // Ambil status dari data pasien
+                        const statusPasien = data_pasien.status;
+
+                        if (statusPasien === 'Verifikasi') {
+                            // Jika status Verifikasi, tampilkan tombol "Verifikasi" dan sembunyikan "Verifikasi Hasil"
+                            verifikasiHasil.style.display = 'none';
+                            verifikasi.style.display = 'block';
+                        } else {
+                            // Jika bukan Verifikasi, tampilkan tombol "Verifikasi Hasil" dan sembunyikan "Verifikasi"
+                            verifikasiHasilButton.style.display = 'block';
+                            verifikasiButton.style.display = 'none';
+                        }
 
                         submitButton.disabled = true;
 
@@ -787,7 +802,7 @@
                         // undisabled tombol manual button
                         // undisabled tombol verifikasi dokter
                         const verifikasiButton = document.getElementById('verifikasiDokterPKButton');
-                        if (data_pasien.status === 'Verifikasi') {
+                        if (data_pasien.status === 'Verifikasi', 'Dikembalikan') {
                             verifikasiButton.disabled = false;
                         } else {
                             verifikasiButton.disabled = true;
@@ -883,7 +898,10 @@
                 </div>
                 <div class="row">
                     <div class="col-lg-6 mb-3 mt-2">
-                        <button id="disabled" type="submit" class="btn btn-outline-info btn-block w-100">Verifikasi Hasil</button>
+                        <button id="verifikasiHasil" type="submit" class="btn btn-outline-info btn-block w-100">Verifikasi Hasil</button>
+                    </div>
+                    <div class="col-lg-6 mb-3 mt-2">
+                        <button id="verifikasi" type="submit" class="btn btn-outline-info btn-block w-100">Verifikasi</button>
                     </div>
             </form>      
                     <div class="col-lg-6 mt-2">

@@ -394,20 +394,28 @@ class pasienController extends Controller
 
     public function kirimLab(Request $request)
     {
-        $data_pasien = pasien::all();
+        // $data_pasien = pasien::all();
+        $pasien = pasien::where('no_lab', $request->no_lab)->first();
+
         $status = 'Telah Dibayar';
         $history_proses = 'Payment';
         // dd($data_pasien);
-        foreach ($data_pasien as $pasien) {
-            if ($pasien->status === 'Dikembalikan Analyst') {
-                $status = 'Telah Dibayar';
-                $history_proses = 'Additional Inspection Payment';
+        // foreach ($data_pasien as $pasien) {
+        // if ($pasien->status === 'Dikembalikan Analyst') {
+        //     $status = 'Telah Dibayar';
+        //     $history_proses = 'Additional Inspection Payment';
 
-                $pasien->update([
-                    'status' => $status,
-                ]);
-            }
+        //     $pasien->update([
+        //         'status' => $status,
+        //     ]);
+        // }
+        // }
+
+        if ($pasien) {
+            $pasien->update(['status' => 'Telah Dibayar']);
         }
+
+
 
         $no_pasien = $request->no_pasien ?? null;
         $diskon = $request->diskon ?? 0;
