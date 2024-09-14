@@ -62,8 +62,7 @@
   <script src="{{ asset('bootstrap/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
   <!-- Core plugin JavaScript-->
-  <script src="{{ asset('bootstrap/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
-
+x
 
   @include('sweetalert::alert')
   {{-- <script src="{{ asset('js/loket.js') }}"></script> --}}

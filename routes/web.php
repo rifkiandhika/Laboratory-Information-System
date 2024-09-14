@@ -162,7 +162,6 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
     // Route Dokter
     Route::resource('vdokter', vDokterController::class);
     Route::post('/dokter/back/{id}', [vDokterController::class, 'back'])->name('dokter.back');
-    Route::post('/dokter/send/{id}', [vDokterController::class, 'sentToReview']);
     // Route Result Review
     Route::resource('result', resultController::class);
 
@@ -170,6 +169,7 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
 
     // Route::get('/print', [resultController::class, 'print']);
     // Route::get('/analyst/result/{result}', [ResultController::class, 'show'])->name('result.show');
+    Route::post('/insert_qc', [QcController::class, 'store'])->name('insert_qc');
     Route::resource('Qc', QcController::class);
     Route::resource('Dqc', DqcController::class);
 

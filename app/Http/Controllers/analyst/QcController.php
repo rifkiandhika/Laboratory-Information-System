@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\analyst;
 
 use App\Http\Controllers\Controller;
+use App\Models\Department;
+use App\Models\quality_control;
 use Illuminate\Http\Request;
 
 class QcController extends Controller
@@ -12,7 +14,8 @@ class QcController extends Controller
      */
     public function index()
     {
-        return view('analyst.quality-control');
+        $department=Department::all();
+        return view('analyst.quality-control',compact('department'));
     }
 
     // public function daftar()
@@ -26,7 +29,7 @@ class QcController extends Controller
      */
     public function create()
     {
-        //
+
     }
 
     /**
@@ -34,7 +37,8 @@ class QcController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        quality_control::create($request->all());
+        return back();
     }
 
     /**

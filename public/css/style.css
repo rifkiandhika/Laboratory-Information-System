@@ -1284,7 +1284,7 @@ nav {
         font-size: 12px;
     }
 }
-.menu {
+.card-body .menu {
     width: 100%;
     margin-top: -10px;
 }

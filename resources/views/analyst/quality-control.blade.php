@@ -1,4 +1,4 @@
-@extends('master')
+@extends('layouts.admin')
 @section('title', 'Quality Control')
 
 @section('content')
@@ -18,6 +18,7 @@
             </div>
             <div class="card-body">
               <div class="menu">
+
                 <div class="itemed">
                   <a href="#" class="sub-menu">Hematologi<i class="bx bxs-chevron-down dropdon"></i></a>
                   <div class="sub">
@@ -1087,8 +1088,8 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="{{ asset('js/grafik-qc.js') }}"></script>
 
-  <script src="{{ asset('../bootstrap/vendor/jquery-easing/jquery.easing.min.js')}}"></script>
-  <script src="{{ asset('../bootstrap/vendor/jquery/jquery.min.js')}}"></script>
+  <script src="{{ asset('bootstrap/vendor/jquery-easing/jquery.easing.min.js')}}"></script>
+  <script src="{{ asset('bootstrap/vendor/jquery/jquery.min.js')}}"></script>
 
 
   {{-- js --}}
@@ -1136,55 +1137,66 @@
           </button>
         </div>
         <div class="modal-body py-0" style="max-height: 700px; overflow-y: auto;">
-          <form action="data-qc.html" class="mt-2">
+          <form action="/analyst/insert_qc" method="POST" class="mt-2">
+            @csrf
             <div class="form-group row">
               <label class="col-sm-4 col-form-label">No Lot</label>
               <div class="col-sm-8">
-                <input type="text" class="form-control" placeholder="55555">
+                <input required type="text" name="no_lot" class="form-control" placeholder="No Lot">
               </div>
             </div>
             <div class="form-group row">
               <label class="col-sm-4 col-form-label">Nama Control</label>
               <div class="col-sm-8">
-                <input type="text" class="form-control" placeholder="Zybio Z3">
+                <input required type="text" name="name_control" class="form-control" placeholder="Nama Control">
               </div>
             </div>
             <div class="form-group row">
               <label class="col-sm-4 col-form-label">Level</label>
               <div class="col-sm-8">
-                <select class="form-control" name="dropdown" id="dropdown">
+                <select class="form-control" name="level" id="dropdown">
                   <option selected>Pilih Level</option>
-                  <option value="1">Low</option>
-                  <option value="2">Normal</option>
-                  <option value="3">High</option>
+                  <option value="low">Low</option>
+                  <option value="normal">Normal</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-4 col-form-label">Department</label>
+              <div class="col-sm-8">
+                <select class="form-control" name="department_id" id="dropdown">
+                  <option selected>Choose Department</option>
+                  @foreach ($department as $departments)
+                  <option value="{{ $departments->id	}}">{{ $departments->nama_department	}}</option>
+                  @endforeach
                 </select>
               </div>
             </div>
             <div class="form-group row">
               <label class="col-sm-4 col-form-label">Exp Date</label>
               <div class="col-sm-8">
-                <input type="date" class="form-control" value="2024-02-22">
+                <input required type="date" class="form-control" name="exp_date" value="2024-02-22">
               </div>
             </div>
             <div class="form-group row">
               <label class="col-sm-4 col-form-label">Use QC</label>
               <div class="col-sm-8">
-                <input type="date" class="form-control" value="2024-02-10">
+                <input required type="date" class="form-control" name="use_qc" value="2024-02-10">
               </div>
             </div>
             <div class="form-group row">
               <label class="col-sm-4 col-form-label">Last QC</label>
               <div class="col-sm-8">
-                <input type="date" class="form-control" value="2024-02-11">
+                <input required type="date" class="form-control" name="last_qc" value="2024-02-11">
               </div>
             </div>
-          </form>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
-            <!-- <button type="button" href="" class="btn btn-primary">Save</button> -->
-            <a type="button" href="/analyst/daftar-qc" class="btn btn-primary">Save</a>
-          </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </form>
       </div>
     </div>
   </div>
