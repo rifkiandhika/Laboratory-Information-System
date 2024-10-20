@@ -39,9 +39,9 @@
 
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css')}}">
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css')}}">
-    <link rel="stylesheet" href="{{ asset('bootstrap/css/sb-admin-2.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('bootstrap/css/sb-admin-2.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-        <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+        <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'> --}}
 
 
 
@@ -169,6 +169,17 @@
             $("#myTable").DataTable();
 
         })
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $("#qcTable").DataTable({
+                paging:false,
+                searching:false,
+                info:false,
+            });
+
+        });
     </script>
 
     <script>
