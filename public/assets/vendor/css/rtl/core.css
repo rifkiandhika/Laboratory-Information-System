@@ -9699,12 +9699,12 @@ html:not([dir="rtl"]) .tab-content:not(.doc-example-content) .tab-pane {
 div:not(.nav-align-left):not(.nav-align-right) > .nav-tabs {
     display: inline-flex;
     width: 100%;
-    overflow-x: auto !important;
+    overflow-x: hidden;
     overflow-y: hidden;
 }
 .nav-tabs.widget-nav-tabs {
     border: 0 !important;
-    overflow-x: auto;
+    overflow-x: hidden;
 }
 .nav-tabs.widget-nav-tabs .nav-link {
     border: 1px dashed #e6e6e8;
