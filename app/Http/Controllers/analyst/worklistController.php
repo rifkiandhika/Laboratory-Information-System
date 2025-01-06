@@ -166,6 +166,17 @@ class worklistController extends Controller
         return redirect()->route('worklist.index');
     }
 
+
+    public function end($id)
+    {
+        $data_pasien = pasien::find($id);
+
+        $data_pasien->update(['status' => 'Result Review']);
+
+        toast('Data Berhasil Diselesaikan', 'success');
+        return redirect()->route('worklist.index');
+    }
+
     /**
      * Show the form for editing the specified resource.
      */

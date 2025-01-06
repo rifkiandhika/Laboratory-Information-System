@@ -40,67 +40,39 @@ Add Department
                                         <table class="table table-bordered" id="tableDetail">
                                             <thead>
                                                 <tr>
-                                                    <th>Kode</th>
+                                                    <th>Code</th>
                                                     <th>Parameter</th>
-                                                    <th>Pemeriksaan</th>
-                                                    <th>Tarif</th>
-                                                    <th>Komponen Tarif</th>
-                                                    <th>Nilai Rujukan</th>
-                                                    <th>Satuan</th>
-                                                    <th>Tipe Inputan Hasil</th>
-                                                    <th>Opsi Output an Hasil</th>
-                                                    <th>Urutan</th>
-                                                    <th>Aksi</th>
+                                                    <th>Inspection Name</th>
+                                                    <th>Price</th>
+                                                    <th>Static Value</th>
+                                                    <th>Unit     Value</th>
+                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td class="col-2">
-                                                        <label for="otomatis">Otomatis <span class="text-danger">*</span></label>
-                                                        <input type="text" name="kode[]" class="form-control" id="kode" required disabled>
-                                                        <!-- Hidden input untuk mengirim nilai kode -->
-                                                        <input type="hidden" name="kode_hidden[]" id="kode_hidden">
-                                                    </td>                                                    
+                                                    <td class="col-1">
+                                                        <input type="text" name="kode[]" class="form-control" required>
+                                                    </td>
                                                     <td class="col-2">
                                                         <input type="text" name="nama_parameter[]" class="form-control" required>
                                                     </td>
-                                                    <td class="col-2">
+                                                    <td class="col-3">
                                                         <input type="text" name="nama_pemeriksaan[]" class="form-control" required>
                                                     </td>
                                                     <td class="col-2">
                                                         <input type="number" name="harga[]" class="form-control" required>
                                                     </td>
-                                                    <td class="col-3">
-                                                        <label for="jasa_sarana">JASA SARANA:</label>
-                                                        <input type="text" name="jasa_sarana[]" class="form-control" required>
-                                                        <label for="jasa_pelayanan">JASA PELAYANAN:</label>
-                                                        <input type="text" name="jasa_pelayanan[]" class="form-control" required>
-                                                        <label for="jasa_dokter">JASA DOKTER:</label>
-                                                        <input type="text" name="jasa_dokter[]" class="form-control" >
-                                                        <label for="jasa_bidan">JASA BIDAN:</label>
-                                                        <input type="text" name="jasa_bidan[]" class="form-control" >
-                                                        <label for="jasa_perawat">JASA PERAWAT:</label>
-                                                        <input type="text" name="jasa_perawat[]" class="form-control" >
-                                                    </td>
                                                     <td class="col-1">
-                                                        <input type="text" name="nilai_rujukan[]" class="form-control" required>
+                                                        <input type="text" name="nilai_statik[]" class="form-control" required>
                                                     </td>
                                                     <td class="col-1">
                                                         <input type="text" name="nilai_satuan[]" class="form-control" required>
                                                     </td>
-                                                    <td class="col-1">
-                                                        <input type="text" name="tipe_inputan[]" class="form-control" required>
-                                                    </td>
-                                                    <td class="col-1">
-                                                        <input type="text" name="opsi_output[]" class="form-control" required>
-                                                    </td>
-                                                    <td class="col-1">
-                                                        <input type="text" name="urutan[]" class="form-control" required>
-                                                    </td>
                                                     <td class="col-3">
                                                         <button type="button" class="btn btn-success btn-add"><i class="ti ti-plus"></i></button>
                                                     </td>
-                                                </tr>                                                
+                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -132,31 +104,6 @@ Add Department
 @endsection
 
 @push('script')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-    let kodeInput = document.getElementById('kode');
-    let hiddenKodeInput = document.getElementById('kode_hidden');
-
-    // Fungsi untuk menghasilkan kode otomatis, misalnya berdasarkan tanggal
-    function generateKode() {
-        let date = new Date();
-        let year = date.getFullYear();
-        let month = ('0' + (date.getMonth() + 1)).slice(-2); // Menambahkan 0 di depan jika bulan < 10
-        let day = ('0' + date.getDate()).slice(-2); // Menambahkan 0 di depan jika hari < 10
-
-        // Membuat format kode seperti: KODE-YYYYMMDD
-        let kode = `${year}${month}${day}`;
-
-        // Set nilai pada input disabled dan hidden
-        kodeInput.value = kode;
-        hiddenKodeInput.value = kode;
-    }
-
-    // Panggil fungsi generateKode ketika halaman dimuat
-    generateKode();
-});
-
-</script>
 <script>
 // document.getElementById('add-detail-field').addEventListener('click', function() {
 //     var newField = document.createElement('div');

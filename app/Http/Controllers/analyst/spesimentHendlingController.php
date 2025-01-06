@@ -22,8 +22,13 @@ class spesimentHendlingController extends Controller
      */
     public function index()
     {
-        $dataPasienCito = pasien::where('status', 'Check in')->orWhere('status', 'Spesiment')->orderBy('cito', 'desc')->paginate(20);
-        $dataPasien = pasien::where('status', 'Check in')->orWhere('status', 'Spesiment')->where('cito', 0)->paginate(20);
+        $dataPasienCito = pasien::whereIn('status', ['Check in', 'Spesiment', 'Acc Collection'])
+            ->orderBy('cito', 'desc')
+            ->paginate(20);
+
+        $dataPasien = pasien::whereIn('status', ['Check in', 'Spesiment'])
+            ->where('cito', 0)
+            ->paginate(20);
         // $dataPasien = pasien::where(function ($query) {
         //     $query->where('status', 'Check in')
         //         ->orWhere('status', 'Spesiment');
@@ -428,6 +433,30 @@ class spesimentHendlingController extends Controller
         ]);
 
         toast('Data telah dikembalikan ke loket', 'success');
+        return redirect()->route('spesiment.index');
+    }
+
+    public function backdashboard(Request $request, $id)
+    {
+        $request->validate([
+            'note' => 'required|string|max:255',
+        ]);
+
+        $pasien = pasien::find($id);
+
+        // Update status pasien
+        $pasien->update(['status' => 'Dikembalikan Analyst']);
+
+        historyPasien::create([
+            'no_lab' => $pasien->no_lab,
+            'proses' => 'Dikembalikan oleh analyst',
+            'tempat' => 'Laboratorium',
+            'note' => $request->input('note'),
+            'waktu_proses' => now(),
+            'created_at' => now(),
+        ]);
+
+        toast('Data telah dikembalikan ke Dashboard', 'success');
         return redirect()->route('spesiment.index');
     }
 }

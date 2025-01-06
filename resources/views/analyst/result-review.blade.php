@@ -189,7 +189,8 @@
                                         onclick="confirmDelete({{ $dpc->id }})"><i
                                         class="ti ti-trash"></i>
                                     </button> --}}
-                                        <button href="#" class="btn btn-sm btn-outline-warning mr-2 preview" data-id={{ $dpc->id }} data-bs-toggle="modal" data-bs-target="#sampleHistoryModal">Sample History</button>
+                                        <a style="cursor: pointer" id="editBtn" data-id="{{ $dpc->no_lab }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                        <button href="#" class="btn btn-sm btn-outline-warning mr-2 preview" data-id="{{ $dpc->id }}" data-bs-toggle="modal" data-bs-target="#sampleHistoryModal">Sample History</button>
                                         {{-- <a style="cursor: pointer; font-size: 14px" href="{{ route('print.pasien', $dpc->no_lab) }}" class="btn btn-outline-primary p-1 mr-2" target="_blank">Print Result</a> --}}
                                         <button class="btn btn-sm btn-outline-primary" onclick="window.open('{{ route('print.pasien', $dpc->no_lab) }}', '_blank')">Print Result</button>
                                         {{-- <button class="btn btn-sm btn-outline-primary" data-id={{ $dpc->no_lab }} data-bs-toggle="modal"data-bs-target="#printResult">Print Result</button> --}}
@@ -245,104 +246,13 @@
   </div>
 @endsection
 @push('script')
-{{-- <script>
-    function loadIframe() {
-        document.getElementById('printIframe').src = '{{ route('print.pasien', $dpc->no_lab) }}';
-    }
-</script> --}}
-{{-- Print Result --}}
-{{-- <script>
-     $('.print').on('click', function(event) {
-        event.preventDefault();
-        const id = this.getAttribute('data-id');
-        const previewDataPasien = document.getElementById('printPasien');
-        const loader = $('#loader');
-
-        loader.show();
-
-        fetch(`/api/get-data-pasien/${id}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("HTTP error " + response.status);
-                }
-                return response.json();
-            })
-            .then(res => {
-                console.log(res);
-                if (res.status === 'success') {
-                    const data_pasien = res.data;
-                    const data_pemeriksaan_pasien = res.data.dpp;
-                    const history = res.data.history;
-                    const spesimen = res.data.spesiment; // Load spesimen data
-                    const scollection = res.data.spesimentcollection;
-                    const shandling = res.data.spesimenthandling;
-                    const hasil = res.data.hasil_pemeriksaan;
-
-                    let detailContent = `
-                        <div class="row mb-3">
-                            <div class="header text-center mb-3">
-                                <h4>Data Pemeriksaan Pasien</h4>
-                            </div>
-                            <hr>
-                            <div class="col-lg-7 col-md-5 col-sm-12">
-                                <div class="row mb-1">
-                                    <label class="col-5 col-form-label fw-bold">Cito</label>
-                                    <div class="col-7">
-                                        : <i class='ti ti-bell-filled text-danger' style="font-size: 23px;"></i>
-                                    </div>
-                                </div>
-                                <div class="row mb-1">
-                                    <label class="col-5 col-form-label fw-bold">No LAB</label>
-                                    <div class="col-7">
-                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.no_lab}">
-                                    </div>
-                                </div>
-                                <div class="row mb-1">
-                                    <label class="col-5 col-form-label fw-bold">No RM</label>
-                                    <div class="col-7">
-                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.no_rm}">
-                                    </div>
-                                </div>
-                                <div class="row mb-1">
-                                    <label class="col-5 col-form-label fw-bold">Nama</label>
-                                    <div class="col-7">
-                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.nama}">
-                                    </div>
-                                </div>
-                                <div class="row mb-1">
-                                    <label class="col-5 col-form-label fw-bold">Ruangan</label>
-                                    <div class="col-7">
-                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.asal_ruangan}">
-                                    </div>
-                                </div>
-                                <div class="row mb-1">
-                                    <label class="col-5 col-form-label fw-bold">Tanggal Lahir Usia</label>
-                                    <div class="col-7">
-                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.lahir} Tahun">
-                                    </div>
-                                </div>
-                                <div class="row mb-1">
-                                    <label class="col-5 col-form-label fw-bold">Dokter</label>
-                                    <div class="col-7">
-                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.dokter.nama_dokter}">
-                                    </div>
-                                </div>
-                            </div>
-                    `;
-
-                    // detailContent += accordionContent;
-                    previewDataPasien.innerHTML = detailContent;
-
-                    loader.hide();
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                loader.hide();
-            });
-    });
-</script> --}}
-{{-- Sample History --}}
+<script>
+    var editBtn = document.getElementById('editBtn');
+    var no_lab = editBtn.getAttribute('data-id');  // Ambil nilai no_lab dari atribut data-id
+    var editUrl = "{{ route('pasien.viewedit', ':no_lab') }}";
+    editUrl = editUrl.replace(':no_lab', no_lab);  // Gantilah :no_lab dengan nilai yang telah diambil
+    editBtn.href = editUrl;  // Set URL pada href tombol Edit
+</script>
 <script>
      $('.preview').on('click', function(event) {
         event.preventDefault();

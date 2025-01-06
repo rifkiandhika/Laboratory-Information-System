@@ -74,7 +74,7 @@
                                     <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Pasien Telah
                                         Dilayani
                                     </div>
-                                    <div class="h3 mt-3 font-weight-bold text-gray-600">6</div>
+                                    <div class="h3 mt-3 font-weight-bold text-gray-600"></div>
 
                                 </div>
                                 <div class="col-auto">
@@ -191,15 +191,17 @@
                                             <td class="col-md-3">
                                                 <button type="button" data-bs-target="#modalPreviewPasien"
                                                     data-bs-toggle="modal" class="btn btn-info btn-edit text-white "
+                                                    title="Edit"
                                                     data-id="{{ $dc->id }}"><i class='ti ti-edit'></i>
                                                 </button>
-                                                    
+                                                                                                    
                                                 <button type="button" data-bs-target="#modalPembayaran"
-                                                    data-bs-toggle="modal" class="btn btn-success btn-payment text-white "
+                                                    data-bs-toggle="modal" class="btn btn-secondary btn-payment text-white "
+                                                    title="Pembayaran"
                                                     data-payment="{{ $dc->id }}"><i class='ti ti-cash-banknote'></i>
                                                 </button>
 
-                                                <a style="cursor: pointer" href="{{ route('print.barcode', $dc->no_lab) }}" class="btn btn-secondary disabled" target="_blank"><i class="ti ti-barcode"></i></a>
+                                                <a title="Cetak Barcode" style="cursor: pointer" href="{{ route('print.barcode', $dc->no_lab) }}" class="btn btn-secondary disabled" target="_blank"><i class="ti ti-barcode"></i></a>
                                                 
 
                                                 <form id="delete-form-{{ $dc->id }}"
@@ -210,6 +212,7 @@
                                                 </form>
                                                 
                                                 <button class="btn btn-danger"
+                                                    title="Hapus Data"
                                                     onclick="confirmDelete({{ $dc->id }})"><i
                                                     class="ti ti-trash"></i>
                                                 </button>
@@ -255,7 +258,7 @@
                                                 </button>
                                                     
                                                 <button type="button" data-bs-target="#modalPembayaran"
-                                                    data-bs-toggle="modal" class="btn btn-secondary disabled btn-payment text-white" 
+                                                    data-bs-toggle="modal" class="btn btn-payment btn-success text-white" 
                                                     data-payment="{{ $pm->id }}"><i class='ti ti-cash-banknote'></i>
                                                 </button>
 
@@ -315,7 +318,7 @@
                                                 </button>
                                                     
                                                 <button type="button" data-bs-target="#modalPembayaran"
-                                                    data-bs-toggle="modal" class="btn btn-success btn-payment text-white" 
+                                                    data-bs-toggle="modal" class="btn btn-secondary btn-payment text-white" 
                                                     data-payment="{{ $dk->id }}"><i class='ti ti-cash-banknote'></i>
                                                 </button>
 
@@ -527,7 +530,7 @@
                          </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-success" id="submit-button" type="submit">Payment</button>
+                            <button class="btn btn-success payment" id="submit-button" type="submit" >Payment</button>
                         </div>
                     </form>
                 </div>
@@ -541,6 +544,7 @@
 
 
 @push('script')
+    
     <script>
         $(function() {
             let detailPemeriksaan = document.getElementById('detailPemeriksaan');
@@ -567,6 +571,7 @@
                             jenis_pelayanan,
                             asal_ruangan,
                             diagnosa,
+                            kode_dokter
                         } = res.data;
 
                         dokter = res.data.dokter;
@@ -593,7 +598,8 @@
                         $('#Telp').text(no_telp);
                         $('#JenisPelayanan').text(jenis_pelayanan);
                         $('#Ruangan').text(asal_ruangan);
-                        $('#Dokter').text(dokter != null ? dokter.nama_dokter : '-');
+                        const dokterText = dokter != null && dokter.nama_dokter ? dokter.nama_dokter : kode_dokter;
+                        $('#Dokter').text(kode_dokter);
                         $('#Ruangandok').text(asal_ruangan);
                         $('#Telpdok').text(dokter != null ? dokter.no_telp : '-');
                         $('#Email').html(dokter != null ? dokter.email : '-');
@@ -636,423 +642,6 @@
     </script>
 
 
-    {{-- <script>
-        $(function() {
-            let detailPembayaran = document.getElementById('detailPembayaran');
-            $('.btn-payment').on('click', function() {
-                const id = this.getAttribute('data-payment');
-
-                fetch(`/api/get-data-pasien/${id}`).then(response => {
-                    if (!response.ok) {
-                        throw new Error("HTTP error" + response.status);
-                    }
-                    return response.json();
-                }).then(res => {
-                    if (res.status === 'success') {
-                        data_pasien = res.data;
-                        data_pemeriksaan_pasien = res.data.dpp;
-
-                        // console.log(res.data.pembayaran);
-
-                        // let old = 0;
-                        let detailContent = '<div class="row">';
-                        // let subContent = [];
-                        let totalHarga = 0;
-
-                        data_pemeriksaan_pasien.forEach((e, i) => {
-                            // console.log(e.data);
-                            detailContent += `<div class="col-12 col-md-6" id="${e.id_departement}">
-                                                        <h6>${e.data_departement.nama_department}</h6>
-                                                        <ol>`;
-                            e.pasiens.forEach((e, i) => {
-                                // console.log(e.data_pemeriksaan);
-                                detailContent +=
-                                    `<li>${e.data_pemeriksaan.nama_pemeriksaan} - Rp ${e.data_pemeriksaan.harga}</li>`;
-                                    totalHarga += e.data_pemeriksaan.harga;
-                            });
-                            detailContent += `</ol><hr></div>`;
-
-                        });
-                        detailContent += '</div>';
-                        let pembayaranContent = `
-                            <h5>Payment Details</h5>
-                            <hr>
-                            <div class="row mb-3">
-                                <div class="col-12 col-md-6">
-                                <label>Payment Method</label>
-                                <input class="form-control " type="text" name="no_lab" value="${data_pasien.no_lab }" readonly hidden>
-                                <input class="form-control bg-secondary-subtle" type="text" name="metode_pembayaran" value="${data_pasien.jenis_pelayanan }" readonly>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                <label>Total Payment</label>
-                                    <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran_asli" name="total_pembayaran_asli" value="${totalHarga}" readonly>
-                                </div>
-                                ${data_pasien.jenis_pelayanan === 'bpjs' ? `
-                                    <div class="col-12 col-md-6">
-                                        <label>No Bpjs</label>
-                                        <input class="form-control" type="number" name="no_pasien" required />
-                                    </div>
-                                ` : ''}
-                                ${data_pasien.jenis_pelayanan === 'asuransi' ? `
-                                    <div class="col-12 col-md-6">
-                                        <label>No Asuransi</label>
-                                        <input class="form-control" type="number" name="no_pasien" required />
-                                    </div>
-                                ` : ''}
-                                <div class="col-12 col-md-6">
-                                    <label>Officer</label>
-                                    <input class="form-control" type="text" name="petugas" required>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <label>Disc</label>
-                                    <input class="form-control " id="diskon" name="diskon" type="number" placeholder="Enter discount if any" value="" min="0">
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <label>Payment Amount</label>
-                                    <input class="form-control " id="jumlah_bayar" name="jumlah_bayar" type="number" value="">
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <label>Total Payment Disc</label>
-                                    <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran" name="total_pembayaran" value="${totalHarga}" readonly>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <label>Change Money</label>
-                                    <input class="form-control bg-secondary-subtle" value="" id="kembalian" name="kembalian" readonly>
-                                </div>
-                            </div>
-                        `;
-                        // console.log(data_pemeriksaan_pasien);
-                        // console.log(data_pasien);
-                        detailContent += pembayaranContent;
-
-                        detailPembayaran.innerHTML = detailContent;
-                        // console.log(detailContent);
-
-                        function hitungTotalPembayaran() {
-                            let totalPembayaranAsli = parseFloat(document.getElementById('total_pembayaran_asli').value);
-                            let diskon = parseFloat(document.getElementById('diskon').value) || 0;
-                            let totalSetelahDiskon = totalPembayaranAsli - diskon;
-                            if (totalSetelahDiskon < 0) {
-                                totalSetelahDiskon = 0;
-                            }
-                            document.getElementById('total_pembayaran').value = totalSetelahDiskon;
-                        }
-
-                        function hitungKembalian() {
-                            let totalPembayaran = parseFloat(document.getElementById('total_pembayaran').value);
-                            let jumlahBayar = parseFloat(document.getElementById('jumlah_bayar').value) || 0;
-                            let kembalian = jumlahBayar - totalPembayaran;
-                            document.getElementById('kembalian').value = kembalian >= 0 ? kembalian : 0;
-
-                            let submitButton = document.getElementById('submit-button');
-                            if (jumlahBayar >= totalPembayaran) {
-                                submitButton.disabled = false;
-                            } else {
-                                submitButton.disabled = true;
-                            }
-                        }
-
-                        document.getElementById('jumlah_bayar').addEventListener('input', function() {
-                            hitungTotalPembayaran();
-                            hitungKembalian();
-                        });
-
-                        document.getElementById('diskon').addEventListener('input', function() {
-                            hitungTotalPembayaran();
-                            hitungKembalian();
-                        });
-                            document.getElementById('submit-button').disabled = true;
-                            
-                            // Hide the payment button if already paid
-                            if (data_pasien.status === 'Telah Dibayar') {
-                                document.querySelector('.btn-payment').style.disabled = 'true';
-                            }
-                    }
-                
-                });
-                // Form edit
-                // $('#modalPreviewPasien').attr('action', '/poli/' + id);
-
-                // show the modal
-                // $('#modalPreviewPasien').modal('show');
-            });
-        })
-    </script> --}}
-
-    {{-- <script>
-        $(function() {
-            let detailPembayaran = document.getElementById('detailPembayaran');
-            $('.btn-payment').on('click', function() {
-                const id = this.getAttribute('data-payment');
-
-                fetch(`/api/get-data-pasien/${id}`).then(response => {
-                    if (!response.ok) {
-                        throw new Error("HTTP error" + response.status);
-                    }
-                    return response.json();
-                }).then(res => {
-                    if (res.status === 'success') {
-                        data_pasien = res.data;
-                        data_pemeriksaan_pasien = res.data.dpp;
-                        const pembayaranTerakhir = new Date(res.data.pembayaran[0].tanggal_pembayaran); // Ambil pembayaran terakhir
-                        console.log(res.data.pembayaran);
-
-                        let detailContent = '<div class="row">';
-                        let totalHarga = 0;
-                        let departmentIds = new Set();
-
-                        data_pemeriksaan_pasien.forEach((e, i) => {
-                            const createdAt = new Date(e.created_at);
-                            if (createdAt > pembayaranTerakhir) {
-                                if (!departmentIds.has(e.id_departement)) {
-                                    departmentIds.add(e.id_departement);
-                                    detailContent += `<div class="col-12 col-md-6" id="${e.id_departement}">
-                                                        <h6>${e.data_departement.nama_department}</h6>
-                                                        <ol>`;
-                                }
-                                
-                                e.pasiens.forEach((pemeriksaan, j) => {
-                                    detailContent += `<li>${pemeriksaan.data_pemeriksaan.nama_pemeriksaan} - Rp ${pemeriksaan.data_pemeriksaan.harga}</li>`;
-                                    totalHarga += pemeriksaan.data_pemeriksaan.harga;
-                                });
-                                detailContent += `</ol><hr></div>`;
-                            }
-                        });
-                        
-                        detailContent += '</div>';
-                        let pembayaranContent = `
-                            <h5>Payment Details</h5>
-                                    <hr>
-                                    <div class="row mb-3">
-                                        <div class="col-12 col-md-6">
-                                        <label>Payment Method</label>
-                                        <input class="form-control " type="text" name="no_lab" value="${data_pasien.no_lab }" readonly hidden>
-                                        <input class="form-control bg-secondary-subtle" type="text" name="metode_pembayaran" value="${data_pasien.jenis_pelayanan }" readonly>
-                                        </div>
-                                        <div class="col-12 col-md-6">
-                                        <label>Total Payment</label>
-                                            <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran_asli" name="total_pembayaran_asli" value="${totalHarga}" readonly>
-                                        </div>
-                                        ${data_pasien.jenis_pelayanan === 'bpjs' ? `
-                                            <div class="col-12 col-md-6">
-                                                <label>No Bpjs</label>
-                                                <input class="form-control" type="number" name="no_pasien" required />
-                                            </div>
-                                        ` : ''}
-                                        ${data_pasien.jenis_pelayanan === 'asuransi' ? `
-                                            <div class="col-12 col-md-6">
-                                                <label>No Asuransi</label>
-                                                <input class="form-control" type="number" name="no_pasien" required />
-                                            </div>
-                                        ` : ''}
-                                        <div class="col-12 col-md-6">
-                                            <label>Officer</label>
-                                            <input class="form-control" type="text" name="petugas" required>
-                                        </div>
-                                        <div class="col-12 col-md-6">
-                                            <label>Disc</label>
-                                            <input class="form-control " id="diskon" name="diskon" type="number" placeholder="Enter discount if any" value="" min="0">
-                                        </div>
-                                        <div class="col-12 col-md-6">
-                                            <label>Payment Amount</label>
-                                            <input class="form-control " id="jumlah_bayar" name="jumlah_bayar" type="number" value="">
-                                        </div>
-                                        <div class="col-12 col-md-6">
-                                            <label>Total Payment Disc</label>
-                                            <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran" name="total_pembayaran" value="${totalHarga}" readonly>
-                                        </div>
-                                        <div class="col-12 col-md-6">
-                                            <label>Change Money</label>
-                                            <input class="form-control bg-secondary-subtle" value="" id="kembalian" name="kembalian" readonly>
-                                        </div>
-                                    </div>
-                        `;
-                        detailContent += pembayaranContent;
-
-                        detailPembayaran.innerHTML = detailContent;
-
-                        function hitungTotalPembayaran() {
-                                    let totalPembayaranAsli = parseFloat(document.getElementById('total_pembayaran_asli').value);
-                                    let diskon = parseFloat(document.getElementById('diskon').value) || 0;
-                                    let totalSetelahDiskon = totalPembayaranAsli - diskon;
-                                    if (totalSetelahDiskon < 0) {
-                                        totalSetelahDiskon = 0;
-                                    }
-                                    document.getElementById('total_pembayaran').value = totalSetelahDiskon;
-                                }
-
-                                function hitungKembalian() {
-                                    let totalPembayaran = parseFloat(document.getElementById('total_pembayaran').value);
-                                    let jumlahBayar = parseFloat(document.getElementById('jumlah_bayar').value) || 0;
-                                    let kembalian = jumlahBayar - totalPembayaran;
-                                    document.getElementById('kembalian').value = kembalian >= 0 ? kembalian : 0;
-
-                                    let submitButton = document.getElementById('submit-button');
-                                    if (jumlahBayar >= totalPembayaran) {
-                                        submitButton.disabled = false;
-                                    } else {
-                                        submitButton.disabled = true;
-                                    }
-                                }
-
-                                document.getElementById('jumlah_bayar').addEventListener('input', function() {
-                                    hitungTotalPembayaran();
-                                    hitungKembalian();
-                                });
-
-                                document.getElementById('diskon').addEventListener('input', function() {
-                                    hitungTotalPembayaran();
-                                    hitungKembalian();
-                                });
-                                    document.getElementById('submit-button').disabled = true;
-                                    
-                                    // Hide the payment button if already paid
-                                    if (data_pasien.status === 'Telah Dibayar') {
-                                        document.querySelector('.btn-payment').style.disabled = 'true';
-                                    }
-                    }
-                });
-            });
-        });
-
-    </script> --}}
-
-    {{-- <script>
-        $(function() {
-            let detailPembayaran = document.getElementById('detailPembayaran');
-            $('.btn-payment').on('click', function() {
-                const id = this.getAttribute('data-payment');
-
-                fetch(`/api/get-data-pasien/${id}?t=${new Date().getTime()}`).then(response => {
-                    if (!response.ok) {
-                        throw new Error("HTTP error" + response.status);
-                    }
-                    return response.json();
-                }).then(res => {
-                    console.log(res);
-                    if (res.status === 'success') {
-                        data_pasien = res.data;
-                        data_pemeriksaan_pasien = res.data.dpp;
-
-                        let detailContent = '<div class="row">';
-                        let totalHarga = 0;
-                        let departmentIds = new Set();
-
-                        data_pemeriksaan_pasien.forEach((e, i) => {
-                            if (e.status === 'baru') { // Filter untuk hanya menampilkan status "baru"
-                            console.log(e);
-                                if (!departmentIds.has(e.id_departement)) {
-                                    departmentIds.add(e.id_departement);
-                                    detailContent += `<div class="col-12 col-md-6" id="${e.id_departement}">
-                                                        <h6>${e.data_departement.nama_department}</h6>
-                                                        <ol>`;
-                                }
-                                
-                                e.pasiens.forEach((pemeriksaan, j) => {
-                                    detailContent += `<li>${pemeriksaan.data_pemeriksaan.nama_pemeriksaan} - Rp ${pemeriksaan.data_pemeriksaan.harga}</li>`;
-                                    totalHarga += pemeriksaan.data_pemeriksaan.harga;
-                                });
-                                detailContent += `</ol><hr></div>`;
-                            }
-                        });
-                        
-                        detailContent += '</div>';
-                        let pembayaranContent = `
-                            <h5>Payment Details</h5>
-                                    <hr>
-                                    <div class="row mb-3">
-                                        <div class="col-12 col-md-6">
-                                        <label>Payment Method</label>
-                                        <input class="form-control " type="text" name="no_lab" value="${data_pasien.no_lab }" readonly hidden>
-                                        <input class="form-control bg-secondary-subtle" type="text" name="metode_pembayaran" value="${data_pasien.jenis_pelayanan }" readonly>
-                                        </div>
-                                        <div class="col-12 col-md-6">
-                                        <label>Total Payment</label>
-                                            <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran_asli" name="total_pembayaran_asli" value="${totalHarga}" readonly>
-                                        </div>
-                                        ${data_pasien.jenis_pelayanan === 'bpjs' ? `
-                                            <div class="col-12 col-md-6">
-                                                <label>No Bpjs</label>
-                                                <input class="form-control" type="number" name="no_pasien" required />
-                                            </div>
-                                        ` : ''}
-                                        ${data_pasien.jenis_pelayanan === 'asuransi' ? `
-                                            <div class="col-12 col-md-6">
-                                                <label>No Asuransi</label>
-                                                <input class="form-control" type="number" name="no_pasien" required />
-                                            </div>
-                                        ` : ''}
-                                        <div class="col-12 col-md-6">
-                                            <label>Officer</label>
-                                            <input class="form-control" type="text" name="petugas" required>
-                                        </div>
-                                        <div class="col-12 col-md-6">
-                                            <label>Disc</label>
-                                            <input class="form-control " id="diskon" name="diskon" type="number" placeholder="Enter discount if any" value="" min="0">
-                                        </div>
-                                        <div class="col-12 col-md-6">
-                                            <label>Payment Amount</label>
-                                            <input class="form-control " id="jumlah_bayar" name="jumlah_bayar" type="number" value="">
-                                        </div>
-                                        <div class="col-12 col-md-6">
-                                            <label>Total Payment Disc</label>
-                                            <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran" name="total_pembayaran" value="${totalHarga}" readonly>
-                                        </div>
-                                        <div class="col-12 col-md-6">
-                                            <label>Change Money</label>
-                                            <input class="form-control bg-secondary-subtle" value="" id="kembalian" name="kembalian" readonly>
-                                        </div>
-                                    </div>
-                        `;
-                        detailContent += pembayaranContent;
-
-                        detailPembayaran.innerHTML = detailContent;
-
-                        function hitungTotalPembayaran() {
-                            let totalPembayaranAsli = parseFloat(document.getElementById('total_pembayaran_asli').value);
-                            let diskon = parseFloat(document.getElementById('diskon').value) || 0;
-                            let totalSetelahDiskon = totalPembayaranAsli - diskon;
-                            if (totalSetelahDiskon < 0) {
-                                totalSetelahDiskon = 0;
-                            }
-                            document.getElementById('total_pembayaran').value = totalSetelahDiskon;
-                        }
-
-                        function hitungKembalian() {
-                            let totalPembayaran = parseFloat(document.getElementById('total_pembayaran').value);
-                            let jumlahBayar = parseFloat(document.getElementById('jumlah_bayar').value) || 0;
-                            let kembalian = jumlahBayar - totalPembayaran;
-                            document.getElementById('kembalian').value = kembalian >= 0 ? kembalian : 0;
-
-                            let submitButton = document.getElementById('submit-button');
-                            if (jumlahBayar >= totalPembayaran) {
-                                submitButton.disabled = false;
-                            } else {
-                                submitButton.disabled = true;
-                            }
-                        }
-
-                        document.getElementById('jumlah_bayar').addEventListener('input', function() {
-                            hitungTotalPembayaran();
-                            hitungKembalian();
-                        });
-
-                        document.getElementById('diskon').addEventListener('input', function() {
-                            hitungTotalPembayaran();
-                            hitungKembalian();
-                        });
-                        document.getElementById('submit-button').disabled = true;
-                        
-                        // Hide the payment button if already paid
-                        if (data_pasien.status === 'Telah Dibayar') {
-                            document.querySelector('.btn-payment').style.disabled = 'true';
-                        }
-                    }
-                });
-            });
-        });
-
-    </script> --}}
     <script>
         $(function() {
             let detailPembayaran = document.getElementById('detailPembayaran');
@@ -1120,6 +709,10 @@
                                     <div class="col-12 col-md-6">
                                         <label>No Asuransi</label>
                                         <input class="form-control" id="no_pasien" name="no_pasien" type="number" required />
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label>Penjamin</label>
+                                        <input class="form-control" id="penjamin" name="penjamin" type="text" required />
                                     </div>
                                 ` : ''}
                                 <div class="col-12 col-md-6">

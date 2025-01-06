@@ -83,15 +83,19 @@
                                     </div>
                                     <div class="col-md-6 mb-6">
                                         <label for="exampleFormControlSelect1" class="fw-bold">Doctor</label>
-                                        <select class="form-select" id="exampleFormControlSelect1" name="dokter">
-                                            <option selected hidden>Choose</option>
-                                            {{-- <option value="1">Permintaan Sendiri</option> --}}
+                                        <select class="form-select" id="exampleFormControlSelect1" name="dokter_internal">
+                                            <option hidden></option>
                                             @foreach ($dokters as $dokter)
-                                                <option value="{{ $dokter->kode_dokter }}">{{ $dokter->nama_dokter }}
-                                                </option>
+                                                <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }}</option>
                                             @endforeach
                                         </select>
                                     </div>
+                                    
+                                    <div class="col-md-6 mb-6">
+                                        <label for="external_doctor" class="fw-bold">External Doctor</label>
+                                        <input type="text" class="form-control" name="dokter_external" placeholder="External Doctor">
+                                    </div>
+                                                                        
                                     <div class="col-md-6 mb-6">
                                         <label for="name" class="fw-bold">Room</label>
                                         <input type="text " class="form-control"
@@ -103,9 +107,13 @@
                                             <option value=""></option>
                                         </select>
                                     </div>
+                                    <div class="col-md-6 mb-6">
+                                        <label for="name" class="fw-bold">Diagnosis</label>
+                                        <input type="text" name="diagnosa" class="form-control" placeholder="Choose Diagnosis">
+                                    </div>
                                     <div class="col-md-6">
                                         <label for="alamat" class="fw-bold">Full Address</label>
-                                        <textarea class="form-control ml-1" cols="119" rows="1" id="alamat" name="alamat"></textarea>
+                                        <textarea class="form-control ml-1" cols="119" rows="1" id="alamat" name="alamat" placeholder="Enter Address"></textarea>
                                     </div>
                                     <div class="form-group col-12">
                                         <label for="basic-url">Kind Of Service</label>

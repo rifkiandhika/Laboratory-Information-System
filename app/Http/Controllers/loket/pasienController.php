@@ -79,19 +79,21 @@ class pasienController extends Controller
             $cito = 0;
         }
 
+        // Memproses harga pemeriksaan
         $harga = (int)str_replace('.', '', $request->hargapemeriksaan);
 
-        // $harga = (int)$harga;
+        // Menentukan dokter internal atau eksternal
+        $dokter = null;
 
-        // foreach($request->pemeriksaan as $pemeriksaan)
-        // {
-        //     $pemeriksaan_temp = explode(',', $pemeriksaan);
+        if ($request->dokter_internal) {
+            // Jika dokter internal dipilih, simpan kode dokter internal
+            $dokter = $request->dokter_internal;
+        } elseif ($request->dokter_external) {
+            // Jika dokter eksternal dipilih, simpan nama dokter eksternal
+            $dokter = $request->dokter_external;
+        }
 
-        //     $id_departement[] = $pemeriksaan_temp[0];
-
-        //     $nama_parameter[] = $pemeriksaan_temp[1];
-        // } 
-
+        // Menyimpan data pasien
         pasien::create([
             'no_lab' => $request->nolab,
             'no_rm' => $request->norm,
@@ -102,16 +104,16 @@ class pasienController extends Controller
             'lahir' => $request->tanggallahir,
             'jenis_kelamin' => $request->jeniskelamin,
             'no_telp' => $request->notelepon,
-            'kode_dokter' => $request->dokter,
+            'kode_dokter' => $dokter,  // Simpan kode dokter internal atau nama dokter eksternal
             'asal_ruangan' => $request->asal_ruangan,
             'diagnosa' => $request->diagnosa,
             'tanggal_masuk' => now(),
             'alamat' => $request->alamat,
         ]);
 
+        // Menyimpan pemeriksaan
         $no = 0;
         foreach ($request->pemeriksaan as $pemeriksaan) {
-            // dd($nama_parameter);
             $data = DetailDepartment::find($pemeriksaan);
             pemeriksaan_pasien::create([
                 'no_lab' => $request->nolab,
@@ -122,10 +124,10 @@ class pasienController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-
             $no++;
         }
 
+        // Menyimpan riwayat pasien
         historyPasien::create([
             'no_lab' => $request->nolab,
             'proses' => 'Order',
@@ -137,6 +139,7 @@ class pasienController extends Controller
         toast('Berhasil Menambah data pasien', 'success');
         return redirect()->route('pasien.index');
     }
+
 
     /**
      * Display the specified resource.
@@ -297,7 +300,6 @@ class pasienController extends Controller
         toast('Tidak dapat menghapus data yang sudah diverifikasi', 'error');
         return redirect()->route('pasien.index');
     }
-
     public function getDataPasien(Request $request, $lab)
     {
         // $data_pasien = pasien::where('no_lab', $lab)->first();
@@ -449,20 +451,20 @@ class pasienController extends Controller
     public function checkin(Request $request)
     {
         $ids = $request->ids;
-        pasien::whereIn('id', $ids)->update(['status' => 'Check In']);
+        pasien::whereIn('id', $ids)->update(['status' => 'Telah Dikirim ke Lab']);
         $pasien = pasien::whereIn('id', $ids)->get();
 
         foreach ($pasien as $pasiens) {
 
             historyPasien::create([
                 'no_lab' => $pasiens->no_lab,
-                'proses' => 'Dikirim ke spesiment',
+                'proses' => 'Dikirim ke dashboard',
                 'tempat' => 'Laboratorium',
                 'waktu_proses' => now(),
                 'created_at' => now(),
             ]);
         }
-        toast('Pasien telah Check in', 'success');
+        toast('Pasien telah dikirim ke Lab', 'success');
         return response()->json(['success' => 'Data berhasil Dikonfirmasi!']);
     }
 

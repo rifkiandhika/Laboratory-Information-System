@@ -676,22 +676,40 @@
                         const hasil = res.data.hasil_pemeriksaan;
 
                         populateModal(spesimen, scollection, shandling, history, data_pemeriksaan_pasien);
+                        function getDokterDisplay(labData, dokterData) {
+                        // Jika tidak ada data
+                        if (!labData || !dokterData) {
+                            return "Dokter tidak tersedia";
+                        }
 
-                        const timelineItems = history.map(h => {
-                            const waktu = new Date(h.waktu_proses);
-                            const waktuFormatted = waktu.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        // Ambil kode dokter dari data lab
+                        const kodeDokterLab = labData?.kode_dokter;
 
-                            return `
-                                <div class="timeline-item w-100">
-                                    <div class="timeline-item-marker">
-                                        <div class="timeline-item-marker-text">${waktuFormatted}</div>
-                                        <div class="timeline-item-marker-indicator clear text-white"><i class="ti ti-check"></i></div>
-                                    </div>
-                                    <div class="timeline-item-content">${h.proses}</div>
-                                </div>
-                            `;
-                        }).join('');
+                        // Cek jika kode dokter lab sama dengan kode dokter di data dokter
+                        if (kodeDokterLab === dokterData.kode_dokter) {
+                            return dokterData.nama_dokter;
+                        }
 
+                        // Jika tidak sama, kembalikan kode dokter dari lab
+                        return kodeDokterLab || "Dokter tidak tersedia";
+                    }
+
+                    // Penggunaan
+                    const labData = data_pasien; // Data lab dengan kode_dokter
+                    const dokterData = data_pasien.kode_dokter; // Data dokter
+
+                    let dokterDisplay = getDokterDisplay(labData, dokterData);
+
+                    // Set nilai ke input
+                    let inputElement = document.querySelector('[name="dokter"]');
+                    if (inputElement) {
+                        inputElement.value = dokterDisplay;
+                    }
+
+                    // Debug logs
+                    console.log('Lab Data:', labData);
+                    console.log('Dokter Data:', dokterData);
+                    console.log('Display Value:', dokterDisplay);
 
                         let detailContent = '<div class="row">';
 
@@ -743,16 +761,16 @@
                                 <div class="row mb-1">
                                     <label class="col-5 col-form-label fw-bold">Dokter</label>
                                     <div class="col-7">
-                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.dokter.nama_dokter}">
+                                        <input type="text" readonly class="form-control-plaintext" value=": ${dokterDisplay} ">
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-5 col-md-6 col-sm-12">
+                            {{-- <div class="col-lg-5 col-md-6 col-sm-12">
                                 <!-- Right Column - Timeline -->
                                 <div class="timeline timeline-sm">
                                     ${timelineItems}
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                         <hr>
                         `;
@@ -772,24 +790,71 @@
                         // undisabled tombol manual button
                         const manualButton = document.getElementById('manualButton');
                         const manualInput = document.querySelectorAll('#manualInput');
+                        const duploButton = document.getElementById('duploButton');
+                        const d1 = document.querySelectorAll('#d1');
+                        const d2 = document.querySelectorAll('#d2');
+                        const d3 = document.querySelectorAll('#d3');
                         const submitButton = document.querySelector('#disabled');
-                        const verifikasiHasil = document.getElementById('verifikasiHasil');
-                        const verifikasi = document.getElementById('verifikasi');
 
                         // Ambil status dari data pasien
                         const statusPasien = data_pasien.status;
 
-                        if (statusPasien === 'Verifikasi') {
-                            // Jika status Verifikasi, tampilkan tombol "Verifikasi" dan sembunyikan "Verifikasi Hasil"
-                            verifikasiHasil.style.display = 'none';
-                            verifikasi.style.display = 'block';
-                        } else {
-                            // Jika bukan Verifikasi, tampilkan tombol "Verifikasi Hasil" dan sembunyikan "Verifikasi"
-                            verifikasiHasilButton.style.display = 'block';
-                            verifikasiButton.style.display = 'none';
-                        }
-
                         submitButton.disabled = true;
+                        
+                        let clickCount = 0;
+
+                        duploButton.addEventListener('click', () => {
+                            clickCount++;
+                            
+                            // Enable input fields berdasarkan jumlah klik
+                            switch(clickCount) {
+                                case 1:
+                                    // Enable d1 pada klik pertama
+                                    d1.forEach(input => {
+                                        input.readOnly = false;
+                                        input.classList.remove('readonly-input');
+                                        input.focus();
+                                    });
+                                    break;
+                                    
+                                case 2:
+                                    // Enable d2 pada klik kedua
+                                    d2.forEach(input => {
+                                        input.readOnly = false;
+                                        input.classList.remove('readonly-input');
+                                        input.focus();
+                                    });
+                                    break;
+                                    
+                                case 3:
+                                    // Enable d3 pada klik ketiga
+                                    d3.forEach(input => {
+                                        input.readOnly = false;
+                                        input.classList.remove('readonly-input');
+                                        input.focus();
+                                    });
+                                    submitButton.disabled = false; // Enable submit button setelah semua input enabled
+                                    // Optional: Disable duplo button setelah semua input enabled
+                                    duploButton.disabled = true;
+                                    break;
+                                    
+                                default:
+                                    break;
+                            }
+                        });
+
+                        // Optional: Jika Anda ingin menambahkan fungsi reset
+                        function resetInputs() {
+                            clickCount = 0;
+                            [d1, d2, d3].forEach(inputGroup => {
+                                inputGroup.forEach(input => {
+                                    input.readOnly = true;
+                                    input.classList.add('readonly-input');
+                                });
+                            });
+                            submitButton.disabled = true;
+                            duploButton.disabled = false;
+                        }
 
                         manualButton.addEventListener('click', () => {
                             manualInput.forEach(input => {
@@ -802,11 +867,20 @@
                         // undisabled tombol manual button
                         // undisabled tombol verifikasi dokter
                         const verifikasiButton = document.getElementById('verifikasiDokterPKButton');
-                        if (data_pasien.status === 'Verifikasi', 'Dikembalikan') {
+                        if (data_pasien.status === 'Verifikasi'|| data_pasien.status === 'Dikembalikan') {
                             verifikasiButton.disabled = false;
                         } else {
                             verifikasiButton.disabled = true;
                         }
+
+                        const verifikasi = document.getElementById('verifikasi');
+                        if (data_pasien.status === 'Verifikasi') {
+                            verifikasi.disabled = false;
+                        } else {
+                            verifikasi.disabled = true;
+                        }
+                        
+
                     }
                 })
                 .catch(error => {
@@ -824,23 +898,17 @@
                             <button type="button" id="manualButton" class="btn btn-outline-secondary btn-block w-100">Manual</button>
                         </div>
                         <div class="col-lg-3 mb-3">
-                            <button type="button" class="btn btn-outline-primary btn-block w-100">Duplo</button>
+                            <button type="button" id="duploButton" class="btn btn-outline-primary btn-block w-100">Duplo</button>
                         </div>
                         <div class="col-lg-3 mb-3">
                             <button type="button" class="btn btn-outline-info btn-block w-100" data-bs-toggle="modal" data-bs-target="#sampleHistoryModal">Sample History<span class="badge bg-danger" style="display: none;">!</span></button>
                         </div>
                         <div class="col-lg-3 mb-3">
-                            <form id="delete-form-${data_pasien.id}"
-                                action="analyst/worklist/${data_pasien.id}" method="POST"
-                                style="display: none;">
+                            <form id="delete-form-${data_pasien.id}" action="analyst/worklist/${data_pasien.id}" method="POST" style="display: none;">
                                 @csrf
                                 @method('DELETE')
                             </form>
-                                                    
-                            <button class="btn btn-outline-danger w-100"
-                                onclick="confirmDelete(${data_pasien.id})">
-                                Delete
-                            </button>
+                            <button class="btn btn-outline-danger w-100" onclick="confirmDelete(${data_pasien.id})">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -848,6 +916,41 @@
         }
 
         function getTableContent(data_pemeriksaan_pasien, data_pasien, hasil) {
+            function getDokterDisplay(labData, dokterData) {
+            // Jika tidak ada data
+            if (!labData || !dokterData) {
+                return "Dokter tidak tersedia";
+            }
+
+            // Ambil kode dokter dari data lab
+            const kodeDokterLab = labData?.kode_dokter;
+
+            // Cek jika kode dokter lab sama dengan kode dokter di data dokter
+            if (kodeDokterLab === dokterData.kode_dokter) {
+                return dokterData.kode_dokter;
+            }
+
+            // Jika tidak sama, kembalikan kode dokter dari lab
+            return kodeDokterLab || "Dokter tidak tersedia";
+        }
+
+        // Penggunaan
+        const labData = data_pasien; // Data lab dengan kode_dokter
+        const dokterData = data_pasien.dokter; // Data dokter
+
+        let dokterDisplay = getDokterDisplay(labData, dokterData);
+
+        // Set nilai ke input
+        let inputElement = document.querySelector('[name="dokter"]');
+        if (inputElement) {
+            inputElement.value = dokterDisplay;
+        }
+
+        // Debug logs
+        console.log('Lab Data:', labData);
+        console.log('Dokter Data:', dokterData);
+        console.log('Display Value:', dokterDisplay);
+
             return `
             <form action="{{ route('worklist.store') }}" method="POST">
                 @csrf
@@ -855,7 +958,7 @@
                 <input type="hidden" name="no_rm" value="${data_pasien.no_rm}">
                 <input type="hidden" name="nama" value="${data_pasien.nama}">
                 <input type="hidden" name="ruangan" value="${data_pasien.asal_ruangan}">
-                <input type="hidden" name="nama_dokter" value="${data_pasien.dokter.nama_dokter}">
+                <input type="hidden" name="nama_dokter" value="${dokterDisplay}">
 
                 <div id="tabel-pemeriksaan" class="table-responsive">
                     <table class="table table-striped" id="worklistTable">
@@ -863,9 +966,9 @@
                             <tr scope="row">
                                 <th class="col-3">Parameter</th>
                                 <th class="col-3 ml-2">Hasil</th>
-                                <!-- Kondisi Duplo -->
-                                <th class="col-3">D1</th>
-                                <th class="col-3">D2</th>
+                                <th class="col-3 ml-2 duplo">D1</th>
+                                <th class="col-3 ml-2 duplo">D2</th>
+                                <th class="col-3 ml-2 duplo">D3</th>
                                 <th class="col-2">Flag</th>
                                 <th class="col-2">Satuan</th>
                                 <th class="col-2">Range</th>
@@ -873,35 +976,34 @@
                         </thead>
                         <tbody>
                             ${data_pemeriksaan_pasien.map(e => `
-                                <th scope="row">${e.data_departement.nama_department}</th>
-                                        <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                <tr>
+                                    <th scope="row">${e.data_departement.nama_department}</th>
+                                    <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
                                     ${e.pasiens.map(p => {
                                         const hasilItem = hasil.find(item => item.nama_pemeriksaan === p.data_pemeriksaan.nama_pemeriksaan);
                                         const rowId = p.data_pemeriksaan.id;
-
-                                    return `
-                                    <tr class="mt-2" data-id="${rowId}">
-                                        <td>${p.data_pemeriksaan.nama_pemeriksaan}</td>
-                                        <input type="hidden" name="nama_pemeriksaan[]" value="${p.data_pemeriksaan.nama_pemeriksaan}" />
-                                        <td><input type="text" name="hasil[]" id="manualInput" class="form-control text-center w-50 p-0 readonly-input" value="${hasilItem ? hasilItem.hasil : ''}" required readonly/></td>
-                                        <td><input type="text" name="duplo" class="form-control text-center w-50 p-0" readonly /></td>
-                                        <td><input type="text" class="form-control text-center w-50 p-0" readonly/></td>
-                                        <td><input type="hidden" class="form-control p-0" readonly/></td>
-                                        <td class="text-center"><input type="hidden" name="satuan[]" class="form-control w-50 p-0" value="${p.data_pemeriksaan.nilai_satuan}" readonly/>${p.data_pemeriksaan.nilai_satuan}</td>
-                                        <td><input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly/>1-10</td>
-                                    </tr>
-                                    `;
+                                        return `
+                                        <tr class="mt-2" data-id="${rowId}">
+                                            <td>${p.data_pemeriksaan.nama_pemeriksaan}</td>
+                                            <input type="hidden" name="nama_pemeriksaan[]" value="${p.data_pemeriksaan.nama_pemeriksaan}" />
+                                            <td><input type="number" name="hasil[]" id="manualInput" class="form-control text-center w-50 p-0 readonly-input" value="${hasilItem ? hasilItem.hasil : ''}" required readonly/></td>
+                                            <td><input type="number" name="duplo" id="d1" class="form-control text-center w-50 p-0" readonly  /></td>
+                                            <td><input type="number" name="duplo" id="d2" class="form-control text-center w-50 p-0" readonly  /></td>
+                                            <td><input type="number" name="duplo" id="d3" class="form-control text-center w-50 p-0" readonly  /></td>
+                                            <td class="text-center"><input type="hidden" name="satuan[]" class="form-control w-50 p-0" value="" readonly/></td>
+                                            <td><input type="hidden" name="range[]" class="form-control w-50 p-0" value="${p.data_pemeriksaan.nilai_satuan}" readonly/>${p.data_pemeriksaan.nilai_satuan}</td>
+                                            <td><input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly/>1-10</td>
+                                        </tr>
+                                        `;
                                     }).join('')}
-                                `).join('')}
+                                </tr>
+                            `).join('')}
                         </tbody>
                     </table>
                 </div>
                 <div class="row">
                     <div class="col-lg-6 mb-3 mt-2">
-                        <button id="verifikasiHasil" type="submit" class="btn btn-outline-info btn-block w-100">Verifikasi Hasil</button>
-                    </div>
-                    <div class="col-lg-6 mb-3 mt-2">
-                        <button id="verifikasi" type="submit" class="btn btn-outline-info btn-block w-100">Verifikasi</button>
+                        <button id="disabled" type="submit" class="btn btn-outline-info btn-block w-100">Verifikasi Hasil</button>
                     </div>
             </form>      
                     <div class="col-lg-6 mt-2">
@@ -910,46 +1012,80 @@
                             <button type="submit" id="verifikasiDokterPKButton" class="btn btn-outline-primary btn-block w-100">Verifikasi Dokter PK</button>
                         </form>
                     </div>
+                    <div>
+                        <form action="worklist/end/${data_pasien.id}" method="POST">
+                            @csrf
+                            <button type="submit" id="verifikasi" class="btn btn-outline-success btn-block w-100">Verifikasi</button>
+                        </form>
+                    </div>
                 </div>
             `;
         }
 
+        document.addEventListener('DOMContentLoaded', function() {
+        let duploCount = 0;
+        const duploButton = document.getElementById('duploButton');
+        
+            if (duploButton) {
+                duploButton.addEventListener('click', () => {
+                    duploCount++;
+                    // console.log('Duplo Button Clicked. Count:', duploCount); // Debugging tombol yang diklik
+
+                    // Menambahkan kolom baru pada setiap baris tabel
+                    const rows = document.querySelectorAll('#worklistTable tbody tr');
+                    
+                    rows.forEach(row => {
+                        const newDuploCell = document.createElement('td');
+                        newDuploCell.classList.add('text-center'); // Jika ingin centering
+                        newDuploCell.textContent = `D${duploCount}`;
+                        row.appendChild(newDuploCell);
+                    });
+                });
+            } else {
+                console.error("Tombol Duplo tidak ditemukan.");
+            }
+        });
+
+
+
+
         function populateModal(spesimen, scollection, shandling, history, data_pemeriksaan_pasien) {
             const accordion = document.getElementById('sampleHistoryAccordion');
             const historyItem = history.find(h => h.proses === 'Dikembalikan oleh dokter');
-
-            // const horizontalItems = history.map(h => {
-            //                 const waktu = new Date(h.waktu_proses);
-            //                 const waktuFormatted = waktu.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            //                 return `
-            //                         <ul class="step-wizard-list">
-            //                             <li class="step-wizard-item">
-            //                                 <span class="progress-count">1</span>
-            //                                 <span class="progress-label">${h.proses}</span>
-            //                             </li>
-            //                         </ul>
-            //                 `;
-            // }).join('');
-            
             let accordionContent = '';
             let noteContent = '';
 
             
             accordionContent += `
-                <hr>
-                <h5>Detail Sampling</h5>
-                <hr>
-                <h5>History</h5>
-                <ul class="step-wizard-list mt-4">
-                    ${history.map((h, index) => `
-                        <li class="step-wizard-item">
-                            <span class="progress-count">${index + 1}</span>
-                            <span class="progress-label">${h.proses}</span>
-                        </li>
-                    `).join('')}
-                </ul>
+    <hr>
+    <h5>Detail Sampling</h5>
+    <hr>
+    <h5>History</h5>
+    <ul class="step-wizard-list mt-4">
+        ${history.map((h, index) => {
+            // Membuat objek Date dari h.created_at
+            let createdAt = new Date(h.created_at);
+
+            // Format tanggal dan waktu sesuai dengan yang diinginkan
+            let formattedDate = createdAt.toLocaleString('id-ID', {
+                year: 'numeric', 
+                month: 'numeric', 
+                day: 'numeric',
+                hour: '2-digit', 
+                minute: '2-digit'
+            });
+
+            return `
+                <li class="step-wizard-item">
+                    <span class="progress-count">${index + 1}</span>
+                    <span class="progress-label">${h.proses}</span>
+                    <span class="progress-label">${formattedDate}</span>
+                </li>
             `;
+        }).join('')}
+    </ul>
+`;
+
 
             spesimen.forEach(e => {
                 let details = '';
@@ -973,17 +1109,17 @@
                 const collectionItem = scollection.find(item => 
                     item.no_lab === e.laravel_through_key && item.tabung === 'K3'
                 );
-                console.log('K3 collectionItem:', collectionItem); // Debugging
+                // console.log('K3 collectionItem:', collectionItem); // Debugging
 
                 if (collectionItem) {
-                    console.log('K3 collectionItem.details:', collectionItem.details); // Debugging
-                    console.log('K3 e.details:', e.details); // Debugging
+                    // console.log('K3 collectionItem.details:', collectionItem.details); // Debugging
+                    // console.log('K3 e.details:', e.details); // Debugging
 
                     // Cocokkan details dari collectionItem dengan details dari spesimen
                     detailsData = collectionItem.details.filter(detail => 
                         e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
                     );
-                    console.log('K3 matched detailsData:', detailsData); // Debugging
+                    // console.log('K3 matched detailsData:', detailsData); // Debugging
 
                     serumh = collectionItem.serumh;
                 }

@@ -82,17 +82,16 @@ class userController extends Controller
             $role = explode(',', auth()->user()->role);
 
             if ($role[0] == 'loket') {
-                toast('Berhasil Login','success');
+                toast('Berhasil Login', 'success');
                 return redirect()->route('pasien.index');
-            }elseif ($role[0] == 'analyst') {
-                toast('Berhasil Login','success');
+            } elseif ($role[0] == 'analyst') {
+                toast('Berhasil Login', 'success');
                 return redirect()->route('analyst.index');
-            }
-            elseif ($role[0] == 'admin') {
-                toast('Berhasil Login','success');
+            } elseif ($role[0] == 'admin') {
+                toast('Berhasil Login', 'success');
                 return redirect()->route('admin.dashboard');
             }
-        }else{
+        } else {
             return back()->withErrors([
                 'error' => 'Username atau Password Salah',
             ]);

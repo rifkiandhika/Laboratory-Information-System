@@ -15,11 +15,20 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('department_id');
             $table->string('kode');
+            $table->string('id_pemeriksaan')->nullable();
             $table->string('nama_parameter');
             $table->string('nama_pemeriksaan');
+            $table->string('jasa_sarana')->nullable();
+            $table->string('jasa_pelayanan')->nullable();
+            $table->string('jasa_dokter')->nullable();
+            $table->string('jasa_bidan')->nullable();
+            $table->string('jasa_perawat')->nullable();
             $table->integer('harga');
-            $table->string('nilai_statik');
-            $table->string('nilai_satuan');
+            $table->string('nilai_rujukan');
+            $table->string('nilai_satuan')->nullable();
+            $table->string('tipe_inputan');
+            $table->string('opsi_output');
+            $table->string('urutan')->nullable();
             $table->timestamps();
 
             // // Cascade delete

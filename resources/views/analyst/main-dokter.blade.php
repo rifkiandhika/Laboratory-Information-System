@@ -462,20 +462,20 @@
 
                         populateModal(spesimen, scollection, shandling, history, data_pemeriksaan_pasien);
 
-                        const timelineItems = history.map(h => {
-                            const waktu = new Date(h.waktu_proses);
-                            const waktuFormatted = waktu.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        // const timelineItems = history.map(h => {
+                        //     const waktu = new Date(h.waktu_proses);
+                        //     const waktuFormatted = waktu.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-                            return `
-                                <div class="timeline-item w-100">
-                                    <div class="timeline-item-marker">
-                                        <div class="timeline-item-marker-text">${waktuFormatted}</div>
-                                        <div class="timeline-item-marker-indicator clear text-white"><i class="ti ti-check"></i></div>
-                                    </div>
-                                    <div class="timeline-item-content">${h.proses}</div>
-                                </div>
-                            `;
-                        }).join('');
+                        //     return `
+                        //         <div class="timeline-item w-100">
+                        //             <div class="timeline-item-marker">
+                        //                 <div class="timeline-item-marker-text">${waktuFormatted}</div>
+                        //                 <div class="timeline-item-marker-indicator clear text-white"><i class="ti ti-check"></i></div>
+                        //             </div>
+                        //             <div class="timeline-item-content">${h.proses}</div>
+                        //         </div>
+                        //     `;
+                        // }).join('');
 
 
                         let detailContent = '<div class="row">';
@@ -528,16 +528,16 @@
                                 <div class="row mb-1">
                                     <label class="col-5 col-form-label fw-bold">Dokter</label>
                                     <div class="col-7">
-                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.dokter.nama_dokter}">
+                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.kode_dokter}">
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-5 col-md-6 col-sm-12">
+                            {{-- <div class="col-lg-5 col-md-6 col-sm-12">
                                 <!-- Right Column - Timeline -->
                                 <div class="timeline timeline-sm">
                                     ${timelineItems}
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                         <hr>
                         `;
@@ -615,7 +615,7 @@
                 <input type="hidden" name="no_rm" value="${data_pasien.no_rm}">
                 <input type="hidden" name="nama" value="${data_pasien.nama}">
                 <input type="hidden" name="ruangan" value="${data_pasien.asal_ruangan}">
-                <input type="hidden" name="nama_dokter" value="${data_pasien.dokter.nama_dokter}">
+                <input type="hidden" name="nama_dokter" value="${data_pasien.kode_dokter}">
 
                 <div id="tabel-pemeriksaan" class="table-responsive">
                     <table class="table table-striped" id="worklistTable">

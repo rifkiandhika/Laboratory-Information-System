@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\analyst\QcController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\loket\pasienController;
@@ -25,6 +26,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/previewpasien/{lab}', [pasienController::class, 'getDataPasien']);
 Route::get('/get-data-pasien/{lab}', [pasienController::class, 'getDataPasien']);
 Route::get('/get-data-diagnosa', [pasienController::class, 'getDataDiagnosa']);
+Route::get('/get-data-qc/{lab}', [QcController::class, 'getDataQc']);
 
 // API Edit Setting
 Route::get('/departments', [DepartmentController::class, 'data']);

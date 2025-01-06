@@ -5,6 +5,7 @@ namespace App\Http\Controllers\analyst;
 use App\Http\Controllers\Controller;
 use App\Models\historyPasien;
 use App\Models\pasien;
+use App\Models\spesimentCollection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -16,8 +17,12 @@ class analystDasboard extends Controller
     public function index()
     {
         $pasienharian = pasien::where('created_at', now())->get();
-        $dataPasien = pasien::where('status', 'Telah Dikirim ke Lab')
-            ->orWhere('status', 'Disetujui oleh analis lab')->orderby('cito', 'desc')->get();
+        // $dataPasien = pasien::where('status', 'Telah Dikirim ke Lab')
+        //     ->orWhere('status', 'Disetujui oleh analis lab')->orderby('cito', 'desc')->get();
+
+        $dataPasien = pasien::whereIn('status', ['Telah Dikirim ke Lab', 'Dikembalikan Analyst'])
+            ->orderBy('cito', 'desc')
+            ->get();
 
         $dataPasienCito = pasien::where(function ($query) {
             $query->where('status', 'Telah Dikirim ke Lab')
@@ -39,12 +44,74 @@ class analystDasboard extends Controller
         //
     }
 
+
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
+        // Validasi data request
+        $request->validate([
+            'no_lab' => 'required',
+            'kapasitas' => 'required_without:serum|array',
+            'serumh' => 'required|array'
+        ]);
+
+        // Ambil input dari request
+        $no_lab = $request->input('no_lab');
+        $kapasitas = $request->input('kapasitas');
+        $serumh = $request->input('serumh');
+        $notes = $request->input('note', []);
+
+        // Menghapus data lama sebelum memasukkan data baru
+        spesimentCollection::where('no_lab', $no_lab)->delete();  // Hapus semua data spesimen yang terkait dengan no_lab
+        // historyPasien::where('no_lab', $no_lab)->delete(); // Hapus history pasien terkait no_lab
+
+        // Jika ada kapasitas, simpan data baru untuk tabung EDTA
+        if (!empty($kapasitas)) {
+            foreach ($kapasitas as $x => $kapasitas) {
+                spesimentCollection::create([
+                    'no_lab' => $no_lab,
+                    'tabung' => 'EDTA',
+                    'kapasitas' => $kapasitas,
+                    'status' => 'Acc',
+                    'note' => $notes[$x] ?? null,
+                    'tanggal' => now(),
+                ]);
+
+                historyPasien::create([
+                    'no_lab' => $no_lab,
+                    'proses' => 'Acc Collection',
+                    'tempat' => 'Laboratorium',
+                    'waktu_proses' => now(),
+                ]);
+            }
+        }
+
+        // Jika ada serumh, simpan data baru untuk tabung K3
+        if (!empty($serumh)) {
+            foreach ($serumh as $x => $serumh) {
+                spesimentCollection::create([
+                    'no_lab' => $no_lab,
+                    'tabung' => 'K3',
+                    'serumh' => $serumh,
+                    'status' => 'Acc',
+                    'note' => $notes[$x] ?? null,
+                    'tanggal' => now(),
+                ]);
+            }
+        }
+
+        // Update status pasien menjadi 'Acc Collection'
+        pasien::where('no_lab', $no_lab)->update([
+            'status' => 'Acc Collection',
+        ]);
+
+        // Berikan notifikasi sukses
+        toast('Berhasil Approve Spesiment', 'success');
+
+        // Redirect ke halaman analyst.index
+        return redirect()->route('analyst.index');
     }
 
     /**

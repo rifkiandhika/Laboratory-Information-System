@@ -104,22 +104,22 @@
             </ul>
           </li>
           {{-- Role Permission --}}
-          <li class="menu-item {{ Request::is('role', 'permission') ? 'active' : '' }}">
+          <li class="menu-item {{ Request::is('role', 'permission', 'user') ? 'active' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
               <i class="menu-icon tf-icons ti ti-user-cog"></i>
               <div data-i18n="Role Permission">Role Permission</div>
             </a>
             <ul class="menu-sub ">
-              <li class="menu-item {{ Request::is('role') ? 'active' : '' }}">
+              {{-- <li class="menu-item {{ Request::is('role') ? 'active' : '' }}">
                 <a href="{{ route('role.index') }}" class="menu-link">
                   <div data-i18n="Role">Role</div>
                 </a>
-              </li>
-              <li class="menu-item {{ Request::is('permission') ? 'active' : '' }}">
+              </li> --}}
+              {{-- <li class="menu-item {{ Request::is('permission') ? 'active' : '' }}">
                 <a href="{{ route('permission.index') }}" class="menu-link">
                   <div data-i18n="Permission">Permission</div>
                 </a>
-              </li>
+              </li> --}}
               <li class="menu-item {{ Request::is('user') ? 'active' : '' }}">
                 <a href="app-ecommerce-dashboard.html" class="menu-link">
                   <div data-i18n="User">User</div>

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('no_lab');
             $table->string('petugas');
             $table->string('no_pasien')->nullable();
+            $table->string('penjamin')->nullable();
             $table->string('metode_pembayaran');
             $table->integer('total_pembayaran_asli');
             $table->integer('total_pembayaran');

@@ -9,7 +9,6 @@ class DetailDepartment extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    protected $fillable = ['department_id', 'kode', 'nama_parameter', 'nama_pemeriksaan', 'harga', 'nilai_statik', 'nilai_satuan'];
     protected $table = 'detail_departments';
 
     public function department()

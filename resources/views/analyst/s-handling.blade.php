@@ -218,26 +218,34 @@
                                                 {{ \Carbon\Carbon::parse($dpc->lahir)->age }} Tahun
                                             </td>
                                             <td>
-                                                @if($dpc->status == "Check In")
+                                                @if($dpc->status == "Acc Collection")
                                                 <span class="badge bg-danger text-white">Waiting...</span>
-                                                @elseif($dpc->status == "Spesiment")
+                                                @elseif($dpc->status == "Acc Handling")
                                                 <span class="badge bg-warning text-white">Approved</span>
                                                 @endif
                                             </td>
                                             <td class="col-4">
-                                                <button class="btn btn-info btn-preview" data-id={{ $dpc->id }} data-bs-target="#modalSpesimen"
+                                                <button title="Preview" class="btn btn-info btn-preview" data-id={{ $dpc->id }} data-bs-target="#modalSpesimen"
                                                     data-bs-toggle="modal" ><i class="ti ti-eye"></i></button>
-                                                <button class="btn btn-warning"><i class="ti ti-barcode"></i></button>
 
-                                                <button class="btn btn-success btn-edit" data-id={{ $dpc->id }} data-bs-target="#modalEdit" data-bs-toggle="modal"><i class="ti ti-edit"></i></button>
+                                                <a title="Cetak Barcode" style="cursor: pointer" href="{{ route('print.barcode', $dpc->no_lab) }}" class="btn btn-secondary" target="_blank"><i class="ti ti-barcode"></i></a>
+                                                <button title="Edit" class="btn btn-success btn-edit" data-id={{ $dpc->id }} data-bs-target="#modalEdit" data-bs-toggle="modal"><i class="ti ti-edit"></i></button>
                                                 
                                                 
+                                                <form  id="backdashboard-{{ $dpc->id }}"
+                                                    action="{{ route('spesiment.backdashboard', $dpc->id) }}" method="POST"
+                                                    style="display: none;">
+                                                    @csrf
+                                                </form>
+                                                <button title="Kembalikan Ke Dashboard" class="btn btn-warning" onclick="confirmBackdashboard({{ $dpc->id }})"><i class="ti ti-arrow-back-up"></i></button>
+                                                
+                                                <form action="" method="post">
                                                 <form id="spesimentBack-{{ $dpc->id }}"
                                                     action="{{ route('spesiment.back', $dpc->id) }}" method="POST"
                                                     style="display: none;">
                                                     @csrf
                                                 </form>
-                                                <button class="btn btn-primary" onclick="confirmBack({{ $dpc->id }})"><i class="ti ti-arrow-back-up"></i></button>
+                                                <button title="Kembalikan Ke Loket" class="btn btn-primary" onclick="confirmBack({{ $dpc->id }})"><i class="ti ti-arrow-back-up"></i></button>
                                                 {{-- <form action="" method="post">
                                                 </form> --}}
 
@@ -248,7 +256,7 @@
                                                     @method('DELETE')
                                                 </form>
                                                 
-                                                <button class="btn btn-danger"
+                                                <button title="Hapus" class="btn btn-danger"
                                                     onclick="confirmDelete({{ $dpc->id }})"><i
                                                     class="ti ti-trash"></i>
                                                 </button>
@@ -365,8 +373,8 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button class="btn btn-success btn-verify" id="verification" type="submit">Submit</button>
+                                        </form>
                                         </div>
-                                    </form>
                                 </div>
 
                              </div>
@@ -411,6 +419,37 @@
                   document.getElementById(`spesimentBack-${id}`).appendChild(noteInput);
               }
               document.getElementById(`spesimentBack-${id}`).submit();
+          }
+      });
+  }
+  </script>
+<script>
+    function confirmBackdashboard(id) {
+      Swal.fire({
+          title: 'Apakah Anda yakin?',
+          text: "Data akan dikirim kembali ke dashboard?",
+          icon: 'warning',
+          input: 'textarea',
+          inputPlaceholder: 'Tambahkan catatan di sini...',
+          showCancelButton: true,
+          confirmButtonText: 'Ya, Kirim!',
+          cancelButtonText: 'Batal',
+          inputValidator: (value) => {
+            if (!value) {
+                  return 'Note wajib diisi!'; // Pesan kesalahan jika input kosong
+              }
+              return null;
+          }
+      }).then((result) => {
+          if (result.isConfirmed) {
+              if (result.value) {
+                  let noteInput = document.createElement('input');
+                  noteInput.type = 'hidden';
+                  noteInput.name = 'note';
+                  noteInput.value = result.value;
+                  document.getElementById(`backdashboard-${id}`).appendChild(noteInput);
+              }
+              document.getElementById(`backdashboard-${id}`).submit();
           }
       });
   }
@@ -472,6 +511,9 @@
                 if (res.status === 'success') {
                     data_pasien = res.data;
                     data_pemeriksaan_pasien = res.data.dpp;
+                    const spesimen = res.data.spesiment; // Load spesimen data
+                    const scollection = res.data.spesimentcollection;
+                    const shandling = res.data.spesimenthandling;
                     let status = data_pasien.status;
                      if(status == 'Spesiment'){
                                  $('#verification').attr('style',`display:none`);
@@ -480,8 +522,8 @@
                                  $('#verification').attr('style',`display:inherit`);
                              }
 
-                    console.log(data_pasien);
-                    console.log(data_pemeriksaan_pasien);
+                    // console.log(data_pasien);
+                    // console.log(data_pemeriksaan_pasien);
                     // if (!data_pasien.dokter) {
                     // console.error('Data dokter null');
                     // return;
@@ -509,89 +551,132 @@
 
                     Object.keys(Tabung).forEach(spesiment => {
 
-                      res.data.spesiment.forEach((e, i) => {
-                                let details = '';
-                        
-                                if (e.details && e.details.length > 0){
-                                    details = `<div class="detail-container col-12 col-md-6">`;
-                                    e.details.forEach(detail => {
-                                        const imageUrl = `/gambar/${detail.gambar}`;
-                                        const isChecked = (e.tabung === 'EDTA' && detail.nama_parameter === 'Normal' ) ||
-                                                            (e.tabung === 'K3' && detail.nama_parameter === 'Normal' ) ||
-                                                            (e.tabung === 'CLOT-ACT' && detail.nama_parameter === 'Normal') ? 'checked' : '';
+                        res.data.spesiment.forEach((e, i) => {
+                            let details = '';
+                            let detailsData = [];
+                            let kapasitas, serumh, serum;
+                            let processTime = '';
+                            let noteText = ''; // Variable untuk menyimpan note
 
-                                        // const approvedDetail = res.data.approvedDetails.find(d => d.id === detail.id);
-                                        // const approvedChecked = approvedDetail ? 'checked' : '';
-                                        // const approvedNote = approvedDetail ? approvedDetail.note : '';
-
-                                        details +=  
-                                        `<div class="detail-item">
-                                            <div class="detail-text">${detail.nama_parameter}</div>
-                                            <div class="detail-image-container">
-                                                <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
-                                            </div>
-                                            <div class="detail-radio-container">
-                                                ${e.tabung === 'EDTA' ? `<input type="radio" name="kapasitas[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}
-                                                ${e.tabung === 'K3' ? `<input type="radio" name="serumh[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''  }
-                                                ${e.tabung === 'CLOT-ACT' ? `<input type="radio" name="serum[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}    
-                                            </div>
-                                        </div>`;
-                                    });
-                                    details += `</div>`
+                            // Check if collection data exists for the current specimen
+                            let hasCollectionData = false;
+                            
+                            if (e.tabung === 'EDTA') {
+                                const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key);
+                                if (collectionItem) {
+                                    hasCollectionData = true;
+                                    detailsData = collectionItem.details.filter(detail => 
+                                        e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                                    );
+                                    kapasitas = collectionItem.kapasitas;
+                                    noteText = collectionItem.note; // Mengambil note untuk EDTA
                                 }
-
-                                let title = '';
-                                let subtext = '';
-
-                                if (e.tabung === 'EDTA') {
-                                    title = '<h5 class="title">Spesiment Collection</h5> <hr>';
-                                }else
-
-                                if (e.tabung === 'K3') {
-                                    title = '<h5 class="title">Spesiment Collection</h5> <hr>';
-                                }else
-
-                                if (e.tabung === 'CLOT-ACT') {
-                                    title = '<h5 class="title mt-3">Spesiment Handlings</h5> <hr>';
-                                    subtext = '<div class="subtext">Serum</div>';
+                            } else if (e.tabung === 'K3') {
+                                const collectionItem = scollection.find(item => 
+                                    item.no_lab === e.laravel_through_key && item.tabung === 'K3'
+                                );
+                                if (collectionItem) {
+                                    hasCollectionData = true;
+                                    detailsData = collectionItem.details.filter(detail => 
+                                        e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                                    );
+                                    serumh = collectionItem.serumh;
+                                    noteText = collectionItem.note; // Mengambil note untuk K3
                                 }
-
-                                let note = '';
-                                if (e.tabung === 'EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'K3') {
-                                    note = '<p class="mb-0"><strong>Note</strong></p>';
+                            } else if (e.tabung === 'CLOT-ACT') {
+                                const handlingItem = shandling.find(item => item.no_lab === e.laravel_through_key);
+                                if (handlingItem) {
+                                    hasCollectionData = true;
+                                    detailsData = handlingItem.details.filter(detail => 
+                                        e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                                    );
+                                    serum = handlingItem.serum;
+                                    noteText = handlingItem.note; // Mengambil note untuk CLOT-ACT
                                 }
-                                
-                                detailContent += `${title}
-                                    <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">
-                                                        
-                                        <div class="accordion-item">
-                                            <h2 class="accordion-header" id="heading${e.tabung}">
-                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">
-                                                Tabung ${e.tabung}
-                                                </button>
-                                            </h2>
-                                            <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}" data-bs-parent="#accordion${e.tabung}">
-                                                <div class="accordion-body">
-                                                    
-                                                    ${subtext}
-                                                    <div class="container">
-                                                        ${details}
-                                                    </div>
-                                                    ${note}
-                                                    ${e.tabung === 'EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
-                                                    ${e.tabung === 'K3' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
-                                                    ${e.tabung === 'CLOT-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
-                                                    
-                                                </div>
-                                            </div>
+                            }
+
+                            if (e.details && e.details.length > 0) {
+                                details = `<div class="detail-container col-12 col-md-6">`;
+                                e.details.forEach(detail => {
+                                    const imageUrl = `/gambar/${detail.gambar}`;
+                                    let isChecked = '';
+                                    let isDisabled = '';  // Default to enabled
+
+                                    if (hasCollectionData) {
+                                        // Jika ada data di database
+                                        if (e.tabung === 'EDTA') {
+                                            isChecked = kapasitas == detail.id ? 'checked' : '';
+                                            isDisabled = kapasitas == detail.id ? '' : 'disabled';  // Disable yang tidak terpilih
+                                        } else if (e.tabung === 'K3') {
+                                            isChecked = serumh == detail.id ? 'checked' : '';
+                                            isDisabled = serumh == detail.id ? '' : 'disabled';  // Disable yang tidak terpilih
+                                        } else if (e.tabung === 'CLOT-ACT') {
+                                            isChecked = serum == detail.id ? 'checked' : '';
+                                            isDisabled = serum == detail.id ? '' : 'disabled';  // Disable yang tidak terpilih
+                                        }
+                                    } else {
+                                        // Jika tidak ada data, set normal sebagai default dan semua radio enabled
+                                        if (detail.nama_parameter.toLowerCase().includes('normal')) {
+                                            isChecked = 'checked';
+                                        }
+                                        isDisabled = '';  // Semua radio button enabled
+                                    }
+
+                                    details += `
+                                    <div class="detail-item">
+                                        <div class="detail-text">${detail.nama_parameter}</div>
+                                        <div class="detail-image-container">
+                                            <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
                                         </div>
-                                        </div>`;
-                             });
+                                        <div class="detail-radio-container">
+                                            <input type="radio" name="${e.tabung}" class="detail-radio" value="${detail.id}" ${isChecked} ${isDisabled} />  
+                                        </div>
+                                    </div>`;
+                                });
+                                details += `</div>`;
+                            }
+
+                            let title = '';
+                            let subtext = '';
+
+                            if (e.tabung === 'EDTA' || e.tabung === 'K3') {
+                                title = '<h5 class="title">Spesiment Collection</h5> <hr>';
+                            } else if (e.tabung === 'CLOT-ACT') {
+                                title = '<h5 class="title mt-3">Spesiment Handlings</h5> <hr>';
+                                subtext = '<div class="subtext">Serum</div>';
+                            }
+
+                            let note = '';
+                            if (e.tabung === 'EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'K3') {
+                                note = '<p class="mb-0"><strong>Note</strong></p>';
+                            }
+                            
+                            detailContent += `${title}
+                            <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">                          
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading${e.tabung}">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">
+                                            Tabung ${e.tabung}
+                                        </button>
+                                    </h2>
+                                    <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}" data-bs-parent="#accordion${e.tabung}">
+                                        <div class="accordion-body">
+                                            ${subtext}
+                                            <div class="container">
+                                                ${details}
+                                            </div>
+                                            ${note}
+                                            <textarea class="form-control" name="note[]" row="3" placeholder="${noteText || 'null'}" ${hasCollectionData ? 'disabled' : ''}></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                    });
                      
                     });
                     
                     detailSpesiment.innerHTML = detailContent;
-                    console.log(detailContent);
+                    // console.log(detailContent);
                 }
             });
         });

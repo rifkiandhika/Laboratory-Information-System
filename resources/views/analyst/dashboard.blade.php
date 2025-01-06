@@ -3,6 +3,64 @@
 Dashboard|Spesiment
 @endsection
 @section('content')
+<style>
+    <style>
+    ::-webkit-scrollbar {
+        width: 5px; 
+    }
+    ::-webkit-scrollbar-thumb {
+        background: lightgray;
+        border-radius: 10px;
+    }
+    .scrollbox{
+        overflow: auto;
+    }
+        .subtext {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .detail-container {
+            display: flex;
+            gap: 20px; /* Space between items */
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100px; /* Adjust width as needed */
+        }
+
+        .detail-text {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .detail-image-container {
+            text-align: center;
+        }
+
+        .detail-image {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .detail-radio-container {
+            text-align: center;
+        }
+
+        .detail-radio {
+            margin-top: 5px;
+        }
+</style>
+</style>
 <section>
         <div class="container-fluid">
             <!-- Page Heading -->
@@ -164,9 +222,9 @@ Dashboard|Spesiment
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    <button type="button" data-bs-target="#modalPreviewPasien"
-                                                    data-bs-toggle="modal" class="btn btn-info btn-edit text-white "
-                                                    data-id="{{ $data1->id }}"><i class='ti ti-eye'></i></button>
+                                                    <button class="btn btn-primary btn-preview" data-id={{ $data1->id }} data-bs-target="#modalSpesimen"
+                                                        data-bs-toggle="modal" ><i class="ti ti-temperature"></i></button>
+    
                                                   </td>
                                             </tr>
                                         @endforeach
@@ -179,144 +237,384 @@ Dashboard|Spesiment
             </div>
         </div>
         {{-- Preview Pasien --}}
-    <div class="modal fade" id="modalPreviewPasien" tabindex="-1" role="dialog"
-    aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content ">
-            <div class="modal-header">
-                <h5 class="modal-title" id="sampleHistoryModalLabel">Preview Pasien</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" style="max-height: 700px;">
-                <div class="row">
-                    <div class="col-12 col-md-6">
-                        Patient
-                        <hr>
-                        <table class="table table-borderless">
-                            <tr>
-                                <th scope="row">No.Lab</th>
-                                <td>
-                                    <div class="flex-container">
-                                        :  <span class="ms-2" id="Nolab"></span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Cito</th>
-                                <td>
-                                    <div class="flex-container">
-                                        <span class="label">:</span>
-                                        <i class="bi bi-bell-fill" id="Cito"></i>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>NIK</th>
-                                <td>
-                                    <div class="flex-container">
-                                      :  <span id="Nik">:</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Name</th>
-                                <td>
-                                    <div class="flex-container">
-                                       : <span id="Nama"></span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Gender</th>
-                                <td>
-                                    <div class="flex-container">
-                                      : <span id="Gender">:</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Address</th>
-                                <td>
-                                    <div class="flex-container">
-                                       : <span id="Alamat"></span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Phone Number</th>
-                                <td>
-                                    <div class="flex-container">
-                                       : <span id="Telp"></span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Service</th>
-                                <td>
-                                    <div class="flex-container">
-                                       : <span id="JenisPelayanan">:</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Room</th>
-                                <td>
-                                    <div class="flex-container">
-                                       : <span id="Ruangan"></span>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
+        <div class="modal fade" id="modalSpesimen" tabindex="-1" role="dialog"aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content ">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="sampleHistoryModalLabel">Detail Inspection Patient</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="col-12 col-md-6">
-                        Doctor
-                        <hr>
-                        <table class="table table-borderless">
-                            <tr>
-                                <th>Doctor Name</th>
-                                <td> : <span id="Dokter"></span></td>
-                            </tr>
-                            <tr>
-                                <th>Room</th>
-                                <td> : <span id="Ruangandok"></span></td>
-                            </tr>
-                            <tr>
-                                <th>Phone Number</th>
-                                <td> : <span id="Telpdok"></span></td>
-                            </tr>
-                            <tr>
-                                <th>Email</th>
-                                <td> : <span id="Email"></span></td>
-                            </tr>
-                            <tr>
-                                <th>
-                                    <p>Diagnosis</p>
-                                </th>
-                                <td>
-                                    <textarea class="form-control" disabled name="diagnosa" id="Diagnosa" cols="15" rows="5"></textarea>
-                                </td>
-                            </tr>
-                        </table>
+                    <div class="modal-body" style=" max-height: 600px; overflow-y: auto" id="pembayaran-pasien">
+                        <form action="{{ route('analyst.store') }}" method="POST">
+                            @csrf
+                            <div class="row">
+                                <div>
+                                <h5>Inspection Details</h5>
+                                <hr>
+                                <div id="patientDoctorInfo"></div>
+                                <div id="detailSpesiment">
+                                    {{-- <input type="hidden" name="no_lab" value="{{ $dataPasien->no_lab }}"> --}}
+                                </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="modal-footer">
+                                <button class="btn btn-success btn-verify" id="verification" type="submit">Submit</button>
+                            </div>
+                        </form>
                     </div>
-                </div>
-                <form method="post" id="form">
-                    @csrf
-                    <label for="" id="notelabel">Note</label>
-                    <textarea  class="form-control" placeholder="Note" name="note"  id="note" cols="30" rows="4"></textarea>
-                    <input type="hidden" id="no_lab" name="no_lab" value="">
-            </div>
-                <div class="modal-footer">
-                    <button class="btn btn-success" id="verification" type="submit">Verification</button>
-                </div>
-            </form>
 
+                 </div>
+            </div>
         </div>
-    </div>
+
 
 </section>
 
 @endsection
 @push('script')
+<script>
+    $(function() {
+        let detailSpesiment = document.getElementById('detailSpesiment');
+        $('.btn-preview').on('click', function() {
+            const id = this.getAttribute('data-id');
+
+            fetch(`/api/get-data-pasien/${id}`).then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP error" + response.status);
+                }
+                return response.json();
+            }).then(res => {
+                if (res.status === 'success') {
+                    data_pasien = res.data;
+                    data_pemeriksaan_pasien = res.data.dpp;
+                    let status = data_pasien.status;
+                    
+                    // Menyembunyikan atau menampilkan bagian verifikasi
+                    if (status == 'Spesiment') {
+                        $('#verification').attr('style', `display:none`);
+                    } else {
+                        $('#verification').attr('style', `display:inherit`);
+                    }
+
+                    console.log(data_pasien);
+                    console.log(data_pemeriksaan_pasien);
+
+                    // HTML untuk informasi pasien dan dokter yang diambil dari res.data
+                    let patientDoctorHTML = `
+                    <div class="modal-body" style="max-height: 700px;">
+                        <div class="row">
+                            <div class="col-12 col-md-12">
+                                Pasien
+                                <hr>
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th scope="row">No.Lab</th>
+                                        <td>
+                                            <div class="flex-container">
+                                                :  <span class="ms-2" id="Nolab">${res.data.no_lab}</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Cito</th>
+                                        <td>
+                                            <div class="flex-container">
+                                                <span class="label">:</span>
+                                                <i class="ti ti-bell-filled" id="Cito">${res.data.cito ? 'Cito' : ''}</i>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>NIK</th>
+                                        <td>
+                                            <div class="flex-container">
+                                              :  <span id="Nik">${res.data.nik}</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Nama</th>
+                                        <td>
+                                            <div class="flex-container">
+                                               : <span id="Nama">${res.data.nama}</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Jenis Kelamin</th>
+                                        <td>
+                                            <div class="flex-container">
+                                              : <span id="Gender">${res.data.jenis_kelamin}</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Alamat</th>
+                                        <td>
+                                            <div class="flex-container">
+                                               : <span id="Alamat">${res.data.alamat}</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>No. Telepon</th>
+                                        <td>
+                                            <div class="flex-container">
+                                               : <span id="Telp">${res.data.no_telp}</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Jenis Pelayanan</th>
+                                        <td>
+                                            <div class="flex-container">
+                                               : <span id="JenisPelayanan">${res.data.jenis_pelayanan}</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Ruangan</th>
+                                        <td>
+                                            <div class="flex-container">
+                                               : <span id="Ruangan">${res.data.asal_ruangan}</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                    </div>`;
+
+                    // Masukkan HTML informasi pasien dan dokter ke dalam modal
+                    $('#patientDoctorInfo').html(patientDoctorHTML);
+
+                    // Mulai menghasilkan detail Spesiment
+                    let detailContent = '<div class="row">';
+                    let Tabung = {};
+
+                    data_pemeriksaan_pasien.forEach((e, i) => {
+                        detailContent += `          <input type="hidden" name="no_lab" value="${e.no_lab}">
+                                                    <div class="col-12 col-md-6" id="${e.id_departement}">
+                                                    <h6>${e.data_departement.nama_department}</h6>
+                                                    <ol>`;
+                        e.pasiens.forEach(e => {
+                            detailContent += `<li>${e.data_pemeriksaan.nama_pemeriksaan}</li>`;
+                            if (!Tabung[e.spesiment]) {
+                                Tabung[e.spesiment] = [];
+                            }
+                            Tabung[e.spesiment] += `<li>${e.data_pemeriksaan.nama_pemeriksaan}</li>`;
+                        });
+                        detailContent += `</ol><hr></div>`;
+                    });
+                    detailContent += '</div>';
+
+                    Object.keys(Tabung).forEach(spesiment => {
+                        res.data.spesiment.forEach((e, i) => {
+                            let details = '';
+                            if (e.details && e.details.length > 0) {
+                                details = `<div class="detail-container col-12 col-md-6">`;
+                                e.details.forEach(detail => {
+                                    const imageUrl = `/gambar/${detail.gambar}`;
+                                    const isChecked = (e.tabung === 'EDTA' && detail.nama_parameter === 'Normal') ||
+                                                      (e.tabung === 'K3' && detail.nama_parameter === 'Normal') ? 'checked' : '';
+
+                                    details +=  
+                                    `<div class="detail-item">
+                                        <div class="detail-text">${detail.nama_parameter}</div>
+                                        <div class="detail-image-container">
+                                            <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
+                                        </div>
+                                        <div class="detail-radio-container">
+                                            ${e.tabung === 'EDTA' ? `<input type="radio" name="kapasitas[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}
+                                            ${e.tabung === 'K3' ? `<input type="radio" name="serumh[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}  
+                                        </div>
+                                    </div>`;
+                                });
+                                details += `</div>`;
+                            }
+
+                            let title = '';
+                            let subtext = '';
+                            if (e.tabung === 'EDTA') {
+                                title = '<h5 class="title">Pengambilan Spesimen</h5> <hr>';
+                            }
+
+                            let note = '';
+                            if (e.tabung === 'EDTA' || e.tabung === 'K3') {
+                                note = '<p class="mb-0"><strong>Note</strong></p>';
+                            }
+
+                            detailContent += `${title}
+                                <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading${e.tabung}">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">
+                                            Tabung ${e.tabung}
+                                            </button>
+                                        </h2>
+                                        <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}" data-bs-parent="#accordion${e.tabung}">
+                                            <div class="accordion-body">
+                                                ${subtext}
+                                                <div class="container">
+                                                    ${details}
+                                                </div>
+                                                ${note}
+                                                ${e.tabung === 'EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Tulis catatan disini"></textarea>` : ''}
+                                                ${e.tabung === 'K3' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Tulis catatan disini"></textarea>` : ''}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>`;
+                        });
+                    });
+
+                    // Masukkan detail spesimen ke dalam modal
+                    detailSpesiment.innerHTML = detailContent;
+                    console.log(detailContent);
+                }
+            });
+        });
+    });
+</script>
+
+
+{{-- <script>
+    $(function() {
+        let detailSpesiment = document.getElementById('detailSpesiment');
+        $('.btn-preview').on('click', function() {
+            const id = this.getAttribute('data-id');
+
+            fetch(`/api/get-data-pasien/${id}`).then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP error" + response.status);
+                }
+                return response.json();
+            }).then(res => {
+                if (res.status === 'success') {
+                    data_pasien = res.data;
+                    data_pemeriksaan_pasien = res.data.dpp;
+                    let status = data_pasien.status;
+                     if(status == 'Spesiment'){
+                                 $('#verification').attr('style',`display:none`);
+                             }
+                             else{
+                                 $('#verification').attr('style',`display:inherit`);
+                             }
+
+                    console.log(data_pasien);
+                    console.log(data_pemeriksaan_pasien);
+                    // if (!data_pasien.dokter) {
+                    // console.error('Data dokter null');
+                    // return;
+                    // }
+
+                    let detailContent = '<div class="row">';
+                    let Tabung = {};
+
+                    data_pemeriksaan_pasien.forEach((e, i) => {
+                        // console.log(e.data);
+                        detailContent += `          <input type="hidden" name="no_lab" value="${e.no_lab}">
+                                                    <div class="col-12 col-md-6" id="${e.id_departement}">
+                                                    <h6>${e.data_departement.nama_department}</h6>
+                                                    <ol>`;
+                        e.pasiens.forEach(e => {
+                            detailContent += `<li>${e.data_pemeriksaan.nama_pemeriksaan}</li>`;
+                            if(!Tabung[e.spesiment]) {
+                                Tabung[e.spesiment] = [];
+                            }
+                            Tabung[e.spesiment] += `<li>${e.data_pemeriksaan.nama_pemeriksaan}</li>`;  
+                        });
+                        detailContent += `</ol><hr></div>`;
+                    });
+                    detailContent += '</div>';
+
+                    Object.keys(Tabung).forEach(spesiment => {
+
+                      res.data.spesiment.forEach((e, i) => {
+                                let details = '';
+                        
+                                if (e.details && e.details.length > 0){
+                                    details = `<div class="detail-container col-12 col-md-6">`;
+                                    e.details.forEach(detail => {
+                                        const imageUrl = `/gambar/${detail.gambar}`;
+                                        const isChecked = (e.tabung === 'EDTA' && detail.nama_parameter === 'Normal' ) ||
+                                                            (e.tabung === 'K3' && detail.nama_parameter === 'Normal' ) ? 'checked' : '';
+
+                                        // const approvedDetail = res.data.approvedDetails.find(d => d.id === detail.id);
+                                        // const approvedChecked = approvedDetail ? 'checked' : '';
+                                        // const approvedNote = approvedDetail ? approvedDetail.note : '';
+
+                                        details +=  
+                                        `<div class="detail-item">
+                                            <div class="detail-text">${detail.nama_parameter}</div>
+                                            <div class="detail-image-container">
+                                                <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
+                                            </div>
+                                            <div class="detail-radio-container">
+                                                ${e.tabung === 'EDTA' ? `<input type="radio" name="kapasitas[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}
+                                                ${e.tabung === 'K3' ? `<input type="radio" name="serumh[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''  }  
+                                            </div>
+                                        </div>`;
+                                    });
+                                    details += `</div>`
+                                }
+
+                                let title = '';
+                                let subtext = '';
+
+                                if (e.tabung === 'EDTA') {
+                                    title = '<h5 class="title">Spesiment Collection</h5> <hr>';
+                                }else
+
+                                if (e.tabung === 'K3') {
+                                }else
+
+                                if (e.tabung === 'CLOT-ACT') {
+                                    title = '<h5 class="title mt-3">Spesiment Handlings</h5> <hr>';
+                                    subtext = '<div class="subtext">Serum</div>';
+                                }
+
+                                let note = '';
+                                if (e.tabung === 'EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'K3') {
+                                    note = '<p class="mb-0"><strong>Note</strong></p>';
+                                }
+                                
+                                detailContent += `${title}
+                                    <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">
+                                                        
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="heading${e.tabung}">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">
+                                                Tabung ${e.tabung}
+                                                </button>
+                                            </h2>
+                                            <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}" data-bs-parent="#accordion${e.tabung}">
+                                                <div class="accordion-body">
+                                                    
+                                                    ${subtext}
+                                                    <div class="container">
+                                                        ${details}
+                                                    </div>
+                                                    ${note}
+                                                    ${e.tabung === 'EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
+                                                    ${e.tabung === 'K3' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>`;
+                             });
+                     
+                    });
+                    
+                    detailSpesiment.innerHTML = detailContent;
+                    console.log(detailContent);
+                }
+            });
+        });
+    })
+</script> --}}
+
         <script>
             $(function(e){
             $("#select_all_ids").click(function(){

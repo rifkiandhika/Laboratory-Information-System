@@ -85,13 +85,18 @@
                                     <div class="col-md-6 mb-6">
                                         <label for="exampleFormControlSelect1" class="fw-bold">Doctor</label>
                                         <select class="form-select" id="exampleFormControlSelect1" name="dokter">
-                                            <option selected hidden value="{{ $data_pasien->kode_dokter }}">{{ $data_pasien->dokter->nama_dokter }}</option>
+                                            <option selected hidden value="{{ $data_pasien->kode_dokter }}">{{ $data_pasien->dokter ? $data_pasien->dokter->nama_dokter : '' }}</option>
                                             {{-- <option value="1">Permintaan Sendiri</option> --}}
                                             @foreach ($dokters as $dokter)
-                                                <option value="{{ $dokter->kode_dokter }}">{{ $dokter->nama_dokter }}
+                                                <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }}
                                                 </option>
                                             @endforeach
                                         </select>
+                                    </div>
+                                    <div class="col-md-6 mb-6">
+                                        <label for="name" class="fw-bold">External Doctor</label>
+                                        <input type="text " class="form-control"
+                                            name="dokter" placeholder="External Doctor" value="{{ $data_pasien->kode_dokter }}">
                                     </div>
                                     <div class="col-md-6 mb-6">
                                         <label for="name" class="fw-bold">Room</label>
@@ -104,6 +109,10 @@
                                             <option selected hidden>{{ $data_pasien->diagnosa }}</option>
                                             <option value=""></option>
                                         </select>
+                                    </div>
+                                    <div class="col-md-6 mb-6">
+                                        <label for="name" class="fw-bold">Diagnosis</label>
+                                        <input type="text" name="diagnosa" class="form-control" value="{{ $data_pasien->diagnosa }}" placeholder="Add Diagnosis">
                                     </div>
                                     <div class="col-md-6">
                                         <label for="alamat" class="fw-bold">Full Address</label>

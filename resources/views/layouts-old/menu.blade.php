@@ -102,17 +102,16 @@
                     <a href="{{ route('poli.index') }}" class="submenu-link"><i class="bi bi-tag"></i>
                         Poli</a>
                 </li>
+                <li class="submenu-item {{ Request::is('poli') ? 'active' : '' }} ">
+                    <a href="{{ route('poli.index') }}" class="submenu-link"><i class="bi bi-tag"></i>
+                        Poli</a>
+                </li>
+                <li class="submenu-item {{ Request::is('pemeriksaan') ? 'active' : '' }} ">
+                    <a href="{{ route('pemeriksaan.index') }}" class="submenu-link"><i class="bi bi-clipboard-data"></i>
+                        Inspection</a>
+                </li>
         </li>
-        {{-- Setting --}}
-
-        {{-- <li class="submenu-item {{ Request::is('parameter') ? 'active' : '' }} ">
-            <a href="" class="submenu-link"><i class="bi bi-activity"></i>
-                Parameter</a>
-        </li> --}}
-        <li class="submenu-item {{ Request::is('pemeriksaan') ? 'active' : '' }} ">
-            <a href="{{ route('pemeriksaan.index') }}" class="submenu-link"><i class="bi bi-clipboard-data"></i>
-                Inspection</a>
-        </li>
+        
         {{-- Setting --}}
 
     </ul>

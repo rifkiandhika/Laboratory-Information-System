@@ -39,55 +39,85 @@ class DepartmentController extends Controller
      */
     public function store(Request $request)
     {
+        // Validasi data
         // dd($request);
         $request->validate([
             'nama_department' => 'required|unique:departments,nama_department',
-            'kode.*' => 'required',
+            'kode_hidden.*' => 'required', // Memastikan kode_hidden diterima
             'nama_parameter.*' => 'required',
             'nama_pemeriksaan.*' => 'required',
             'harga.*' => 'required',
-            'nilai_statik.*' => 'required',
+            'jasa_sarana.*' => 'nullable',
+            'jasa_pelayanan.*' => 'nullable',
+            'jasa_dokter.*' => 'nullable',
+            'jasa_bidan.*' => 'nullable',
+            'jasa_perawat.*' => 'nullable',
+            'nilai_rujukan.*' => 'required',
             'nilai_satuan.*' => 'required',
+            'tipe_inputan.*' => 'required',
+            'opsi_output.*' => 'required',
+            'urutan.*' => 'required',
         ]);
 
+        // Membuat department baru
         $departments = Department::create([
             'nama_department' => $request->nama_department,
         ]);
 
-
+        // Menghitung panjang array parameter
         $array_length = count($request->nama_parameter);
 
+        // Looping data untuk setiap detail
         for ($x = 0; $x < $array_length; $x++) {
-            // Pastikan semua elemen array ada
+            // Pastikan semua data ada untuk setiap index
             if (
-                isset($request->kode[$x]) &&
+                isset($request->kode_hidden[$x]) &&
                 isset($request->nama_parameter[$x]) &&
                 isset($request->nama_pemeriksaan[$x]) &&
                 isset($request->harga[$x]) &&
-                isset($request->nilai_statik[$x]) &&
-                isset($request->nilai_satuan[$x])
+                isset($request->nilai_rujukan[$x]) &&
+                isset($request->nilai_satuan[$x]) &&
+                isset($request->tipe_inputan[$x]) &&
+                isset($request->opsi_output[$x]) &&
+                isset($request->urutan[$x])
             ) {
-                // Tambahkan detail baru
+                // Menyimpan detail department jika data lengkap
                 try {
                     $departments->detailDepartments()->create([
-                        'kode' => $request->kode[$x],
+                        'kode' => $request->kode_hidden[$x], // Menggunakan kode_hidden
                         'nama_parameter' => $request->nama_parameter[$x],
                         'nama_pemeriksaan' => $request->nama_pemeriksaan[$x],
                         'harga' => $request->harga[$x],
-                        'nilai_statik' => $request->nilai_statik[$x],
+                        'jasa_sarana' => $request->jasa_sarana[$x] ?? null, // Nullable jika tidak ada
+                        'jasa_pelayanan' => $request->jasa_pelayanan[$x] ?? null,
+                        'jasa_dokter' => $request->jasa_dokter[$x] ?? null,
+                        'jasa_bidan' => $request->jasa_bidan[$x] ?? null,
+                        'jasa_perawat' => $request->jasa_perawat[$x] ?? null,
+                        'nilai_rujukan' => $request->nilai_rujukan[$x],
                         'nilai_satuan' => $request->nilai_satuan[$x],
+                        'tipe_inputan' => $request->tipe_inputan[$x],
+                        'opsi_output' => $request->opsi_output[$x],
+                        'urutan' => $request->urutan[$x],
                     ]);
                 } catch (Exception $e) {
-                    dd($e->getMessage());
+                    // Menangani error jika ada
+                    dd("Error saving data at index $x: " . $e->getMessage());
                 }
             } else {
-                // Log data yang hilang untuk debugging
+                // Debugging jika ada data yang hilang
                 dd("Missing data at index $x");
             }
         }
+
+        // Memberikan feedback jika berhasil
         toast('Berhasil Menambahkan Data Department', 'success');
+
+        // Redirect ke halaman department.index
         return redirect()->route('department.index');
     }
+
+
+
 
     /**
      * Display the specified resource.

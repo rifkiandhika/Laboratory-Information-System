@@ -92,7 +92,7 @@
       <!-- /Logo -->
       <div class="authentication-inner row m-0">
         <!-- /Left Text -->
-        <div class="d-none d-lg-flex col-lg-8 p-0 bg-primary">
+        {{-- <div class="d-none d-lg-flex col-lg-8 p-0 bg-primary">
           <img style="filter: blur(2px);"
               src="{{ asset('image/national-cancer-institute-oCLuFi9GYNA-unsplash.jpg') }}" width="1025px"
               alt="auth-login-cover"
@@ -102,7 +102,18 @@
           >
             
           </div>
-        </div>
+        </div> --}}
+        <div class="d-none d-lg-flex col-lg-8 p-0">
+          <div style="
+              background-image: url('{{ asset('image/dokter.png') }}');
+              background-size: contain;
+              background-repeat: no-repeat;
+              background-position: center;
+              width: 100%;
+              height: 100vh"
+              class="auth-cover-bg auth-cover-bg-color d-flex justify-content-center align-items-center">
+          </div>
+      </div>
 
         <div
           class="d-flex col-12 col-lg-4 align-items-center authentication-bg p-sm-12 p-6 shadow-lg"
