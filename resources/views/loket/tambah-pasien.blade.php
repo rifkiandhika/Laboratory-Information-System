@@ -58,19 +58,19 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="basic-url" class="fw-bold">Full Name</label>
+                                        <label for="basic-url" class="fw-bold">Full Name <strong class="text-danger">*</strong></label>
                                         <div class="input-group mb-6">
                                             <input type="text" class="form-control" name="nama" aria-label=""
-                                                placeholder="Add Full Name">
+                                                placeholder="Add Full Name" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6 mb-6">
                                         <!-- <label for="name" class="">Date</label> -->
-                                        <label for="startDate" class="fw-bold">Date Of Birth</label>
-                                        <input id="startDate" class="form-control" type="date" name="tanggallahir" />
+                                        <label for="startDate" class="fw-bold">Date Of Birth<strong class="text-danger"> *</strong></label>
+                                        <input id="startDate" class="form-control" type="date" name="tanggallahir" required />
                                     </div>
                                     <div class="col-md-6 mb-6">
-                                        <label for="exampleFormControlSelect1" class="fw-bold">Gender</label>
+                                        <label for="exampleFormControlSelect1" class="fw-bold">Gender<strong class="text-danger"> *</strong></label>
                                         <select class="form-select" id="exampleFormControlSelect1" name="jeniskelamin">
                                             <option selected>Select Gender</option>
                                             <option value="Laki²">Laki²</option>
@@ -78,8 +78,8 @@
                                         </select>
                                     </div>
                                     <div class="col-md-6 mb-6">
-                                        <label for="phonenumber" class="fw-bold">Phone Number</label>
-                                            <input type="number" class="form-control" name="notelepon" placeholder="Add Phone Number">
+                                        <label for="phonenumber" class="fw-bold">Phone Number<strong class="text-danger"> *</strong></label>
+                                            <input type="number" class="form-control" name="notelepon" placeholder="Add Phone Number" required>
                                     </div>
                                     <div class="col-md-6 mb-6">
                                         <label for="exampleFormControlSelect1" class="fw-bold">Doctor</label>
@@ -92,7 +92,7 @@
                                     </div>
                                     
                                     <div class="col-md-6 mb-6">
-                                        <label for="external_doctor" class="fw-bold">External Doctor</label>
+                                        <label for="external_doctor" class="fw-bold">External Doctor </label>
                                         <input type="text" class="form-control" name="dokter_external" placeholder="External Doctor">
                                     </div>
                                                                         
@@ -112,7 +112,7 @@
                                         <input type="text" name="diagnosa" class="form-control" placeholder="Choose Diagnosis">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="alamat" class="fw-bold">Full Address</label>
+                                        <label for="alamat" class="fw-bold">Full Address <strong class="text-danger"> *</strong></label>
                                         <textarea class="form-control ml-1" cols="119" rows="1" id="alamat" name="alamat" placeholder="Enter Address"></textarea>
                                     </div>
                                     <div class="form-group col-12">

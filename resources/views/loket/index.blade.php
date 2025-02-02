@@ -74,7 +74,7 @@
                                     <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Pasien Telah
                                         Dilayani
                                     </div>
-                                    <div class="h3 mt-3 font-weight-bold text-gray-600"></div>
+                                    <div class="h3 mt-3 font-weight-bold text-gray-600">{{ $dl }}</div>
 
                                 </div>
                                 <div class="col-auto">
@@ -190,15 +190,15 @@
                                             </td>
                                             <td class="col-md-3">
                                                 <button type="button" data-bs-target="#modalPreviewPasien"
-                                                    data-bs-toggle="modal" class="btn btn-info btn-edit text-white "
+                                                    data-bs-toggle="modal" class="btn btn-secondary btn-edit text-white btn-update"
                                                     title="Edit"
                                                     data-id="{{ $dc->id }}"><i class='ti ti-edit'></i>
                                                 </button>
                                                                                                     
                                                 <button type="button" data-bs-target="#modalPembayaran"
-                                                    data-bs-toggle="modal" class="btn btn-secondary btn-payment text-white "
-                                                    title="Pembayaran"
-                                                    data-payment="{{ $dc->id }}"><i class='ti ti-cash-banknote'></i>
+                                                    data-bs-toggle="modal" class="btn btn-secondary btn-payment text-white"
+                                                    title="Pembayaran" data-payment="{{ $dc->id }}">
+                                                    <i class='ti ti-cash-banknote'></i>
                                                 </button>
 
                                                 <a title="Cetak Barcode" style="cursor: pointer" href="{{ route('print.barcode', $dc->no_lab) }}" class="btn btn-secondary disabled" target="_blank"><i class="ti ti-barcode"></i></a>
@@ -253,7 +253,7 @@
                                             </td>
                                             <td class="col-md-3">
                                                 <button type="button" data-bs-target="#modalPreviewPasien"
-                                                    data-bs-toggle="modal" class="btn btn-info btn-edit text-white "
+                                                    data-bs-toggle="modal" class="btn btn-secondary btn-edit text-white btn-update"
                                                     data-id="{{ $pm->id }}"><i class='ti ti-edit'></i>
                                                 </button>
                                                     
@@ -262,8 +262,13 @@
                                                     data-payment="{{ $pm->id }}"><i class='ti ti-cash-banknote'></i>
                                                 </button>
 
-                                                <a style="cursor: pointer" href="{{ route('print.barcode', $pm->no_lab) }}" class="btn btn-warning" target="_blank"><i class="ti ti-barcode"></i></a>
-                                                
+                                                <a style="cursor: pointer" 
+                                                    data-id="{{ $pm->no_lab }}" 
+                                                    href="{{ route('print.barcode', $pm->no_lab) }}" 
+                                                    class="btn btn-secondary barcodeBtn" 
+                                                    target="_blank">
+                                                    <i class="ti ti-barcode"></i>
+                                                </a>                                                 
 
                                                 <form id="delete-form-{{ $pm->id }}"
                                                     action="{{ route('pasien.destroy', $pm->no_lab) }}" method="POST"
@@ -313,16 +318,16 @@
                                             </td>
                                             <td class="col-md-3">
                                                 <button type="button" data-bs-target="#modalPreviewPasien"
-                                                    data-bs-toggle="modal" class="btn btn-info btn-edit text-white "
+                                                    data-bs-toggle="modal" class="btn btn-secondary btn-edit text-white btn-update btn-bf"
                                                     data-id="{{ $dk->id }}"><i class='ti ti-edit'></i>
                                                 </button>
                                                     
                                                 <button type="button" data-bs-target="#modalPembayaran"
-                                                    data-bs-toggle="modal" class="btn btn-secondary btn-payment text-white" 
+                                                    data-bs-toggle="modal" class="btn btn-secondary btn-payment text-white btn-pybf" 
                                                     data-payment="{{ $dk->id }}"><i class='ti ti-cash-banknote'></i>
                                                 </button>
 
-                                                <a style="cursor: pointer" href="{{ route('print.barcode', $dk->no_lab) }}" class="btn btn-warning" target="_blank"><i class="ti ti-barcode"></i></a>
+                                                <a data-barcode="{{ $dk->no_lab }}" style="cursor: pointer" href="{{ route('print.barcode', $dk->no_lab) }}" class="btn btn-secondary btn-bcbf" target="_blank"><i class="ti ti-barcode"></i></a>
                                                 
 
                                                 <form id="delete-form-{{ $dk->id }}"
@@ -513,28 +518,26 @@
     <div class="modal fade" id="modalPembayaran" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content ">
+            <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="sampleHistoryModalLabel">Preview Patient</h5>
+                    <h5 class="modal-title">Preview Patient</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="pembayaran-pasien" style="max-height: 700px;">
-                    <form action="{{ route('pasien.kirimlab') }}" method="POST">
+                    <form id="paymentForm" action="{{ route('pasien.kirimlab') }}" method="POST">
                         @csrf
                         <div class="row">
-                         <div>
-                            <h5>Payment</h5>
-                            <hr>
-                            <div id="detailPembayaran">
+                            <div>
+                                <h5>Payment</h5>
+                                <hr>
+                                <div id="detailPembayaran"></div>
                             </div>
-                         </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-success payment" id="submit-button" type="submit" >Payment</button>
+                            <button class="btn btn-success payment" id="submit-button" type="submit">Payment</button>
                         </div>
                     </form>
                 </div>
-
             </div>
         </div>
     </div>
@@ -544,8 +547,154 @@
 
 
 @push('script')
-    
-    <script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeButtons('.btn-bf', 'buttonBF', 'data-id');      // Tombol Edit
+        initializeButtons('.btn-pybf', 'buttonPYBF', 'data-payment');  // Tombol Payment
+        initializeButtons('.btn-bcbf', 'buttonBCBF', 'data-barcode');  // Tombol Barcode
+        
+    });
+
+    function initializeButtons(selector, storageKeyPrefix, dataAttr) {
+        const buttons = document.querySelectorAll(selector);
+
+        buttons.forEach(button => {
+            const id = button.getAttribute(dataAttr);
+            if (!id) return;
+
+            const storageKey = `${storageKeyPrefix}_${id}`;
+
+            // Cek apakah tombol pernah diklik (diambil dari localStorage)
+            if (localStorage.getItem(storageKey) === 'true') {
+                changeButtonColor(button, storageKeyPrefix);
+            } else {
+                resetToDefault(button);
+            }
+
+            // Event listener untuk klik tombol
+            button.addEventListener('click', function () {
+                const currentStatus = localStorage.getItem(storageKey) === 'true';
+                
+                if (currentStatus) {
+                    localStorage.setItem(storageKey, 'false'); // Reset ke abu-abu
+                    resetToDefault(button);
+                } else {
+                    localStorage.setItem(storageKey, 'true'); // Ubah warna sesuai fungsi tombol
+                    changeButtonColor(button, storageKeyPrefix);
+                }
+            });
+        });
+    }
+
+    function resetToDefault(button) {
+        button.classList.remove('btn-warning', 'btn-success', 'btn-info');
+        button.classList.add('btn-secondary');
+    }
+
+    function changeButtonColor(button, storageKeyPrefix) {
+        button.classList.remove('btn-secondary');
+
+        if (storageKeyPrefix === 'buttonBF') {
+            button.classList.add('btn-info'); // Tombol Edit (Biru)
+        } else if (storageKeyPrefix === 'buttonPYBF') {
+            button.classList.add('btn-success'); // Tombol Payment (Hijau)
+        } else if (storageKeyPrefix === 'buttonBCBF') {
+            button.classList.add('btn-warning'); // Tombol Barcode (Kuning)
+        }
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    // Ambil semua tombol dengan class 'btn-update'
+    const buttons = document.querySelectorAll(".btn-update");
+
+    buttons.forEach(button => {
+        const buttonId = button.getAttribute("data-id"); // Ambil ID tombol
+
+        // Cek di localStorage apakah tombol ini sudah diklik
+        if (localStorage.getItem(`button_clicked_${buttonId}`) === "true") {
+            button.classList.remove("btn-secondary");
+            button.classList.add("btn-info");
+        }
+
+        // Tambahkan event click
+        button.addEventListener("click", function () {
+            button.classList.remove("btn-secondary");
+            button.classList.add("btn-info");
+
+            // Simpan status di localStorage
+            localStorage.setItem(`button_clicked_${buttonId}`, "true");
+        });
+    });
+});
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeBarcodeButtons();
+        initializePaymentButton();
+    });
+
+    function initializeBarcodeButtons() {
+        const barcodeButtons = document.querySelectorAll('.barcodeBtn');
+        barcodeButtons.forEach(button => {
+            const noLab = button.getAttribute('data-id');
+            const barcodeStatusKey = `buttonBarcode_${noLab}`;
+
+            // Pastikan warna sesuai dengan localStorage
+            if (localStorage.getItem(barcodeStatusKey) === 'true') {
+                button.classList.remove('btn-secondary');
+                button.classList.add('btn-warning');
+            } else {
+                button.classList.remove('btn-warning');
+                button.classList.add('btn-secondary');
+            }
+
+            button.addEventListener('click', function () {
+                this.classList.remove('btn-secondary');
+                this.classList.add('btn-warning');
+                localStorage.setItem(barcodeStatusKey, 'true');
+            });
+        });
+    }
+
+    function initializePaymentButton() {
+        const paymentForm = document.getElementById('paymentForm');
+        if (!paymentForm) return;
+
+        paymentForm.addEventListener('submit', function (event) {
+            const paymentButton = document.querySelector('.btn-payment');
+            if (paymentButton) {
+                const paymentId = paymentButton.getAttribute('data-payment');
+                const paymentStatusKey = `buttonPayment_${paymentId}`;
+
+                localStorage.setItem(paymentStatusKey, 'true');
+
+                // Ubah warna tombol payment setelah submit
+                paymentButton.classList.remove('btn-secondary');
+                paymentButton.classList.add('btn-success');
+            }
+        });
+
+        // Pastikan warna tombol payment sesuai dengan localStorage saat halaman dimuat
+        const paymentButtons = document.querySelectorAll('.btn-payment');
+        paymentButtons.forEach(button => {
+            const paymentId = button.getAttribute('data-payment');
+            const paymentStatusKey = `buttonPayment_${paymentId}`;
+
+            if (localStorage.getItem(paymentStatusKey) === 'true') {
+                button.classList.remove('btn-secondary');
+                button.classList.add('btn-success');
+            } else {
+                button.classList.remove('btn-warning');
+                button.classList.add('btn-secondary');
+            }
+        });
+    }
+</script>
+
+
+
+<script>
         $(function() {
             let detailPemeriksaan = document.getElementById('detailPemeriksaan');
             

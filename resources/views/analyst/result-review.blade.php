@@ -2,6 +2,7 @@
 @section('title', 'Result Review')
 @section('content')
 <link rel="stylesheet" href="{{ asset('css/timeline.css') }}">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <style>
     @media print {
         body {
@@ -108,6 +109,7 @@
     margin-top: 10px;
  }
   </style>
+  
 <div class="content" id="scroll-content">
     <div class="container-fluid">
       <!-- Page Heading -->
@@ -171,6 +173,10 @@
                                     <span class="badge bg-danger text-white">Waiting...</span>
                                     @else
                                     @endif
+                                    @if($dpc->status == "diselesaikan")
+                                    <span class="badge bg-success text-white">Patient Done</span>
+                                    @else
+                                    @endif
                                 </td>
                                 <td>
                                     {{-- <button class="btn btn-info btn-preview" data-id={{ $dpc->id }} data-bs-target="#modalSpesimen"
@@ -189,10 +195,31 @@
                                         onclick="confirmDelete({{ $dpc->id }})"><i
                                         class="ti ti-trash"></i>
                                     </button> --}}
-                                        <a style="cursor: pointer" id="editBtn" data-id="{{ $dpc->no_lab }}" class="btn btn-sm btn-outline-primary">Edit</a>
-                                        <button href="#" class="btn btn-sm btn-outline-warning mr-2 preview" data-id="{{ $dpc->id }}" data-bs-toggle="modal" data-bs-target="#sampleHistoryModal">Sample History</button>
-                                        {{-- <a style="cursor: pointer; font-size: 14px" href="{{ route('print.pasien', $dpc->no_lab) }}" class="btn btn-outline-primary p-1 mr-2" target="_blank">Print Result</a> --}}
-                                        <button class="btn btn-sm btn-outline-primary" onclick="window.open('{{ route('print.pasien', $dpc->no_lab) }}', '_blank')">Print Result</button>
+                                    <!-- Tombol Edit -->
+                                    <a style="cursor: pointer" data-id="{{ $dpc->no_lab }}" class="btn btn-sm btn-outline-secondary editBtn">
+                                        <i title="Edit" class="ti ti-pencil"></i>
+                                    </a>
+
+                                    <!-- Tombol Sample History -->
+                                    <button href="#" id="sampleHistoryBtn-{{ $dpc->id }}" class="btn btn-sm btn-outline-secondary mr-2 preview" data-id="{{ $dpc->id }}" data-bs-toggle="modal" data-bs-target="#sampleHistoryModal">
+                                        <i title="Sample History" class="ti ti-clock"></i>
+                                    </button>
+
+                                    
+                                    <!-- Tombol Selesaikan -->
+                                    <form id="kirimresult-{{ $dpc->id }}" action="result/done/{{ $dpc->id }}" method="POST" style="display: none;">
+                                        @csrf
+                                    </form>
+                                    <!-- Tombol Selesaikan -->
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="confirmResult({{ $dpc->id }})" {{ $dpc->status == 'diselesaikan' ? 'disabled' : '' }} id="selesaikanBtn-{{ $dpc->id }}">
+                                        <i title="Selesaikan" class="ti ti-checklist"></i>
+                                    </button>
+
+                                    <!-- Tombol Print -->
+                                    <button class="btn btn-sm btn-outline-secondary" id="printBtn-{{ $dpc->id }}" onclick="openModal()" {{ $dpc->status != 'diselesaikan' ? 'disabled' : '' }}>
+                                        <i title="Print Result" class="ti ti-printer"></i>
+                                    </button>
+
                                         {{-- <button class="btn btn-sm btn-outline-primary" data-id={{ $dpc->no_lab }} data-bs-toggle="modal"data-bs-target="#printResult">Print Result</button> --}}
 
                                                 
@@ -203,6 +230,24 @@
                   </table>
                 </div>
                 {{-- Sample History --}}
+                <div id="noteModal" class="modal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Enter Patient's Note</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <textarea id="patientNote" class="form-control" rows="4" placeholder="Enter your note here..."></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" onclick="submitNote()">Print with Note</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{-- historysample --}}
                 <div class="modal fade" id="sampleHistoryModal" tabindex="-1" aria-labelledby="sampleHistoryModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
@@ -246,12 +291,98 @@
   </div>
 @endsection
 @push('script')
+    <script>
+      document.querySelectorAll('.editBtn, .preview, [id^="selesaikanBtn-"], [id^="printBtn-"], [id^="sampleHistoryBtn-"]').forEach(function(button) {
+    // Ambil ID penuh dari button
+    const buttonId = button.id || button.getAttribute('data-id');
+    
+    // Set warna default ke secondary
+    if (button.classList.contains('editBtn') || 
+        button.classList.contains('preview') || 
+        button.id.startsWith('selesaikanBtn-') || 
+        button.id.startsWith('printBtn-') ||
+        button.id.startsWith('sampleHistoryBtn-')) {
+        button.classList.add('btn-outline-secondary');
+    }
+
+    // Cek status klik untuk ID spesifik
+    const clickedStatus = localStorage.getItem(`clicked-${buttonId}`);
+
+    // Kembalikan warna untuk button yang sudah di-klik
+    if (clickedStatus === 'clicked') {
+        if (button.classList.contains('editBtn')) {
+            button.classList.replace('btn-outline-secondary', 'btn-outline-primary');
+        } else if (button.classList.contains('preview')) {
+            button.classList.replace('btn-outline-secondary', 'btn-outline-warning'); 
+        } else if (button.id.startsWith('selesaikanBtn-')) {
+            button.classList.replace('btn-outline-secondary', 'btn-outline-success');
+        } else if (button.id.startsWith('printBtn-')) {
+            button.classList.replace('btn-outline-secondary', 'btn-outline-info');
+        } else if (button.id.startsWith('sampleHistoryBtn-')) {
+            button.classList.replace('btn-outline-secondary', 'btn-outline-warning');
+        }
+    }
+
+    button.addEventListener('click', function() {
+        if (this.classList.contains('editBtn')) {
+            this.classList.replace('btn-outline-secondary', 'btn-outline-primary');
+        } else if (this.classList.contains('preview')) {
+            this.classList.replace('btn-outline-secondary', 'btn-outline-warning');
+        } else if (this.id.startsWith('selesaikanBtn-')) {
+            this.classList.replace('btn-outline-secondary', 'btn-outline-success');
+        } else if (this.id.startsWith('printBtn-')) {
+            this.classList.replace('btn-outline-secondary', 'btn-outline-info');
+        } else if (this.id.startsWith('sampleHistoryBtn-')) {
+            this.classList.replace('btn-outline-secondary', 'btn-outline-warning');
+        }
+        // Simpan status klik dengan ID spesifik
+        localStorage.setItem(`clicked-${buttonId}`, 'clicked');
+    });
+});
+    </script>
+    
 <script>
-    var editBtn = document.getElementById('editBtn');
+    // Fungsi untuk membuka modal
+    function openModal() {
+        var modal = new bootstrap.Modal(document.getElementById('noteModal'));
+        modal.show();
+    }
+
+    // Fungsi untuk mengambil note dan membuka halaman print
+    function submitNote() {
+        var note = document.getElementById('patientNote').value;
+        var noLab = "{{ $dpc->no_lab }}"; // Ambil no_lab jika perlu
+
+        if (note.trim() === "") {
+            alert("Please enter a note before printing.");
+            return;
+        }
+
+        // Ganti dengan URL print tanpa mengupdate status
+        var printUrl = "{{ route('print.pasien', $dpc->no_lab) }}";
+        printUrl += "?note=" + encodeURIComponent(note);
+        
+        // Buka halaman print di tab baru
+        window.open(printUrl, '_blank');
+        
+        // Menutup modal setelah menekan tombol submit
+        var modal = bootstrap.Modal.getInstance(document.getElementById('noteModal'));
+        modal.hide();
+    }
+</script>
+
+<script>
+   // Ambil semua elemen dengan class 'editBtn'
+var editBtns = document.querySelectorAll('.editBtn');
+
+// Loop untuk setiap tombol
+editBtns.forEach(function(editBtn) {
     var no_lab = editBtn.getAttribute('data-id');  // Ambil nilai no_lab dari atribut data-id
     var editUrl = "{{ route('pasien.viewedit', ':no_lab') }}";
     editUrl = editUrl.replace(':no_lab', no_lab);  // Gantilah :no_lab dengan nilai yang telah diambil
     editBtn.href = editUrl;  // Set URL pada href tombol Edit
+});
+
 </script>
 <script>
      $('.preview').on('click', function(event) {
@@ -289,12 +420,27 @@
                     <hr>
                     <h5>History</h5>
                     <ul class="step-wizard-list mt-4">
-                        ${history.map((h, index) => `
-                            <li class="step-wizard-item">
-                                <span class="progress-count">${index + 1}</span>
-                                <span class="progress-label">${h.proses}</span>
-                            </li>
-                        `).join('')}
+                        ${history.map((h, index) => {
+                            // Membuat objek Date dari h.created_at
+                            let createdAt = new Date(h.created_at);
+
+                            // Format tanggal dan waktu sesuai dengan yang diinginkan
+                            let formattedDate = createdAt.toLocaleString('id-ID', {
+                                year: 'numeric', 
+                                month: 'numeric', 
+                                day: 'numeric',
+                                hour: '2-digit', 
+                                minute: '2-digit'
+                            });
+
+                            return `
+                                <li class="step-wizard-item">
+                                    <span class="progress-count">${index + 1}</span>
+                                    <span class="progress-label">${h.proses}</span>
+                                    <span class="progress-label">${formattedDate}</span>
+                                </li>
+                            `;
+                        }).join('')}
                     </ul>
                     `;
 
@@ -303,7 +449,7 @@
                         let detailsData = [];
                         let kapasitas, serumh, serum;
 
-                        if (e.tabung === 'EDTA') {
+                        if (e.tabung === 'K3-EDTA') {
                             const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key && item.tabung === 'EDTA');
                             if (collectionItem) {
                                 detailsData = collectionItem.details.filter(detail => 
@@ -340,7 +486,7 @@
 
                                 const matchedDetail = detailsData.find(d => d.id === detail.id);
                                 if (matchedDetail) {
-                                    if (e.tabung === 'EDTA' && kapasitas == detail.id) {
+                                    if (e.tabung === 'K3-EDTA' && kapasitas == detail.id) {
                                         isChecked = 'checked';
                                         isDisabled = '';
                                     } else if (e.tabung === 'K3' && serumh == detail.id) {
@@ -369,7 +515,7 @@
                         let title = '';
                         let subtext = '';
 
-                        if (e.tabung === 'EDTA') {
+                        if (e.tabung === 'K3-EDTA') {
                             title = '<h5 class="title">Spesiment Collection</h5> <hr>';
                         }else
 
@@ -383,7 +529,7 @@
                         }
 
                         let note = '';
-                        if (e.tabung === 'EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'K3') {
+                        if (e.tabung === 'K3-EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'K3') {
                             note = '<p class="mb-0"><strong>Note</strong></p>';
                         }
 
@@ -404,7 +550,7 @@
                                                 ${details}
                                             </div>
                                             ${note}
-                                            ${e.tabung === 'EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
+                                            ${e.tabung === 'K3-EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
                                             ${e.tabung === 'K3' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
                                             ${e.tabung === 'CLOT-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
                                             

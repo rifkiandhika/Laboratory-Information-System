@@ -22,7 +22,12 @@ class spesimentHendlingController extends Controller
      */
     public function index()
     {
-        $dataPasienCito = pasien::whereIn('status', ['Check in', 'Spesiment', 'Acc Collection'])
+        $pasienharian = pasien::where('created_at', now())->count();
+
+        $bl = pasien::where('status', 'Acc Collection')->count();
+        $dl = pasien::where('status', 'Check In Spesiment')->count();
+
+        $dataPasienCito = pasien::whereIn('status', ['Check in', 'Spesiment', 'Acc Collection', 'Acc Handling'])
             ->orderBy('cito', 'desc')
             ->paginate(20);
 
@@ -46,7 +51,7 @@ class spesimentHendlingController extends Controller
 
         $dataHistory = historyPasien::where('proses', '=', 'order')->get();
 
-        return view('analyst.s-handling', compact('dataPasien', 'dataPasienCito', 'dataHistory'));
+        return view('analyst.s-handling', compact('dataPasien', 'dataPasienCito', 'dataHistory', 'pasienharian', 'bl', 'dl'));
     }
 
     /**
@@ -62,61 +67,33 @@ class spesimentHendlingController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
+        // Debugging request
+        // dd($request);
+
         // dd($request);
         $request->validate([
             'no_lab' => 'required',
-            'kapasitas' => 'required_without:serum|array',
-            'serumh' => 'required|array',
-            'serum' => 'required_without:kapasitas|array'
+            'serum' => 'required|array'
         ]);
+
+        // Ambil input dari request
         $no_lab = $request->input('no_lab');
-        $kapasitas = $request->input('kapasitas');
-        $serumh = $request->input('serumh');
         $serum = $request->input('serum');
         $notes = $request->input('note', []);
 
+        // Menghapus data lama sebelum memasukkan data baru
+        spesimentHandling::where('no_lab', $no_lab)->delete();  // Hapus semua data spesimen yang terkait dengan no_lab
+        // historyPasien::where('no_lab', $no_lab)->delete(); // Hapus history pasien terkait no_lab
 
-        if (!empty($kapasitas)) {
-            foreach ($kapasitas as $x => $kapasitas) {
-                spesimentCollection::create([
-                    'no_lab' => $no_lab,
-                    'tabung' => 'EDTA',
-                    'kapasitas' => $kapasitas,
-                    'status' => 'Acc',
-                    'note' => $notes[$x] ?? null,
-                    'tanggal' => now(),
-                ]);
-
-                historyPasien::create([
-                    'no_lab' => $no_lab,
-                    'proses' => 'Acc Collection',
-                    'tempat' => 'Laboratorium',
-                    'waktu_proses' => now(),
-                ]);
-            }
-        }
-        if (!empty($serumh)) {
-            foreach ($serumh as $x => $serumh) {
-                spesimentCollection::create([
-                    'no_lab' => $no_lab,
-                    'tabung' => 'K3',
-                    'serumh' => $serumh,
-                    'status' => 'Acc',
-                    'note' => $notes[$x] ?? null,
-                    'tanggal' => now(),
-                ]);
-            }
-        }
-
+        // Jika ada kapasitas, simpan data baru untuk tabung EDTA
         if (!empty($serum)) {
             foreach ($serum as $x => $serum) {
                 spesimentHandling::create([
                     'no_lab' => $no_lab,
                     'tabung' => 'CLOT-ACT',
                     'serum' => $serum,
-                    'status' => 'Acc',
-                    // 'note' => $notes[$x] ?? null,
+                    'status' => 'Acc Handling',
+                    'note' => $notes[$x] ?? null,
                     'tanggal' => now(),
                 ]);
 
@@ -129,14 +106,16 @@ class spesimentHendlingController extends Controller
             }
         }
 
-
-        // Update pasien status
+        // Update status pasien menjadi 'Acc Collection'
         pasien::where('no_lab', $no_lab)->update([
-            'status' => 'Spesiment',
+            'status' => 'Acc Handling',
         ]);
+
+        // Success toast notification
         toast('Berhasil Approve Spesiment', 'success');
         return redirect()->route('spesiment.index');
     }
+
 
     /**
      * Display the specified resource.

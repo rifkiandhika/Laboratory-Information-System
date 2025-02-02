@@ -251,6 +251,60 @@
       });
   }
 </script>
+<script>
+  function confirmDok(id) {
+      Swal.fire({
+          title: 'Apakah Anda yakin?',
+          text: "Data akan dikirim ke dokter!",
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Ya, kirim!',
+          cancelButtonText: 'Batal'
+      }).then((result) => {
+          if (result.isConfirmed) {
+              document.getElementById(`kirimdok-${id}`).submit();
+          }
+      });
+  }
+</script>
+<script>
+  function confirmResult(id) {
+      Swal.fire({
+          title: 'Apakah Anda yakin?',
+          text: "Data akan diselesaikan!",
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Ya, selesaikan!',
+          cancelButtonText: 'Batal'
+      }).then((result) => {
+          if (result.isConfirmed) {
+              document.getElementById(`kirimresult-` + id).submit();
+          }
+      });
+  }
+</script>
+<script>
+  function confirmDone(id) {
+      Swal.fire({
+          title: 'Apakah Anda yakin?',
+          text: "Data akan diselesaikan!",
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Ya, kirim!',
+          cancelButtonText: 'Batal'
+      }).then((result) => {
+          if (result.isConfirmed) {
+              document.getElementById(`kirimdone-${id}`).submit();
+          }
+      });
+  }
+</script>
 
     <!-- Vendors JS -->
 

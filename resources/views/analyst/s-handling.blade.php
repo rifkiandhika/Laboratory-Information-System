@@ -77,7 +77,7 @@
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                     Jumlah Pasien Masuk (Harian)</div>
-                                <div class="h3 mt-3 font-weight-bold text-gray-600">150</div>
+                                <div class="h3 mt-3 font-weight-bold text-gray-600">{{ $pasienharian }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="bx bx-chart fa-3x text-gray-300"></i>
@@ -95,7 +95,7 @@
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                     Pasien Belum Dilayani</div>
-                                <div class="h3 mt-3 font-weight-bold text-gray-600">10</div>
+                                <div class="h3 mt-3 font-weight-bold text-gray-600">{{ $bl }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="bx bx-info-circle fa-3x text-gray-300"></i>
@@ -113,7 +113,7 @@
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Pasien Telah Dilayani
                                 </div>
-                                <div class="h3 mt-3 font-weight-bold text-gray-600">250</div>
+                                <div class="h3 mt-3 font-weight-bold text-gray-600">{{ $dl }}</div>
                                 <!-- <div class="row no-gutters align-items-center">
                                 <div class="col-auto">
                                     <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
@@ -221,31 +221,36 @@
                                                 @if($dpc->status == "Acc Collection")
                                                 <span class="badge bg-danger text-white">Waiting...</span>
                                                 @elseif($dpc->status == "Acc Handling")
-                                                <span class="badge bg-warning text-white">Approved</span>
+                                                <span class="badge bg-success text-white">Approved</span>
                                                 @endif
                                             </td>
                                             <td class="col-4">
-                                                <button title="Preview" class="btn btn-info btn-preview" data-id={{ $dpc->id }} data-bs-target="#modalSpesimen"
-                                                    data-bs-toggle="modal" ><i class="ti ti-eye"></i></button>
-
-                                                <a title="Cetak Barcode" style="cursor: pointer" href="{{ route('print.barcode', $dpc->no_lab) }}" class="btn btn-secondary" target="_blank"><i class="ti ti-barcode"></i></a>
-                                                <button title="Edit" class="btn btn-success btn-edit" data-id={{ $dpc->id }} data-bs-target="#modalEdit" data-bs-toggle="modal"><i class="ti ti-edit"></i></button>
+                                                <button title="Preview" class="btn btn-outline-secondary btn-preview" data-id="{{ $dpc->id }}" data-bs-target="#modalSpesimen" data-bs-toggle="modal">
+                                                    <i class="ti ti-eye"></i>
+                                                </button>
                                                 
+                                                <a title="Cetak Barcode" style="cursor: pointer" href="{{ route('print.barcode', $dpc->no_lab) }}" class="btn btn-outline-secondary btn-barcode" target="_blank">
+                                                    <i class="ti ti-barcode"></i>
+                                                </a>
                                                 
-                                                <form  id="backdashboard-{{ $dpc->id }}"
-                                                    action="{{ route('spesiment.backdashboard', $dpc->id) }}" method="POST"
-                                                    style="display: none;">
+                                                <button title="Edit" class="btn btn-outline-secondary btn-edit" data-id="{{ $dpc->id }}" data-bs-target="#modalEdit" data-bs-toggle="modal">
+                                                    <i class="ti ti-edit"></i>
+                                                </button>
+                                                
+                                                <form id="backdashboard-{{ $dpc->id }}" action="{{ route('spesiment.backdashboard', $dpc->id) }}" method="POST" style="display: none;">
                                                     @csrf
                                                 </form>
-                                                <button title="Kembalikan Ke Dashboard" class="btn btn-warning" onclick="confirmBackdashboard({{ $dpc->id }})"><i class="ti ti-arrow-back-up"></i></button>
+                                                <button title="Kembalikan Ke Dashboard" class="btn btn-outline-secondary" onclick="confirmBackdashboard({{ $dpc->id }})">
+                                                    <i class="ti ti-arrow-back-up"></i>
+                                                </button>
                                                 
-                                                <form action="" method="post">
-                                                <form id="spesimentBack-{{ $dpc->id }}"
-                                                    action="{{ route('spesiment.back', $dpc->id) }}" method="POST"
-                                                    style="display: none;">
+                                                <form id="spesimentBack-{{ $dpc->id }}" action="{{ route('spesiment.back', $dpc->id) }}" method="POST" style="display: none;">
                                                     @csrf
                                                 </form>
-                                                <button title="Kembalikan Ke Loket" class="btn btn-primary" onclick="confirmBack({{ $dpc->id }})"><i class="ti ti-arrow-back-up"></i></button>
+                                                <button title="Kembalikan Ke Loket" class="btn btn-outline-secondary" onclick="confirmBack({{ $dpc->id }})">
+                                                    <i class="ti ti-arrow-back-up"></i>
+                                                </button>
+                                                
                                                 {{-- <form action="" method="post">
                                                 </form> --}}
 
@@ -324,6 +329,15 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body" style=" max-height: 600px; overflow-y: auto" id="pembayaran-pasien">
+                                    @if ($errors->any())
+                                            <div class="alert alert-danger">
+                                                <ul>
+                                                    @foreach ($errors->all() as $error)
+                                                        <li>{{ $error }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endif
                                     <form action="{{ route('spesiment.store') }}" method="POST">
                                         @csrf
                                         <div class="row">
@@ -391,6 +405,60 @@
 </div>
 
 @push('script')
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Untuk setiap tombol, kita memeriksa dan menambahkan event listener
+        document.querySelectorAll('.btn-preview, .btn-edit, .btn-warning, .btn-primary, .btn-barcode').forEach(function(button) {
+            const buttonId = button.getAttribute('data-id');  // Ambil ID unik dari tombol
+            const clickedStatus = localStorage.getItem(`clicked-${buttonId}`);  // Cek apakah sudah diklik di localStorage
+
+            // Jika tombol sudah diklik sebelumnya, setel warnanya
+            if (clickedStatus === 'clicked') {
+                if (button.classList.contains('btn-preview')) {
+                    button.classList.remove('btn-outline-secondary');
+                    button.classList.add('btn-info');  // Ganti warna tombol Preview setelah diklik
+                } else if (button.classList.contains('btn-edit')) {
+                    button.classList.remove('btn-outline-secondary');
+                    button.classList.add('btn-success');  // Ganti warna tombol Edit setelah diklik
+                } else if (button.classList.contains('btn-warning')) {
+                    button.classList.remove('btn-outline-secondary');
+                    button.classList.add('btn-warning');  // Ganti warna tombol Kembalikan ke Dashboard
+                } else if (button.classList.contains('btn-primary')) {
+                    button.classList.remove('btn-outline-secondary');
+                    button.classList.add('btn-primary');  // Ganti warna tombol Kembalikan ke Loket
+                } else if (button.classList.contains('btn-barcode')) {
+                    button.classList.remove('btn-outline-secondary');
+                    button.classList.add('btn-warning');  // Ganti warna tombol Cetak Barcode setelah diklik
+                }
+            }
+
+            // Tambahkan event listener untuk menangani klik
+            button.addEventListener('click', function() {
+                // Ganti warna tombol setelah diklik
+                if (this.classList.contains('btn-preview')) {
+                    this.classList.remove('btn-outline-secondary');
+                    this.classList.add('btn-info');  // Tombol Preview
+                } else if (this.classList.contains('btn-edit')) {
+                    this.classList.remove('btn-outline-secondary');
+                    this.classList.add('btn-success');  // Tombol Edit
+                } else if (this.classList.contains('btn-warning')) {
+                    this.classList.remove('btn-outline-secondary');
+                    this.classList.add('btn-warning');  // Tombol Kembalikan ke Dashboard
+                } else if (this.classList.contains('btn-primary')) {
+                    this.classList.remove('btn-outline-secondary');
+                    this.classList.add('btn-primary');  // Tombol Kembalikan ke Loket
+                } else if (this.classList.contains('btn-barcode')) {
+                    this.classList.remove('btn-outline-secondary');
+                    this.classList.add('btn-warning');  // Tombol Cetak Barcode
+                }
+
+                // Simpan status klik tombol ke localStorage
+                localStorage.setItem(`clicked-${buttonId}`, 'clicked');
+            });
+        });
+    });
+</script>
+
 
 <script>
     function confirmBack(id) {
@@ -457,48 +525,8 @@
 
 <script>
     $(function() {
-        // button preview waktu di klik mendapatkan data sesuai id
-        $('.btn-edit').on('click', function() {
-            // untuk mendapatkan data sesuai idnya
-            const id = this.getAttribute('data-id');
-
-            
-            $('#editFormPasien').attr('action', "{{ url('/analyst/spesiment') }}/" + id);
-
-            // Memanggil API
-            fetch(`/api/get-data-pasien/${id}`).then(response => {
-                if (!response.ok) {
-                    throw new Error("HTTP error" + response.status);
-                }
-                return response.json();
-            }).then(res => {
-                if (res.status === 'success') {
-                    const {
-                        no_lab,
-                        nik,
-                        nama,
-                        alamat,
-                    } = res.data;
-
-                    dokter = res.data.dokter;
-                    data_pemeriksaan_pasien = res.data.dpp;
-
-                    $('#Nik').val(nik);
-                    $('#Nama').val(nama);
-                    $('#Alamat').val(alamat);
-
-                }
-            });
-            // Form edit
-            // $('#modalPreviewPasien').attr('action', '/poli/' + id);
-
-        });
-    })
-</script>
-
-<script>
-    $(function() {
         let detailSpesiment = document.getElementById('detailSpesiment');
+        
         $('.btn-preview').on('click', function() {
             const id = this.getAttribute('data-id');
 
@@ -515,29 +543,22 @@
                     const scollection = res.data.spesimentcollection;
                     const shandling = res.data.spesimenthandling;
                     let status = data_pasien.status;
-                     if(status == 'Spesiment'){
-                                 $('#verification').attr('style',`display:none`);
-                             }
-                             else{
-                                 $('#verification').attr('style',`display:inherit`);
-                             }
 
-                    // console.log(data_pasien);
-                    // console.log(data_pemeriksaan_pasien);
-                    // if (!data_pasien.dokter) {
-                    // console.error('Data dokter null');
-                    // return;
-                    // }
+                    if (status == 'Spesiment') {
+                        $('#verification').attr('style', `display:none`);
+                    } else {
+                        $('#verification').attr('style', `display:inherit`);
+                    }
 
                     let detailContent = '<div class="row">';
                     let Tabung = {};
 
                     data_pemeriksaan_pasien.forEach((e, i) => {
-                        // console.log(e.data);
-                        detailContent += `          <input type="hidden" name="no_lab" value="${e.no_lab}">
-                                                    <div class="col-12 col-md-6" id="${e.id_departement}">
-                                                    <h6>${e.data_departement.nama_department}</h6>
-                                                    <ol>`;
+                        detailContent += `
+                            <input type="hidden" name="no_lab" value="${e.no_lab}">
+                            <div class="col-12 col-md-6" id="${e.id_departement}">
+                                <h6>${e.data_departement.nama_department}</h6>
+                                <ol>`;
                         e.pasiens.forEach(e => {
                             detailContent += `<li>${e.data_pemeriksaan.nama_pemeriksaan}</li>`;
                             if(!Tabung[e.spesiment]) {
@@ -550,18 +571,17 @@
                     detailContent += '</div>';
 
                     Object.keys(Tabung).forEach(spesiment => {
-
                         res.data.spesiment.forEach((e, i) => {
                             let details = '';
                             let detailsData = [];
-                            let kapasitas, serumh, serum;
+                            let serum;
                             let processTime = '';
                             let noteText = ''; // Variable untuk menyimpan note
 
                             // Check if collection data exists for the current specimen
                             let hasCollectionData = false;
                             
-                            if (e.tabung === 'EDTA') {
+                            if (e.tabung === 'K3-EDTA') {
                                 const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key);
                                 if (collectionItem) {
                                     hasCollectionData = true;
@@ -604,7 +624,7 @@
 
                                     if (hasCollectionData) {
                                         // Jika ada data di database
-                                        if (e.tabung === 'EDTA') {
+                                        if (e.tabung === 'K3-EDTA') {
                                             isChecked = kapasitas == detail.id ? 'checked' : '';
                                             isDisabled = kapasitas == detail.id ? '' : 'disabled';  // Disable yang tidak terpilih
                                         } else if (e.tabung === 'K3') {
@@ -629,7 +649,9 @@
                                             <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
                                         </div>
                                         <div class="detail-radio-container">
-                                            <input type="radio" name="${e.tabung}" class="detail-radio" value="${detail.id}" ${isChecked} ${isDisabled} />  
+                                        ${e.tabung === 'K3-EDTA' ? `<input type="radio" name="kapasitas[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}
+                                        ${e.tabung === 'K3' ? `<input type="radio" name="serumh[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}    
+                                        ${e.tabung === 'CLOT-ACT' ? `<input type="radio" name="serum[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}    
                                         </div>
                                     </div>`;
                                 });
@@ -639,15 +661,14 @@
                             let title = '';
                             let subtext = '';
 
-                            if (e.tabung === 'EDTA' || e.tabung === 'K3') {
-                                title = '<h5 class="title">Spesiment Collection</h5> <hr>';
-                            } else if (e.tabung === 'CLOT-ACT') {
+                            // Filter and only add details for CLOT-ACT
+                            if (e.tabung === 'CLOT-ACT') {
                                 title = '<h5 class="title mt-3">Spesiment Handlings</h5> <hr>';
                                 subtext = '<div class="subtext">Serum</div>';
                             }
 
                             let note = '';
-                            if (e.tabung === 'EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'K3') {
+                            if (e.tabung === 'CLOT-ACT') {
                                 note = '<p class="mb-0"><strong>Note</strong></p>';
                             }
                             
@@ -671,17 +692,16 @@
                                     </div>
                                 </div>
                             </div>`;
+                        });
                     });
-                     
-                    });
-                    
+
                     detailSpesiment.innerHTML = detailContent;
-                    // console.log(detailContent);
                 }
             });
         });
     })
 </script>
+
 
 <script>
     $(function(e){

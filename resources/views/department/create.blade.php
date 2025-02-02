@@ -49,7 +49,7 @@ Add Department
                                                     <th>Satuan</th>
                                                     <th>Tipe Inputan Hasil</th>
                                                     <th>Opsi Output an Hasil</th>
-                                                    <th>Urutan</th>
+                                                    <th>Metode</th>
                                                     <th>Aksi</th>
                                                 </tr>
                                             </thead>
@@ -156,54 +156,99 @@ Add Department
     generateKode();
 });
 
-</script>
-<script>
-// document.getElementById('add-detail-field').addEventListener('click', function() {
-//     var newField = document.createElement('div');
-//     newField.classList.add('detail-field');
-//     newField.innerHTML = 
-//                         `<label class="mt-4">Nama Parameter</label>` +
-//                         '<input type="text" name="nama_parameter[]" class="form-control mb-4" required>' +                        
-//                          '<input type="file" name="gambar[]" class="form-control" required>';
-//     document.getElementById('detail-fields').appendChild(newField);
-// });
-function btnFunction(){
-    $(".btn-add").unbind('click').bind('click', function(){
-        let row = ` <tr>        
-                        <td>
-                            <input type="text" name="kode[]" class="form-control" required>
-                        </td>
-                        <td>
-                            <input type="text" name="nama_parameter[]" class="form-control" required>
-                        </td>
-                        <td>
-                            <input type="text" name="nama_pemeriksaan[]" class="form-control" required>
-                        </td>
-                        <td>
-                            <input type="text" name="harga[]" class="form-control" required>
-                        </td>
-                        <td>
-                            <input type="text" name="nilai_statik[]" class="form-control" required>
-                        </td>
-                        <td>
-                            <input type="text" name="nilai_satuan[]" class="form-control" required>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-success btn-add"><i class="ti ti-plus"></i></button>
-                            <button type="button" class="btn btn-danger btn-remove"><i class="ti ti-minus"></i></button>
-                        </td>
-                    </tr>`;
-        $("#tableDetail > tbody:last-child").append(row);
+</script><script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fungsi untuk menghasilkan kode otomatis, misalnya berdasarkan tanggal
+        function generateKode(row) {
+            let date = new Date();
+            let year = date.getFullYear();
+            let month = ('0' + (date.getMonth() + 1)).slice(-2); // Menambahkan 0 di depan jika bulan < 10
+            let day = ('0' + date.getDate()).slice(-2); // Menambahkan 0 di depan jika hari < 10
 
+            // Membuat format kode seperti: KODE-YYYYMMDD
+            let kode = `${year}${month}${day}`;
+
+            // Cari input dalam row dan set nilai otomatis ke input kode dan kode_hidden
+            let kodeInput = row.querySelector('.kode');
+            let hiddenKodeInput = row.querySelector('.kode_hidden');
+
+            if (kodeInput && hiddenKodeInput) {
+                kodeInput.value = kode;
+                hiddenKodeInput.value = kode;
+            }
+        }
+
+        function btnFunction() {
+            $(".btn-add").unbind('click').bind('click', function(){
+                let row = ` <tr>
+                    <td class="col-2">
+                        <label for="otomatis">Otomatis <span class="text-danger">*</span></label>
+                        <input type="text" name="kode[]" class="form-control kode" required disabled>
+                        <!-- Hidden input untuk mengirim nilai kode -->
+                        <input type="hidden" name="kode_hidden[]" class="kode_hidden">
+                    </td>                                                    
+                    <td class="col-2">
+                        <input type="text" name="nama_parameter[]" class="form-control" required>
+                    </td>
+                    <td class="col-2">
+                        <input type="text" name="nama_pemeriksaan[]" class="form-control" required>
+                    </td>
+                    <td class="col-2">
+                        <input type="number" name="harga[]" class="form-control" required>
+                    </td>
+                    <td class="col-3">
+                        <label for="jasa_sarana">JASA SARANA:</label>
+                        <input type="text" name="jasa_sarana[]" class="form-control" required>
+                        <label for="jasa_pelayanan">JASA PELAYANAN:</label>
+                        <input type="text" name="jasa_pelayanan[]" class="form-control" required>
+                        <label for="jasa_dokter">JASA DOKTER:</label>
+                        <input type="text" name="jasa_dokter[]" class="form-control" >
+                        <label for="jasa_bidan">JASA BIDAN:</label>
+                        <input type="text" name="jasa_bidan[]" class="form-control" >
+                        <label for="jasa_perawat">JASA PERAWAT:</label>
+                        <input type="text" name="jasa_perawat[]" class="form-control" >
+                    </td>
+                    <td class="col-1">
+                        <input type="text" name="nilai_rujukan[]" class="form-control" required>
+                    </td>
+                    <td class="col-1">
+                        <input type="text" name="nilai_satuan[]" class="form-control" required>
+                    </td>
+                    <td class="col-1">
+                        <input type="text" name="tipe_inputan[]" class="form-control" required>
+                    </td>
+                    <td class="col-1">
+                        <input type="text" name="opsi_output[]" class="form-control" required>
+                    </td>
+                    <td class="col-1">
+                        <input type="text" name="urutan[]" class="form-control" required>
+                    </td>
+                    <td class="col-3">
+                        <button type="button" class="btn btn-success btn-add"><i class="ti ti-plus"></i></button>
+                    </td>
+                </tr>`;
+
+                // Tambahkan baris baru ke dalam tabel
+                $("#tableDetail > tbody:last-child").append(row);
+
+                // Panggil generateKode() pada row yang baru saja ditambahkan
+                let newRow = $("#tableDetail > tbody:last-child tr:last-child")[0];
+                generateKode(newRow);
+
+                // Panggil btnFunction() lagi agar fungsi tetap aktif pada tombol add/remove
+                btnFunction();
+            });
+
+            // Event untuk menghapus baris
+            $(".btn-remove").unbind('click').bind('click', function(){
+                $(this).closest('tr').remove();
+            });
+        }
+
+        // Panggil fungsi btnFunction ketika halaman dimuat
         btnFunction();
     });
-
-    $(".btn-remove").unbind('click').bind('click', function(){
-        $(this).closest('tr').remove();
-    });
-}
-
-btnFunction();
 </script>
+
     
 @endpush

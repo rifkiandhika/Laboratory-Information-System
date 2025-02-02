@@ -5,6 +5,8 @@ namespace App\Http\Controllers\analyst;
 use App\Http\Controllers\Controller;
 use App\Models\historyPasien;
 use App\Models\pasien;
+use App\Models\pembayaran;
+use App\Models\pemeriksaan_pasien;
 use App\Models\spesimentCollection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +18,10 @@ class analystDasboard extends Controller
      */
     public function index()
     {
-        $pasienharian = pasien::where('created_at', now())->get();
+        $pasienharian = pasien::where('created_at', now())->count();
+
+        $bl = pasien::where('status', 'Telah Dikirim ke Lab')->count();
+        // $dl = pasien::where('status', 'Acc Collection')->count();
         // $dataPasien = pasien::where('status', 'Telah Dikirim ke Lab')
         //     ->orWhere('status', 'Disetujui oleh analis lab')->orderby('cito', 'desc')->get();
 
@@ -33,7 +38,7 @@ class analystDasboard extends Controller
 
         $dataHistory = historyPasien::where('proses', '=', 'order')->get();
 
-        return view('analyst.dashboard', compact('dataPasien', 'pasienharian', 'dataPasienCito', 'dataHistory'));
+        return view('analyst.dashboard', compact('dataPasien', 'pasienharian', 'dataPasienCito', 'dataHistory', 'bl'));
     }
 
     /**
@@ -45,22 +50,23 @@ class analystDasboard extends Controller
     }
 
 
+
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
         // Validasi data request
+        // dd($request)->all();
         $request->validate([
             'no_lab' => 'required',
             'kapasitas' => 'required_without:serum|array',
-            'serumh' => 'required|array'
         ]);
 
         // Ambil input dari request
         $no_lab = $request->input('no_lab');
         $kapasitas = $request->input('kapasitas');
-        $serumh = $request->input('serumh');
+        // $serumh = $request->input('serumh');
         $notes = $request->input('note', []);
 
         // Menghapus data lama sebelum memasukkan data baru
@@ -89,23 +95,23 @@ class analystDasboard extends Controller
         }
 
         // Jika ada serumh, simpan data baru untuk tabung K3
-        if (!empty($serumh)) {
-            foreach ($serumh as $x => $serumh) {
-                spesimentCollection::create([
-                    'no_lab' => $no_lab,
-                    'tabung' => 'K3',
-                    'serumh' => $serumh,
-                    'status' => 'Acc',
-                    'note' => $notes[$x] ?? null,
-                    'tanggal' => now(),
-                ]);
-            }
-        }
+        // if (!empty($serumh)) {
+        //     foreach ($serumh as $x => $serumh) {
+        //         spesimentCollection::create([
+        //             'no_lab' => $no_lab,
+        //             'tabung' => 'K3',
+        //             'serumh' => $serumh,
+        //             'status' => 'Acc',
+        //             'note' => $notes[$x] ?? null,
+        //             'tanggal' => now(),
+        //         ]);
+        //     }
+        // }
 
         // Update status pasien menjadi 'Acc Collection'
-        pasien::where('no_lab', $no_lab)->update([
-            'status' => 'Acc Collection',
-        ]);
+        $pasien = pasien::where('no_lab', $request->no_lab)->first();
+        $pasien->status = $request->status;
+        $pasien->save();
 
         // Berikan notifikasi sukses
         toast('Berhasil Approve Spesiment', 'success');
@@ -120,6 +126,33 @@ class analystDasboard extends Controller
     public function show(string $id)
     {
         //
+    }
+
+    public function back(Request $request, $id)
+    {
+        $request->validate([
+            'note' => 'required|string|max:255',
+        ]);
+
+        $pasien = pasien::find($id);
+
+        // Update status pasien
+        $pasien->update(['status' => 'Dikembalikan Analyst']);
+
+        pemeriksaan_pasien::where('no_lab', $pasien->no_lab)
+            ->update(['status' => 'lama']);
+
+        historyPasien::create([
+            'no_lab' => $pasien->no_lab,
+            'proses' => 'Dikembalikan oleh analyst',
+            'tempat' => 'Laboratorium',
+            'note' => $request->input('note'),
+            'waktu_proses' => now(),
+            'created_at' => now(),
+        ]);
+
+        toast('Data telah dikembalikan ke loket', 'success');
+        return redirect()->route('analyst.index');
     }
 
     /**
@@ -141,9 +174,26 @@ class analystDasboard extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $no_lab)
     {
-        //
+        // Cari data pasien berdasarkan no_lab
+        $pasien = pasien::where('no_lab', $no_lab)->first();
+
+        // Cek apakah data pasien belum diverifikasi
+        if ($pasien && $pasien->status = 'Check In') {
+            // Hapus data dari tabel pemeriksaan_pasien
+            pemeriksaan_pasien::where('no_lab', $no_lab)->delete();
+
+            // Hapus data dari tabel pembayaran
+            pembayaran::where('no_lab', $no_lab)->delete();
+
+            // Hapus data dari tabel pasien
+            $pasien->delete();
+
+            toast('Berhasil Menghapus Data Pasien', 'success');
+            return redirect()->route('analyst.index');
+        }
+        toast('Tidak dapat menghapus data yang sudah diverifikasi', 'error');
     }
 
     public function approve(Request $request)

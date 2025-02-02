@@ -37,6 +37,7 @@ class pasienController extends Controller
         // $data_pasien = pasien::where('cito', 0)->where('status', 'Belum Dilayani')->get();
         $data = pasien::where('status', 'Belum Dilayani')->count();
         $tanggal = pasien::whereDate('created_at', Carbon::today())->count();
+        $dl = pasien::where('status', 'Telah Dikirim ke Lab')->count();
         $data_pasien = pasien::where('status', 'Belum Dilayani')->orderBy('cito', 'desc')->paginate(20);
         $payment = pasien::where('status', 'Telah Dibayar')->orderBy('cito', 'desc')->paginate(20);
         $dikembalikan = pasien::where('status', 'Dikembalikan Analyst')->orderBy('cito', 'desc')->paginate(20);
@@ -47,7 +48,7 @@ class pasienController extends Controller
 
 
 
-        return view('loket.index', compact('data_pasien', 'data', 'tanggal', 'payment', 'dikembalikan'));
+        return view('loket.index', compact('data_pasien', 'data', 'tanggal', 'payment', 'dikembalikan', 'dl'));
     }
 
     /**
@@ -216,30 +217,6 @@ class pasienController extends Controller
             'alamat' => $request->alamat,
         ]);
 
-        // pemeriksaan_pasien::where('no_lab', $request->nolab)->delete();
-
-        // foreach ($request->pemeriksaan as $pemeriksaan) {
-        //     $pemeriksaan_temp = explode(',', $pemeriksaan);
-
-        //     $id_departement[] = $pemeriksaan_temp[0];
-
-        //     $nama_parameter[] = $pemeriksaan_temp[1];
-        // }
-
-        // $no = 0;
-        // foreach ($request->pemeriksaan as $x => $pemeriksaan) {
-        //     pemeriksaan_pasien::create([
-        //         'no_lab' => $request->nolab,
-        //         'id_departement' => explode(',', $pemeriksaan)[1],
-        //         'nama_parameter' => $nama_parameter[$no],
-        //         'harga' => $harga,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ]);
-
-        //     $no++;
-        // }
-
         if ($pasien->status === 'Dikembalikan Analyst') {
             // Tambahkan hanya pemeriksaan baru tanpa menyertakan pemeriksaan lama
             foreach ($request->pemeriksaan as $pemeriksaan) {
@@ -262,17 +239,11 @@ class pasienController extends Controller
             }
         }
 
-        // historyPasien::where('no_lab', $request->nolab)->update([
-        //     'waktu_proses' => now(),
-        // ]);
-
-        // historyPasien::create([
-        //     'no_lab' => $pasien->no_lab,
-        //     'proses' => 'Update',
-        //     'tempat' => 'Loket',
-        //     'waktu_proses' => now(),
-        //     'note' => $request->note ?? ''
-        // ]);
+        session()->flash('status', 'updated');
+        // session(['updatedButtonId' => $no_lab]);
+        $updatedButtonIds = $no_lab; // Array data-id tombol yang diupdate
+        session(['updatedButtonIds' => $updatedButtonIds]);
+        session()->flash('status', 'updated');
 
 
         toast('Berhasil mengubah data pasien', 'success');

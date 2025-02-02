@@ -63,6 +63,14 @@ class vDokterController extends Controller
 
         $data_pasien->update(['status' => 'Result Review']);
 
+        historyPasien::create([
+            'no_lab' => $data_pasien->no_lab,
+            'proses' => 'Diverifikasi Oleh Dokter',
+            'tempat' => 'Laboratorium',
+            'waktu_proses' => now(),
+            'created_at' => now(),
+        ]);
+
         toast('Data Berhasil Diselesaikan', 'success');
         return redirect()->route('vdokter.index');
     }

@@ -83,12 +83,9 @@ Dashboard|Spesiment
                                 <div class="col mr-2">
                                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                         Jumlah Pasien Masuk (Harian)</div>
-                                    <div class="h3 mt-3 font-weight-bold text-gray-600">@if ($pasienharian->count() == null)0
-                                        @elseif($pasienharian->count() !== 0)
-
-                                     @foreach($pasienharian as $ph)
-                                        {{ $no1++ }}
-                                    @endforeach @endif</div>
+                                    <div class="h3 mt-3 font-weight-bold text-gray-600">
+                                        {{ $pasienharian }}
+                                    </div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="bx bx-chart fa-3x text-gray-300"></i>
@@ -106,7 +103,7 @@ Dashboard|Spesiment
                                 <div class="col mr-2">
                                     <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                         Pasien Belum Dilayani</div>
-                                    <div class="h3 mt-3 font-weight-bold text-gray-600">15</div>
+                                    <div class="h3 mt-3 font-weight-bold text-gray-600">{{ $bl }}</div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="bx bx-info-circle fa-3x text-gray-300"></i>
@@ -173,10 +170,10 @@ Dashboard|Spesiment
                 <div class="col-xl-12">
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <div class="d-flex justify-content-between">
+                            {{-- <div class="d-flex justify-content-between">
                                 <h6 class="m-0 font-weight-bold" style="color: #96B6C5;">Antrian Pasien</h6>
                                 <a href="#" id="konfirmasiallselecteddata" type="button" class="btn btn-outline-primary mb-2 mt-2 " >Check In</a>
-                            </div>
+                            </div> --}}
                         </div>
                         <div class="card-body card-datatable">
                             <div class="table-responsive" style="width: 100%;">
@@ -186,7 +183,7 @@ Dashboard|Spesiment
                                     @endphp
                                     <thead >
 
-                                        <th class="sorting_disabled"><input style="font-size: 20px; cursor: pointer;clear:" type="checkbox" name="" id="select_all_ids" class="form-check-input" ></th>
+                                        <th>No</th>
                                             <th scope="col">Cito</th>
                                             <th scope="col">No RM</th>
                                             <th scope="col">No Lab</th>
@@ -199,12 +196,12 @@ Dashboard|Spesiment
                                     <tbody style="font-size: 14px">
                                         @foreach ($dataPasien as $data1)
                                             <tr id="voucher{{ $data1->id }}">
-                                                @if ($data1->status == 'Disetujui oleh analis lab')
+                                                {{-- @if ($data1->status == 'Disetujui oleh analis lab') --}}
 
-                                                <td><input style="font-size: 20px; cursor: pointer;" type="checkbox" name="ids" id="checkbox" class="form-check-input checkbox_ids" value="{{ $data1->id }}"></td>
-                                                @else
-                                                <td style="visibility: hidden">{{ $no++ }}</td>
-                                                @endif
+                                                {{-- <td><input style="font-size: 20px; cursor: pointer;" type="checkbox" name="ids" id="checkbox" class="form-check-input checkbox_ids" value="{{ $data1->id }}"></td> --}}
+                                                {{-- @else --}}
+                                                <td>{{ $no++ }}</td>
+                                                {{-- @endif --}}
 
                                             <td>
                                                 <i class='ti ti-bell-filled {{ $data1->cito == '1' ? 'text-danger' : 'text-secondary' }}' style="font-size: 23px;"></i>
@@ -222,8 +219,31 @@ Dashboard|Spesiment
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    <button class="btn btn-primary btn-preview" data-id={{ $data1->id }} data-bs-target="#modalSpesimen"
+                                                    <button title="Check Collection" class="btn btn-outline-secondary btn-preview" data-id={{ $data1->id }} data-bs-target="#modalSpesimen"
                                                         data-bs-toggle="modal" ><i class="ti ti-temperature"></i></button>
+
+                                                        <form id="spesimentBack-{{ $data1->id }}" action="{{ route('analyst.back', $data1->id) }}" method="POST" style="display: none;">
+                                                            @csrf
+                                                        </form>
+
+                                                        <button title="Kembalikan Ke Loket" class="btn btn-outline-secondary" onclick="confirmBack({{ $data1->id }})">
+                                                            <i class="ti ti-arrow-back-up"></i>
+                                                        </button>
+
+                                                        <a data-barcode="{{ $data1->no_lab }}" style="cursor: pointer" href="{{ route('print.barcode', $data1->no_lab) }}" class="btn btn-secondary barcode-btn" target="_blank"><i class="ti ti-barcode"></i></a>
+                                                
+
+                                                        <form id="delete-form-{{ $data1->id }}"
+                                                            action="{{ route('analyst.destroy', $data1->no_lab) }}" method="POST"
+                                                            style="display: none;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                        </form>
+                                                        
+                                                        <button class="btn btn-danger"
+                                                            onclick="confirmDelete({{ $data1->id }})"><i
+                                                            class="ti ti-trash"></i>
+                                                        </button>
     
                                                   </td>
                                             </tr>
@@ -273,6 +293,85 @@ Dashboard|Spesiment
 
 @endsection
 @push('script')
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Ambil semua tombol dengan class 'barcode-btn'
+        const buttons = document.querySelectorAll(".barcode-btn");
+    
+        buttons.forEach(button => {
+            const barcode = button.getAttribute("data-barcode");
+    
+            // Cek di localStorage apakah tombol ini sudah diklik sebelumnya
+            if (localStorage.getItem(`barcode_clicked_${barcode}`) === "true") {
+                button.classList.remove("btn-secondary");
+                button.classList.add("btn-warning");
+            }
+    
+            // Tambahkan event click untuk mengubah warna tombol dan menyimpan status di localStorage
+            button.addEventListener("click", function () {
+                button.classList.remove("btn-secondary");
+                button.classList.add("btn-warning");
+                
+                // Simpan status di localStorage
+                localStorage.setItem(`barcode_clicked_${barcode}`, "true");
+            });
+        });
+    });
+    </script>
+<script>
+    function confirmBack(id) {
+      Swal.fire({
+          title: 'Apakah Anda yakin?',
+          text: "Data akan dikirim kembali ke loket?",
+          icon: 'warning',
+          input: 'textarea',
+          inputPlaceholder: 'Tambahkan catatan di sini...',
+          showCancelButton: true,
+          confirmButtonText: 'Ya, Kirim!',
+          cancelButtonText: 'Batal',
+          inputValidator: (value) => {
+            if (!value) {
+                  return 'Note wajib diisi!'; // Pesan kesalahan jika input kosong
+              }
+              return null;
+          }
+      }).then((result) => {
+          if (result.isConfirmed) {
+              if (result.value) {
+                  let noteInput = document.createElement('input');
+                  noteInput.type = 'hidden';
+                  noteInput.name = 'note';
+                  noteInput.value = result.value;
+                  document.getElementById(`spesimentBack-${id}`).appendChild(noteInput);
+              }
+              document.getElementById(`spesimentBack-${id}`).submit();
+          }
+      });
+  }
+  </script>
+<script>
+    $('#verification').click(function(e) {
+   e.preventDefault();
+   
+   // Dapatkan semua department yang ada
+   const departments = new Set();
+   data_pemeriksaan_pasien.forEach(e => {
+       departments.add(e.data_departement.nama_department);
+   });
+
+   // Set status berdasarkan jumlah department
+   let newStatus;
+   if (departments.size === 1 && departments.has('Hematologi')) {
+       newStatus = 'Check In Spesiment';
+   } else if (departments.size > 1) {
+       newStatus = 'Acc Collection'; 
+   }
+
+   // Tambahkan status ke form sebelum submit
+   $('form').append(`<input type="hidden" name="status" value="${newStatus}">`);
+   $('form').submit();
+});
+</script>
 <script>
     $(function() {
         let detailSpesiment = document.getElementById('detailSpesiment');
@@ -409,64 +508,70 @@ Dashboard|Spesiment
                     detailContent += '</div>';
 
                     Object.keys(Tabung).forEach(spesiment => {
-                        res.data.spesiment.forEach((e, i) => {
-                            let details = '';
-                            if (e.details && e.details.length > 0) {
-                                details = `<div class="detail-container col-12 col-md-6">`;
-                                e.details.forEach(detail => {
-                                    const imageUrl = `/gambar/${detail.gambar}`;
-                                    const isChecked = (e.tabung === 'EDTA' && detail.nama_parameter === 'Normal') ||
-                                                      (e.tabung === 'K3' && detail.nama_parameter === 'Normal') ? 'checked' : '';
+                    res.data.spesiment.forEach((e, i) => {
+                        // Skip if the tabung is CLOT-ACT
+                        if (e.tabung === 'CLOT-ACT') {
+                            return; // Skip this iteration if tabung is CLOT-ACT
+                        }
 
-                                    details +=  
-                                    `<div class="detail-item">
-                                        <div class="detail-text">${detail.nama_parameter}</div>
-                                        <div class="detail-image-container">
-                                            <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
-                                        </div>
-                                        <div class="detail-radio-container">
-                                            ${e.tabung === 'EDTA' ? `<input type="radio" name="kapasitas[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}
-                                            ${e.tabung === 'K3' ? `<input type="radio" name="serumh[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}  
-                                        </div>
-                                    </div>`;
-                                });
-                                details += `</div>`;
-                            }
+                        let details = '';
+                        if (e.details && e.details.length > 0) {
+                            details = `<div class="detail-container col-12 col-md-6">`;
+                            e.details.forEach(detail => {
+                                const imageUrl = `/gambar/${detail.gambar}`;
+                                const isChecked = (e.tabung === 'K3-EDTA' && detail.nama_parameter === 'Normal') ||
+                                                (e.tabung === 'K3' && detail.nama_parameter === 'Normal') ? 'checked' : '';
 
-                            let title = '';
-                            let subtext = '';
-                            if (e.tabung === 'EDTA') {
-                                title = '<h5 class="title">Pengambilan Spesimen</h5> <hr>';
-                            }
-
-                            let note = '';
-                            if (e.tabung === 'EDTA' || e.tabung === 'K3') {
-                                note = '<p class="mb-0"><strong>Note</strong></p>';
-                            }
-
-                            detailContent += `${title}
-                                <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header" id="heading${e.tabung}">
-                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">
-                                            Tabung ${e.tabung}
-                                            </button>
-                                        </h2>
-                                        <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}" data-bs-parent="#accordion${e.tabung}">
-                                            <div class="accordion-body">
-                                                ${subtext}
-                                                <div class="container">
-                                                    ${details}
-                                                </div>
-                                                ${note}
-                                                ${e.tabung === 'EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Tulis catatan disini"></textarea>` : ''}
-                                                ${e.tabung === 'K3' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Tulis catatan disini"></textarea>` : ''}
-                                            </div>
-                                        </div>
+                                details +=  
+                                `<div class="detail-item">
+                                    <div class="detail-text">${detail.nama_parameter}</div>
+                                    <div class="detail-image-container">
+                                        <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
+                                    </div>
+                                    <div class="detail-radio-container">
+                                        ${e.tabung === 'K3-EDTA' ? `<input type="radio" name="kapasitas[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}
+                                        ${e.tabung === 'K3' ? `<input type="radio" name="serumh[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}  
                                     </div>
                                 </div>`;
-                        });
+                            });
+                            details += `</div>`;
+                        }
+
+                        let title = '';
+                        let subtext = '';
+                        if (e.tabung === 'K3-EDTA') {
+                            title = '<h5 class="title">Pengambilan Spesimen</h5> <hr>';
+                        }
+
+                        let note = '';
+                        if (e.tabung === 'K3-EDTA' || e.tabung === 'K3') {
+                            note = '<p class="mb-0"><strong>Note</strong></p>';
+                        }
+
+                        detailContent += `${title}
+                            <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading${e.tabung}">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">
+                                        Tabung ${e.tabung}
+                                        </button>
+                                    </h2>
+                                    <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}" data-bs-parent="#accordion${e.tabung}">
+                                        <div class="accordion-body">
+                                            ${subtext}
+                                            <div class="container">
+                                                ${details}
+                                            </div>
+                                            ${note}
+                                            ${e.tabung === 'K3-EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Tulis catatan disini"></textarea>` : ''}
+                                            ${e.tabung === 'K3' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Tulis catatan disini"></textarea>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
                     });
+                });
+
 
                     // Masukkan detail spesimen ke dalam modal
                     detailSpesiment.innerHTML = detailContent;

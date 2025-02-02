@@ -630,6 +630,7 @@
 
 <!-- Preview Pasien -->
 @push('script')
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
@@ -786,100 +787,115 @@
 
                         // loader.style.display = 'none';
                         loader.hide();
+
                         
                         // undisabled tombol manual button
-                        const manualButton = document.getElementById('manualButton');
-                        const manualInput = document.querySelectorAll('#manualInput');
-                        const duploButton = document.getElementById('duploButton');
-                        const d1 = document.querySelectorAll('#d1');
-                        const d2 = document.querySelectorAll('#d2');
-                        const d3 = document.querySelectorAll('#d3');
-                        const submitButton = document.querySelector('#disabled');
+                        // const manualButton = document.getElementById('manualButton');
+                        // const manualInput = document.querySelectorAll('#manualInput');
+                        // const duploButton = document.getElementById('duploButton');
+                        // const d1 = document.querySelectorAll('#d1');
+                        // const d2 = document.querySelectorAll('#d2');
+                        // const d3 = document.querySelectorAll('#d3');
+                        // const submitButton = document.querySelector('#disabled');
+                        // const submitButtond = document.querySelector('#vdbutton');
 
-                        // Ambil status dari data pasien
-                        const statusPasien = data_pasien.status;
+                        // // Ambil status dari data pasien
+                        // const statusPasien = data_pasien.status;
 
-                        submitButton.disabled = true;
+                        // submitButton.disabled = true;
+
+                        // submitButtond.disabled = true;
+                        // // Ambil referensi tombol manual dan tombol verifikasi
+                        // const mb = document.getElementById('manualButton');
+                        // const vb = document.getElementById('disabled');
+                        // const vdb = document.getElementById('vdbutton');
+
+                        // // Tambahkan event listener pada tombol manual
+                        // mb.addEventListener('click', () => {
+                        //     // Ketika tombol manual diklik, aktifkan tombol verifikasi
+                        //     vb.disabled = false;
+                        //     vdb.disabled = false;
+                        // });
+
                         
-                        let clickCount = 0;
+                        // let clickCount = 0;
 
-                        duploButton.addEventListener('click', () => {
-                            clickCount++;
+                        // document.getElementById('duploButton').addEventListener('click', () => {
+                        //     clickCount++;
                             
-                            // Enable input fields berdasarkan jumlah klik
-                            switch(clickCount) {
-                                case 1:
-                                    // Enable d1 pada klik pertama
-                                    d1.forEach(input => {
-                                        input.readOnly = false;
-                                        input.classList.remove('readonly-input');
-                                        input.focus();
-                                    });
-                                    break;
+                        //     // Enable input fields berdasarkan jumlah klik
+                        //     switch(clickCount) {
+                        //         case 1:
+                        //             // Enable d1 pada klik pertama
+                        //             document.querySelectorAll('#d1').forEach(input => {
+                        //                 input.disabled = false;  // Menghapus disabled
+                        //                 input.classList.remove('disabled-input');  // Hapus class disabled
+                        //                 input.focus();
+                        //             });
+                        //             break;
                                     
-                                case 2:
-                                    // Enable d2 pada klik kedua
-                                    d2.forEach(input => {
-                                        input.readOnly = false;
-                                        input.classList.remove('readonly-input');
-                                        input.focus();
-                                    });
-                                    break;
+                        //         case 2:
+                        //             // Enable d2 pada klik kedua
+                        //             document.querySelectorAll('#d2').forEach(input => {
+                        //                 input.disabled = false;  // Menghapus disabled
+                        //                 input.classList.remove('disabled-input');  // Hapus class disabled
+                        //                 input.focus();
+                        //             });
+                        //             break;
                                     
-                                case 3:
-                                    // Enable d3 pada klik ketiga
-                                    d3.forEach(input => {
-                                        input.readOnly = false;
-                                        input.classList.remove('readonly-input');
-                                        input.focus();
-                                    });
-                                    submitButton.disabled = false; // Enable submit button setelah semua input enabled
-                                    // Optional: Disable duplo button setelah semua input enabled
-                                    duploButton.disabled = true;
-                                    break;
+                        //         case 3:
+                        //             // Enable d3 pada klik ketiga
+                        //             document.querySelectorAll('#d3').forEach(input => {
+                        //                 input.disabled = false;  // Menghapus disabled
+                        //                 input.classList.remove('disabled-input');  // Hapus class disabled
+                        //                 input.focus();
+                        //             });
+                        //             document.getElementById('submitButton').disabled = false;  // Enable tombol submit setelah semua input enabled
+                        //             // Optional: Disable duplo button setelah semua input enabled
+                        //             document.getElementById('duploButton').disabled = true;
+                        //             break;
                                     
-                                default:
-                                    break;
-                            }
-                        });
+                        //         default:
+                        //             break;
+                        //     }
+                        // });
 
-                        // Optional: Jika Anda ingin menambahkan fungsi reset
-                        function resetInputs() {
-                            clickCount = 0;
-                            [d1, d2, d3].forEach(inputGroup => {
-                                inputGroup.forEach(input => {
-                                    input.readOnly = true;
-                                    input.classList.add('readonly-input');
-                                });
-                            });
-                            submitButton.disabled = true;
-                            duploButton.disabled = false;
-                        }
+                        // // Optional: Fungsi reset jika Anda ingin mereset semua input dan tombol
+                        // function resetInputs() {
+                        //     clickCount = 0;
+                            
+                        //     // Mengembalikan input ke keadaan disabled
+                        //     ['d1', 'd2', 'd3'].forEach(id => {
+                        //         document.querySelectorAll(`#${id}`).forEach(input => {
+                        //             input.disabled = true;  // Menonaktifkan disabled
+                        //             input.classList.add('disabled-input');  // Menambahkan class disabled jika diperlukan
+                        //         });
+                        //     });
 
-                        manualButton.addEventListener('click', () => {
-                            manualInput.forEach(input => {
-                                input.readOnly = false;
-                                input.classList.remove('readonly-input');
-                                input.focus(); // Optional: Focus on the first input
-                            });
-                            submitButton.disabled = false;
-                        });
-                        // undisabled tombol manual button
-                        // undisabled tombol verifikasi dokter
-                        const verifikasiButton = document.getElementById('verifikasiDokterPKButton');
-                        if (data_pasien.status === 'Verifikasi'|| data_pasien.status === 'Dikembalikan') {
-                            verifikasiButton.disabled = false;
-                        } else {
-                            verifikasiButton.disabled = true;
-                        }
+                        //     document.getElementById('submitButton').disabled = true;  // Nonaktifkan tombol submit
+                        //     document.getElementById('duploButton').disabled = false;  // Mengaktifkan tombol duplo kembali
+                        // }
 
-                        const verifikasi = document.getElementById('verifikasi');
-                        if (data_pasien.status === 'Verifikasi') {
-                            verifikasi.disabled = false;
-                        } else {
-                            verifikasi.disabled = true;
-                        }
-                        
+
+                        // document.getElementById('manualButton').addEventListener('click', () => {
+                        //     // Ambil semua elemen input yang memiliki class 'manualInput'
+                        //     const manualInputs = document.querySelectorAll('.manualInput');
+                            
+                        //     // Iterasi untuk mengubah status disabled dan readOnly
+                        //     manualInputs.forEach(input => {
+                        //         input.readOnly = false; // Mengubah readOnly menjadi false
+                        //         input.disabled = false; // Menghilangkan disabled
+                        //         input.classList.remove('disabled'); // Menghapus class 'disabled' jika ada
+                        //         input.focus(); // Fokus pada input pertama (opsional)
+                        //     });
+                            
+                        //     // Jika ada tombol submit, aktifkan tombol submit
+                        //     const submitButton = document.getElementById('submitButton'); // Sesuaikan dengan ID tombol submit Anda
+                        //     if (submitButton) {
+                        //         submitButton.disabled = false;
+                        //     }
+                        // });
+
 
                     }
                 })
@@ -916,43 +932,22 @@
         }
 
         function getTableContent(data_pemeriksaan_pasien, data_pasien, hasil) {
+            // Fungsi helper untuk menampilkan data dokter
             function getDokterDisplay(labData, dokterData) {
-            // Jika tidak ada data
-            if (!labData || !dokterData) {
-                return "Dokter tidak tersedia";
+                if (!labData || !dokterData) {
+                    return "Dokter tidak tersedia";
+                }
+                const kodeDokterLab = labData?.kode_dokter;
+                return kodeDokterLab === dokterData.kode_dokter ? dokterData.kode_dokter : (kodeDokterLab || "Dokter tidak tersedia");
             }
 
-            // Ambil kode dokter dari data lab
-            const kodeDokterLab = labData?.kode_dokter;
+            const labData = data_pasien;
+            const dokterData = data_pasien.dokter;
+            let dokterDisplay = getDokterDisplay(labData, dokterData);
 
-            // Cek jika kode dokter lab sama dengan kode dokter di data dokter
-            if (kodeDokterLab === dokterData.kode_dokter) {
-                return dokterData.kode_dokter;
-            }
-
-            // Jika tidak sama, kembalikan kode dokter dari lab
-            return kodeDokterLab || "Dokter tidak tersedia";
-        }
-
-        // Penggunaan
-        const labData = data_pasien; // Data lab dengan kode_dokter
-        const dokterData = data_pasien.dokter; // Data dokter
-
-        let dokterDisplay = getDokterDisplay(labData, dokterData);
-
-        // Set nilai ke input
-        let inputElement = document.querySelector('[name="dokter"]');
-        if (inputElement) {
-            inputElement.value = dokterDisplay;
-        }
-
-        // Debug logs
-        console.log('Lab Data:', labData);
-        console.log('Dokter Data:', dokterData);
-        console.log('Display Value:', dokterDisplay);
-
-            return `
-            <form action="{{ route('worklist.store') }}" method="POST">
+            // Generate HTML content
+            const content = `
+            <form id="worklistForm" action="{{ route('worklist.store') }}" method="POST">
                 @csrf
                 <input type="hidden" name="no_lab" value="${data_pasien.no_lab}">
                 <input type="hidden" name="no_rm" value="${data_pasien.no_rm}">
@@ -986,10 +981,10 @@
                                         <tr class="mt-2" data-id="${rowId}">
                                             <td>${p.data_pemeriksaan.nama_pemeriksaan}</td>
                                             <input type="hidden" name="nama_pemeriksaan[]" value="${p.data_pemeriksaan.nama_pemeriksaan}" />
-                                            <td><input type="number" name="hasil[]" id="manualInput" class="form-control text-center w-50 p-0 readonly-input" value="${hasilItem ? hasilItem.hasil : ''}" required readonly/></td>
-                                            <td><input type="number" name="duplo" id="d1" class="form-control text-center w-50 p-0" readonly  /></td>
-                                            <td><input type="number" name="duplo" id="d2" class="form-control text-center w-50 p-0" readonly  /></td>
-                                            <td><input type="number" name="duplo" id="d3" class="form-control text-center w-50 p-0" readonly  /></td>
+                                            <td><input type="number" name="hasil[]" class="form-control text-center w-50 p-0 manualInput" disabled value="${hasilItem ? hasilItem.hasil : ''}" required/></td>
+                                            <td><input type="number" name="duplo" id="d1" class="form-control text-center w-50 p-0" disabled /></td>
+                                            <td><input type="number" name="duplo" id="d2" class="form-control text-center w-50 p-0" disabled /></td>
+                                            <td><input type="number" name="duplo" id="d3" class="form-control text-center w-50 p-0" disabled /></td>
                                             <td class="text-center"><input type="hidden" name="satuan[]" class="form-control w-50 p-0" value="" readonly/></td>
                                             <td><input type="hidden" name="range[]" class="form-control w-50 p-0" value="${p.data_pemeriksaan.nilai_satuan}" readonly/>${p.data_pemeriksaan.nilai_satuan}</td>
                                             <td><input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly/>1-10</td>
@@ -1002,25 +997,103 @@
                     </table>
                 </div>
                 <div class="row">
-                    <div class="col-lg-6 mb-3 mt-2">
-                        <button id="disabled" type="submit" class="btn btn-outline-info btn-block w-100">Verifikasi Hasil</button>
+                    <div class="col-lg-12 mb-3 mt-2">
+                        <button type="button" id="verifikasiHasilBtn" class="btn btn-outline-info btn-block w-100">Verifikasi Hasil</button>
                     </div>
-            </form>      
-                    <div class="col-lg-6 mt-2">
-                        <form action="worklist/checkin/${data_pasien.id}" method="POST">
-                            @csrf
-                            <button type="submit" id="verifikasiDokterPKButton" class="btn btn-outline-primary btn-block w-100">Verifikasi Dokter PK</button>
-                        </form>
-                    </div>
-                    <div>
-                        <form action="worklist/end/${data_pasien.id}" method="POST">
-                            @csrf
-                            <button type="submit" id="verifikasi" class="btn btn-outline-success btn-block w-100">Verifikasi</button>
-                        </form>
+                    <div class="col-lg-12 mt-2">
+                        <button type="button" id="verifikasiDokterBtn" class="btn btn-outline-primary w-100">Verifikasi Dokter PK</button>
                     </div>
                 </div>
-            `;
+            </form>`;
+
+            // Render content first
+            setTimeout(() => {
+                // Setup form action handling
+                const form = document.getElementById('worklistForm');
+                const verifikasiHasilBtn = document.getElementById('verifikasiHasilBtn');
+                const verifikasiDokterBtn = document.getElementById('verifikasiDokterBtn');
+                const manualButton = document.getElementById('manualButton');
+                const duploButton = document.getElementById('duploButton');
+
+                // Function untuk handle form submission
+                function handleFormSubmission(actionType) {
+                    if (form) {
+                        if (actionType === 'checkin') {
+                            form.action = `worklist/checkin/${data_pasien.id}`;
+                        } else {
+                            form.action = "{{ route('worklist.store') }}";
+                        }
+                        form.submit();
+                    }
+                }
+
+                // Setup event listeners untuk tombol verifikasi
+                if (verifikasiHasilBtn) {
+                    verifikasiHasilBtn.addEventListener('click', () => handleFormSubmission('store'));
+                }
+
+                if (verifikasiDokterBtn) {
+                    verifikasiDokterBtn.addEventListener('click', () => handleFormSubmission('checkin'));
+                }
+
+                // Setup manual input handling
+                if (manualButton) {
+                    manualButton.addEventListener('click', () => {
+                        const manualInputs = document.querySelectorAll('.manualInput');
+                        manualInputs.forEach(input => {
+                            if (input) {
+                                input.disabled = false;
+                                input.focus();
+                            }
+                        });
+                    });
+                }
+
+                // Setup duplo button handling
+                let clickCount = 0;
+                if (duploButton) {
+                    duploButton.addEventListener('click', () => {
+                        clickCount++;
+                        
+                        switch(clickCount) {
+                            case 1:
+                                document.querySelectorAll('#d1').forEach(input => {
+                                    if (input) {
+                                        input.disabled = false;
+                                        input.focus();
+                                    }
+                                });
+                                break;
+                            case 2:
+                                document.querySelectorAll('#d2').forEach(input => {
+                                    if (input) {
+                                        input.disabled = false;
+                                        input.focus();
+                                    }
+                                });
+                                break;
+                            case 3:
+                                document.querySelectorAll('#d3').forEach(input => {
+                                    if (input) {
+                                        input.disabled = false;
+                                        input.focus();
+                                    }
+                                });
+                                if (duploButton) {
+                                    duploButton.disabled = true;
+                                }
+                                break;
+                        }
+                    });
+                }
+            }, 0);
+
+            return content;
         }
+
+        // Export fungsi jika diperlukan
+        window.getTableContent = getTableContent;
+
 
         document.addEventListener('DOMContentLoaded', function() {
         let duploCount = 0;
@@ -1094,7 +1167,7 @@
                 let processTime = '';
 
                 const checkInSpesimen = history.find(h => h.status === 'Check in spesiment');
-                if (e.tabung === 'EDTA') {
+                if (e.tabung === 'K3-EDTA') {
                 // Cari item dalam spesiment collection yang memiliki no_lab yang sesuai dengan laravel_through_key
                 const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key);
                 if (collectionItem) {
@@ -1145,7 +1218,7 @@
 
                         const matchedDetail = detailsData.find(d => d.id === detail.id)
                         if(matchedDetail){
-                            if (e.tabung === 'EDTA' && kapasitas == detail.id) {
+                            if (e.tabung === 'K3-EDTA' && kapasitas == detail.id) {
                                 isChecked = 'checked';
                                 isDisabled = '';
                             } else if (e.tabung === 'K3' && serumh == detail.id) {
@@ -1174,7 +1247,7 @@
                 let detail = '';
                 let subtext = '';
 
-                if (e.tabung === 'EDTA') {
+                if (e.tabung === 'K3-EDTA') {
                     title = '<h5 class="title">Spesiment Collection</h5> <hr>';
                 }else
 
@@ -1188,7 +1261,7 @@
                 }
 
                 let note = '';
-                if (e.tabung === 'EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'CLOTH-ACT') {
+                if (e.tabung === 'K3-EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'CLOTH-ACT') {
                     note = '<p class="mb-0"><strong>Note</strong></p>';
                 }
                 accordionContent += ` ${title}
@@ -1207,7 +1280,7 @@
                                         ${details}
                                     </div>
                                     ${note}
-                                    ${e.tabung === 'EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
+                                    ${e.tabung === 'K3-EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
                                     ${e.tabung === 'CLOTH-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
                                     ${e.tabung === 'CLOT-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null"disabled></textarea>` : ''}
                                     

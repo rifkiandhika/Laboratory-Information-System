@@ -45,6 +45,23 @@
         display: block;
         background-color: antiquewhite;
     }
+    .footer-container {
+    padding: 20px;
+}
+
+.footer-container .user-info {
+    flex: 1;  /* Memberikan ruang yang cukup di sebelah kiri */
+}
+
+.footer-container .doctor-info {
+    flex: 1;  /* Memberikan ruang yang cukup di sebelah kanan */
+    text-align: right;
+}
+
+.footer-container h6 {
+    margin: 0;
+}
+
 }
 
     </style>
@@ -161,7 +178,7 @@
                             <th scope="row" class="p-0 mb-0">Dokter Pengirim</th>
                             <td>
                                 <div>
-                                    :  <span class="ms-2" id="dokter">{{ $data_pasien->dokter->nama_dokter}}</span>
+                                    :  <span class="ms-2" id="dokter">{{ $data_pasien->kode_dokter}}</span>
                                 </div>
                             </td>
                         </tr>
@@ -186,9 +203,6 @@
                         <tr scope="row">
                             <th class="col-4 fw-bold">Jenis Pemeriksaan</th>
                             <th class="col-3 ml-2 fw-bold">Hasil</th>
-                            <!-- Kondisi Duplo -->
-                            <th class="col-3 fw-bold">D1</th>
-                            <th class="col-3 fw-bold">D2</th>
                             <th class="col-2 fw-bold">Flag</th>
                             <th class="col-2 fw-bold">Satuan</th>
                             <th class="col-2 fw-bold">Range</th>
@@ -214,8 +228,6 @@
                                 <tr>
                                     <td>{{ $pemeriksaanName }}</td>
                                     <td>{{ $hasilItem ? $hasilItem->hasil : 'Tidak ada hasil' }}</td>
-                                    <td></td>
-                                    <td></td>
                                     <td><input type="hidden" class="form-control p-0" readonly/></td>
                                     <td class="text-center">{{ $hasilItem ? $hasilItem->satuan : 'Tidak ada satuan' }}</td>
                                     <td><input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly/>1-10</td>
@@ -228,11 +240,27 @@
                 </table>
             </div>
         </div>
-        <div class="footer-container text-end">
-            <h6>Dokter Penanggung Jawab</h6>
-            <img src="" alt="Barcode">
-            <h6 style="padding-right: 30px !important;">{{ $data_pasien->dokter->nama_dokter }}</h6>
+        @if(isset($note) && !empty($note))
+            <p><strong>Note:</strong> {{ $note }}</p>
+        @endif
+        <div class="footer-container d-flex justify-content-between">
+            <!-- Bagian Kiri untuk Nama User -->
+            <div class="user-info">
+                <h6>Lab Penanggung Jawab</h6>
+                <br>
+                <br>
+                <h6 style="padding-left: 25px">{{ auth()->user()->name }}</h6> <!-- Nama user yang sedang login -->
+            </div>
+        
+            <!-- Bagian Kanan untuk Nama Dokter -->
+            <div class="doctor-info text-end">
+                <h6>Dokter Penanggung Jawab</h6>
+                <br>
+                <br>
+                <h6 style="padding-right: 30px !important;">{{ $data_pasien->kode_dokter }}</h6>
+            </div>
         </div>
+        
 </div>
     
 

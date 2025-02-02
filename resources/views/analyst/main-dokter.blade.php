@@ -686,12 +686,24 @@
                 <hr>
                 <h5>History</h5>
                 <ul class="step-wizard-list mt-4">
-                    ${history.map((h, index) => `
+                    ${history.map((h, index) => {
+                    let createdAt = new Date(h.created_at);
+
+                    // Format tanggal dan waktu sesuai dengan yang diinginkan
+                    let formattedDate = createdAt.toLocaleString('id-ID', {
+                        year: 'numeric', 
+                        month: 'numeric', 
+                        day: 'numeric',
+                        hour: '2-digit', 
+                        minute: '2-digit'
+                    });
+                    return`
                         <li class="step-wizard-item">
                             <span class="progress-count">${index + 1}</span>
                             <span class="progress-label">${h.proses}</span>
+                            <span class="progress-label">${formattedDate}</span>
                         </li>
-                    `).join('')}
+                    `}).join('')}
                 </ul>
             `;
 
@@ -702,7 +714,7 @@
                 let processTime = '';
 
                 const checkInSpesimen = history.find(h => h.status === 'Check in spesiment');
-                if (e.tabung === 'EDTA') {
+                if (e.tabung === 'K3-EDTA') {
                 // Cari item dalam spesiment collection yang memiliki no_lab yang sesuai dengan laravel_through_key
                 const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key);
                 if (collectionItem) {
@@ -747,7 +759,7 @@
 
                         const matchedDetail = detailsData.find(d => d.id === detail.id)
                         if(matchedDetail){
-                            if (e.tabung === 'EDTA' && kapasitas == detail.id) {
+                            if (e.tabung === 'K3-EDTA' && kapasitas == detail.id) {
                                 isChecked = 'checked';
                                 isDisabled = '';
                             } else if (e.tabung === 'K3' && serumh == detail.id) {
@@ -776,7 +788,7 @@
                 let detail = '';
                 let subtext = '';
 
-                if (e.tabung === 'EDTA') {
+                if (e.tabung === 'K3-EDTA') {
                     title = '<h5 class="title">Spesiment Collection</h5> <hr>';
                 }else
 
@@ -790,7 +802,7 @@
                 }
 
                 let note = '';
-                if (e.tabung === 'EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'K3') {
+                if (e.tabung === 'K3-EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'K3') {
                     note = '<p class="mb-0"><strong>Note</strong></p>';
                 }
                 
@@ -810,7 +822,7 @@
                                         ${details}
                                     </div>
                                     ${note}
-                                    ${e.tabung === 'EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
+                                    ${e.tabung === 'K3-EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
                                     ${e.tabung === 'K3' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
                                     ${e.tabung === 'CLOT-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
                                     

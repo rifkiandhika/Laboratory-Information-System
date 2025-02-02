@@ -20,7 +20,7 @@ Dashboard|Admin
                                 <div class="col mr-2">
                                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                         Number of incoming patients (Daily)</div>
-                                    <div class="h3 mt-3 font-weight-bold text-gray-600">150</div>
+                                    <div class="h3 mt-3 font-weight-bold text-gray-600">{{ $ph }}</div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="bx bx-chart fa-3x text-gray-300"></i>
@@ -38,7 +38,7 @@ Dashboard|Admin
                                 <div class="col mr-2">
                                     <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                         Total User</div>
-                                    <div class="h3 mt-3 font-weight-bold text-gray-600">15</div>
+                                    <div class="h3 mt-3 font-weight-bold text-gray-600">{{ $tu }}</div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="bx bx-info-circle fa-3x text-gray-300"></i>
@@ -57,7 +57,7 @@ Dashboard|Admin
                                     <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                         Total Request Parameter
                                     </div>
-                                    <div class="h3 mt-3 font-weight-bold text-gray-600">250</div>
+                                    <div class="h3 mt-3 font-weight-bold text-gray-600">0</div>
                                     <!-- <div class="row no-gutters align-items-center">
                                                                                                                                                                                 <div class="col-auto">
                                                                                                                                                                                     <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>

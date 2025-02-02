@@ -60,6 +60,7 @@ class worklistController extends Controller
      */
     public function store(Request $request)
     {
+
         // dd($request);
         $request->validate([
             'no_lab' => 'required',
@@ -115,10 +116,17 @@ class worklistController extends Controller
 
         $pasien = pasien::where('no_lab', $no_lab)->where('status', 'Check In Spesiment')->first();
         if ($pasien) {
-            $pasien->update(['status' => 'Verifikasi']);
+            $pasien->update(['status' => 'Result Review']);
         }
+        historyPasien::create([
+            'no_lab' => $pasien->no_lab,
+            'proses' => 'Diverifikasi Analyst',
+            'tempat' => 'Laboratorium',
+            'waktu_proses' => now(),
+            'created_at' => now(),
+        ]);
 
-        toast('Data berhasil di verifikasi', 'success');
+        toast('Data berhasil di selesaikan', 'success');
         return redirect()->route('worklist.index');
     }
 
@@ -130,40 +138,74 @@ class worklistController extends Controller
         //
     }
 
-    public function checkin($id)
+    public function checkin(Request $request, $id)
     {
-        // Validasi dan pembaruan status
-        $pasien = pasien::find($id);
+        // Validasi input
+        $request->validate([
+            'no_lab' => 'required',
+            'no_rm' => 'required',
+            'nama' => 'required',
+            'ruangan' => 'required',
+            'nama_dokter' => 'required',
+            'hasil' => 'required|array',
+            'nama_pemeriksaan' => 'required|array',
+            'department' => 'required|array',
+        ]);
 
-        // Cek apakah status sebelumnya adalah "Verifikasi Dokter"
-        if ($pasien->status === 'Dikembalikan') {
-            // Update status menjadi "Diverifikasi Ulang"
-            $pasien->update(['status' => 'Diverifikasi Ulang']);
+        try {
+            // Cari data pasien
+            $pasien = Pasien::findOrFail($id);
 
-            // Tambahkan catatan ke history
-            historyPasien::create([
-                'no_lab' => $pasien->no_lab,
-                'proses' => 'Diverifikasi Ulang',
-                'tempat' => 'Laboratorium',
-                'waktu_proses' => now(),
-                'created_at' => now(),
-            ]);
-        } else {
-            // Update status pasien ke "Verifikasi Dokter"
-            $pasien->update(['status' => 'Verifikasi Dokter']);
+            // Simpan hasil pemeriksaan
+            foreach ($request->nama_pemeriksaan as $index => $nama_pemeriksaan) {
+                HasilPemeriksaan::create([
+                    'no_lab' => $request->no_lab,
+                    'nama_pemeriksaan' => $nama_pemeriksaan,
+                    'hasil' => $request->hasil[$index],
+                    'department' => $request->department[$index],
+                    'created_at' => now()
+                ]);
+            }
 
-            // Tambahkan catatan ke history
-            historyPasien::create([
-                'no_lab' => $pasien->no_lab,
-                'proses' => 'Verifikasi Dokter',
-                'tempat' => 'Laboratorium',
-                'waktu_proses' => now(),
-                'created_at' => now(),
-            ]);
+            // Cek status pasien
+            if ($pasien->status === 'Dikembalikan') {
+                // Update status jadi Diverifikasi Ulang
+                $pasien->update([
+                    'status' => 'Diverifikasi Ulang',
+                    'updated_at' => now()
+                ]);
+
+                // Catat history pasien
+                HistoryPasien::create([
+                    'no_lab' => $pasien->no_lab,
+                    'proses' => 'Diverifikasi Ulang',
+                    'tempat' => 'Laboratorium',
+                    'waktu_proses' => now(),
+                    'created_at' => now(),
+                ]);
+            } else {
+                // Update status ke Verifikasi Dokter
+                $pasien->update([
+                    'status' => 'Verifikasi Dokter',
+                    'updated_at' => now()
+                ]);
+
+                // Catat history pasien
+                HistoryPasien::create([
+                    'no_lab' => $pasien->no_lab,
+                    'proses' => 'Verifikasi Dokter',
+                    'tempat' => 'Laboratorium',
+                    'waktu_proses' => now(),
+                    'created_at' => now(),
+                ]);
+            }
+
+            toast('Data telah dikirim untuk diverifikasi', 'success');
+            return redirect()->route('worklist.index');
+        } catch (\Exception $e) {
+            toast('Terjadi kesalahan: ' . $e->getMessage(), 'error');
+            return redirect()->back()->withInput();
         }
-
-        toast('Data telah dikirim untuk diverifikasi', 'success');
-        return redirect()->route('worklist.index');
     }
 
 
