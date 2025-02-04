@@ -977,9 +977,9 @@
                         <th class="col-3">Parameter</th>
                         <th class="col-3">Hasil</th>
                         <th class="col-3"></th>
-                        <th class="col-3 duplo">D1</th>
-                        <th class="col-3 duplo">D2</th>
-                        <th class="col-3 duplo">D3</th>
+                        <th class="col-3 duplo d1-column" style="display:none;">D1</th>
+                        <th class="col-3 duplo d2-column" style="display:none;">D2</th>
+                        <th class="col-3 duplo d3-column" style="display:none;">D3</th>
                         <th class="col-2">Flag</th>
                         <th class="col-2">Satuan</th>
                         <th class="col-2">Range</th>
@@ -1007,18 +1007,31 @@
                                 <tr data-id="${rowId}">
                                     <td>${p.data_pemeriksaan.nama_pemeriksaan}</td>
                                     <input type="hidden" name="nama_pemeriksaan[]" value="${p.data_pemeriksaan.nama_pemeriksaan}" />
-                                    <td><input type="number" name="hasil[]" class="form-control text-center w-50 p-0 manualInput" disabled value="${hasilItem ? hasilItem.hasil : ''}" required/></td>
+                                    <td>
+                                        <input type="number" name="hasil[]" class="form-control text-center w-50 p-0 manualInput" disabled value="${hasilItem ? hasilItem.hasil : ''}" required/>
+                                    </td>
                                     <td>
                                         <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" data-index="0">
                                             <i class="ti ti-switch-2"></i>
                                         </button>
                                     </td>
-                                    <td><input type="number" name="duplo_d1" class="form-control text-center w-50 p-0 d1" disabled/></td>
-                                    <td><input type="number" name="duplo_d2" class="form-control text-center w-50 p-0 d2" disabled/></td>
-                                    <td><input type="number" name="duplo_d3" class="form-control text-center w-50 p-0 d3" disabled/></td>
+                                    <td class="duplo d1-column" style="display:none;">
+                                        <input type="number" name="duplo_d1" class="form-control text-center w-50 p-0 d1" disabled/>
+                                    </td>
+                                    <td class="duplo d2-column" style="display:none;">
+                                        <input type="number" name="duplo_d2" class="form-control text-center w-50 p-0 d2" disabled/>
+                                    </td>
+                                    <td class="duplo d3-column" style="display:none;">
+                                        <input type="number" name="duplo_d3" class="form-control text-center w-50 p-0 d3" disabled/>
+                                    </td>
                                     <td class="text-center flag-cell">${flagIcon}</td>
-                                    <td><input type="hidden" name="satuan[]" class="form-control w-50 p-0" value="${p.data_pemeriksaan.nilai_satuan}" readonly/>${p.data_pemeriksaan.nilai_satuan}</td>
-                                    <td><input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly/>1-10</td>
+                                    <td>
+                                        <input type="hidden" name="satuan[]" class="form-control w-50 p-0" value="${p.data_pemeriksaan.nilai_satuan}" readonly/>
+                                        ${p.data_pemeriksaan.nilai_satuan}
+                                    </td>
+                                    <td>
+                                        <input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly/>1-10
+                                    </td>
                                 </tr>
                                 `;
                             }).join('')}
@@ -1027,6 +1040,7 @@
                 </tbody>
             </table>
         </div>
+        
         <div class="row">
             <div class="col-lg-12 mb-3 mt-2">
                 <button type="button" id="verifikasiHasilBtn" class="btn btn-outline-info btn-block w-100" disabled>Verifikasi Hasil</button>
@@ -1038,13 +1052,14 @@
     </form>`;
 
     setTimeout(() => {
+        // Referensi tombol dan form
         const form = document.getElementById('worklistForm');
         const verifikasiHasilBtn = document.getElementById('verifikasiHasilBtn');
         const verifikasiDokterBtn = document.getElementById('verifikasiDokterBtn');
         const manualButton = document.getElementById('manualButton');
         const duploButton = document.getElementById('duploButton');
 
-        // Add event listeners for real-time flag updates
+        // Event listener untuk input real-time flag
         document.querySelectorAll('.manualInput, .d1, .d2, .d3').forEach(input => {
             input.addEventListener('input', function() {
                 const flagCell = this.closest('tr').querySelector('.flag-cell');
@@ -1052,7 +1067,7 @@
             });
         });
 
-        // Rest of the event listeners remain the same...
+        // Event listener untuk tombol verifikasi
         document.getElementById('verifikasiHasilBtn').addEventListener('click', () => {
             document.getElementById('worklistForm').action = "{{ route('worklist.store') }}";
             document.getElementById('worklistForm').submit();
@@ -1063,11 +1078,56 @@
             document.getElementById('worklistForm').submit();
         });
 
-        if (isDikembalikan) {
-            verifikasiHasilBtn.disabled = true;
-            verifikasiDokterBtn.disabled = true;
+        // Tombol duplo - menampilkan kolom secara bertahap
+        let currentDuploStage = 0;
+        if (duploButton) {
+            duploButton.addEventListener('click', () => {
+                const d1Columns = document.querySelectorAll('.d1-column');
+                const d2Columns = document.querySelectorAll('.d2-column');
+                const d3Columns = document.querySelectorAll('.d3-column');
+                const d1Inputs = document.querySelectorAll('.d1');
+                const d2Inputs = document.querySelectorAll('.d2');
+                const d3Inputs = document.querySelectorAll('.d3');
+
+                switch(currentDuploStage) {
+                    case 0:
+                        // Tampilkan kolom D1 dan aktifkan input D1
+                        d1Columns.forEach(col => col.style.display = 'table-cell');
+                        d1Inputs.forEach(input => {
+                            input.disabled = false;
+                            input.focus();
+                        });
+                        currentDuploStage = 1;
+                        break;
+                    
+                    case 1:
+                        // Tampilkan kolom D2 dan aktifkan input D2
+                        d2Columns.forEach(col => col.style.display = 'table-cell');
+                        d2Inputs.forEach(input => {
+                            input.disabled = false;
+                            input.focus();
+                        });
+                        currentDuploStage = 2;
+                        break;
+                    
+                    case 2:
+                        // Tampilkan kolom D3 dan aktifkan input D3
+                        d3Columns.forEach(col => col.style.display = 'table-cell');
+                        d3Inputs.forEach(input => {
+                            input.disabled = false;
+                            input.focus();
+                        });
+                        currentDuploStage = 0;
+                        break;
+                }
+
+                // Aktifkan tombol verifikasi
+                if (verifikasiHasilBtn) verifikasiHasilBtn.disabled = false;
+                if (verifikasiDokterBtn) verifikasiDokterBtn.disabled = false;
+            });
         }
 
+        // Tombol manual input
         if (manualButton) {
             manualButton.addEventListener('click', () => {
                 document.querySelectorAll('.manualInput').forEach(input => {
@@ -1075,8 +1135,14 @@
                     input.focus();
                 });
 
+                // Pastikan input duplo tetap disabled
                 document.querySelectorAll('.d1, .d2, .d3').forEach(input => {
                     input.disabled = true;
+                });
+
+                // Sembunyikan kolom duplo
+                document.querySelectorAll('.d1-column, .d2-column, .d3-column').forEach(col => {
+                    col.style.display = 'none';
                 });
 
                 if (isDikembalikan) {
@@ -1088,36 +1154,7 @@
             });
         }
 
-        if (duploButton) {
-            let currentDuploStage = 0;
-
-            duploButton.addEventListener('click', () => {
-                const d1Inputs = document.querySelectorAll('.d1');
-                const d2Inputs = document.querySelectorAll('.d2');
-                const d3Inputs = document.querySelectorAll('.d3');
-
-                if (currentDuploStage === 0) {
-                    d1Inputs.forEach(input => {
-                        input.disabled = false;
-                        input.focus();
-                    });
-                    currentDuploStage = 1;
-                } else if (currentDuploStage === 1) {
-                    d2Inputs.forEach(input => {
-                        input.disabled = false;
-                        input.focus();
-                    });
-                    currentDuploStage = 2;
-                } else if (currentDuploStage === 2) {
-                    d3Inputs.forEach(input => {
-                        input.disabled = false;
-                        input.focus();
-                    });
-                    currentDuploStage = 0;
-                }
-            });
-        }
-
+        // Tombol switch untuk pergantian input
         document.querySelectorAll('.switch-btn').forEach((button) => {
             button.addEventListener('click', function() {
                 const row = this.closest('tr');
@@ -1130,6 +1167,7 @@
                 const currentIndex = parseInt(this.getAttribute('data-index'));
                 
                 if (currentIndex === 0) {
+                    // Aktifkan input D1
                     d1Input.disabled = false;
                     if (d1Input.value) {
                         hasilInput.value = d1Input.value;
@@ -1137,6 +1175,7 @@
                     }
                     this.setAttribute('data-index', '1');
                 } else if (currentIndex === 1) {
+                    // Aktifkan input D2
                     d2Input.disabled = false;
                     if (d2Input.value) {
                         hasilInput.value = d2Input.value;
@@ -1144,6 +1183,7 @@
                     }
                     this.setAttribute('data-index', '2');
                 } else {
+                    // Aktifkan input D3
                     d3Input.disabled = false;
                     if (d3Input.value) {
                         hasilInput.value = d3Input.value;
@@ -1153,6 +1193,12 @@
                 }
             });
         });
+
+        // Disable tombol verifikasi jika status dikembalikan
+        if (isDikembalikan) {
+            verifikasiHasilBtn.disabled = true;
+            verifikasiDokterBtn.disabled = true;
+        }
     }, 0);
 
     return content;
