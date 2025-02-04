@@ -932,165 +932,231 @@
         }
 
         function getTableContent(data_pemeriksaan_pasien, data_pasien, hasil) {
-            // Fungsi helper untuk menampilkan data dokter
-            function getDokterDisplay(labData, dokterData) {
-                if (!labData || !dokterData) {
-                    return "Dokter tidak tersedia";
-                }
-                const kodeDokterLab = labData?.kode_dokter;
-                return kodeDokterLab === dokterData.kode_dokter ? dokterData.kode_dokter : (kodeDokterLab || "Dokter tidak tersedia");
+    function getDokterDisplay(labData, dokterData) {
+        if (!labData || !dokterData) {
+            return "Dokter tidak tersedia";
+        }
+        const kodeDokterLab = labData?.kode_dokter;
+        return kodeDokterLab === dokterData.kode_dokter ? dokterData.kode_dokter : (kodeDokterLab || "Dokter tidak tersedia");
+    }
+
+    // Function to update flag based on input value
+    function updateFlag(value, flagCell) {
+        const nilaiHasil = parseFloat(value);
+        let flagIcon = '';
+        
+        if (!isNaN(nilaiHasil)) {
+            if (nilaiHasil < 5) {
+                flagIcon = `<i class="ti ti-arrow-down text-primary"></i>`;
+            } else if (nilaiHasil > 10) {
+                flagIcon = `<i class="ti ti-arrow-up text-danger"></i>`;
             }
+        }
+        
+        flagCell.innerHTML = flagIcon;
+    }
 
-            const labData = data_pasien;
-            const dokterData = data_pasien.dokter;
-            let dokterDisplay = getDokterDisplay(labData, dokterData);
+    const labData = data_pasien;
+    const dokterData = data_pasien.dokter;
+    let dokterDisplay = getDokterDisplay(labData, dokterData);
+    const isDikembalikan = data_pasien.status === "Dikembalikan";
 
-            // Generate HTML content
-            const content = `
-            <form id="worklistForm" action="{{ route('worklist.store') }}" method="POST">
-                @csrf
-                <input type="hidden" name="no_lab" value="${data_pasien.no_lab}">
-                <input type="hidden" name="no_rm" value="${data_pasien.no_rm}">
-                <input type="hidden" name="nama" value="${data_pasien.nama}">
-                <input type="hidden" name="ruangan" value="${data_pasien.asal_ruangan}">
-                <input type="hidden" name="nama_dokter" value="${dokterDisplay}">
+    const content = `
+    <form id="worklistForm" action="{{ route('worklist.store') }}" method="POST">
+        @csrf
+        <input type="hidden" name="no_lab" value="${data_pasien.no_lab}">
+        <input type="hidden" name="no_rm" value="${data_pasien.no_rm}">
+        <input type="hidden" name="nama" value="${data_pasien.nama}">
+        <input type="hidden" name="ruangan" value="${data_pasien.asal_ruangan}">
+        <input type="hidden" name="nama_dokter" value="${dokterDisplay}">
 
-                <div id="tabel-pemeriksaan" class="table-responsive">
-                    <table class="table table-striped" id="worklistTable">
-                        <thead>
-                            <tr scope="row">
-                                <th class="col-3">Parameter</th>
-                                <th class="col-3 ml-2">Hasil</th>
-                                <th class="col-3 ml-2 duplo">D1</th>
-                                <th class="col-3 ml-2 duplo">D2</th>
-                                <th class="col-3 ml-2 duplo">D3</th>
-                                <th class="col-2">Flag</th>
-                                <th class="col-2">Satuan</th>
-                                <th class="col-2">Range</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${data_pemeriksaan_pasien.map(e => `
-                                <tr>
-                                    <th scope="row">${e.data_departement.nama_department}</th>
-                                    <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
-                                    ${e.pasiens.map(p => {
-                                        const hasilItem = hasil.find(item => item.nama_pemeriksaan === p.data_pemeriksaan.nama_pemeriksaan);
-                                        const rowId = p.data_pemeriksaan.id;
-                                        return `
-                                        <tr class="mt-2" data-id="${rowId}">
-                                            <td>${p.data_pemeriksaan.nama_pemeriksaan}</td>
-                                            <input type="hidden" name="nama_pemeriksaan[]" value="${p.data_pemeriksaan.nama_pemeriksaan}" />
-                                            <td><input type="number" name="hasil[]" class="form-control text-center w-50 p-0 manualInput" disabled value="${hasilItem ? hasilItem.hasil : ''}" required/></td>
-                                            <td><input type="number" name="duplo" id="d1" class="form-control text-center w-50 p-0" disabled /></td>
-                                            <td><input type="number" name="duplo" id="d2" class="form-control text-center w-50 p-0" disabled /></td>
-                                            <td><input type="number" name="duplo" id="d3" class="form-control text-center w-50 p-0" disabled /></td>
-                                            <td class="text-center"><input type="hidden" name="satuan[]" class="form-control w-50 p-0" value="" readonly/></td>
-                                            <td><input type="hidden" name="range[]" class="form-control w-50 p-0" value="${p.data_pemeriksaan.nilai_satuan}" readonly/>${p.data_pemeriksaan.nilai_satuan}</td>
-                                            <td><input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly/>1-10</td>
-                                        </tr>
-                                        `;
-                                    }).join('')}
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="row">
-                    <div class="col-lg-12 mb-3 mt-2">
-                        <button type="button" id="verifikasiHasilBtn" class="btn btn-outline-info btn-block w-100">Verifikasi Hasil</button>
-                    </div>
-                    <div class="col-lg-12 mt-2">
-                        <button type="button" id="verifikasiDokterBtn" class="btn btn-outline-primary w-100">Verifikasi Dokter PK</button>
-                    </div>
-                </div>
-            </form>`;
+        <div id="tabel-pemeriksaan" class="table-responsive">
+            <table class="table table-striped" id="worklistTable">
+                <thead>
+                    <tr>
+                        <th class="col-3">Parameter</th>
+                        <th class="col-3">Hasil</th>
+                        <th class="col-3"></th>
+                        <th class="col-3 duplo">D1</th>
+                        <th class="col-3 duplo">D2</th>
+                        <th class="col-3 duplo">D3</th>
+                        <th class="col-2">Flag</th>
+                        <th class="col-2">Satuan</th>
+                        <th class="col-2">Range</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${data_pemeriksaan_pasien.map(e => `
+                        <tr>
+                            <th scope="row">${e.data_departement.nama_department}</th>
+                            <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                            ${e.pasiens.map(p => {
+                                const hasilItem = hasil.find(item => item.nama_pemeriksaan === p.data_pemeriksaan.nama_pemeriksaan);
+                                const rowId = p.data_pemeriksaan.id;
+                                const nilaiHasil = hasilItem ? parseFloat(hasilItem.hasil) : null;
+                                let flagIcon = '';
 
-            // Render content first
-            setTimeout(() => {
-                // Setup form action handling
-                const form = document.getElementById('worklistForm');
-                const verifikasiHasilBtn = document.getElementById('verifikasiHasilBtn');
-                const verifikasiDokterBtn = document.getElementById('verifikasiDokterBtn');
-                const manualButton = document.getElementById('manualButton');
-                const duploButton = document.getElementById('duploButton');
-
-                // Function untuk handle form submission
-                function handleFormSubmission(actionType) {
-                    if (form) {
-                        if (actionType === 'checkin') {
-                            form.action = `worklist/checkin/${data_pasien.id}`;
-                        } else {
-                            form.action = "{{ route('worklist.store') }}";
-                        }
-                        form.submit();
-                    }
-                }
-
-                // Setup event listeners untuk tombol verifikasi
-                if (verifikasiHasilBtn) {
-                    verifikasiHasilBtn.addEventListener('click', () => handleFormSubmission('store'));
-                }
-
-                if (verifikasiDokterBtn) {
-                    verifikasiDokterBtn.addEventListener('click', () => handleFormSubmission('checkin'));
-                }
-
-                // Setup manual input handling
-                if (manualButton) {
-                    manualButton.addEventListener('click', () => {
-                        const manualInputs = document.querySelectorAll('.manualInput');
-                        manualInputs.forEach(input => {
-                            if (input) {
-                                input.disabled = false;
-                                input.focus();
-                            }
-                        });
-                    });
-                }
-
-                // Setup duplo button handling
-                let clickCount = 0;
-                if (duploButton) {
-                    duploButton.addEventListener('click', () => {
-                        clickCount++;
-                        
-                        switch(clickCount) {
-                            case 1:
-                                document.querySelectorAll('#d1').forEach(input => {
-                                    if (input) {
-                                        input.disabled = false;
-                                        input.focus();
+                                if (nilaiHasil !== null) {
+                                    if (nilaiHasil < 5) {
+                                        flagIcon = `<i class="ti ti-arrow-down text-primary"></i>`;
+                                    } else if (nilaiHasil > 10) {
+                                        flagIcon = `<i class="ti ti-arrow-up text-danger"></i>`;
                                     }
-                                });
-                                break;
-                            case 2:
-                                document.querySelectorAll('#d2').forEach(input => {
-                                    if (input) {
-                                        input.disabled = false;
-                                        input.focus();
-                                    }
-                                });
-                                break;
-                            case 3:
-                                document.querySelectorAll('#d3').forEach(input => {
-                                    if (input) {
-                                        input.disabled = false;
-                                        input.focus();
-                                    }
-                                });
-                                if (duploButton) {
-                                    duploButton.disabled = true;
                                 }
-                                break;
-                        }
-                    });
-                }
-            }, 0);
+                                return `
+                                <tr data-id="${rowId}">
+                                    <td>${p.data_pemeriksaan.nama_pemeriksaan}</td>
+                                    <input type="hidden" name="nama_pemeriksaan[]" value="${p.data_pemeriksaan.nama_pemeriksaan}" />
+                                    <td><input type="number" name="hasil[]" class="form-control text-center w-50 p-0 manualInput" disabled value="${hasilItem ? hasilItem.hasil : ''}" required/></td>
+                                    <td>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" data-index="0">
+                                            <i class="ti ti-switch-2"></i>
+                                        </button>
+                                    </td>
+                                    <td><input type="number" name="duplo_d1" class="form-control text-center w-50 p-0 d1" disabled/></td>
+                                    <td><input type="number" name="duplo_d2" class="form-control text-center w-50 p-0 d2" disabled/></td>
+                                    <td><input type="number" name="duplo_d3" class="form-control text-center w-50 p-0 d3" disabled/></td>
+                                    <td class="text-center flag-cell">${flagIcon}</td>
+                                    <td><input type="hidden" name="satuan[]" class="form-control w-50 p-0" value="${p.data_pemeriksaan.nilai_satuan}" readonly/>${p.data_pemeriksaan.nilai_satuan}</td>
+                                    <td><input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly/>1-10</td>
+                                </tr>
+                                `;
+                            }).join('')}
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 mb-3 mt-2">
+                <button type="button" id="verifikasiHasilBtn" class="btn btn-outline-info btn-block w-100" disabled>Verifikasi Hasil</button>
+            </div>
+            <div class="col-lg-12 mt-2">
+                <button type="button" id="verifikasiDokterBtn" class="btn btn-outline-primary w-100" disabled>Verifikasi Dokter PK</button>
+            </div>
+        </div>
+    </form>`;
 
-            return content;
+    setTimeout(() => {
+        const form = document.getElementById('worklistForm');
+        const verifikasiHasilBtn = document.getElementById('verifikasiHasilBtn');
+        const verifikasiDokterBtn = document.getElementById('verifikasiDokterBtn');
+        const manualButton = document.getElementById('manualButton');
+        const duploButton = document.getElementById('duploButton');
+
+        // Add event listeners for real-time flag updates
+        document.querySelectorAll('.manualInput, .d1, .d2, .d3').forEach(input => {
+            input.addEventListener('input', function() {
+                const flagCell = this.closest('tr').querySelector('.flag-cell');
+                updateFlag(this.value, flagCell);
+            });
+        });
+
+        // Rest of the event listeners remain the same...
+        document.getElementById('verifikasiHasilBtn').addEventListener('click', () => {
+            document.getElementById('worklistForm').action = "{{ route('worklist.store') }}";
+            document.getElementById('worklistForm').submit();
+        });
+
+        document.getElementById('verifikasiDokterBtn').addEventListener('click', () => {
+            document.getElementById('worklistForm').action = `worklist/checkin/${data_pasien.id}`;
+            document.getElementById('worklistForm').submit();
+        });
+
+        if (isDikembalikan) {
+            verifikasiHasilBtn.disabled = true;
+            verifikasiDokterBtn.disabled = true;
         }
 
+        if (manualButton) {
+            manualButton.addEventListener('click', () => {
+                document.querySelectorAll('.manualInput').forEach(input => {
+                    input.disabled = false;
+                    input.focus();
+                });
+
+                document.querySelectorAll('.d1, .d2, .d3').forEach(input => {
+                    input.disabled = true;
+                });
+
+                if (isDikembalikan) {
+                    verifikasiDokterBtn.disabled = false;
+                } else {
+                    verifikasiHasilBtn.disabled = false;
+                    verifikasiDokterBtn.disabled = false;
+                }
+            });
+        }
+
+        if (duploButton) {
+            let currentDuploStage = 0;
+
+            duploButton.addEventListener('click', () => {
+                const d1Inputs = document.querySelectorAll('.d1');
+                const d2Inputs = document.querySelectorAll('.d2');
+                const d3Inputs = document.querySelectorAll('.d3');
+
+                if (currentDuploStage === 0) {
+                    d1Inputs.forEach(input => {
+                        input.disabled = false;
+                        input.focus();
+                    });
+                    currentDuploStage = 1;
+                } else if (currentDuploStage === 1) {
+                    d2Inputs.forEach(input => {
+                        input.disabled = false;
+                        input.focus();
+                    });
+                    currentDuploStage = 2;
+                } else if (currentDuploStage === 2) {
+                    d3Inputs.forEach(input => {
+                        input.disabled = false;
+                        input.focus();
+                    });
+                    currentDuploStage = 0;
+                }
+            });
+        }
+
+        document.querySelectorAll('.switch-btn').forEach((button) => {
+            button.addEventListener('click', function() {
+                const row = this.closest('tr');
+                const hasilInput = row.querySelector('.manualInput');
+                const d1Input = row.querySelector('.d1');
+                const d2Input = row.querySelector('.d2');
+                const d3Input = row.querySelector('.d3');
+                const flagCell = row.querySelector('.flag-cell');
+                
+                const currentIndex = parseInt(this.getAttribute('data-index'));
+                
+                if (currentIndex === 0) {
+                    d1Input.disabled = false;
+                    if (d1Input.value) {
+                        hasilInput.value = d1Input.value;
+                        updateFlag(d1Input.value, flagCell);
+                    }
+                    this.setAttribute('data-index', '1');
+                } else if (currentIndex === 1) {
+                    d2Input.disabled = false;
+                    if (d2Input.value) {
+                        hasilInput.value = d2Input.value;
+                        updateFlag(d2Input.value, flagCell);
+                    }
+                    this.setAttribute('data-index', '2');
+                } else {
+                    d3Input.disabled = false;
+                    if (d3Input.value) {
+                        hasilInput.value = d3Input.value;
+                        updateFlag(d3Input.value, flagCell);
+                    }
+                    this.setAttribute('data-index', '0');
+                }
+            });
+        });
+    }, 0);
+
+    return content;
+}
         // Export fungsi jika diperlukan
         window.getTableContent = getTableContent;
 
@@ -1123,13 +1189,12 @@
 
 
         function populateModal(spesimen, scollection, shandling, history, data_pemeriksaan_pasien) {
-            const accordion = document.getElementById('sampleHistoryAccordion');
-            const historyItem = history.find(h => h.proses === 'Dikembalikan oleh dokter');
-            let accordionContent = '';
-            let noteContent = '';
+    const accordion = document.getElementById('sampleHistoryAccordion');
+    const historyItem = history.find(h => h.proses === 'Dikembalikan oleh dokter');
+    let accordionContent = '';
+    let noteContent = '';
 
-            
-            accordionContent += `
+    accordionContent += `
     <hr>
     <h5>Detail Sampling</h5>
     <hr>
@@ -1159,151 +1224,139 @@
     </ul>
 `;
 
+    spesimen.forEach(e => {
+        let details = '';
+        let detailsData = [];
+        let kapasitas, serumh, serum;
+        let processTime = '';
 
-            spesimen.forEach(e => {
-                let details = '';
-                let detailsData = [];
-                let kapasitas, serumh, serum;
-                let processTime = '';
+        const checkInSpesimen = history.find(h => h.status === 'Check in spesiment');
+        let noteFromCollection = null;
+        let noteFromHandling = null;
 
-                const checkInSpesimen = history.find(h => h.status === 'Check in spesiment');
-                if (e.tabung === 'K3-EDTA') {
-                // Cari item dalam spesiment collection yang memiliki no_lab yang sesuai dengan laravel_through_key
-                const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key);
-                if (collectionItem) {
-                    // Cocokkan details dari collectionItem dengan details dari spesimen
-                    detailsData = collectionItem.details.filter(detail => 
-                        e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                    );
-                    kapasitas = collectionItem.kapasitas;
-                }
-                } else if (e.tabung === 'K3') {
-                // Cari item dalam spesiment collection yang memiliki no_lab dan tabung yang sesuai
-                const collectionItem = scollection.find(item => 
-                    item.no_lab === e.laravel_through_key && item.tabung === 'K3'
+        if (e.tabung === 'K3-EDTA') {
+            const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key);
+            if (collectionItem) {
+                detailsData = collectionItem.details.filter(detail => 
+                    e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
                 );
-                // console.log('K3 collectionItem:', collectionItem); // Debugging
+                kapasitas = collectionItem.kapasitas;
+                noteFromCollection = collectionItem.note;
+            }
+        } else if (e.tabung === 'K3') {
+            const collectionItem = scollection.find(item => 
+                item.no_lab === e.laravel_through_key && item.tabung === 'K3'
+            );
+            if (collectionItem) {
+                detailsData = collectionItem.details.filter(detail => 
+                    e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                );
+                serumh = collectionItem.serumh;
+                noteFromCollection = collectionItem.note;
+            }
+        } else if (e.tabung === 'CLOT-ACT') {
+            const handlingItem = shandling.find(item => item.no_lab === e.laravel_through_key);
+            if (handlingItem) {
+                detailsData = handlingItem.details.filter(detail => 
+                    e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                );
+                serum = handlingItem.serum;
+                noteFromHandling = handlingItem.note;
+            }
+        }
 
-                if (collectionItem) {
-                    // console.log('K3 collectionItem.details:', collectionItem.details); // Debugging
-                    // console.log('K3 e.details:', e.details); // Debugging
+        if (e.details && e.details.length > 0){
+            details = `<div class="detail-container col-12 col-md-6">`;
+            e.details.forEach(detail => {
+                const imageUrl = `/gambar/${detail.gambar}`;
+                let isChecked = '';
+                let isDisabled = 'disabled';
 
-                    // Cocokkan details dari collectionItem dengan details dari spesimen
-                    detailsData = collectionItem.details.filter(detail => 
-                        e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                    );
-                    // console.log('K3 matched detailsData:', detailsData); // Debugging
-
-                    serumh = collectionItem.serumh;
-                }
-                }else if (e.tabung === 'CLOT-ACT') {
-                    // Untuk CLOT-ACT, cari item dalam spesimen handling yang memiliki no_lab yang sesuai dengan laravel_through_key
-                    const handlingItem = shandling.find(item => item.no_lab === e.laravel_through_key);
-                    if (handlingItem) {
-                        // Cocokkan details dari handlingItem dengan details dari spesimen
-                        detailsData = handlingItem.details.filter(detail => 
-                            e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                        );
-                        serum = handlingItem.serum;
+                const matchedDetail = detailsData.find(d => d.id === detail.id)
+                if(matchedDetail){
+                    if (e.tabung === 'K3-EDTA' && kapasitas == detail.id) {
+                        isChecked = 'checked';
+                        isDisabled = '';
+                    } else if (e.tabung === 'K3' && serumh == detail.id) {
+                        isChecked = 'checked';
+                        isDisabled = '';
+                    } else if (e.tabung === 'CLOT-ACT' && serum == detail.id) {
+                        isChecked = 'checked';
+                        isDisabled = '';
                     }
                 }
-            
-                        
-                if (e.details && e.details.length > 0){
-                    details = `<div class="detail-container col-12 col-md-6">`;
-                    e.details.forEach(detail => {
-                        const imageUrl = `/gambar/${detail.gambar}`;
-                        let isChecked = '';
-                        let isDisabled = 'disabled';
 
-                        const matchedDetail = detailsData.find(d => d.id === detail.id)
-                        if(matchedDetail){
-                            if (e.tabung === 'K3-EDTA' && kapasitas == detail.id) {
-                                isChecked = 'checked';
-                                isDisabled = '';
-                            } else if (e.tabung === 'K3' && serumh == detail.id) {
-                                isChecked = 'checked';
-                                isDisabled = '';
-                            } else if (e.tabung === 'CLOT-ACT' && serum == detail.id) {
-                                isChecked = 'checked';
-                                isDisabled = '';
-                            }
-                        }
-
-                        details +=  
-                        `<div class="detail-item">
-                            <div class="detail-text">${detail.nama_parameter}</div>
-                            <div class="detail-image-container">
-                                <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
-                            </div>
-                            <div class="detail-radio-container ">
+                details +=  
+                `<div class="detail-item">
+                    <div class="detail-text">${detail.nama_parameter}</div>
+                    <div class="detail-image-container">
+                        <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
+                    </div>
+                    <div class="detail-radio-container ">
                         <input type="radio" name="${e.tabung}" class="detail.radio" value="${detail.id}" ${isChecked} ${isDisabled} />  
+                    </div>
+                </div>`;
+            });
+            details += `</div>`
+        }
+
+        let title = '';
+        let subtext = '';
+
+        if (e.tabung === 'K3-EDTA') {
+            title = '<h5 class="title">Spesiment Collection</h5> <hr>';
+        } else if (e.tabung === 'CLOTH-ACT') {
+            subtext = '<div class="subtext">Serum</div>';
+        } else if (e.tabung === 'CLOT-ACT') {
+            title = '<h5 class="title mt-3">Spesiment Handlings</h5> <hr>';
+            subtext = '<div class="subtext">Serum</div>';
+        }
+
+        let note = '';
+        if (e.tabung === 'K3-EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'CLOTH-ACT') {
+            note = '<p class="mb-0"><strong>Note</strong></p>';
+        }
+
+        accordionContent += `${title}
+            <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">                          
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading${e.tabung}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">
+                        Tabung ${e.tabung}
+                        </button>
+                    </h2>
+                    <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}" data-bs-parent="#accordion${e.tabung}">
+                        <div class="accordion-body">
+                            ${subtext}
+                            <div class="container">
+                                ${details}
                             </div>
-                        </div>`;
-                    });
-                    details += `</div>`
-                }
-                let title = '';
-                let detail = '';
-                let subtext = '';
-
-                if (e.tabung === 'K3-EDTA') {
-                    title = '<h5 class="title">Spesiment Collection</h5> <hr>';
-                }else
-
-                if (e.tabung === 'CLOTH-ACT') {
-                    subtext = '<div class="subtext">Serum</div>';
-                }else
-
-                if (e.tabung === 'CLOT-ACT') {
-                    title = '<h5 class="title mt-3">Spesiment Handlings</h5> <hr>';
-                    subtext = '<div class="subtext">Serum</div>';
-                }
-
-                let note = '';
-                if (e.tabung === 'K3-EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'CLOTH-ACT') {
-                    note = '<p class="mb-0"><strong>Note</strong></p>';
-                }
-                accordionContent += ` ${title}
-                   <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">                          
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="heading${e.tabung}">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">
-                                Tabung ${e.tabung}
-                                </button>
-                            </h2>
-                            <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}" data-bs-parent="#accordion${e.tabung}">
-                                <div class="accordion-body">
-                                    
-                                    ${subtext}
-                                    <div class="container">
-                                        ${details}
-                                    </div>
-                                    ${note}
-                                    ${e.tabung === 'K3-EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
-                                    ${e.tabung === 'CLOTH-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
-                                    ${e.tabung === 'CLOT-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null"disabled></textarea>` : ''}
-                                    
-                                </div>
-                            </div>
+                            ${note}
+                            ${e.tabung === 'K3-EDTA' ? 
+                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
+                            ${e.tabung === 'CLOTH-ACT' ? 
+                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
+                            ${e.tabung === 'CLOT-ACT' ? 
+                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromHandling || 'null'}" ${noteFromHandling ? '' : 'disabled'} ></textarea>` : ''}
                         </div>
                     </div>
-                `;
-            });
-
-            if (historyItem && historyItem.note) {
-            accordionContent += `
-                <div class="col-lg-12">
-                    <label class="fw-bold mt-2">Note</label>
-                    <textarea id="noteTextarea" class="form-control" row="3" placeholder="${historyItem.note}" disabled></textarea>
                 </div>
-            `;
-            }
-            
-        accordion.innerHTML = accordionContent;
-        
+            </div>
+        `;
+    });
 
-        }
+    if (historyItem && historyItem.note) {
+        accordionContent += `
+            <div class="col-lg-12">
+                <label class="fw-bold mt-2">Note</label>
+                <textarea id="noteTextarea" class="form-control" row="3" placeholder="${historyItem.note}" disabled></textarea>
+            </div>
+        `;
+    }
+
+    accordion.innerHTML = accordionContent;
+}
+
     });
     });
 </script>

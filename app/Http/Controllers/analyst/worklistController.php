@@ -156,7 +156,12 @@ class worklistController extends Controller
             // Cari data pasien
             $pasien = Pasien::findOrFail($id);
 
-            // Simpan hasil pemeriksaan
+            // Hapus hasil pemeriksaan sebelumnya jika status Dikembalikan
+            if ($pasien->status === 'Dikembalikan') {
+                HasilPemeriksaan::where('no_lab', $pasien->no_lab)->delete();
+            }
+
+            // Simpan hasil pemeriksaan baru
             foreach ($request->nama_pemeriksaan as $index => $nama_pemeriksaan) {
                 HasilPemeriksaan::create([
                     'no_lab' => $request->no_lab,
@@ -167,15 +172,13 @@ class worklistController extends Controller
                 ]);
             }
 
-            // Cek status pasien
+            // Update status pasien
             if ($pasien->status === 'Dikembalikan') {
-                // Update status jadi Diverifikasi Ulang
                 $pasien->update([
                     'status' => 'Diverifikasi Ulang',
                     'updated_at' => now()
                 ]);
 
-                // Catat history pasien
                 HistoryPasien::create([
                     'no_lab' => $pasien->no_lab,
                     'proses' => 'Diverifikasi Ulang',
@@ -184,13 +187,11 @@ class worklistController extends Controller
                     'created_at' => now(),
                 ]);
             } else {
-                // Update status ke Verifikasi Dokter
                 $pasien->update([
                     'status' => 'Verifikasi Dokter',
                     'updated_at' => now()
                 ]);
 
-                // Catat history pasien
                 HistoryPasien::create([
                     'no_lab' => $pasien->no_lab,
                     'proses' => 'Verifikasi Dokter',

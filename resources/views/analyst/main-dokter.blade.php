@@ -637,7 +637,16 @@
                                     ${e.pasiens.map(p => {
                                         const hasilItem = hasil.find(item => item.nama_pemeriksaan === p.data_pemeriksaan.nama_pemeriksaan);
                                         const rowId = p.data_pemeriksaan.id;
+                                        const nilaiHasil = hasilItem ? parseFloat(hasilItem.hasil) : null;
+                                        let flagIcon = '';
 
+                                        if (nilaiHasil !== null) {
+                                            if (nilaiHasil < 5) {
+                                                flagIcon = `<i class="ti ti-arrow-down text-primary"></i>`;
+                                            } else if (nilaiHasil > 10) {
+                                                flagIcon = `<i class="ti ti-arrow-up text-danger"></i>`;
+                                            }
+                                        }
                                     return `
                                     <tr class="mt-2" data-id="${rowId}">
                                         <td>${p.data_pemeriksaan.nama_pemeriksaan}</td>
@@ -645,7 +654,7 @@
                                         <td><input style="background-color: #EEEDEB" type="text" name="hasil[]" id="manualInput" class="form-control text-center w-50 p-0 readonly-input" value="${hasilItem ? hasilItem.hasil : ''}" required readonly/></td>
                                         <td><input style="background-color: #EEEDEB" type="text" name="duplo" class="form-control text-center w-50 p-0" readonly /></td>
                                         <td><input style="background-color: #EEEDEB" type="text" class="form-control text-center w-50 p-0" readonly/></td>
-                                        <td><input type="hidden" class="form-control p-0" readonly/></td>
+                                        <td class="text-center">${flagIcon}</td>
                                         <td class="text-center"><input type="hidden" name="satuan[]" class="form-control w-50 p-0" value="${p.data_pemeriksaan.nilai_satuan}" readonly/>${p.data_pemeriksaan.nilai_satuan}</td>
                                         <td><input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly/>1-10</td>
                                     </tr>
@@ -678,15 +687,18 @@
 
         function populateModal(spesimen, scollection, shandling, history, data_pemeriksaan_pasien) {
             const accordion = document.getElementById('sampleHistoryAccordion');
+            const historyItem = history.find(h => h.proses === 'Dikembalikan oleh dokter');
             let accordionContent = '';
+            let noteContent = '';
 
             accordionContent += `
-                <hr>
-                <h5>Detail Sampling</h5>
-                <hr>
-                <h5>History</h5>
-                <ul class="step-wizard-list mt-4">
-                    ${history.map((h, index) => {
+            <hr>
+            <h5>Detail Sampling</h5>
+            <hr>
+            <h5>History</h5>
+            <ul class="step-wizard-list mt-4">
+                ${history.map((h, index) => {
+                    // Membuat objek Date dari h.created_at
                     let createdAt = new Date(h.created_at);
 
                     // Format tanggal dan waktu sesuai dengan yang diinginkan
@@ -697,15 +709,17 @@
                         hour: '2-digit', 
                         minute: '2-digit'
                     });
-                    return`
+
+                    return `
                         <li class="step-wizard-item">
                             <span class="progress-count">${index + 1}</span>
                             <span class="progress-label">${h.proses}</span>
                             <span class="progress-label">${formattedDate}</span>
                         </li>
-                    `}).join('')}
-                </ul>
-            `;
+                    `;
+                }).join('')}
+            </ul>
+        `;
 
             spesimen.forEach(e => {
                 let details = '';
@@ -714,42 +728,40 @@
                 let processTime = '';
 
                 const checkInSpesimen = history.find(h => h.status === 'Check in spesiment');
-                if (e.tabung === 'K3-EDTA') {
-                // Cari item dalam spesiment collection yang memiliki no_lab yang sesuai dengan laravel_through_key
-                const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key);
-                if (collectionItem) {
-                    // Cocokkan details dari collectionItem dengan details dari spesimen
-                    detailsData = collectionItem.details.filter(detail => 
-                        e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                    );
-                    kapasitas = collectionItem.kapasitas;
-                }
-                } else if (e.tabung === 'K3') {
-                // Cari item dalam spesiment collection yang memiliki no_lab dan tabung yang sesuai
-                const collectionItem = scollection.find(item => 
-                    item.no_lab === e.laravel_through_key && item.tabung === 'K3'
-                );
+                let noteFromCollection = null;
+                let noteFromHandling = null;
 
-                if (collectionItem) {
-                    // Cocokkan details dari collectionItem dengan details dari spesimen
-                    detailsData = collectionItem.details.filter(detail => 
-                        e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                if (e.tabung === 'K3-EDTA') {
+                    const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key);
+                    if (collectionItem) {
+                        detailsData = collectionItem.details.filter(detail => 
+                            e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                        );
+                        kapasitas = collectionItem.kapasitas;
+                        noteFromCollection = collectionItem.note;
+                    }
+                } else if (e.tabung === 'K3') {
+                    const collectionItem = scollection.find(item => 
+                        item.no_lab === e.laravel_through_key && item.tabung === 'K3'
                     );
-                    serumh = collectionItem.serumh;
-                }
-                }else if (e.tabung === 'CLOT-ACT') {
-                    // Untuk CLOT-ACT, cari item dalam spesimen handling yang memiliki no_lab yang sesuai dengan laravel_through_key
+                    if (collectionItem) {
+                        detailsData = collectionItem.details.filter(detail => 
+                            e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                        );
+                        serumh = collectionItem.serumh;
+                        noteFromCollection = collectionItem.note;
+                    }
+                } else if (e.tabung === 'CLOT-ACT') {
                     const handlingItem = shandling.find(item => item.no_lab === e.laravel_through_key);
                     if (handlingItem) {
-                        // Cocokkan details dari handlingItem dengan details dari spesimen
                         detailsData = handlingItem.details.filter(detail => 
                             e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
                         );
                         serum = handlingItem.serum;
+                        noteFromHandling = handlingItem.note;
                     }
                 }
-            
-                        
+
                 if (e.details && e.details.length > 0){
                     details = `<div class="detail-container col-12 col-md-6">`;
                     e.details.forEach(detail => {
@@ -778,36 +790,32 @@
                                 <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
                             </div>
                             <div class="detail-radio-container ">
-                        <input type="radio" name="${e.tabung}" class="detail.radio" value="${detail.id}" ${isChecked} ${isDisabled} />  
+                                <input type="radio" name="${e.tabung}" class="detail.radio" value="${detail.id}" ${isChecked} ${isDisabled} />  
                             </div>
                         </div>`;
                     });
                     details += `</div>`
                 }
+
                 let title = '';
-                let detail = '';
                 let subtext = '';
 
                 if (e.tabung === 'K3-EDTA') {
                     title = '<h5 class="title">Spesiment Collection</h5> <hr>';
-                }else
-
-                if (e.tabung === 'K3') {
-                    title = '<h5 class="title">Spesiment Collection</h5> <hr>';
-                }else
-
-                if (e.tabung === 'CLOT-ACT') {
+                } else if (e.tabung === 'CLOTH-ACT') {
+                    subtext = '<div class="subtext">Serum</div>';
+                } else if (e.tabung === 'CLOT-ACT') {
                     title = '<h5 class="title mt-3">Spesiment Handlings</h5> <hr>';
                     subtext = '<div class="subtext">Serum</div>';
                 }
 
                 let note = '';
-                if (e.tabung === 'K3-EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'K3') {
+                if (e.tabung === 'K3-EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'CLOTH-ACT') {
                     note = '<p class="mb-0"><strong>Note</strong></p>';
                 }
-                
-                accordionContent += ` ${title}
-                   <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">                          
+
+                accordionContent += `${title}
+                    <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">                          
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="heading${e.tabung}">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">
@@ -816,26 +824,34 @@
                             </h2>
                             <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}" data-bs-parent="#accordion${e.tabung}">
                                 <div class="accordion-body">
-                                    
                                     ${subtext}
                                     <div class="container">
                                         ${details}
                                     </div>
                                     ${note}
-                                    ${e.tabung === 'K3-EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
-                                    ${e.tabung === 'K3' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
-                                    ${e.tabung === 'CLOT-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
-                                    
+                                    ${e.tabung === 'K3-EDTA' ? 
+                                        `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
+                                    ${e.tabung === 'CLOTH-ACT' ? 
+                                        `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
+                                    ${e.tabung === 'CLOT-ACT' ? 
+                                        `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromHandling || 'null'}" ${noteFromHandling ? '' : 'disabled'} disabled></textarea>` : ''}
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
             });
-            
+
+            if (historyItem && historyItem.note) {
+                accordionContent += `
+                    <div class="col-lg-12">
+                        <label class="fw-bold mt-2">Note</label>
+                        <textarea id="noteTextarea" class="form-control" row="3" placeholder="${historyItem.note}" disabled></textarea>
+                    </div>
+                `;
+            }
 
             accordion.innerHTML = accordionContent;
-
         }
     });
     });
