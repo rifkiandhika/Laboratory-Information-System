@@ -932,277 +932,333 @@
         }
 
         function getTableContent(data_pemeriksaan_pasien, data_pasien, hasil) {
-    function getDokterDisplay(labData, dokterData) {
-        if (!labData || !dokterData) {
-            return "Dokter tidak tersedia";
-        }
-        const kodeDokterLab = labData?.kode_dokter;
-        return kodeDokterLab === dokterData.kode_dokter ? dokterData.kode_dokter : (kodeDokterLab || "Dokter tidak tersedia");
-    }
-
-    // Function to update flag based on input value
-    function updateFlag(value, flagCell) {
-        const nilaiHasil = parseFloat(value);
-        let flagIcon = '';
-        
-        if (!isNaN(nilaiHasil)) {
-            if (nilaiHasil < 5) {
-                flagIcon = `<i class="ti ti-arrow-down text-primary"></i>`;
-            } else if (nilaiHasil > 10) {
-                flagIcon = `<i class="ti ti-arrow-up text-danger"></i>`;
+            function getDokterDisplay(labData, dokterData) {
+                if (!labData || !dokterData) {
+                    return "Dokter tidak tersedia";
+                }
+                const kodeDokterLab = labData?.kode_dokter;
+                return kodeDokterLab === dokterData.kode_dokter ? dokterData.kode_dokter : (kodeDokterLab || "Dokter tidak tersedia");
             }
-        }
-        
-        flagCell.innerHTML = flagIcon;
-    }
 
-    const labData = data_pasien;
-    const dokterData = data_pasien.dokter;
-    let dokterDisplay = getDokterDisplay(labData, dokterData);
-    const isDikembalikan = data_pasien.status === "Dikembalikan";
+            function updateFlag(value, flagCell) {
+                const nilaiHasil = parseFloat(value);
+                let flagIcon = '';
+                
+                if (!isNaN(nilaiHasil)) {
+                    if (nilaiHasil < 5) {
+                        flagIcon = `<i class="ti ti-arrow-down text-primary"></i>`;
+                    } else if (nilaiHasil > 10) {
+                        flagIcon = `<i class="ti ti-arrow-up text-danger"></i>`;
+                    }
+                }
+                
+                flagCell.innerHTML = flagIcon;
+            }
 
-    const content = `
-    <form id="worklistForm" action="{{ route('worklist.store') }}" method="POST">
-        @csrf
-        <input type="hidden" name="no_lab" value="${data_pasien.no_lab}">
-        <input type="hidden" name="no_rm" value="${data_pasien.no_rm}">
-        <input type="hidden" name="nama" value="${data_pasien.nama}">
-        <input type="hidden" name="ruangan" value="${data_pasien.asal_ruangan}">
-        <input type="hidden" name="nama_dokter" value="${dokterDisplay}">
+            const labData = data_pasien;
+            const dokterData = data_pasien.dokter;
+            let dokterDisplay = getDokterDisplay(labData, dokterData);
+            const isDikembalikan = data_pasien.status === "Dikembalikan";
 
-        <div id="tabel-pemeriksaan" class="table-responsive">
-            <table class="table table-striped" id="worklistTable">
-                <thead>
-                    <tr>
-                        <th class="col-3">Parameter</th>
-                        <th class="col-3">Hasil</th>
-                        <th class="col-3"></th>
-                        <th class="col-3 duplo d1-column" style="display:none;">D1</th>
-                        <th class="col-3 duplo d2-column" style="display:none;">D2</th>
-                        <th class="col-3 duplo d3-column" style="display:none;">D3</th>
-                        <th class="col-2">Flag</th>
-                        <th class="col-2">Satuan</th>
-                        <th class="col-2">Range</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${data_pemeriksaan_pasien.map(e => `
-                        <tr>
-                            <th scope="row">${e.data_departement.nama_department}</th>
-                            <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
-                            ${e.pasiens.map(p => {
-                                const hasilItem = hasil.find(item => item.nama_pemeriksaan === p.data_pemeriksaan.nama_pemeriksaan);
-                                const rowId = p.data_pemeriksaan.id;
-                                const nilaiHasil = hasilItem ? parseFloat(hasilItem.hasil) : null;
-                                let flagIcon = '';
+            const content = `
+            <form id="worklistForm" action="{{ route('worklist.store') }}" method="POST">
+                @csrf
+                <input type="hidden" name="no_lab" value="${data_pasien.no_lab}">
+                <input type="hidden" name="no_rm" value="${data_pasien.no_rm}">
+                <input type="hidden" name="nama" value="${data_pasien.nama}">
+                <input type="hidden" name="ruangan" value="${data_pasien.asal_ruangan}">
+                <input type="hidden" name="nama_dokter" value="${dokterDisplay}">
 
-                                if (nilaiHasil !== null) {
-                                    if (nilaiHasil < 5) {
-                                        flagIcon = `<i class="ti ti-arrow-down text-primary"></i>`;
-                                    } else if (nilaiHasil > 10) {
-                                        flagIcon = `<i class="ti ti-arrow-up text-danger"></i>`;
-                                    }
-                                }
-                                return `
-                                <tr data-id="${rowId}">
-                                    <td>${p.data_pemeriksaan.nama_pemeriksaan}</td>
-                                    <input type="hidden" name="nama_pemeriksaan[]" value="${p.data_pemeriksaan.nama_pemeriksaan}" />
-                                    <td>
-                                        <input type="number" name="hasil[]" class="form-control text-center w-50 p-0 manualInput" disabled value="${hasilItem ? hasilItem.hasil : ''}" required/>
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" data-index="0">
-                                            <i class="ti ti-switch-2"></i>
-                                        </button>
-                                    </td>
-                                    <td class="duplo d1-column" style="display:none;">
-                                        <input type="number" name="duplo_d1" class="form-control text-center w-50 p-0 d1" disabled/>
-                                    </td>
-                                    <td class="duplo d2-column" style="display:none;">
-                                        <input type="number" name="duplo_d2" class="form-control text-center w-50 p-0 d2" disabled/>
-                                    </td>
-                                    <td class="duplo d3-column" style="display:none;">
-                                        <input type="number" name="duplo_d3" class="form-control text-center w-50 p-0 d3" disabled/>
-                                    </td>
-                                    <td class="text-center flag-cell">${flagIcon}</td>
-                                    <td>
-                                        <input type="hidden" name="satuan[]" class="form-control w-50 p-0" value="${p.data_pemeriksaan.nilai_satuan}" readonly/>
-                                        ${p.data_pemeriksaan.nilai_satuan}
-                                    </td>
-                                    <td>
-                                        <input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly/>1-10
-                                    </td>
+                <div id="tabel-pemeriksaan" class="table-responsive">
+                    <table class="table table-striped" id="worklistTable">
+                        <thead>
+                            <tr>
+                                <th class="col-3">Parameter</th>
+                                <th class="col-3">Hasil</th>
+                                <th class="col-3"></th>
+                                <th class="col-3 duplo d1-column" style="display: none;">D1</th>
+                                <th class="col-3 duplo d2-column" style="display: none;">D2</th>
+                                <th class="col-3 duplo d3-column" style="display: none;">D3</th>
+                                <th class="col-2">Flag</th>
+                                <th class="col-2">Satuan</th>
+                                <th class="col-2">Range</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data_pemeriksaan_pasien.map(e => `
+                                <tr>
+                                    <th scope="row">${e.data_departement.nama_department}</th>
+                                    <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                    ${e.pasiens.map(p => {
+                                        const hasilItem = hasil.find(item => item.nama_pemeriksaan === p.data_pemeriksaan.nama_pemeriksaan) || {};
+                                        const rowId = p.data_pemeriksaan.id;
+                                        const nilaiHasil = hasilItem.hasil ? parseFloat(hasilItem.hasil) : null;
+                                        let flagIcon = '';
+
+                                        if (nilaiHasil !== null) {
+                                            if (nilaiHasil < 5) {
+                                                flagIcon = `<i class="ti ti-arrow-down text-primary"></i>`;
+                                            } else if (nilaiHasil > 10) {
+                                                flagIcon = `<i class="ti ti-arrow-up text-danger"></i>`;
+                                            }
+                                        }
+                                        return `
+                                        <tr data-id="${rowId}">
+                                            <td>${p.data_pemeriksaan.nama_pemeriksaan}</td>
+                                            <input type="hidden" name="nama_pemeriksaan[]" value="${p.data_pemeriksaan.nama_pemeriksaan}" />
+                                            <td>
+                                                <input type="number" name="hasil[]" class="form-control text-center w-50 p-0 manualInput" disabled value="${hasilItem.hasil || ''}" required/>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" data-index="0">
+                                                    <i class="ti ti-switch-2"></i>
+                                                </button>
+                                            </td>
+                                            <td class="duplo d1-column" style="display: none;">
+                                                <input type="number" name="duplo_d1" class="form-control text-center w-50 p-0 d1" disabled value="${hasilItem.duplo_d1 || ''}"/>
+                                            </td>
+                                            <td class="duplo d2-column" style="display: none;">
+                                                <input type="number" name="duplo_d2" class="form-control text-center w-50 p-0 d2" disabled value="${hasilItem.duplo_d2 || ''}"/>
+                                            </td>
+                                            <td class="duplo d3-column" style="display: none;">
+                                                <input type="number" name="duplo_d3" class="form-control text-center w-50 p-0 d3" disabled value="${hasilItem.duplo_d3 || ''}"/>
+                                            </td>
+                                            <td class="text-center flag-cell">${flagIcon}</td>
+                                            <td>
+                                                <input type="hidden" name="satuan[]" class="form-control w-50 p-0" value="${p.data_pemeriksaan.nilai_satuan}" readonly/>
+                                                ${p.data_pemeriksaan.nilai_satuan}
+                                            </td>
+                                            <td>
+                                                <input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly/>1-10
+                                            </td>
+                                        </tr>
+                                        `;
+                                    }).join('')}
                                 </tr>
-                                `;
-                            }).join('')}
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="row">
-            <div class="col-lg-12 mb-3 mt-2">
-                <button type="button" id="verifikasiHasilBtn" class="btn btn-outline-info btn-block w-100" disabled>Verifikasi Hasil</button>
-            </div>
-            <div class="col-lg-12 mt-2">
-                <button type="button" id="verifikasiDokterBtn" class="btn btn-outline-primary w-100" disabled>Verifikasi Dokter PK</button>
-            </div>
-        </div>
-    </form>`;
-
-    setTimeout(() => {
-        // Referensi tombol dan form
-        const form = document.getElementById('worklistForm');
-        const verifikasiHasilBtn = document.getElementById('verifikasiHasilBtn');
-        const verifikasiDokterBtn = document.getElementById('verifikasiDokterBtn');
-        const manualButton = document.getElementById('manualButton');
-        const duploButton = document.getElementById('duploButton');
-
-        // Event listener untuk input real-time flag
-        document.querySelectorAll('.manualInput, .d1, .d2, .d3').forEach(input => {
-            input.addEventListener('input', function() {
-                const flagCell = this.closest('tr').querySelector('.flag-cell');
-                updateFlag(this.value, flagCell);
-            });
-        });
-
-        // Event listener untuk tombol verifikasi
-        document.getElementById('verifikasiHasilBtn').addEventListener('click', () => {
-            document.getElementById('worklistForm').action = "{{ route('worklist.store') }}";
-            document.getElementById('worklistForm').submit();
-        });
-
-        document.getElementById('verifikasiDokterBtn').addEventListener('click', () => {
-            document.getElementById('worklistForm').action = `worklist/checkin/${data_pasien.id}`;
-            document.getElementById('worklistForm').submit();
-        });
-
-        // Tombol duplo - menampilkan kolom secara bertahap
-        let currentDuploStage = 0;
-        if (duploButton) {
-            duploButton.addEventListener('click', () => {
-                const d1Columns = document.querySelectorAll('.d1-column');
-                const d2Columns = document.querySelectorAll('.d2-column');
-                const d3Columns = document.querySelectorAll('.d3-column');
-                const d1Inputs = document.querySelectorAll('.d1');
-                const d2Inputs = document.querySelectorAll('.d2');
-                const d3Inputs = document.querySelectorAll('.d3');
-
-                switch(currentDuploStage) {
-                    case 0:
-                        // Tampilkan kolom D1 dan aktifkan input D1
-                        d1Columns.forEach(col => col.style.display = 'table-cell');
-                        d1Inputs.forEach(input => {
-                            input.disabled = false;
-                            input.focus();
-                        });
-                        currentDuploStage = 1;
-                        break;
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <br>
                     
-                    case 1:
-                        // Tampilkan kolom D2 dan aktifkan input D2
-                        d2Columns.forEach(col => col.style.display = 'table-cell');
-                        d2Inputs.forEach(input => {
-                            input.disabled = false;
-                            input.focus();
-                        });
-                        currentDuploStage = 2;
-                        break;
-                    
-                    case 2:
-                        // Tampilkan kolom D3 dan aktifkan input D3
-                        d3Columns.forEach(col => col.style.display = 'table-cell');
-                        d3Inputs.forEach(input => {
-                            input.disabled = false;
-                            input.focus();
-                        });
-                        currentDuploStage = 0;
-                        break;
+                    <label>Note<span class="text-danger">*</span></label>
+                    <div>
+                        <textarea class="form-control" name="note" col="3" row="3">${hasil.length > 0 && hasil[0].note ? hasil[0].note : ''}</textarea>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-12 mb-3 mt-2">
+                        <button type="button" id="verifikasiHasilBtn" class="btn btn-outline-info btn-block w-100" disabled>Verifikasi Hasil</button>
+                    </div>
+                    <div class="col-lg-12 mt-2">
+                        <button type="button" id="verifikasiDokterBtn" class="btn btn-outline-primary w-100" disabled>Verifikasi Dokter PK</button>
+                    </div>
+                </div>
+            </form>`;
+
+            setTimeout(() => {
+                // Referensi elemen-elemen yang diperlukan
+                const verifikasiHasilBtn = document.getElementById('verifikasiHasilBtn');
+                const verifikasiDokterBtn = document.getElementById('verifikasiDokterBtn');
+                const manualButton = document.getElementById('manualButton');
+                const duploButton = document.getElementById('duploButton');
+                let currentDuploStage = 0;
+
+                // Fungsi untuk mengecek dan menampilkan kolom duplo yang memiliki nilai
+                function checkAndShowDuploColumns() {
+                    const d1Values = Array.from(document.querySelectorAll('.d1')).map(input => input.value).filter(Boolean);
+                    const d2Values = Array.from(document.querySelectorAll('.d2')).map(input => input.value).filter(Boolean);
+                    const d3Values = Array.from(document.querySelectorAll('.d3')).map(input => input.value).filter(Boolean);
+
+                    if (d1Values.length > 0) {
+                        document.querySelectorAll('.d1-column').forEach(col => col.style.display = 'table-cell');
+                        currentDuploStage = Math.max(currentDuploStage, 1);
+                    }
+                    if (d2Values.length > 0) {
+                        document.querySelectorAll('.d2-column').forEach(col => col.style.display = 'table-cell');
+                        currentDuploStage = Math.max(currentDuploStage, 2);
+                    }
+                    if (d3Values.length > 0) {
+                        document.querySelectorAll('.d3-column').forEach(col => col.style.display = 'table-cell');
+                        currentDuploStage = Math.max(currentDuploStage, 3);
+                    }
                 }
 
-                // Aktifkan tombol verifikasi
-                if (verifikasiHasilBtn) verifikasiHasilBtn.disabled = false;
-                if (verifikasiDokterBtn) verifikasiDokterBtn.disabled = false;
+                // Panggil fungsi saat halaman dimuat
+                checkAndShowDuploColumns();
+
+                // Event listener untuk input real-time flag
+                document.querySelectorAll('.manualInput, .d1, .d2, .d3').forEach(input => {
+                    input.addEventListener('input', function() {
+                        const flagCell = this.closest('tr').querySelector('.flag-cell');
+                        updateFlag(this.value, flagCell);
+                    });
+                });
+
+                // Event listener untuk tombol verifikasi
+                if (verifikasiHasilBtn) {
+                    verifikasiHasilBtn.addEventListener('click', () => {
+                        document.getElementById('worklistForm').action = "{{ route('worklist.store') }}";
+                        document.getElementById('worklistForm').submit();
+                    });
+                }
+
+                if (verifikasiDokterBtn) {
+                    verifikasiDokterBtn.addEventListener('click', () => {
+                        document.getElementById('worklistForm').action = `worklist/checkin/${data_pasien.id}`;
+                        document.getElementById('worklistForm').submit();
+                    });
+                }
+
+                // Tombol duplo
+                if (duploButton) {
+                    duploButton.addEventListener('click', () => {
+                        const d1Columns = document.querySelectorAll('.d1-column');
+                        const d2Columns = document.querySelectorAll('.d2-column');
+                        const d3Columns = document.querySelectorAll('.d3-column');
+                        const d1Inputs = document.querySelectorAll('.d1');
+                        const d2Inputs = document.querySelectorAll('.d2');
+                        const d3Inputs = document.querySelectorAll('.d3');
+
+                        switch(currentDuploStage) {
+                            case 0:
+                                d1Columns.forEach(col => col.style.display = 'table-cell');
+                                d1Inputs.forEach(input => {
+                                    input.disabled = false;
+                                    input.focus();
+                                });
+                                currentDuploStage = 1;
+                                break;
+                            case 1:
+                                d2Columns.forEach(col => col.style.display = 'table-cell');
+                                d2Inputs.forEach(input => {
+                                    input.disabled = false;
+                                    input.focus();
+                                });
+                                currentDuploStage = 2;
+                                break;
+                            case 2:
+                                d3Columns.forEach(col => col.style.display = 'table-cell');
+                                d3Inputs.forEach(input => {
+                                    input.disabled = false;
+                                    input.focus();
+                                });
+                                currentDuploStage = 0;
+                                break;
+                        }
+
+                        if (!isDikembalikan) {
+                            if (verifikasiHasilBtn) verifikasiHasilBtn.disabled = false;
+                            if (verifikasiDokterBtn) verifikasiDokterBtn.disabled = false;
+                        }
+                    });
+                }
+
+                // Tombol manual input
+                if (manualButton) {
+                    manualButton.addEventListener('click', () => {
+                        document.querySelectorAll('.manualInput').forEach(input => {
+                            input.disabled = false;
+                            input.focus();
+                        });
+
+                        document.querySelectorAll('.d1, .d2, .d3').forEach(input => {
+                            input.disabled = true;
+                        });
+
+                        if (!isDikembalikan) {
+                            if (verifikasiHasilBtn) verifikasiHasilBtn.disabled = false;
+                            if (verifikasiDokterBtn) verifikasiDokterBtn.disabled = false;
+                        }
+                    });
+                }
+
+                // Tombol switch
+                document.querySelectorAll('.switch-btn').forEach((button) => {
+                // Menyimpan nilai asli untuk setiap baris
+                const originalValues = new Map();
+                
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const hasilInput = row.querySelector('.manualInput');
+                    const d1Input = row.querySelector('.d1');
+                    const d2Input = row.querySelector('.d2');
+                    const d3Input = row.querySelector('.d3');
+                    const flagCell = row.querySelector('.flag-cell');
+                    
+                    // Inisialisasi atau update nilai current untuk setiap klik
+                    if (!originalValues.has(row)) {
+                        originalValues.set(row, {
+                            hasil: hasilInput.value,
+                            d1: d1Input?.value || '',
+                            d2: d2Input?.value || '',
+                            d3: d3Input?.value || ''
+                        });
+                    } else {
+                        // Update nilai current setiap kali tombol diklik
+                        const currentValues = {
+                            hasil: hasilInput.value,
+                            d1: d1Input?.value || '',
+                            d2: d2Input?.value || '',
+                            d3: d3Input?.value || ''
+                        };
+                        originalValues.set(row, currentValues);
+                    }
+                    
+                    // Dapatkan current index dari button atau set ke 0 jika belum ada
+                    let currentIndex = parseInt(button.getAttribute('data-switch-index')) || 0;
+                    
+                    // Dapatkan nilai current
+                    const current = originalValues.get(row);
+                    
+                    // Fungsi untuk memperbarui nilai berdasarkan index
+                    const updateValues = () => {
+                        switch(currentIndex) {
+                            case 0: // Switch dengan D1
+                                if (d1Input && window.getComputedStyle(d1Input.closest('.d1-column')).display !== 'none') {
+                                    const tempHasil = hasilInput.value;
+                                    hasilInput.value = d1Input.value;
+                                    d1Input.value = tempHasil;
+                                }
+                                break;
+                            case 1: // Switch dengan D2
+                                if (d2Input && window.getComputedStyle(d2Input.closest('.d2-column')).display !== 'none') {
+                                    const tempHasil = hasilInput.value;
+                                    hasilInput.value = d2Input.value;
+                                    d2Input.value = tempHasil;
+                                }
+                                break;
+                            case 2: // Switch dengan D3
+                                if (d3Input && window.getComputedStyle(d3Input.closest('.d3-column')).display !== 'none') {
+                                    const tempHasil = hasilInput.value;
+                                    hasilInput.value = d3Input.value;
+                                    d3Input.value = tempHasil;
+                                }
+                                break;
+                        }
+                    };
+                    
+                    // Update nilai
+                    updateValues();
+                    
+                    // Increment index dan reset ke 0 jika sudah mencapai 3
+                    currentIndex = (currentIndex + 1) % 3;
+                    button.setAttribute('data-switch-index', currentIndex);
+                    
+                    // Update flag
+                    updateFlag(hasilInput.value, flagCell);
+                });
             });
-        }
 
-        // Tombol manual input
-        if (manualButton) {
-            manualButton.addEventListener('click', () => {
-                document.querySelectorAll('.manualInput').forEach(input => {
-                    input.disabled = false;
-                    input.focus();
-                });
-
-                // Pastikan input duplo tetap disabled
-                document.querySelectorAll('.d1, .d2, .d3').forEach(input => {
-                    input.disabled = true;
-                });
-
-                // Sembunyikan kolom duplo
-                document.querySelectorAll('.d1-column, .d2-column, .d3-column').forEach(col => {
-                    col.style.display = 'none';
-                });
-
+                // Disable tombol verifikasi jika status dikembalikan
                 if (isDikembalikan) {
-                    verifikasiDokterBtn.disabled = false;
-                } else {
-                    verifikasiHasilBtn.disabled = false;
-                    verifikasiDokterBtn.disabled = false;
+                    if (verifikasiHasilBtn) verifikasiHasilBtn.disabled = true;
+                    if (verifikasiDokterBtn) verifikasiDokterBtn.disabled = true;
                 }
-            });
+            }, 0);
+
+            return content;
         }
-
-        // Tombol switch untuk pergantian input
-        document.querySelectorAll('.switch-btn').forEach((button) => {
-            button.addEventListener('click', function() {
-                const row = this.closest('tr');
-                const hasilInput = row.querySelector('.manualInput');
-                const d1Input = row.querySelector('.d1');
-                const d2Input = row.querySelector('.d2');
-                const d3Input = row.querySelector('.d3');
-                const flagCell = row.querySelector('.flag-cell');
-                
-                const currentIndex = parseInt(this.getAttribute('data-index'));
-                
-                if (currentIndex === 0) {
-                    // Aktifkan input D1
-                    d1Input.disabled = false;
-                    if (d1Input.value) {
-                        hasilInput.value = d1Input.value;
-                        updateFlag(d1Input.value, flagCell);
-                    }
-                    this.setAttribute('data-index', '1');
-                } else if (currentIndex === 1) {
-                    // Aktifkan input D2
-                    d2Input.disabled = false;
-                    if (d2Input.value) {
-                        hasilInput.value = d2Input.value;
-                        updateFlag(d2Input.value, flagCell);
-                    }
-                    this.setAttribute('data-index', '2');
-                } else {
-                    // Aktifkan input D3
-                    d3Input.disabled = false;
-                    if (d3Input.value) {
-                        hasilInput.value = d3Input.value;
-                        updateFlag(d3Input.value, flagCell);
-                    }
-                    this.setAttribute('data-index', '0');
-                }
-            });
-        });
-
-        // Disable tombol verifikasi jika status dikembalikan
-        if (isDikembalikan) {
-            verifikasiHasilBtn.disabled = true;
-            verifikasiDokterBtn.disabled = true;
-        }
-    }, 0);
-
-    return content;
-}
         // Export fungsi jika diperlukan
         window.getTableContent = getTableContent;
 

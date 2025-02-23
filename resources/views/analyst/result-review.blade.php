@@ -216,7 +216,7 @@
                                     </button>
 
                                     <!-- Tombol Print -->
-                                    <button class="btn btn-sm btn-outline-secondary" id="printBtn-{{ $dpc->id }}" onclick="openModal()" {{ $dpc->status != 'diselesaikan' ? 'disabled' : '' }}>
+                                    <button class="btn btn-sm btn-outline-secondary" id="printBtn-{{ $dpc->id }}" onclick="openModal('{{ $dpc->no_lab }}')" {{ $dpc->status != 'diselesaikan' ? 'disabled' : '' }}>
                                         <i title="Print Result" class="ti ti-printer"></i>
                                     </button>
 
@@ -230,7 +230,7 @@
                   </table>
                 </div>
                 {{-- Sample History --}}
-                <div id="noteModal" class="modal" tabindex="-1" aria-hidden="true">
+                <div class="modal fade" id="noteModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -239,6 +239,7 @@
                             </div>
                             <div class="modal-body">
                                 <textarea id="patientNote" class="form-control" rows="4" placeholder="Enter your note here..."></textarea>
+                                <input type="hidden" id="currentNoLab">
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -341,33 +342,57 @@
 });
     </script>
     
+    <!-- Button untuk setiap baris data -->
+<button class="btn btn-sm btn-outline-secondary" onclick="openModal('{{ $dpc->no_lab }}')" {{ $dpc->status != 'diselesaikan' ? 'disabled' : '' }}>
+    <i title="Print Result" class="ti ti-printer"></i>
+</button>
+
+<!-- Modal yang akan digunakan bersama -->
+<div class="modal fade" id="noteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Enter Patient's Note</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea id="patientNote" class="form-control" rows="4" placeholder="Enter your note here..."></textarea>
+                <input type="hidden" id="currentNoLab">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitNote()">Print with Note</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    // Fungsi untuk membuka modal
-    function openModal() {
-        var modal = new bootstrap.Modal(document.getElementById('noteModal'));
-        modal.show();
+    let noteModal = null;
+
+    function openModal(noLab) {
+        if (!noteModal) {
+            noteModal = new bootstrap.Modal(document.getElementById('noteModal'));
+        }
+        document.getElementById('currentNoLab').value = noLab;
+        document.getElementById('patientNote').value = '';
+        noteModal.show();
     }
 
-    // Fungsi untuk mengambil note dan membuka halaman print
     function submitNote() {
-        var note = document.getElementById('patientNote').value;
-        var noLab = "{{ $dpc->no_lab }}"; // Ambil no_lab jika perlu
+        const note = document.getElementById('patientNote').value;
+        const noLab = document.getElementById('currentNoLab').value;
 
         if (note.trim() === "") {
             alert("Please enter a note before printing.");
             return;
         }
 
-        // Ganti dengan URL print tanpa mengupdate status
-        var printUrl = "{{ route('print.pasien', $dpc->no_lab) }}";
-        printUrl += "?note=" + encodeURIComponent(note);
+        // Tambahkan prefix 'analyst' ke URL
+        const printUrl = `{{ url('analyst/print/pasien') }}/${noLab}?note=${encodeURIComponent(note)}`;
         
-        // Buka halaman print di tab baru
         window.open(printUrl, '_blank');
-        
-        // Menutup modal setelah menekan tombol submit
-        var modal = bootstrap.Modal.getInstance(document.getElementById('noteModal'));
-        modal.hide();
+        noteModal.hide();
     }
 </script>
 
@@ -445,120 +470,125 @@ editBtns.forEach(function(editBtn) {
                     `;
 
                     spesimen.forEach(e => {
-                        let details = '';
-                        let detailsData = [];
-                        let kapasitas, serumh, serum;
+        let details = '';
+        let detailsData = [];
+        let kapasitas, serumh, serum;
+        let processTime = '';
 
-                        if (e.tabung === 'K3-EDTA') {
-                            const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key && item.tabung === 'EDTA');
-                            if (collectionItem) {
-                                detailsData = collectionItem.details.filter(detail => 
-                                    e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                                );
-                                kapasitas = collectionItem.kapasitas;
-                            }
-                        } else if (e.tabung === 'K3') {
-                            const collectionItem = scollection.find(item => 
-                                item.no_lab === e.laravel_through_key && item.tabung === 'K3'
-                            );
-                            if (collectionItem) {
-                                detailsData = collectionItem.details.filter(detail => 
-                                    e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                                );
-                                serumh = collectionItem.serumh;
-                            }
-                        } else if (e.tabung === 'CLOT-ACT') {
-                            const handlingItem = shandling.find(item => item.no_lab === e.laravel_through_key);
-                            if (handlingItem) {
-                                detailsData = handlingItem.details.filter(detail => 
-                                    e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                                );
-                                serum = handlingItem.serum;
-                            }
-                        }
+        const checkInSpesimen = history.find(h => h.status === 'Check in spesiment');
+        let noteFromCollection = null;
+        let noteFromHandling = null;
 
-                        if (e.details && e.details.length > 0) {
-                            details = `<div class="detail-container col-12 col-md-6">`;
-                            e.details.forEach(detail => {
-                                const imageUrl = `/gambar/${detail.gambar}`;
-                                let isChecked = '';
-                                let isDisabled = 'disabled';
+        if (e.tabung === 'K3-EDTA') {
+            const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key);
+            if (collectionItem) {
+                detailsData = collectionItem.details.filter(detail => 
+                    e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                );
+                kapasitas = collectionItem.kapasitas;
+                noteFromCollection = collectionItem.note;
+            }
+        } else if (e.tabung === 'K3') {
+            const collectionItem = scollection.find(item => 
+                item.no_lab === e.laravel_through_key && item.tabung === 'K3'
+            );
+            if (collectionItem) {
+                detailsData = collectionItem.details.filter(detail => 
+                    e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                );
+                serumh = collectionItem.serumh;
+                noteFromCollection = collectionItem.note;
+            }
+        } else if (e.tabung === 'CLOT-ACT') {
+            const handlingItem = shandling.find(item => item.no_lab === e.laravel_through_key);
+            if (handlingItem) {
+                detailsData = handlingItem.details.filter(detail => 
+                    e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                );
+                serum = handlingItem.serum;
+                noteFromHandling = handlingItem.note;
+            }
+        }
 
-                                const matchedDetail = detailsData.find(d => d.id === detail.id);
-                                if (matchedDetail) {
-                                    if (e.tabung === 'K3-EDTA' && kapasitas == detail.id) {
-                                        isChecked = 'checked';
-                                        isDisabled = '';
-                                    } else if (e.tabung === 'K3' && serumh == detail.id) {
-                                        isChecked = 'checked';
-                                        isDisabled = '';
-                                    } else if (e.tabung === 'CLOT-ACT' && serum == detail.id) {
-                                        isChecked = 'checked';
-                                        isDisabled = '';
-                                    }
-                                }
+        if (e.details && e.details.length > 0){
+            details = `<div class="detail-container col-12 col-md-6">`;
+            e.details.forEach(detail => {
+                const imageUrl = `/gambar/${detail.gambar}`;
+                let isChecked = '';
+                let isDisabled = 'disabled';
 
-                                details += `
-                                <div class="detail-item">
-                                    <div class="detail-text">${detail.nama_parameter}</div>
-                                    <div class="detail-image-container">
-                                        <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
-                                    </div>
-                                    <div class="detail-radio-container">
-                                        <input type="radio" name="${e.tabung}" class="detail.radio" value="${detail.id}" ${isChecked} ${isDisabled} />  
-                                    </div>
-                                </div>`;
-                            });
-                            details += `</div>`;
-                        }
+                const matchedDetail = detailsData.find(d => d.id === detail.id)
+                if(matchedDetail){
+                    if (e.tabung === 'K3-EDTA' && kapasitas == detail.id) {
+                        isChecked = 'checked';
+                        isDisabled = '';
+                    } else if (e.tabung === 'K3' && serumh == detail.id) {
+                        isChecked = 'checked';
+                        isDisabled = '';
+                    } else if (e.tabung === 'CLOT-ACT' && serum == detail.id) {
+                        isChecked = 'checked';
+                        isDisabled = '';
+                    }
+                }
 
-                        let title = '';
-                        let subtext = '';
+                details +=  
+                `<div class="detail-item">
+                    <div class="detail-text">${detail.nama_parameter}</div>
+                    <div class="detail-image-container">
+                        <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
+                    </div>
+                    <div class="detail-radio-container ">
+                        <input type="radio" name="${e.tabung}" class="detail.radio" value="${detail.id}" ${isChecked} ${isDisabled} />  
+                    </div>
+                </div>`;
+            });
+            details += `</div>`
+        }
 
-                        if (e.tabung === 'K3-EDTA') {
-                            title = '<h5 class="title">Spesiment Collection</h5> <hr>';
-                        }else
+        let title = '';
+        let subtext = '';
 
-                        if (e.tabung === 'K3') {
-                            title = '<h5 class="title">Spesiment Collection</h5> <hr>';
-                        }else
+        if (e.tabung === 'K3-EDTA') {
+            title = '<h5 class="title">Spesiment Collection</h5> <hr>';
+        } else if (e.tabung === 'CLOTH-ACT') {
+            subtext = '<div class="subtext">Serum</div>';
+        } else if (e.tabung === 'CLOT-ACT') {
+            title = '<h5 class="title mt-3">Spesiment Handlings</h5> <hr>';
+            subtext = '<div class="subtext">Serum</div>';
+        }
 
-                        if (e.tabung === 'CLOT-ACT') {
-                            title = '<h5 class="title mt-3">Spesiment Handlings</h5> <hr>';
-                            subtext = '<div class="subtext">Serum</div>';
-                        }
+        let note = '';
+        if (e.tabung === 'K3-EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'CLOTH-ACT') {
+            note = '<p class="mb-0"><strong>Note</strong></p>';
+        }
 
-                        let note = '';
-                        if (e.tabung === 'K3-EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'K3') {
-                            note = '<p class="mb-0"><strong>Note</strong></p>';
-                        }
-
-                        accordionContent += `${title}
-                            <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">
-                                                
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading${e.tabung}">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">
-                                        Tabung ${e.tabung}
-                                        </button>
-                                    </h2>
-                                    <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}" data-bs-parent="#accordion${e.tabung}">
-                                        <div class="accordion-body">
-                                            
-                                            ${subtext}
-                                            <div class="container">
-                                                ${details}
-                                            </div>
-                                            ${note}
-                                            ${e.tabung === 'K3-EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
-                                            ${e.tabung === 'K3' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
-                                            ${e.tabung === 'CLOT-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="null" disabled></textarea>` : ''}
-                                            
-                                        </div>
-                                    </div>
-                                </div>
-                                </div>`;
-                    });
+        accordionContent += `${title}
+            <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">                          
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading${e.tabung}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">
+                        Tabung ${e.tabung}
+                        </button>
+                    </h2>
+                    <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}" data-bs-parent="#accordion${e.tabung}">
+                        <div class="accordion-body">
+                            ${subtext}
+                            <div class="container">
+                                ${details}
+                            </div>
+                            ${note}
+                            ${e.tabung === 'K3-EDTA' ? 
+                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
+                            ${e.tabung === 'CLOTH-ACT' ? 
+                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
+                            ${e.tabung === 'CLOT-ACT' ? 
+                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromHandling || 'null'}" ${noteFromHandling ? '' : 'disabled'} disabled></textarea>` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
                     
 
                     // let detailContent = `

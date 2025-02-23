@@ -318,35 +318,16 @@ class spesimentHendlingController extends Controller
         foreach ($pasiens as $pasien) {
 
             // Cek apakah status pasien "Check In"
-            if ($pasien->status == 'Check In') {
+            if ($pasien->status == 'Acc Collection') {
 
                 // Loop melalui setiap data pemeriksaan pasien
                 foreach ($pasien->spesiment as $spesiment) {
-
-                    if ($spesiment->tabung === 'EDTA') {
-                        // KONDISI UNTUK INPUT SPESIMENT COLLECTION DENGAN TABUNG EDTA
-                        spesimentCollection::create([
-                            'no_lab' => $pasien->no_lab,
-                            'tabung' => 'EDTA',
-                            'kapasitas' => 13, // Ini nilai contoh, sesuaikan dengan kebutuhan
-                            'status' => 'Acc',
-                            'tanggal' => now(),
-                        ]);
-                    } else if ($spesiment->tabung === 'CLOTH-ACT') {
-                        // KONDISI UNTUK INPUT SPESIMENT COLLECTION DENGAN TABUNG CLOTH-ACT
-                        spesimentCollection::create([
-                            'no_lab' => $pasien->no_lab,
-                            'tabung' => 'K3',
-                            'serumh' => 15, // Ini nilai contoh, sesuaikan dengan kebutuhan
-                            'status' => 'Acc',
-                            'tanggal' => now(),
-                        ]);
-                    } else if ($spesiment->tabung === 'CLOT-ACT') {
+                    if ($spesiment->tabung === 'CLOT-ACT') {
                         // KONDISI UNTUK INPUT SPESIMENT HANDLING DENGAN TABUNG CLOT-ACT
                         spesimentHandling::create([
                             'no_lab' => $pasien->no_lab,
                             'tabung' => 'CLOT-ACT',
-                            'serum' => 19, // Ini nilai contoh, sesuaikan dengan kebutuhan
+                            'serum' => 7, // Ini nilai contoh, sesuaikan dengan kebutuhan
                             'status' => 'Acc',
                             'tanggal' => now(),
                         ]);
@@ -397,7 +378,7 @@ class spesimentHendlingController extends Controller
         $pasien = pasien::find($id);
 
         // Update status pasien
-        $pasien->update(['status' => 'Dikembalikan Analyst']);
+        $pasien->update(['status' => 'Dikembalikan AnalystS']);
 
         pemeriksaan_pasien::where('no_lab', $pasien->no_lab)
             ->update(['status' => 'lama']);

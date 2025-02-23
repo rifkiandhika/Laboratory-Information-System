@@ -25,7 +25,7 @@ class analystDasboard extends Controller
         // $dataPasien = pasien::where('status', 'Telah Dikirim ke Lab')
         //     ->orWhere('status', 'Disetujui oleh analis lab')->orderby('cito', 'desc')->get();
 
-        $dataPasien = pasien::whereIn('status', ['Telah Dikirim ke Lab', 'Dikembalikan Analyst'])
+        $dataPasien = pasien::whereIn('status', ['Telah Dikirim ke Lab', 'Dikembalikan AnalystS'])
             ->orderBy('cito', 'desc')
             ->get();
 

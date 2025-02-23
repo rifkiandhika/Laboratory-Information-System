@@ -44,6 +44,7 @@ class resultController extends Controller
     {
         // return view('print-view.print-pasien');
         // dd('Fungsi print berhasil dipanggil');
+        // dd($request);
         $note = $request->input('note');
         // $data_pasien = pasien::with(['data_pemeriksaan_pasien.data_departement', 'dpp.pasiens', 'hasil_pemeriksaan'])->where('no_lab', $no_lab)->first();
         $data_pasien = pasien::where('no_lab', $no_lab)->with([
@@ -55,17 +56,6 @@ class resultController extends Controller
             'dokter',
             'hasil_pemeriksaan'
         ])->first();
-        // $cetak_data = pasien::select('no_lab', 'no_rm', 'nama', 'lahir', 'alamat', 'tanggal_masuk', 'created_at', 'updated_at', 'kode_dokter', 'diagnosa')->where('no_lab', $no_lab)->first();
-        // $hasils = HasilPemeriksaan::select('nama_dokter')->where('no_lab', $no_lab)->first();
-        // $hasil = HasilPemeriksaan::select('nama_dokter', 'nama_pemeriksaan', 'hasil', 'flag', 'satuan', 'range')->where('no_lab', $no_lab)->get();
-        // $detail = pemeriksaan_pasien::with('data_department')where('', )->get();
-
-        // Cetak atau return data yang diambil
-        // return response()->json($data_pasien);
-        // if ($data_pasien) {
-        //     $data_pasien->status = 'diselesaikan'; // Mengubah status menjadi 'diselesaikan'
-        //     $data_pasien->save(); // Menyimpan perubahan status
-        // }
         return view('print-view.print-pasien', compact('data_pasien', 'note'));
     }
 

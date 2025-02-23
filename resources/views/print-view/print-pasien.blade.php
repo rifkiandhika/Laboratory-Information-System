@@ -61,9 +61,29 @@
 .footer-container h6 {
     margin: 0;
 }
+     /* Pastikan icon tetap muncul saat print */
+     .flag i, .flag .printable-icon {
+            display: inline-block !important;
+        }
+        .text-primary {
+            color: #206bc4 !important;
+        }
+        .text-danger {
+            color: #d63939 !important;
+        }
+        /* Jika menggunakan simbol unicode */
+        .printable-icon {
+            font-weight: bold;
+            font-size: 16px;
+        }
+    }
 
-}
-
+    /* Style untuk preview dan print */
+    .flag i {
+        font-family: 'tabler-icons' !important;
+        font-style: normal;
+        font-size: 16px;
+    }
     </style>
     {{-- <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -77,6 +97,9 @@
       <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/node-waves/node-waves.css') }}" />
       <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
       <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/typeahead-js/typeahead.css') }}" />
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <!-- atau jika menggunakan versi spesifik -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
 </head>
 <body>
     <div>
@@ -228,7 +251,17 @@
                                 <tr>
                                     <td>{{ $pemeriksaanName }}</td>
                                     <td>{{ $hasilItem ? $hasilItem->hasil : 'Tidak ada hasil' }}</td>
-                                    <td><input type="hidden" class="form-control p-0" readonly/></td>
+                                    <td class="flag">
+                                        @if($hasilItem && is_numeric($hasilItem->hasil))
+                                            @if(floatval($hasilItem->hasil) < 5)
+                                                <!-- atau -->
+                                                <i class="ti ti-arrow-down text-primary"></i>
+                                            @elseif(floatval($hasilItem->hasil) > 10)
+                                                <!-- atau -->
+                                                <i class="ti ti-arrow-up text-danger"></i>
+                                            @endif
+                                        @endif
+                                    </td>
                                     <td class="text-center">{{ $hasilItem ? $hasilItem->satuan : 'Tidak ada satuan' }}</td>
                                     <td><input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly/>1-10</td>
                                 </tr>
