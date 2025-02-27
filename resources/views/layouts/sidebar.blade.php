@@ -4,7 +4,7 @@
             <div data-i18n="Dashboard">Dashboard</div>
             </a>
         </li>
-        <li class="menu-item {{ Request::is('loket/pasien', 'loket/data-pasien', 'loket/report', 'loket/pasien/create') ? 'active' : '' }}">
+        <li class="menu-item {{ Request::is('loket/pasien', 'loket/data-pasien', 'loket/report', 'loket/pasien/create') ? 'open active' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
               <i class="menu-icon tf-icons ti ti-user-square"></i>
               <div data-i18n="Locket">Locket</div>
@@ -30,7 +30,7 @@
           </li>
 
           {{-- Laboratorium --}}
-        <li class="menu-item {{ Request::is('analyst/analyst', 'analyst/spesiment', 'analyst/worklist') ? 'active' : '' }}">
+        <li class="menu-item {{ Request::is('analyst/analyst', 'analyst/spesiment', 'analyst/worklist') ? 'open active' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
               <i class="menu-icon tf-icons ti ti-flask"></i>
               <div data-i18n="Laboratory">Laboratory</div>
@@ -75,7 +75,7 @@
             </a>
           </li>
           {{-- Setting --}}
-          <li class="menu-item {{ Request::is('dokter', 'poli', 'department', 'pemeriksaan', 'spesiments', 'detailspesiments') ? 'active' : '' }}">
+          <li class="menu-item {{ Request::is('dokter', 'poli', 'department', 'pemeriksaan', 'spesiments', 'detailspesiments') ? 'open active' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
               <i class="menu-icon tf-icons ti ti-settings"></i>
               <div data-i18n="Setting">Setting</div>

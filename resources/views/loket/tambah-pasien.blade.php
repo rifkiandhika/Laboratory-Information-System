@@ -72,7 +72,7 @@
                                     <div class="col-md-6 mb-6">
                                         <label for="exampleFormControlSelect1" class="fw-bold">Gender<strong class="text-danger"> *</strong></label>
                                         <select class="form-select" id="exampleFormControlSelect1" name="jeniskelamin">
-                                            <option selected>Select Gender</option>
+                                            <option selected>Choose Gender</option>
                                             <option value="Laki²">Laki²</option>
                                             <option value="Perempuan">Perempuan</option>
                                         </select>
@@ -82,18 +82,19 @@
                                             <input type="number" class="form-control" name="notelepon" placeholder="Add Phone Number" required>
                                     </div>
                                     <div class="col-md-6 mb-6">
-                                        <label for="exampleFormControlSelect1" class="fw-bold">Doctor</label>
-                                        <select class="form-select" id="exampleFormControlSelect1" name="dokter_internal">
-                                            <option hidden></option>
+                                        <label for="doctorSelect" class="fw-bold">Doctor</label>
+                                        <select class="form-select" id="doctorSelect" name="dokter_internal">
+                                            <option hidden>Choose Doctor</option>
                                             @foreach ($dokters as $dokter)
                                                 <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }}</option>
                                             @endforeach
+                                            <option value="external">Lainnya...</option>
                                         </select>
                                     </div>
                                     
-                                    <div class="col-md-6 mb-6">
-                                        <label for="external_doctor" class="fw-bold">External Doctor </label>
-                                        <input type="text" class="form-control" name="dokter_external" placeholder="External Doctor">
+                                    <div class="col-md-6 mb-6" id="externalDoctorContainer" style="display: none;">
+                                        <label for="external_doctor" class="fw-bold">External Doctor</label>
+                                        <input type="text" class="form-control" id="external_doctor" name="dokter_external" placeholder="Masukkan nama dokter">
                                     </div>
                                                                         
                                     <div class="col-md-6 mb-6">
@@ -115,7 +116,7 @@
                                         <label for="alamat" class="fw-bold">Full Address <strong class="text-danger"> *</strong></label>
                                         <textarea class="form-control ml-1" cols="119" rows="1" id="alamat" name="alamat" placeholder="Enter Address"></textarea>
                                     </div>
-                                    <div class="form-group col-12">
+                                    <div class="col-md-6 mb-6">
                                         <label for="basic-url">Kind Of Service</label>
                                         <div class="row">
                                             <div class="ml-4 mb-2">
@@ -196,7 +197,7 @@
                                 </div>
                                 <hr>
                                 <div class=" text-end">
-                                    <button class="btn btn-outline-primary" type="submit">Submit</button>
+                                    <button class="btn btn-outline-primary oneclick" type="submit">Submit</button>
                                     <button class="btn btn-outline-danger" type="reset">Reset</button>   
                                 </div>
                             </form>
@@ -271,7 +272,117 @@ $(document).ready(function(){
 
 
 @push('script')
+<script>
+    // Menambahkan event listener saat dokumen sudah siap
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. One-click submit: mencegah button submit diklik lebih dari sekali
+    const form = document.querySelector('form');
+    const submitButton = document.querySelector('.oneclick');
+    
+    if (form && submitButton) {
+        form.addEventListener('submit', function(event) {
+            // Nonaktifkan tombol setelah diklik
+            submitButton.disabled = true;
+            submitButton.classList.add('disabled');
+            submitButton.innerHTML = '<span>Memproses...</span>';
+            
+            // Memeriksa duplikasi pemeriksaan sebelum submit
+            if (!checkDuplicateExams()) {
+                event.preventDefault();
+                submitButton.disabled = false;
+                submitButton.classList.remove('disabled');
+                submitButton.innerHTML = 'Submit';
+                alert('Ditemukan pemeriksaan duplikat. Silakan periksa kembali pilihan Anda.');
+            }
+        });
+    }
+    
+    // 2. Fungsi untuk memeriksa duplikasi pemeriksaan
+    function checkDuplicateExams() {
+        // Kumpulkan semua pemeriksaan yang dipilih
+        const selectedExams = [];
+        const checkboxes = document.getElementsByClassName('child-pemeriksaan');
+        
+        for (let i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked && checkboxes[i].type === 'checkbox') {
+                // Ambil nama pemeriksaan dari label
+                const label = checkboxes[i].nextElementSibling;
+                if (label && label.tagName === 'LABEL') {
+                    const examName = label.textContent.trim().split('Rp.')[0].trim();
+                    
+                    // Cek apakah nama pemeriksaan sudah ada dalam array
+                    if (selectedExams.includes(examName)) {
+                        return false; // Ditemukan duplikat
+                    }
+                    
+                    selectedExams.push(examName);
+                }
+            }
+        }
+        
+        return true; // Tidak ada duplikat
+    }
+    
+    // 3. Perbaikan fungsi checkpemeriksaan
+    window.checkpemeriksaan = function(lab) {
+        var total = 0;
+        var harga = 0;
+        var harga_pemeriksaan = document.getElementById('harga-pemeriksaan');
+        var checkboxes = document.getElementsByClassName('child-pemeriksaan');
+        
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked == true && checkboxes[i].type === 'checkbox') {
+                harga = checkboxes[i].getAttribute('data-harga');
+                total = parseInt(total) + parseInt(harga);
+            }
+        }
 
+        //mengubah format angka ke rupiah
+        var reverse = total.toString().split('').reverse().join(''),
+            ribuan = reverse.match(/\d{1,3}/g);
+        
+        if (ribuan) {
+            ribuan = ribuan.join('.').split('').reverse().join('');
+            if (harga_pemeriksaan) {
+                harga_pemeriksaan.value = ribuan;
+            }
+        }
+    };
+    
+    // 4. Perbaikan juga untuk tombol reset
+    const resetButton = document.querySelector('button[type="reset"]');
+    if (resetButton) {
+        resetButton.addEventListener('click', function() {
+            // Reset tombol submit
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.classList.remove('disabled');
+                submitButton.innerHTML = 'Submit';
+            }
+            
+            // Reset harga pemeriksaan
+            const harga_pemeriksaan = document.getElementById('harga-pemeriksaan');
+            if (harga_pemeriksaan) {
+                harga_pemeriksaan.value = '0';
+            }
+        });
+    }
+});
+    </script>
+<script>
+    document.getElementById('doctorSelect').addEventListener('change', function () {
+        var externalContainer = document.getElementById('externalDoctorContainer');
+        var externalInput = document.getElementById('external_doctor');
+
+        if (this.value === 'external') {
+            externalContainer.style.display = 'block';
+            externalInput.setAttribute('required', 'true'); // Buat wajib diisi jika memilih "Lainnya..."
+        } else {
+            externalContainer.style.display = 'none';
+            externalInput.removeAttribute('required');
+        }
+    });
+</script>
     <script>
         $(document).ready(function() {
         $('#searchInspection').on('keyup', function() {
@@ -306,26 +417,6 @@ $(document).ready(function(){
 
     <!-- hitung harga otomatis saat memilih checkbox mengambil harga dari database -->
     <script type="text/javascript">
-        function checkpemeriksaan(lab) {
-            var total = 0;
-            var harga = 0;
-            var harga_pemeriksaan = document.getElementById('harga-pemeriksaan');
-            var checkboxes = document.getElementsByClassName('child-pemeriksaan');
-            for (var i = 0; i < checkboxes.length; i++) {
-                if (checkboxes[i].checked == true) {
-                    harga = checkboxes[i].getAttribute('data-harga');
-                    total = parseInt(total) + parseInt(harga);
-                }
-            }
-
-            //mengubah format angka ke rupiah
-            var reverse = total.toString().split('').reverse().join(''),
-                ribuan = reverse.match(/\d{1,3}/g);
-            ribuan = ribuan.join('.').split('').reverse().join('');
-
-            harga_pemeriksaan.value = ribuan;
-        }
-
         $(document).ready(function(){
             $("#diagnosa").select2({
                 placeholder: 'Pilih Diagnosa',

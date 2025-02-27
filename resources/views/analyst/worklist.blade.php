@@ -1057,124 +1057,144 @@
             </form>`;
 
             setTimeout(() => {
-                // Referensi elemen-elemen yang diperlukan
-                const verifikasiHasilBtn = document.getElementById('verifikasiHasilBtn');
-                const verifikasiDokterBtn = document.getElementById('verifikasiDokterBtn');
-                const manualButton = document.getElementById('manualButton');
-                const duploButton = document.getElementById('duploButton');
-                let currentDuploStage = 0;
+            // Referensi elemen-elemen yang diperlukan
+            const verifikasiHasilBtn = document.getElementById('verifikasiHasilBtn');
+            const verifikasiDokterBtn = document.getElementById('verifikasiDokterBtn');
+            const manualButton = document.getElementById('manualButton');
+            const duploButton = document.getElementById('duploButton');
+            let currentDuploStage = 0;
 
-                // Fungsi untuk mengecek dan menampilkan kolom duplo yang memiliki nilai
-                function checkAndShowDuploColumns() {
-                    const d1Values = Array.from(document.querySelectorAll('.d1')).map(input => input.value).filter(Boolean);
-                    const d2Values = Array.from(document.querySelectorAll('.d2')).map(input => input.value).filter(Boolean);
-                    const d3Values = Array.from(document.querySelectorAll('.d3')).map(input => input.value).filter(Boolean);
+            // Fungsi untuk mengecek dan menampilkan kolom duplo yang memiliki nilai
+            function checkAndShowDuploColumns() {
+                const d1Values = Array.from(document.querySelectorAll('.d1')).map(input => input.value).filter(Boolean);
+                const d2Values = Array.from(document.querySelectorAll('.d2')).map(input => input.value).filter(Boolean);
+                const d3Values = Array.from(document.querySelectorAll('.d3')).map(input => input.value).filter(Boolean);
 
-                    if (d1Values.length > 0) {
-                        document.querySelectorAll('.d1-column').forEach(col => col.style.display = 'table-cell');
-                        currentDuploStage = Math.max(currentDuploStage, 1);
-                    }
-                    if (d2Values.length > 0) {
-                        document.querySelectorAll('.d2-column').forEach(col => col.style.display = 'table-cell');
-                        currentDuploStage = Math.max(currentDuploStage, 2);
-                    }
-                    if (d3Values.length > 0) {
-                        document.querySelectorAll('.d3-column').forEach(col => col.style.display = 'table-cell');
-                        currentDuploStage = Math.max(currentDuploStage, 3);
-                    }
+                if (d1Values.length > 0) {
+                    document.querySelectorAll('.d1-column').forEach(col => col.style.display = 'table-cell');
+                    currentDuploStage = Math.max(currentDuploStage, 1);
                 }
+                if (d2Values.length > 0) {
+                    document.querySelectorAll('.d2-column').forEach(col => col.style.display = 'table-cell');
+                    currentDuploStage = Math.max(currentDuploStage, 2);
+                }
+                if (d3Values.length > 0) {
+                    document.querySelectorAll('.d3-column').forEach(col => col.style.display = 'table-cell');
+                    currentDuploStage = Math.max(currentDuploStage, 3);
+                }
+            }
 
-                // Panggil fungsi saat halaman dimuat
-                checkAndShowDuploColumns();
+            // Panggil fungsi saat halaman dimuat
+            checkAndShowDuploColumns();
 
-                // Event listener untuk input real-time flag
-                document.querySelectorAll('.manualInput, .d1, .d2, .d3').forEach(input => {
-                    input.addEventListener('input', function() {
-                        const flagCell = this.closest('tr').querySelector('.flag-cell');
-                        updateFlag(this.value, flagCell);
-                    });
+            // Event listener untuk input real-time flag
+            document.querySelectorAll('.manualInput, .d1, .d2, .d3').forEach(input => {
+                input.addEventListener('input', function() {
+                    const flagCell = this.closest('tr').querySelector('.flag-cell');
+                    updateFlag(this.value, flagCell);
                 });
+            });
 
-                // Event listener untuk tombol verifikasi
-                if (verifikasiHasilBtn) {
-                    verifikasiHasilBtn.addEventListener('click', () => {
-                        document.getElementById('worklistForm').action = "{{ route('worklist.store') }}";
-                        document.getElementById('worklistForm').submit();
-                    });
-                }
+            // Event listener untuk tombol verifikasi
+            if (verifikasiHasilBtn) {
+                verifikasiHasilBtn.addEventListener('click', () => {
+                    document.getElementById('worklistForm').action = "{{ route('worklist.store') }}";
+                    document.getElementById('worklistForm').submit();
+                });
+            }
 
-                if (verifikasiDokterBtn) {
-                    verifikasiDokterBtn.addEventListener('click', () => {
-                        document.getElementById('worklistForm').action = `worklist/checkin/${data_pasien.id}`;
-                        document.getElementById('worklistForm').submit();
-                    });
-                }
+            if (verifikasiDokterBtn) {
+                verifikasiDokterBtn.addEventListener('click', () => {
+                    document.getElementById('worklistForm').action = `worklist/checkin/${data_pasien.id}`;
+                    document.getElementById('worklistForm').submit();
+                });
+            }
 
-                // Tombol duplo
-                if (duploButton) {
-                    duploButton.addEventListener('click', () => {
-                        const d1Columns = document.querySelectorAll('.d1-column');
-                        const d2Columns = document.querySelectorAll('.d2-column');
-                        const d3Columns = document.querySelectorAll('.d3-column');
-                        const d1Inputs = document.querySelectorAll('.d1');
-                        const d2Inputs = document.querySelectorAll('.d2');
-                        const d3Inputs = document.querySelectorAll('.d3');
+            // Tombol duplo - KODE YANG DIPERBAIKI
+            if (duploButton) {
+                duploButton.addEventListener('click', () => {
+                    const d1Columns = document.querySelectorAll('.d1-column');
+                    const d2Columns = document.querySelectorAll('.d2-column');
+                    const d3Columns = document.querySelectorAll('.d3-column');
+                    const d1Inputs = document.querySelectorAll('.d1');
+                    const d2Inputs = document.querySelectorAll('.d2');
+                    const d3Inputs = document.querySelectorAll('.d3');
 
-                        switch(currentDuploStage) {
-                            case 0:
-                                d1Columns.forEach(col => col.style.display = 'table-cell');
-                                d1Inputs.forEach(input => {
-                                    input.disabled = false;
-                                    input.focus();
-                                });
-                                currentDuploStage = 1;
-                                break;
-                            case 1:
-                                d2Columns.forEach(col => col.style.display = 'table-cell');
-                                d2Inputs.forEach(input => {
-                                    input.disabled = false;
-                                    input.focus();
-                                });
-                                currentDuploStage = 2;
-                                break;
-                            case 2:
-                                d3Columns.forEach(col => col.style.display = 'table-cell');
-                                d3Inputs.forEach(input => {
-                                    input.disabled = false;
-                                    input.focus();
-                                });
-                                currentDuploStage = 0;
-                                break;
-                        }
-
-                        if (!isDikembalikan) {
-                            if (verifikasiHasilBtn) verifikasiHasilBtn.disabled = false;
-                            if (verifikasiDokterBtn) verifikasiDokterBtn.disabled = false;
-                        }
-                    });
-                }
-
-                // Tombol manual input
-                if (manualButton) {
-                    manualButton.addEventListener('click', () => {
-                        document.querySelectorAll('.manualInput').forEach(input => {
+                    // Aktifkan semua field yang sudah muncul sebelumnya
+                    if (currentDuploStage >= 1) {
+                        d1Inputs.forEach(input => {
                             input.disabled = false;
-                            input.focus();
                         });
-
-                        document.querySelectorAll('.d1, .d2, .d3').forEach(input => {
-                            input.disabled = true;
+                    }
+                    
+                    if (currentDuploStage >= 2) {
+                        d2Inputs.forEach(input => {
+                            input.disabled = false;
                         });
+                    }
+                    
+                    if (currentDuploStage >= 3) {
+                        d3Inputs.forEach(input => {
+                            input.disabled = false;
+                        });
+                    }
 
-                        if (!isDikembalikan) {
-                            if (verifikasiHasilBtn) verifikasiHasilBtn.disabled = false;
-                            if (verifikasiDokterBtn) verifikasiDokterBtn.disabled = false;
-                        }
+                    // Tampilkan field baru sesuai dengan stage saat ini
+                    switch(currentDuploStage) {
+                        case 0:
+                            d1Columns.forEach(col => col.style.display = 'table-cell');
+                            d1Inputs.forEach(input => {
+                                input.disabled = false;
+                                input.focus();
+                            });
+                            currentDuploStage = 1;
+                            break;
+                        case 1:
+                            d2Columns.forEach(col => col.style.display = 'table-cell');
+                            d2Inputs.forEach(input => {
+                                input.disabled = false;
+                                input.focus();
+                            });
+                            currentDuploStage = 2;
+                            break;
+                        case 2:
+                            d3Columns.forEach(col => col.style.display = 'table-cell');
+                            d3Inputs.forEach(input => {
+                                input.disabled = false;
+                                input.focus();
+                            });
+                            currentDuploStage = 3; // Ubah ke 3 agar tidak reset ke 0
+                            break;
+                        case 3:
+                            // Semua field sudah ditampilkan, hanya pastikan semua aktif
+                            currentDuploStage = 3; // Tetap di 3
+                            break;
+                    }
+                });
+            }
+
+            // Tombol manual input - KODE YANG DIPERBAIKI
+            if (manualButton) {
+                manualButton.addEventListener('click', () => {
+                    // Aktifkan semua input manual
+                    document.querySelectorAll('.manualInput').forEach(input => {
+                        input.disabled = false;
+                        input.focus();
                     });
-                }
 
-                // Tombol switch
-                document.querySelectorAll('.switch-btn').forEach((button) => {
+                    // Nonaktifkan semua input duplo
+                    document.querySelectorAll('.d1, .d2, .d3').forEach(input => {
+                        input.disabled = true;
+                    });
+
+                    // Aktifkan tombol verifikasi tanpa memperhatikan status dikembalikan
+                    if (verifikasiHasilBtn) verifikasiHasilBtn.disabled = false;
+                    if (verifikasiDokterBtn) verifikasiDokterBtn.disabled = false;
+                });
+            }
+
+            // Tombol switch
+            document.querySelectorAll('.switch-btn').forEach((button) => {
                 // Menyimpan nilai asli untuk setiap baris
                 const originalValues = new Map();
                 
@@ -1250,12 +1270,12 @@
                 });
             });
 
-                // Disable tombol verifikasi jika status dikembalikan
-                if (isDikembalikan) {
-                    if (verifikasiHasilBtn) verifikasiHasilBtn.disabled = true;
-                    if (verifikasiDokterBtn) verifikasiDokterBtn.disabled = true;
-                }
-            }, 0);
+            // Disable tombol verifikasi jika status dikembalikan SAAT INISIALISASI
+            if (isDikembalikan) {
+                if (verifikasiHasilBtn) verifikasiHasilBtn.disabled = true;
+                if (verifikasiDokterBtn) verifikasiDokterBtn.disabled = true;
+            }
+        }, 0);
 
             return content;
         }
