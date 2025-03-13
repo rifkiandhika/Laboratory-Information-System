@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\loket;
 
 use Alert;
+use App\Events\DataUpdated;
 use App\Models\obr;
 use App\Models\obx;
 use App\Models\icd10;
@@ -45,7 +46,7 @@ class pasienController extends Controller
         // dd($data_pasien);
         // $data_departement = Department::all();
         // $data_pemeriksaan = Pemeriksaan::all();
-
+        broadcast(new DataUpdated($data));
 
 
         return view('loket.index', compact('data_pasien', 'data', 'tanggal', 'payment', 'dikembalikan', 'dl'));

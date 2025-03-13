@@ -547,6 +547,18 @@
 
 
 @push('script')
+<script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+@vite(['resources/js/app.js'])
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Echo:', Echo); // Cek apakah Echo sudah didefinisikan
+        Echo.channel('data-updates')
+            .listen('DataUpdated', (e) => {
+                console.log('Data diperbarui:', e);
+                location.reload(); // Contoh: refresh halaman saat event diterima
+            });
+    });
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         initializeButtons('.btn-bf', 'buttonBF', 'data-id');      // Tombol Edit
