@@ -547,8 +547,6 @@
 
 
 @push('script')
-<script src="https://js.pusher.com/7.0/pusher.min.js"></script>
-@vite(['resources/js/app.js'])
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         console.log('Echo:', Echo); // Cek apakah Echo sudah didefinisikan

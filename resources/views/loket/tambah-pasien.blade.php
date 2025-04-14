@@ -84,7 +84,7 @@
                                     <div class="col-md-6 mb-6">
                                         <label for="doctorSelect" class="fw-bold">Doctor</label>
                                         <select class="form-select" id="doctorSelect" name="dokter_internal">
-                                            <option hidden>Choose Doctor</option>
+                                            <option hidden></option>
                                             @foreach ($dokters as $dokter)
                                                 <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }}</option>
                                             @endforeach

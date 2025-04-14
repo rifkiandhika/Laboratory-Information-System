@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\loket\pasienController;
 use App\Http\Controllers\analyst\spesimentHendlingController;
 use App\Http\Controllers\analyst\worklistController;
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\department\DepartmentController;
 
 /*
@@ -27,6 +28,19 @@ Route::get('/previewpasien/{lab}', [pasienController::class, 'getDataPasien']);
 Route::get('/get-data-pasien/{lab}', [pasienController::class, 'getDataPasien']);
 Route::get('/get-data-diagnosa', [pasienController::class, 'getDataDiagnosa']);
 Route::get('/get-data-qc/{lab}', [QcController::class, 'getDataQc']);
+
+// Endpoint untuk Check data apakah masuk atau belum
+
+Route::get('/check-data', [ApiController::class, 'checkData']);
+
+// Endpoint untuk Quality Control (QC)
+Route::post('/qc', [ApiController::class, 'qc']);
+
+// Endpoint untuk Kunjungan Pemeriksaan
+Route::post('/kunjunganpemeriksaan', [ApiController::class, 'kunjunganPemeriksaan']);
+
+// Endpoint untuk Hasil Kunjungan Pemeriksaan
+Route::post('/kunjunganpemeriksaanhasil', [ApiController::class, 'kunjunganPemeriksaanHasil']);
 
 // API Edit Setting
 Route::get('/departments', [DepartmentController::class, 'data']);
