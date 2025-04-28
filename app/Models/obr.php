@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class obr extends Model
 {
     use HasFactory;
+    protected $table = "obrs";
+    protected $guarded = [];
 }

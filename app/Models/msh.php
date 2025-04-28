@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class msh extends Model
 {
     use HasFactory;
+    protected $table = "mshes";
+    protected $guarded = [];
 }
