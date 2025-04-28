@@ -238,7 +238,7 @@ class ApiController extends Controller
             DB::table('obrs')
                 ->where('id', $obr->id)
                 ->update([
-                    'status' => 'has_result',
+                    // 'status' => 'has_result',
                     'updated_at' => now(),
                 ]);
 
