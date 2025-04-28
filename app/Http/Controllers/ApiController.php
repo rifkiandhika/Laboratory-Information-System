@@ -173,7 +173,7 @@ class ApiController extends Controller
             'message' => 'Data MSH Pemeriksaan berhasil disimpan',
             'data' => [
                 'msh_id' => $mshId,
-                'kunjungan_id' => $kunjunganId,
+                'id' => $kunjunganId,
                 'message_control_id' => $validated['message_control_id']
             ]
         ], 201);
@@ -205,13 +205,13 @@ class ApiController extends Controller
             }
 
             $existing = DB::table('obxes')
-                ->where('kunjungan_id', $obr->id)
+                ->where('id', $obr->id)
                 ->where('identifier_id', $validated['identifier_id'])
                 ->first();
 
             if (!$existing) {
                 $hasilId = DB::table('obxes')->insertGetId([
-                    'kunjungan_id' => $obr->id,
+                    'id' => $obr->id,
                     'message_control_id' => $validated['message_control_id'],
                     'identifier_id' => $validated['identifier_id'],
                     'identifier_name' => $validated['identifier_name'],
