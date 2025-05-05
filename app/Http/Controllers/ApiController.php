@@ -57,8 +57,7 @@ class ApiController extends Controller
                 'collector' => 'nullable|string',
                 'result_time' => 'nullable|string',
                 'service_segment' => 'nullable|string',
-                'examiner' => 'nullable|string',
-                'device' => 'nullable|string',
+                'examiner' => 'nullable|string'
             ])->validate();
 
             $saved[] = obr::create($validated);
