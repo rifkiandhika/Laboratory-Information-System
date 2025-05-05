@@ -9,529 +9,92 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class ApiController extends Controller
 {
     public function qc(Request $request)
     {
-        try {
-            // Cek apakah request berisi array data
-            if ($request->has('data') && is_array($request->data)) {
-                $insertedIds = [];
-
-                // Memproses multiple data
-                foreach ($request->data as $item) {
-                    $validated = $this->validateQcData($item);
-
-                    $mshId = DB::table('mshes')->insertGetId([
-                        'sender' => $validated['sender'],
-                        'sender_facility' => $validated['sender_facility'],
-                        'sender_timestamp' => $validated['sender_timestamp'],
-                        'message_type' => $validated['message_type'],
-                        'message_control_id' => $validated['message_control_id'],
-                        'processing_id' => $validated['processing_id'],
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-
-                    $insertedIds[] = [
-                        'id' => $mshId,
-                        'message_control_id' => $validated['message_control_id']
-                    ];
-                }
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Data QC batch berhasil disimpan',
-                    'data' => $insertedIds
-                ], 201);
-            } else {
-                // Proses single data seperti sebelumnya
-                $validated = $request->validate([
-                    'sender' => 'required|string',
-                    'sender_facility' => 'required|string',
-                    'sender_timestamp' => 'required|string',
-                    'message_type' => 'required|string',
-                    'message_control_id' => 'required|string',
-                    'processing_id' => 'required|string',
-                ]);
-
-                $mshId = DB::table('mshes')->insertGetId([
-                    'sender' => $validated['sender'],
-                    'sender_facility' => $validated['sender_facility'],
-                    'sender_timestamp' => $validated['sender_timestamp'],
-                    'message_type' => $validated['message_type'],
-                    'message_control_id' => $validated['message_control_id'],
-                    'processing_id' => $validated['processing_id'],
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Data QC berhasil disimpan',
-                    'data' => [
-                        'id' => $mshId,
-                        'message_control_id' => $validated['message_control_id']
-                    ]
-                ], 201);
-            }
-        } catch (\Exception $e) {
-            Log::error('QC API Error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan saat menyimpan data QC',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    private function validateQcData($data)
-    {
-        $validator = validator($data, [
+        $data = $request->validate([
             'sender' => 'required|string',
             'sender_facility' => 'required|string',
             'sender_timestamp' => 'required|string',
             'message_type' => 'required|string',
-            'message_control_id' => 'required|string',
+            'message_control_id' => 'required|string|unique:qc,message_control_id',
             'processing_id' => 'required|string',
         ]);
 
-        if ($validator->fails()) {
-            throw new \Exception('Validasi gagal: ' . json_encode($validator->errors()));
-        }
+        $qc = msh::create([
+            'sender' => $data['sender'],
+            'sender_facility' => $data['sender_facility'],
+            'sender_timestamp' => $data['sender_timestamp'],
+            'message_type' => $data['message_type'],
+            'message_control_id' => $data['message_control_id'],
+            'processing_id' => $data['processing_id'],
+        ]);
 
-        return $validator->validated();
+        return response()->json(['message' => 'MSH berhasil disimpan', 'data' => $qc], 201);
     }
+
 
     public function kunjunganPemeriksaan(Request $request)
     {
-        try {
-            // Cek apakah request berisi array data
-            if ($request->has('data') && is_array($request->data)) {
-                $result = [];
+        $dataList = $request->all();
 
-                // Memproses multiple data
-                foreach ($request->data as $item) {
-                    if (isset($item['message_control_id']) && isset($item['order_number'])) {
-                        $result[] = $this->handleSingleObrData($item);
-                    } else {
-                        $result[] = $this->handleSingleMshData($item);
-                    }
-                }
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Data batch kunjungan pemeriksaan berhasil disimpan',
-                    'data' => $result
-                ], 201);
-            } else {
-                // Single data processing
-                if ($request->has('message_control_id') && $request->has('order_number')) {
-                    return $this->handleObrData($request);
-                } else {
-                    return $this->handleMshData($request);
-                }
-            }
-        } catch (\Exception $e) {
-            Log::error('Kunjungan Pemeriksaan API Error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan saat menyimpan data kunjungan pemeriksaan',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    private function handleSingleObrData($data)
-    {
-        $validator = validator($data, [
-            'message_control_id' => 'required|string',
-            'order_number' => 'required|string',
-            'requested_time' => 'nullable|string',
-            'examination_time' => 'nullable|string',
-            'collector' => 'nullable|string',
-            'result_time' => 'nullable|string',
-            'service_segment' => 'nullable|string',
-            'examiner' => 'nullable|string',
-            'device' => 'nullable|string',
-        ]);
-
-        if ($validator->fails()) {
-            throw new \Exception('Validasi gagal: ' . json_encode($validator->errors()));
+        if (array_keys($dataList) !== range(0, count($dataList) - 1)) {
+            // Single OBR entry (not array)
+            $dataList = [$dataList];
         }
 
-        $validated = $validator->validated();
+        $saved = [];
 
-        $kunjungan = DB::table('obrs')
-            ->where('message_control_id', $validated['message_control_id'])
-            ->first();
+        foreach ($dataList as $data) {
+            $validated = Validator::make($data, [
+                'message_control_id' => 'required|exists:qc,message_control_id',
+                'order_number' => 'required|string',
+                'requested_time' => 'nullable|string',
+                'examination_time' => 'nullable|string',
+                'collector' => 'nullable|string',
+                'result_time' => 'nullable|string',
+                'service_segment' => 'nullable|string',
+                'examiner' => 'nullable|string',
+                'device' => 'nullable|string',
+            ])->validate();
 
-        if (!$kunjungan) {
-            $kunjunganId = DB::table('obrs')->insertGetId([
-                'message_control_id' => $validated['message_control_id'],
-                'order_number' => $validated['order_number'],
-                'requested_time' => $validated['requested_time'],
-                'examination_time' => $validated['examination_time'],
-                'collector' => $validated['collector'],
-                'result_time' => $validated['result_time'],
-                'service_segment' => $validated['service_segment'],
-                'examiner' => $validated['examiner'],
-                // 'device' => $validated['device'],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            return [
-                'id' => $kunjunganId,
-                'message_control_id' => $validated['message_control_id'],
-                'status' => 'created'
-            ];
-        } else {
-            DB::table('obrs')
-                ->where('id', $kunjungan->id)
-                ->update([
-                    'order_number' => $validated['order_number'],
-                    'requested_time' => $validated['requested_time'] ?? $kunjungan->requested_time,
-                    'examination_time' => $validated['examination_time'] ?? $kunjungan->examination_time,
-                    'collector' => $validated['collector'] ?? $kunjungan->collector,
-                    'result_time' => $validated['result_time'] ?? $kunjungan->result_time,
-                    'service_segment' => $validated['service_segment'] ?? $kunjungan->service_segment,
-                    'examiner' => $validated['examiner'] ?? $kunjungan->examiner,
-                    // 'device' => $validated['device'] ?? $kunjungan->device,
-                    'updated_at' => now(),
-                ]);
-
-            return [
-                'id' => $kunjungan->id,
-                'message_control_id' => $validated['message_control_id'],
-                'status' => 'updated'
-            ];
-        }
-    }
-
-    private function handleSingleMshData($data)
-    {
-        $validator = validator($data, [
-            'sender' => 'required|string',
-            'sender_facility' => 'required|string',
-            'sender_timestamp' => 'required|string',
-            'message_type' => 'required|string',
-            'message_control_id' => 'required|string',
-            'processing_id' => 'required|string',
-        ]);
-
-        if ($validator->fails()) {
-            throw new \Exception('Validasi gagal: ' . json_encode($validator->errors()));
+            $saved[] = obr::create($validated);
         }
 
-        $validated = $validator->validated();
-
-        $mshId = DB::table('mshes')->insertGetId([
-            'sender' => $validated['sender'],
-            'sender_facility' => $validated['sender_facility'],
-            'sender_timestamp' => $validated['sender_timestamp'],
-            'message_type' => $validated['message_type'],
-            'message_control_id' => $validated['message_control_id'],
-            'processing_id' => $validated['processing_id'],
-            'type' => 'PEMERIKSAAN',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $kunjunganId = DB::table('obrs')->insertGetId([
-            'message_control_id' => $validated['message_control_id'],
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        return [
-            'msh_id' => $mshId,
-            'id' => $kunjunganId,
-            'message_control_id' => $validated['message_control_id']
-        ];
+        return response()->json(['message' => 'Data OBR berhasil disimpan', 'data' => $saved], 201);
     }
 
-    private function handleObrData(Request $request)
-    {
-        $validated = $request->validate([
-            'message_control_id' => 'required|string',
-            'order_number' => 'required|string',
-            'requested_time' => 'nullable|string',
-            'examination_time' => 'nullable|string',
-            'collector' => 'nullable|string',
-            'result_time' => 'nullable|string',
-            'service_segment' => 'nullable|string',
-            'examiner' => 'nullable|string',
-            'device' => 'nullable|string',
-        ]);
-
-        $kunjungan = DB::table('obrs')
-            ->where('message_control_id', $validated['message_control_id'])
-            ->first();
-
-        if (!$kunjungan) {
-            $kunjunganId = DB::table('obrs')->insertGetId([
-                'message_control_id' => $validated['message_control_id'],
-                'order_number' => $validated['order_number'],
-                'requested_time' => $validated['requested_time'],
-                'examination_time' => $validated['examination_time'],
-                'collector' => $validated['collector'],
-                'result_time' => $validated['result_time'],
-                'service_segment' => $validated['service_segment'],
-                'examiner' => $validated['examiner'],
-                // 'device' => $validated['device'],
-                // 'status' => 'pending',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Data OBR berhasil disimpan',
-                'data' => [
-                    'id' => $kunjunganId,
-                    'message_control_id' => $validated['message_control_id']
-                ]
-            ], 201);
-        } else {
-            DB::table('obrs')
-                ->where('id', $kunjungan->id)
-                ->update([
-                    'order_number' => $validated['order_number'],
-                    'requested_time' => $validated['requested_time'] ?? $kunjungan->requested_time,
-                    'examination_time' => $validated['examination_time'] ?? $kunjungan->examination_time,
-                    'collector' => $validated['collector'] ?? $kunjungan->collector,
-                    'result_time' => $validated['result_time'] ?? $kunjungan->result_time,
-                    'service_segment' => $validated['service_segment'] ?? $kunjungan->service_segment,
-                    'examiner' => $validated['examiner'] ?? $kunjungan->examiner,
-                    // 'device' => $validated['device'] ?? $kunjungan->device,
-                    'updated_at' => now(),
-                ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Data OBR berhasil diupdate',
-                'data' => [
-                    'id' => $kunjungan->id,
-                    'message_control_id' => $validated['message_control_id']
-                ]
-            ], 200);
-        }
-    }
-
-    private function handleMshData(Request $request)
-    {
-        $validated = $request->validate([
-            'sender' => 'required|string',
-            'sender_facility' => 'required|string',
-            'sender_timestamp' => 'required|string',
-            'message_type' => 'required|string',
-            'message_control_id' => 'required|string',
-            'processing_id' => 'required|string',
-        ]);
-
-        $mshId = DB::table('mshes')->insertGetId([
-            'sender' => $validated['sender'],
-            'sender_facility' => $validated['sender_facility'],
-            'sender_timestamp' => $validated['sender_timestamp'],
-            'message_type' => $validated['message_type'],
-            'message_control_id' => $validated['message_control_id'],
-            'processing_id' => $validated['processing_id'],
-            'type' => 'PEMERIKSAAN',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $kunjunganId = DB::table('obrs')->insertGetId([
-            'message_control_id' => $validated['message_control_id'],
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Data MSH Pemeriksaan berhasil disimpan',
-            'data' => [
-                'msh_id' => $mshId,
-                'id' => $kunjunganId,
-                'message_control_id' => $validated['message_control_id']
-            ]
-        ], 201);
-    }
 
     public function kunjunganPemeriksaanHasil(Request $request)
     {
-        try {
-            // Cek apakah request berisi array data
-            if ($request->has('data') && is_array($request->data)) {
-                $result = [];
+        $dataList = $request->all();
 
-                // Memproses multiple data
-                foreach ($request->data as $item) {
-                    $hasil = $this->handleSingleHasilData($item);
-                    $result[] = $hasil;
-                }
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Batch data hasil kunjungan pemeriksaan berhasil disimpan atau diperbarui',
-                    'data' => $result
-                ], 201);
-            } else {
-                // Single data processing
-                $validated = $request->validate([
-                    'message_control_id' => 'required|string',
-                    'identifier_id' => 'required|string',
-                    'identifier_name' => 'required|string',
-                    'identifier_encode' => 'required|string',
-                    'identifier_value' => 'nullable|string',
-                    'identifier_unit' => 'nullable|string',
-                    'identifier_range' => 'nullable|string',
-                    'identifier_flags' => 'nullable|string',
-                ]);
-
-                $obr = DB::table('obrs')
-                    ->where('message_control_id', $validated['message_control_id'])
-                    ->first();
-
-                if (!$obr) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Kunjungan pemeriksaan tidak ditemukan'
-                    ], 404);
-                }
-
-                $existing = DB::table('obxes')
-                    ->where('id', $obr->id)
-                    ->where('identifier_id', $validated['identifier_id'])
-                    ->first();
-
-                if (!$existing) {
-                    $hasilId = DB::table('obxes')->insertGetId([
-                        'id' => $obr->id,
-                        'message_control_id' => $validated['message_control_id'],
-                        'identifier_id' => $validated['identifier_id'],
-                        'identifier_name' => $validated['identifier_name'],
-                        'identifier_encode' => $validated['identifier_encode'],
-                        'identifier_value' => $validated['identifier_value'],
-                        'identifier_unit' => $validated['identifier_unit'],
-                        'identifier_range' => $validated['identifier_range'],
-                        'identifier_flags' => $validated['identifier_flags'],
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                } else {
-                    DB::table('obxes')
-                        ->where('id', $existing->id)
-                        ->update([
-                            'identifier_value' => $validated['identifier_value'],
-                            'identifier_unit' => $validated['identifier_unit'],
-                            'identifier_range' => $validated['identifier_range'],
-                            'identifier_flags' => $validated['identifier_flags'],
-                            'updated_at' => now(),
-                        ]);
-                }
-
-                DB::table('obrs')
-                    ->where('id', $obr->id)
-                    ->update([
-                        // 'status' => 'has_result',
-                        'updated_at' => now(),
-                    ]);
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Data hasil kunjungan pemeriksaan berhasil disimpan atau diperbarui'
-                ], 201);
-            }
-        } catch (\Exception $e) {
-            Log::error('OBX API Error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan saat menyimpan data hasil pemeriksaan',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    private function handleSingleHasilData($data)
-    {
-        $validator = validator($data, [
-            'message_control_id' => 'required|string',
-            'identifier_id' => 'required|string',
-            'identifier_name' => 'required|string',
-            'identifier_encode' => 'required|string',
-            'identifier_value' => 'nullable|string',
-            'identifier_unit' => 'nullable|string',
-            'identifier_range' => 'nullable|string',
-            'identifier_flags' => 'nullable|string',
-        ]);
-
-        if ($validator->fails()) {
-            throw new \Exception('Validasi gagal: ' . json_encode($validator->errors()));
+        if (array_keys($dataList) !== range(0, count($dataList) - 1)) {
+            // Single OBX entry (not array)
+            $dataList = [$dataList];
         }
 
-        $validated = $validator->validated();
+        $saved = [];
 
-        $obr = DB::table('obrs')
-            ->where('message_control_id', $validated['message_control_id'])
-            ->first();
+        foreach ($dataList as $data) {
+            $validated = Validator::make($data, [
+                'message_control_id' => 'required|exists:qc,message_control_id',
+                'identifier_id' => 'required|string',
+                'identifier_name' => 'nullable|string',
+                'identifier_encode' => 'nullable|string',
+                'identifier_value' => 'required|string',
+                'identifier_unit' => 'nullable|string',
+                'identifier_range' => 'nullable|string',
+                'identifier_flags' => 'nullable|string',
+            ])->validate();
 
-        if (!$obr) {
-            throw new \Exception('Kunjungan pemeriksaan tidak ditemukan untuk message_control_id: ' . $validated['message_control_id']);
+            $saved[] = obx::create($validated);
         }
 
-        $existing = DB::table('obxes')
-            ->where('id', $obr->id)
-            ->where('identifier_id', $validated['identifier_id'])
-            ->first();
-
-        if (!$existing) {
-            $hasilId = DB::table('obxes')->insertGetId([
-                'id' => $obr->id,
-                'message_control_id' => $validated['message_control_id'],
-                'identifier_id' => $validated['identifier_id'],
-                'identifier_name' => $validated['identifier_name'],
-                'identifier_encode' => $validated['identifier_encode'],
-                'identifier_value' => $validated['identifier_value'],
-                'identifier_unit' => $validated['identifier_unit'],
-                'identifier_range' => $validated['identifier_range'],
-                'identifier_flags' => $validated['identifier_flags'],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            DB::table('obrs')
-                ->where('id', $obr->id)
-                ->update([
-                    // 'status' => 'has_result',
-                    'updated_at' => now(),
-                ]);
-
-            return [
-                'message_control_id' => $validated['message_control_id'],
-                'identifier_id' => $validated['identifier_id'],
-                'status' => 'created'
-            ];
-        } else {
-            DB::table('obxes')
-                ->where('id', $obr->id)
-                ->where('identifier_id', $validated['identifier_id'])
-                ->update([
-                    'identifier_value' => $validated['identifier_value'],
-                    'identifier_unit' => $validated['identifier_unit'],
-                    'identifier_range' => $validated['identifier_range'],
-                    'identifier_flags' => $validated['identifier_flags'],
-                    'updated_at' => now(),
-                ]);
-
-            return [
-                'message_control_id' => $validated['message_control_id'],
-                'identifier_id' => $validated['identifier_id'],
-                'status' => 'updated'
-            ];
-        }
+        return response()->json(['message' => 'Data OBX berhasil disimpan', 'data' => $saved], 201);
     }
 
     public function checkData()
