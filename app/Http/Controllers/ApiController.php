@@ -9,48 +9,57 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Validator;
 
 class ApiController extends Controller
 {
     public function qc(Request $request)
     {
-        $data = $request->validate([
-            'sender' => 'required|string',
-            'sender_facility' => 'required|string',
-            'sender_timestamp' => 'required|string',
-            'message_type' => 'required|string',
-            'message_control_id' => 'required|string|unique:qc,message_control_id',
-            'processing_id' => 'required|string',
-        ]);
+        $x_data_type = $request->header('X_DATA_TYPE');
 
-        $qc = msh::create([
-            'sender' => $data['sender'],
-            'sender_facility' => $data['sender_facility'],
-            'sender_timestamp' => $data['sender_timestamp'],
-            'message_type' => $data['message_type'],
-            'message_control_id' => $data['message_control_id'],
-            'processing_id' => $data['processing_id'],
-        ]);
+        if ($x_data_type == 'MSH') {
+            $validated = $request->validate([
+                'sender' => 'required|string',
+                'sender_facility' => 'required|string',
+                'sender_timestamp' => 'required|string',
+                'message_type' => 'required|string',
+                'message_control_id' => 'required|string',
+                'processing_id' => 'required|string',
+            ]);
 
-        return response()->json(['message' => 'MSH berhasil disimpan', 'data' => $qc], 201);
+            $mshId = DB::table('mshes')->insertGetId([
+                'sender' => $validated['sender'],
+                'sender_facility' => $validated['sender_facility'],
+                'sender_timestamp' => $validated['sender_timestamp'],
+                'message_type' => $validated['message_type'],
+                'message_control_id' => $validated['message_control_id'],
+                'processing_id' => $validated['processing_id'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data QC berhasil disimpan',
+                'data' => [
+                    'id' => $mshId,
+                    'message_control_id' => $validated['message_control_id']
+                ]
+            ], 201);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Header X_DATA_TYPE tidak dikenali'
+        ], 400);
     }
-
 
     public function kunjunganPemeriksaan(Request $request)
     {
-        $dataList = $request->all();
+        $x_data_type = $request->header('X_DATA_TYPE');
 
-        if (array_keys($dataList) !== range(0, count($dataList) - 1)) {
-            // Single OBR entry (not array)
-            $dataList = [$dataList];
-        }
-
-        $saved = [];
-
-        foreach ($dataList as $data) {
-            $validated = Validator::make($data, [
-                'message_control_id' => 'required|exists:qc,message_control_id',
+        if ($x_data_type == 'OBR') {
+            $validated = $request->validate([
+                'message_control_id' => 'required|string',
                 'order_number' => 'required|string',
                 'requested_time' => 'nullable|string',
                 'examination_time' => 'nullable|string',
@@ -58,42 +67,74 @@ class ApiController extends Controller
                 'result_time' => 'nullable|string',
                 'service_segment' => 'nullable|string',
                 'examiner' => 'nullable|string'
-            ])->validate();
+            ]);
 
-            $saved[] = obr::create($validated);
+            $obrId = DB::table('obrs')->insertGetId([
+                'message_control_id' => $validated['message_control_id'],
+                'order_number' => $validated['order_number'],
+                'requested_time' => $validated['requested_time'],
+                'examination_time' => $validated['examination_time'],
+                'collector' => $validated['collector'],
+                'result_time' => $validated['result_time'],
+                'service_segment' => $validated['service_segment'],
+                'examiner' => $validated['examiner'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data kunjungan pemeriksaan berhasil disimpan',
+                'data' => ['id' => $obrId]
+            ], 201);
         }
 
-        return response()->json(['message' => 'Data OBR berhasil disimpan', 'data' => $saved], 201);
+        return response()->json([
+            'success' => false,
+            'message' => 'Header X_DATA_TYPE tidak dikenali'
+        ], 400);
     }
-
 
     public function kunjunganPemeriksaanHasil(Request $request)
     {
-        $dataList = $request->all();
+        $x_data_type = $request->header('X_DATA_TYPE');
 
-        if (array_keys($dataList) !== range(0, count($dataList) - 1)) {
-            // Single OBX entry (not array)
-            $dataList = [$dataList];
-        }
-
-        $saved = [];
-
-        foreach ($dataList as $data) {
-            $validated = Validator::make($data, [
-                'message_control_id' => 'required|exists:qc,message_control_id',
+        if ($x_data_type == 'OBX') {
+            $validated = $request->validate([
+                'message_control_id' => 'required|string',
                 'identifier_id' => 'required|string',
-                'identifier_name' => 'nullable|string',
-                'identifier_encode' => 'nullable|string',
-                'identifier_value' => 'required|string',
+                'identifier_name' => 'required|string',
+                'identifier_encode' => 'required|string',
+                'identifier_value' => 'nullable|string',
                 'identifier_unit' => 'nullable|string',
                 'identifier_range' => 'nullable|string',
                 'identifier_flags' => 'nullable|string',
-            ])->validate();
+            ]);
 
-            $saved[] = obx::create($validated);
+            $obxId = DB::table('obxes')->insertGetId([
+                'message_control_id' => $validated['message_control_id'],
+                'identifier_id' => $validated['identifier_id'],
+                'identifier_name' => $validated['identifier_name'],
+                'identifier_encode' => $validated['identifier_encode'],
+                'identifier_value' => $validated['identifier_value'],
+                'identifier_unit' => $validated['identifier_unit'],
+                'identifier_range' => $validated['identifier_range'],
+                'identifier_flags' => $validated['identifier_flags'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data hasil pemeriksaan berhasil disimpan',
+                'data' => ['id' => $obxId]
+            ], 201);
         }
 
-        return response()->json(['message' => 'Data OBX berhasil disimpan', 'data' => $saved], 201);
+        return response()->json([
+            'success' => false,
+            'message' => 'Header X_DATA_TYPE tidak dikenali'
+        ], 400);
     }
 
     public function checkData()
