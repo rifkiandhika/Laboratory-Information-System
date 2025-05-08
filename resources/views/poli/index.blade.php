@@ -62,9 +62,9 @@
                                             </tr>
                                         </thead>
                                         <tbody style="font-size: 14px">
-                                            @foreach ($polis as $Poli)
+                                            @foreach ($polis as $x => $Poli)
                                                 <tr>
-                                                    <td>{{ $Poli->id }}</td>
+                                                    <td>{{ $x + 1 }}</td>
                                                     <td>{{ $Poli->nama_poli }}</td>
                                                     <td>
                                                         <button class="btn btn-success btn-edit"

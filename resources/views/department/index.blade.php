@@ -65,9 +65,12 @@
                                             </tr>
                                         </thead>
                                         <tbody style="font-size: 14px">
+                                            @php
+                                                $counter = 1; // Inisialisasi counter untuk nomor urut
+                                            @endphp
                                             @foreach ($departments as $Department)
                                                 <tr>
-                                                    <td>{{ $Department->id }}</td>
+                                                    <td>{{ $counter }}</td>
                                                     <td>{{ $Department->nama_department }}</td>
                                                     <td>
                                                         @foreach($Department->detailDepartments as $detail)
@@ -90,6 +93,7 @@
                                                     </td>
 
                                                 </tr>
+                                                @php $counter++; @endphp
                                             @endforeach
                                         </tbody>
                                     </table>
