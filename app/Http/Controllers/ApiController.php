@@ -102,32 +102,53 @@ class ApiController extends Controller
         if ($x_data_type == 'OBX') {
             $validated = $request->validate([
                 'message_control_id' => 'required|string',
-                'identifier_id' => 'required|string',
-                'identifier_name' => 'required|string',
-                'identifier_encode' => 'required|string',
-                'identifier_value' => 'nullable|string',
-                'identifier_unit' => 'nullable|string',
-                'identifier_range' => 'nullable|string',
-                'identifier_flags' => 'nullable|string',
+                'data' => 'required|array',
+                'data.*.identifier_id' => 'required|string',
+                'data.*.identifier_name' => 'required|string',
+                'data.*.identifier_encode' => 'required|string',
+                'data.*.identifier_value' => 'nullable|string',
+                'data.*.identifier_unit' => 'nullable|string',
+                'data.*.identifier_range' => 'nullable|string',
+                'data.*.identifier_flags' => 'nullable|string',
             ]);
 
-            $obxId = DB::table('obxes')->insertGetId([
-                'message_control_id' => $validated['message_control_id'],
-                'identifier_id' => $validated['identifier_id'],
-                'identifier_name' => $validated['identifier_name'],
-                'identifier_encode' => $validated['identifier_encode'],
-                'identifier_value' => $validated['identifier_value'],
-                'identifier_unit' => $validated['identifier_unit'],
-                'identifier_range' => $validated['identifier_range'],
-                'identifier_flags' => $validated['identifier_flags'],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // Hitung sudah berapa batch unik yang pernah masuk
+            $totalBatch = DB::table('obxes')
+                ->select('message_control_id')
+                ->distinct()
+                ->count();
+
+            // Tentukan status berdasarkan urutan batch
+            $status = match (($totalBatch) % 3) {
+                0 => 'rendah',
+                1 => 'normal',
+                2 => 'tinggi',
+            };
+
+            $insertedIds = [];
+
+            foreach ($validated['data'] as $item) {
+                $obxId = DB::table('obxes')->insertGetId([
+                    'message_control_id' => $validated['message_control_id'],
+                    'identifier_id' => $item['identifier_id'],
+                    'identifier_name' => $item['identifier_name'],
+                    'identifier_encode' => $item['identifier_encode'],
+                    'identifier_value' => $item['identifier_value'],
+                    'identifier_unit' => $item['identifier_unit'],
+                    'identifier_range' => $item['identifier_range'],
+                    'identifier_flags' => $item['identifier_flags'],
+                    'status' => $status,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                $insertedIds[] = $obxId;
+            }
 
             return response()->json([
                 'success' => true,
-                'message' => 'Data hasil pemeriksaan berhasil disimpan',
-                'data' => ['id' => $obxId]
+                'message' => 'Batch OBX berhasil disimpan dengan status: ' . $status,
+                'data' => ['inserted_ids' => $insertedIds]
             ], 201);
         }
 
@@ -136,6 +157,7 @@ class ApiController extends Controller
             'message' => 'Header X_DATA_TYPE tidak dikenali'
         ], 400);
     }
+
 
     public function checkData()
     {
