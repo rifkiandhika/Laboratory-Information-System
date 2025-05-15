@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('identifier_unit')->nullable();
             $table->string('identifier_range')->nullable();
             $table->string('identifier_flags')->nullable();
+            $table->string('status')->nullable();
+            $table->string('tanggal')->nullable();
             $table->timestamps();
         });
     }

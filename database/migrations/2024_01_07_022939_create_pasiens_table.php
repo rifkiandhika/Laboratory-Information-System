@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('asal_ruangan')->nullable();
             $table->string('status')->default('Belum Dilayani');
             $table->dateTime('tanggal_masuk')->default(now());
+            $table->string('tanggal')->nullable();
             $table->timestamps();
         });
     }
