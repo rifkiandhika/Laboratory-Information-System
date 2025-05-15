@@ -111,6 +111,7 @@ class pasienController extends Controller
             'diagnosa' => $request->diagnosa,
             'tanggal_masuk' => now(),
             'alamat' => $request->alamat,
+            'tanggal' => Carbon::today(),
         ]);
 
         // Menyimpan pemeriksaan
@@ -387,7 +388,8 @@ class pasienController extends Controller
                 'spesiment.details',
                 'spesimentcollection',
                 'spesimenthandling.details',
-                'hasil_pemeriksaan'
+                'hasil_pemeriksaan',
+                'obx'
             ])->first();
 
             if ($data_pasien && $data_pasien->spesimentcollection) {

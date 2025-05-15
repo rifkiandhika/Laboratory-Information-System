@@ -138,6 +138,7 @@ class ApiController extends Controller
                     'identifier_range' => $item['identifier_range'],
                     'identifier_flags' => $item['identifier_flags'],
                     'status' => $status,
+                    'tanggal' => Carbon::today(),
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);

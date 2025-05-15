@@ -10,4 +10,9 @@ class obx extends Model
     use HasFactory;
     protected $table = "obxes";
     protected $guarded = [];
+
+    public function pasien()
+    {
+        return $this->belongsTo(pasien::class, 'tanggal', 'tanggal');
+    }
 }

@@ -65,6 +65,10 @@ class pasien extends Model
     {
         return $this->hasMany(pemeriksaan_pasien::class, 'no_lab', 'no_lab');
     }
+    public function obx()
+    {
+        return $this->hasMany(obx::class, 'tanggal', 'tanggal');
+    }
 
     public function age()
     {
