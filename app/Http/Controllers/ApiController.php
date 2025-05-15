@@ -145,6 +145,7 @@ class ApiController extends Controller
                 'identifier_range' => $validated['identifier_range'],
                 'identifier_flags' => $validated['identifier_flags'],
                 'status' => $status,
+                'tanggal' => Carbon::today(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
