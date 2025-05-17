@@ -124,9 +124,9 @@ class ApiController extends Controller
                     ->count();
 
                 $status = match ($totalBatch % 3) {
-                    0 => 'rendah',
-                    1 => 'normal',
-                    2 => 'tinggi',
+                    0 => 'Low',
+                    1 => 'Normal',
+                    2 => 'High',
                 };
             } else {
                 // Jika sudah ada, ambil status dari salah satu entri yang sudah tersimpan
