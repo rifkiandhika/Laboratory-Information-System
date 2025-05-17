@@ -807,7 +807,8 @@
             $('.btn-payment').on('click', function() {
                 const id = this.getAttribute('data-payment');
 
-                fetch(`/api/get-data-pasien/${id}?t=${new Date().getTime()}`).then(response => {
+                fetch(`/api/get-data-pasien/${id}`)
+                .then(response => {
                     if (!response.ok) {
                         throw new Error("HTTP error" + response.status);
                     }
@@ -816,6 +817,7 @@
                     if (res.status === 'success') {
                         let data_pasien = res.data;
                         let data_pemeriksaan_pasien = res.data.dpp;
+                        let data_harga = res.data.pasiens;
 
                         let detailContent = '<div class="row">';
                         let totalHarga = 0;
@@ -839,6 +841,7 @@
                                     detailContent += `<li>${pemeriksaan.data_pemeriksaan.nama_pemeriksaan} - Rp ${pemeriksaan.data_pemeriksaan.harga}</li>`;
                                     totalHarga += pemeriksaan.data_pemeriksaan.harga;
                                 });
+                                console.log(totalHarga);
 
                                 detailContent += `</ol><hr></div>`;
                             }
