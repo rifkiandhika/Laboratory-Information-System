@@ -41,65 +41,72 @@ Edit Department
                                         <table class="table table-bordered" id="tableDetail">
                                             <thead>
                                                 <tr>
-                                                    <th>Kode</th>
-                                                    <th>Parameter</th>
-                                                    <th>Pemeriksaan</th>
-                                                    <th>Tarif</th>
-                                                    <th>Komponen Tarif</th>
-                                                    <th>Nilai Rujukan</th>
-                                                    <th>Satuan</th>
-                                                    <th>Tipe Inputan Hasil</th>
-                                                    <th>Opsi Output Hasil</th>
-                                                    <th>Urutan</th>
+                                                    <th class="col-2">Kode</th>
+                                                    <th class="col-1">Parameter</th>
+                                                    <th class="col-1">Pemeriksaan</th>
+                                                    <th class="col-2">Tarif</th>
+                                                    <th class="col-1">Komponen Tarif</th>
+                                                    <th class="col-1">Nilai Rujukan</th>
+                                                    <th class="col-1">Satuan</th>
+                                                    <th class="col-1">Tipe Input</th>
+                                                    <th class="col-1">Opsi Output</th>
+                                                    <th class="col-1">Metode</th>
+                                                    <th class="col-1">Status</th>
                                                     <th>Aksi</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach($departments->detailDepartments as $x => $detail)
                                                     <tr>
-                                                        <td class="col-2">
+                                                        <td>
                                                             <label for="otomatis">Otomatis <span class="text-danger">*</span></label>
                                                             <input type="text" name="kode[]" class="form-control" value="{{ $detail->kode }}" disabled>
-                                                            <!-- Hidden input untuk mengirim nilai kode -->
-                                                            <input type="hidden" name="kode_hidden[]" value="{{ $detail->kode }}">
+                                                            <input type="hidden" name="id_detail[{{ $x }}]" value="{{ $detail->id }}">
+                                                            <input type="hidden" name="kode_hidden[{{ $x }}]" value="{{ $detail->kode }}" class="form-control" readonly>
+                                                        
                                                         </td>
-                                                        <td class="col-2">
-                                                            <input type="text" name="nama_parameter[]" class="form-control" value="{{ $detail->nama_parameter }}" required>
+                                                        <td>
+                                                            <input type="text" name="nama_parameter[{{ $x }}]" class="form-control" value="{{ $detail->nama_parameter }}" required>
                                                         </td>
-                                                        <td class="col-2">
-                                                            <input type="text" name="nama_pemeriksaan[]" class="form-control" value="{{ $detail->nama_pemeriksaan }}" required>
+                                                        <td>
+                                                            <input type="text" name="nama_pemeriksaan[{{ $x }}]" class="form-control" value="{{ $detail->nama_pemeriksaan }}" required>
                                                         </td>
-                                                        <td class="col-2">
-                                                            <input type="number" name="harga[]" class="form-control" value="{{ $detail->harga }}" required>
+                                                        <td>
+                                                            <input type="number" name="harga[{{ $x }}]" class="form-control" value="{{ $detail->harga }}" required>
                                                         </td>
-                                                        <td class="col-3">
+                                                        <td>
                                                             <label for="jasa_sarana">JASA SARANA:</label>
-                                                            <input type="text" name="jasa_sarana[]" class="form-control" value="{{ $detail->jasa_sarana }}" required>
+                                                            <input type="text" name="jasa_sarana[{{ $x }}]" class="form-control" value="{{ $detail->jasa_sarana }}" required>
                                                             <label for="jasa_pelayanan">JASA PELAYANAN:</label>
-                                                            <input type="text" name="jasa_pelayanan[]" class="form-control" value="{{ $detail->jasa_pelayanan }}" required>
+                                                            <input type="text" name="jasa_pelayanan[{{ $x }}]" class="form-control" value="{{ $detail->jasa_pelayanan }}" required>
                                                             <label for="jasa_dokter">JASA DOKTER:</label>
-                                                            <input type="text" name="jasa_dokter[]" class="form-control" value="{{ $detail->jasa_dokter }}">
+                                                            <input type="text" name="jasa_dokter[{{ $x }}]" class="form-control" value="{{ $detail->jasa_dokter }}">
                                                             <label for="jasa_bidan">JASA BIDAN:</label>
-                                                            <input type="text" name="jasa_bidan[]" class="form-control" value="{{ $detail->jasa_bidan }}">
+                                                            <input type="text" name="jasa_bidan[{{ $x }}]" class="form-control" value="{{ $detail->jasa_bidan }}">
                                                             <label for="jasa_perawat">JASA PERAWAT:</label>
-                                                            <input type="text" name="jasa_perawat[]" class="form-control" value="{{ $detail->jasa_perawat }}">
+                                                            <input type="text" name="jasa_perawat[{{ $x }}]" class="form-control" value="{{ $detail->jasa_perawat }}">
                                                         </td>
-                                                        <td class="col-1">
-                                                            <input type="text" name="nilai_rujukan[]" class="form-control" value="{{ $detail->nilai_rujukan }}" required>
+                                                        <td>
+                                                            <input type="text" name="nilai_rujukan[{{ $x }}]" class="form-control" value="{{ $detail->nilai_rujukan }}" required>
                                                         </td>
-                                                        <td class="col-1">
-                                                            <input type="text" name="nilai_satuan[]" class="form-control" value="{{ $detail->nilai_satuan }}" required>
+                                                        <td>
+                                                            <input type="text" name="nilai_satuan[{{ $x }}]" class="form-control" value="{{ $detail->nilai_satuan }}" required>
                                                         </td>
-                                                        <td class="col-1">
-                                                            <input type="text" name="tipe_inputan[]" class="form-control" value="{{ $detail->tipe_inputan }}" required>
+                                                        <td>
+                                                            <input type="text" name="tipe_inputan[{{ $x }}]" class="form-control" value="{{ $detail->tipe_inputan }}" required>
                                                         </td>
-                                                        <td class="col-1">
-                                                            <input type="text" name="opsi_output[]" class="form-control" value="{{ $detail->opsi_output }}" required>
+                                                        <td>
+                                                            <input type="text" name="opsi_output[{{ $x }}]" class="form-control" value="{{ $detail->opsi_output }}" required>
                                                         </td>
-                                                        <td class="col-1">
-                                                            <input type="text" name="urutan[]" class="form-control" value="{{ $detail->urutan }}" required>
+                                                        <td>
+                                                            <input type="text" name="urutan[{{ $x }}]" class="form-control" value="{{ $detail->urutan }}" required>
                                                         </td>
-                                                        <td class="col-3">
+                                                        <td class="text-center">
+                                                            <input type="checkbox" name="status[{{ $x }}]" value="active"
+                                                                class="form-check-input"
+                                                                {{ $detail->status === 'active' ? 'checked' : '' }}>
+                                                        </td>
+                                                        <td>
                                                             <button type="button" class="btn btn-success btn-add"><i class="ti ti-plus"></i></button>
                                                         </td>
                                                     </tr>
@@ -151,22 +158,22 @@ Edit Department
         function btnFunction() {
             $(".btn-add").unbind('click').bind('click', function(){
                 let row = ` <tr>
-                    <td class="col-2">
+                    <td>
                         <label for="otomatis">Otomatis <span class="text-danger">*</span></label>
                         <input type="text" name="kode[]" class="form-control kode" required disabled>
                         <!-- Hidden input untuk mengirim nilai kode -->
                         <input type="hidden" name="kode_hidden[]" class="kode_hidden">
                     </td>                                                    
-                    <td class="col-2">
+                    <td>
                         <input type="text" name="nama_parameter[]" class="form-control" required>
                     </td>
-                    <td class="col-2">
+                    <td>
                         <input type="text" name="nama_pemeriksaan[]" class="form-control" required>
                     </td>
-                    <td class="col-2">
+                    <td>
                         <input type="number" name="harga[]" class="form-control" required>
                     </td>
-                    <td class="col-3">
+                    <td>
                         <label for="jasa_sarana">JASA SARANA:</label>
                         <input type="text" name="jasa_sarana[]" class="form-control" required>
                         <label for="jasa_pelayanan">JASA PELAYANAN:</label>
@@ -178,22 +185,25 @@ Edit Department
                         <label for="jasa_perawat">JASA PERAWAT:</label>
                         <input type="text" name="jasa_perawat[]" class="form-control" >
                     </td>
-                    <td class="col-1">
+                    <td>
                         <input type="text" name="nilai_rujukan[]" class="form-control" required>
                     </td>
-                    <td class="col-1">
+                    <td>
                         <input type="text" name="nilai_satuan[]" class="form-control" required>
                     </td>
-                    <td class="col-1">
+                    <td>
                         <input type="text" name="tipe_inputan[]" class="form-control" required>
                     </td>
-                    <td class="col-1">
+                    <td>
                         <input type="text" name="opsi_output[]" class="form-control" required>
                     </td>
-                    <td class="col-1">
+                    <td>
                         <input type="text" name="urutan[]" class="form-control" required>
                     </td>
-                    <td class="col-3">
+                    <td class="text-center">
+                    <input type="checkbox" name="status[]" value="active" class="form-check-input">
+                    </td>
+                    <td>
                         <button type="button" class="btn btn-success btn-add"><i class="ti ti-plus"></i></button>
                     </td>
                 </tr>`;

@@ -32,10 +32,12 @@ class PoliController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'kode' => 'required',
             'nama_poli' => 'required|unique:polis,nama_poli',
+
         ]);
         Poli::create($request->all());
-        toast('Berhasil Menambahkan Data Poli','success'); 
+        toast('Berhasil Menambahkan Data Poli', 'success');
         return back();
     }
 
@@ -61,11 +63,13 @@ class PoliController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
+            'kode' => 'required',
             'nama_poli' => 'required',
         ]);
-        
+
         $polis = Poli::findOrfail($id);
         // dd($id);
+        $polis->kode = $request->kode;
         $polis->nama_poli = $request->nama_poli;
         $polis->save();
 
@@ -83,7 +87,7 @@ class PoliController extends Controller
             Alert::error('Error', 'Tidak bisa menghapus Poli yang sudah berkaitan dengan Dokter.');
             return redirect()->route('poli.index');
         }
-    
+
         // Jika tidak ada pemeriksaan berelasi, hapus department
         $polis->delete();
 

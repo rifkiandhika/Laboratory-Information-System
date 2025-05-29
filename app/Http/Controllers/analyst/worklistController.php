@@ -69,9 +69,9 @@ class worklistController extends Controller
             'nama' => 'required',
             'ruangan' => 'required',
             'nama_dokter' => 'required',
-            'duplo_d1' => 'nullable|numeric',
-            'duplo_d2' => 'nullable|numeric',
-            'duplo_d3' => 'nullable|numeric',
+            'duplo_d1.*' => 'nullable|numeric',
+            'duplo_d2.*' => 'nullable|numeric',
+            'duplo_d3.*' => 'nullable|numeric',
             'note' => 'required',
             'nama_pemeriksaan.*' => 'required',
             'hasil.*' => 'required',
@@ -87,10 +87,10 @@ class worklistController extends Controller
         $ruangan = $request->input('ruangan');
         $nama_dokter = $request->input('nama_dokter');
         $nama_pemeriksaan = $request->input('nama_pemeriksaan');
-        $hasils = $request->input('hasil');
-        $d1 = $request->input('duplo_d1');
-        $d2 = $request->input('duplo_d2');
-        $d3 = $request->input('duplo_d3');
+        $hasils = $request->input('hasil', []);
+        $d1 = $request->input('duplo_d1', []);
+        $d2 = $request->input('duplo_d2', []);
+        $d3 = $request->input('duplo_d3', []);
         $notes = $request->input('note');
         $ranges = $request->input('range', []);
         $satuans = $request->input('satuan', []);
@@ -112,8 +112,12 @@ class worklistController extends Controller
                 $existingHasil->update([
                     'hasil' => $hasils[$x],
                     'range' => $ranges[$x] ?? $existingHasil->range,
+                    'duplo_d1' => $d1[$x] ?? $existingHasil->duplo_d1,
+                    'duplo_d2' => $d2[$x] ?? $existingHasil->duplo_d2,
+                    'duplo_d3' => $d3[$x] ?? $existingHasil->duplo_d3,
                     'satuan' => $satuans[$x] ?? $existingHasil->satuan,
                     'department' => $departments[$x] ?? $existingHasil->department,
+
                 ]);
             } else {
                 // Jika data belum ada, buat data baru
@@ -124,9 +128,9 @@ class worklistController extends Controller
                     'ruangan' => $ruangan,
                     'nama_dokter' => $nama_dokter,
                     'nama_pemeriksaan' => $pemeriksaan,
-                    'duplo_d1' => $d1,
-                    'duplo_d2' => $d2,
-                    'duplo_d3' => $d3,
+                    'duplo_d1' => $d1[$x],
+                    'duplo_d2' => $d2[$x],
+                    'duplo_d3' => $d3[$x],
                     'note' => $notes,
                     'hasil' => $hasils[$x],
                     'range' => $ranges[$x] ?? null,
@@ -185,9 +189,9 @@ class worklistController extends Controller
             'nama' => 'required',
             'ruangan' => 'required',
             'nama_dokter' => 'required',
-            'duplo_d1' => 'nullable|numeric',
-            'duplo_d2' => 'nullable|numeric',
-            'duplo_d3' => 'nullable|numeric',
+            'duplo_d1.*' => 'nullable|numeric',
+            'duplo_d2.*' => 'nullable|numeric',
+            'duplo_d3.*' => 'nullable|numeric',
             'note' => 'required',
             'hasil' => 'required|array',
             'nama_pemeriksaan' => 'required|array',
@@ -212,9 +216,9 @@ class worklistController extends Controller
                     'no_lab' => $request->no_lab,
                     'nama_pemeriksaan' => $nama_pemeriksaan,
                     'hasil' => $request->hasil[$index],
-                    'duplo_d1' => $request->duplo_d1,
-                    'duplo_d2' => $request->duplo_d2,
-                    'duplo_d3' => $request->duplo_d3,
+                    'duplo_d1' => $request->duplo_d1[$index],
+                    'duplo_d2' => $request->duplo_d2[$index],
+                    'duplo_d3' => $request->duplo_d3[$index],
                     'note' => $request->note,
                     'department' => $request->department[$index],
                     'created_at' => now(),

@@ -98,6 +98,104 @@
     font-weight: 600;
     margin-top: 10px;
  }
+
+ /* CSS untuk memperbaiki tampilan tabel pemeriksaan */
+#tabel-pemeriksaan {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+#tabel-pemeriksaan .table-responsive {
+  border-radius: 12px 12px 0 0;
+  overflow-x: auto;
+}
+
+/* #tabel-pemeriksaan .table thead th {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-weight: 600;
+  text-align: center;
+  vertical-align: middle;
+  padding: 1rem 0.75rem;
+  border: none;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+} */
+
+.tableh{
+    table-layout: fixed;
+  width: 100%;
+}
+
+.accordion-button {
+  background-color: #f8f9fa;
+  border: none;
+  font-weight: 600;
+  color: #495057;
+  padding: 1rem 1.5rem;
+  border-radius: 0 !important;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #e7f1ff;
+  color: #0d6efd;
+  box-shadow: none;
+}
+
+.accordion-item {
+  border: none;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.accordion-item:last-child {
+  border-bottom: none;
+}
+
+.accordion-body {
+  padding: 0;
+}
+
+
+.exam-table td:last-child {
+  border-right: none;
+}
+
+.exam-table tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+
+.exam-table .form-control:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+
+.switch-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.switch-btn:hover {
+  background-color: #e9ecef;
+}
+
+.flag-cell i {
+  font-size: 1.2rem;
+}
+
+
+.exam-count {
+  color: #6c757d;
+  font-size: 0.875rem;
+}
 </style>
 <section>
     <div class="content" id="scroll-content">
@@ -708,9 +806,9 @@
                     }
 
                     // Debug logs
-                    console.log('Lab Data:', labData);
-                    console.log('Dokter Data:', dokterData);
-                    console.log('Display Value:', dokterDisplay);
+                    // console.log('Lab Data:', labData);
+                    // console.log('Dokter Data:', dokterData);
+                    // console.log('Display Value:', dokterDisplay);
 
                         let detailContent = '<div class="row">';
 
@@ -825,13 +923,6 @@
         }
 
         function getTableContent(data_pemeriksaan_pasien, data_pasien, hasil) {
-            function getDokterDisplay(labData, dokterData) {
-                if (!labData || !dokterData) {
-                    return "Dokter tidak tersedia";
-                }
-                const kodeDokterLab = labData?.kode_dokter;
-                return kodeDokterLab === dokterData.kode_dokter ? dokterData.kode_dokter : (kodeDokterLab || "Dokter tidak tersedia");
-            }
 
             function updateFlag(value, flagCell) {
                 const nilaiHasil = parseFloat(value);
@@ -850,11 +941,10 @@
 
             const labData = data_pasien;
             const dokterData = data_pasien.dokter;
-            let dokterDisplay = getDokterDisplay(labData, dokterData);
             const isDikembalikan = data_pasien.status === "Dikembalikan";
             const obx = data_pasien.obx;
-            console.log("Data OBX:", obx);
-            console.log("Data Pemeriksaan Pasien:", data_pemeriksaan_pasien);
+            // console.log("Data OBX:", obx);
+            // console.log("Data Pemeriksaan Pasien:", data_pemeriksaan_pasien);
             
             const hasil_periksa = data_pemeriksaan_pasien.flatMap(e =>
             e.pasiens.map(p => {
@@ -864,7 +954,7 @@
                 
                 // Filter OBX berdasarkan identifier_name yang cocok dengan nama_parameter
                 const obxMatches = obx.filter(o => o.identifier_name === namaParameter);
-                console.log(`Cek parameter ${namaParameter} (pemeriksaan: ${namaPemeriksaan}):`, obxMatches);
+                // console.log(`Cek parameter ${namaParameter} (pemeriksaan: ${namaPemeriksaan}):`, obxMatches);
                 
                 // Ambil nilai dari identifier_value jika ditemukan
                 const hasilUtama = obxMatches[0]?.identifier_value ?? '';
@@ -882,7 +972,7 @@
         );
 
             // Juga tambahkan log untuk debugging
-            console.log("hasil_periksa final:", hasil_periksa);
+            // console.log("hasil_periksa final:", hasil_periksa);
 
             // const hasil = hasil_periksa;
             const content = `
@@ -892,86 +982,118 @@
                 <input type="hidden" name="no_rm" value="${data_pasien.no_rm}">
                 <input type="hidden" name="nama" value="${data_pasien.nama}">
                 <input type="hidden" name="ruangan" value="${data_pasien.asal_ruangan}">
-                <input type="hidden" name="nama_dokter" value="${dokterDisplay}">
+                <input type="hidden" name="nama_dokter" value="${data_pasien.kode_dokter}">
 
-                <div id="tabel-pemeriksaan" class="table-responsive">
-                    <table class="table table-striped" id="worklistTable">
+                <div id="tabel-pemeriksaan">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th class="col-3">Parameter</th>
-                                <th class="col-3">Hasil</th>
-                                <th class="col-3"></th>
-                                <th class="col-3 duplo d1-column" style="display: none;">D1</th>
-                                <th class="col-3 duplo d2-column" style="display: none;">D2</th>
-                                <th class="col-3 duplo d3-column" style="display: none;">D3</th>
-                                <th class="col-2">Flag</th>
-                                <th class="col-2">Satuan</th>
-                                <th class="col-2">Range</th>
+                            <th class="col-2">PARAMETER</th>
+                            <th class="col-2">HASIL</th>
+                            <th class="col-1"></th>
+                            <th class="col-2 duplo d1-column " style="display: none; ">D1</th>
+                            <th class="col-2 duplo d2-column " style="display: none; ">D2</th>
+                            <th class="col-2 duplo d3-column " style="display: none; ">D3</th>
+                            <th class="col-3">FLAG</th>
+                            <th class="col-2">Unit</th>
+                            {{-- <th class="col-2">RANGE</th> --}}
                             </tr>
                         </thead>
-                        <tbody>
-                            
-                            ${data_pemeriksaan_pasien.map(e => `
-                                <tr>
-                                    <th scope="row">${e.data_departement.nama_department}</th>
-                                    <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
-                                    ${e.pasiens.map(p => {
-                                        const hasilItem = hasil_periksa.find(item => item.nama_pemeriksaan === p.data_pemeriksaan.nama_pemeriksaan) || {};
-                                        const rowId = p.data_pemeriksaan.id;
-                                        const nilaiHasil = hasilItem.hasil ? parseFloat(hasilItem.hasil) : null;
-                                        
-                                        let flagIcon = '';
-                                        if (nilaiHasil !== null) {
-                                            if (nilaiHasil < 5) {
-                                                flagIcon = `<i class="ti ti-arrow-down text-primary"></i>`;
-                                            } else if (nilaiHasil > 10) {
-                                                flagIcon = `<i class="ti ti-arrow-up text-danger"></i>`;
-                                            }
-                                        }
-                                        console.log(`Item ${p.data_pemeriksaan.nama_pemeriksaan}:`, hasilItem);
-                                        return `
-                                        <tr data-id="${rowId}" data-parameter="${p.data_pemeriksaan.nama_parameter}">
-                                            <td>${p.data_pemeriksaan.nama_pemeriksaan}</td>
-                                            <input type="hidden" name="nama_pemeriksaan[]" value="${p.data_pemeriksaan.nama_pemeriksaan}" />
-                                            <td>
-                                                <input type="number" name="hasil[]" class="form-control text-center w-50 p-0 manualInput" disabled value="${hasilItem.hasil || ''}" required/>
-                                            </td>
-                                            <td>
-                                                <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" data-index="0">
-                                                    <i class="ti ti-switch-2"></i>
-                                                </button>
-                                            </td>
-                                            <td class="duplo d1-column" style="display: none;">
-                                                <input type="number" name="duplo_d1[]" class="form-control text-center w-50 p-0 d1" disabled value="${hasilItem.duplo_d1 || ''}"/>
-                                            </td>
-                                            <td class="duplo d2-column" style="display: none;">
-                                                <input type="number" name="duplo_d2[]" class="form-control text-center w-50 p-0 d2" disabled value="${hasilItem.duplo_d2 || ''}"/>
-                                            </td>
-                                            <td class="duplo d3-column" style="display: none;">
-                                                <input type="number" name="duplo_d3[]" class="form-control text-center w-50 p-0 d3" disabled value="${hasilItem.duplo_d3 || ''}"/>
-                                            </td>
-                                            <td class="text-center flag-cell">${flagIcon}</td>
-                                            <td>
-                                                <input type="hidden" name="satuan[]" class="form-control w-50 p-0" value="${p.data_pemeriksaan.nilai_satuan}" readonly/>
-                                                ${p.data_pemeriksaan.nilai_satuan}
-                                            </td>
-                                            <td>
-                                                <input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly/>1-10
-                                            </td>
-                                        </tr>
-                                        `;
-                                    }).join('')}
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                    <br>
-                    
-                    <label>Note<span class="text-danger">*</span></label>
-                    <div>
-                        <textarea class="form-control" name="note" col="3" row="3">${hasil.length > 0 && hasil[0].note ? hasil[0].note : ''}</textarea>
+                        </table>
                     </div>
-                </div>
+
+                    <div class="accordion" id="accordionPemeriksaan">
+                        ${data_pemeriksaan_pasien.map((e, idx) => `
+                        <tr>
+                        <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading${idx}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${idx}" aria-expanded="false" aria-controls="collapse${idx}">
+                                <span >${e.data_departement.nama_department} </span>
+                            </button> 
+                        </h2>
+                        <div id="collapse${idx}" class="accordion-collapse collapse" aria-labelledby="heading${idx}" data-bs-parent="#accordionPemeriksaan">
+                            <div class="accordion-body">
+                            <table class="table table-striped">
+                                <thead style="visibility: collapse;">
+                                    <tr>
+                                    <th class="col-2">PARAMETER</th>
+                                    <th class="col-2">HASIL</th>
+                                    <th class="col-1"></th>
+                                    <th class="col-2 duplo d1-column " style="display: none; ">D1</th>
+                                    <th class="col-2 duplo d2-column " style="display: none; ">D2</th>
+                                    <th class="col-2 duplo d3-column " style="display: none; ">D3</th>
+                                    <th class="col-3">FLAG</th>
+                                    <th class="col-2">Unit</th>
+                                    {{-- <th class="col-2">RANGE</th> --}}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                ${e.pasiens.map(p => {
+                                    const hasilItem = hasil_periksa.find(item => item.nama_pemeriksaan === p.data_pemeriksaan.nama_pemeriksaan) || {};
+                                    const nilaiHasil = hasilItem.hasil ? parseFloat(hasilItem.hasil) : null;
+                                    const rowId = p.data_pemeriksaan.id;
+
+                                    let flagIcon = '';
+                                    if (nilaiHasil !== null) {
+                                    if (nilaiHasil < 5) {
+                                        flagIcon = `<i class="ti ti-arrow-down text-primary"></i>`;
+                                    } else if (nilaiHasil > 10) {
+                                        flagIcon = `<i class="ti ti-arrow-up text-danger"></i>`;
+                                    }
+                                    }
+
+                                    return `
+                                    <tr data-id="${rowId}" data-parameter="${p.data_pemeriksaan.nama_parameter}">
+                                    <td class="col-2">
+                                        <strong>${p.data_pemeriksaan.nama_pemeriksaan}</strong>
+                                        <input type="hidden" name="nama_pemeriksaan[]" value="${p.data_pemeriksaan.nama_pemeriksaan}" />
+                                    </td>
+                                    <td class="col-2">
+                                        <input type="number" name="hasil[]" class="form-control manualInput w-60 p-0" disabled value="${hasilItem.hasil || ''}" required />
+                                    </td>
+                                    <td class="col-1">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" data-index="0">
+                                            <i class="ti ti-switch-2"></i>
+                                        </button>
+                                    </td>
+                                    <td class="col-2 duplo d1-column text-center " style="display: none;">
+                                        <input type="number" name="duplo_d1[]" class="form-control d1 w-60 p-0 text-center" disabled value="${hasilItem.duplo_d1 || ''}" />
+                                    </td>
+                                    <td class="col-2 duplo d2-column " style="display: none;">
+                                        <input type="number" name="duplo_d2[]" class="form-control d2 w-60 p-0 text-center" disabled value="${hasilItem.duplo_d2 || ''}" />
+                                    </td>
+                                    <td class="col-2 duplo d3-column " style="display: none;">
+                                        <input type="number" name="duplo_d3[]" class="form-control d3 w-50 p-0 text-center" disabled value="${hasilItem.duplo_d3 || ''}" />
+                                        
+                                    </td>
+                                    <td class="col-3 flag-cell">${flagIcon}</td>
+                                    <td>
+                                        <input type="hidden" name="satuan[]" class="form-control w-100 p-0" value="${p.data_pemeriksaan.nilai_satuan}" readonly />
+                                        ${p.data_pemeriksaan.nilai_satuan}
+                                    </td>
+                                    {{-- <td>
+                                        <input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly />1-10
+                                    </td> --}}
+                                    </tr>
+                                    `;
+                                }).join('')}
+                                </tr>
+                                </tbody>
+                            </table>
+                            </div>
+                        </div>
+                        </div>
+                        `).join('')}
+                    </div>
+
+                    <div>
+                        <label>Note<span class="text-danger">*</span></label>
+                        <textarea class="form-control" name="note" cols="3" rows="3" placeholder="Masukkan catatan pemeriksaan...">${hasil.length > 0 && hasil[0].note ? hasil[0].note : ''}</textarea>
+                    </div>
+                    </div>
+
+
                 
                 <div class="row">
                     <div class="col-lg-12 mb-3 mt-2">
@@ -990,38 +1112,51 @@
             const manualButton = document.getElementById('manualButton');
             const duploButton = document.getElementById('duploButton');
             let currentDuploStage = 0;
-            
-            // Fungsi untuk mengecek dan menampilkan kolom duplo yang memiliki nilai
-            // function checkAndShowDuploColumns() {
-            //     const d1Values = Array.from(document.querySelectorAll('.d1')).map(input =>
-            //     input.value).filter(Boolean);
-            //     const d2Values = Array.from(document.querySelectorAll('.d2')).map(input =>
-            //     input.value).filter(Boolean);
-            //     const d3Values = Array.from(document.querySelectorAll('.d3')).map(input =>
-            //     input.value).filter(Boolean);
+
+            function updateFlag(value, flagCell) {
+                const numValue = parseFloat(value);
+                if (!isNaN(numValue)) {
+                    if (numValue < 5) {
+                        flagCell.innerHTML = '<i class="ti ti-arrow-down text-primary"></i>';
+                    } else if (numValue > 10) {
+                        flagCell.innerHTML = '<i class="ti ti-arrow-up text-danger"></i>';
+                    } else {
+                        flagCell.innerHTML = '';
+                    }
+                } else {
+                    flagCell.innerHTML = '';
+                }
+            }
+
+            function setupFlagEventListeners() {
+                // Tambahkan event listener untuk semua input (baik hasil maupun duplo)
+                const allInputs = document.querySelectorAll('.manualInput, .d1, .d2, .d3');
                 
-            //     console.log("Checking duplo columns...");
-            //     console.log("D1 values:", d1Values);
-            //     console.log("D2 values:", d2Values);
-            //     console.log("D3 values:", d3Values);
+                allInputs.forEach(input => {
+                    // Hapus event listener yang mungkin sudah ada untuk menghindari duplikasi
+                    input.removeEventListener('input', inputHandler);
+                    
+                    // Tambahkan event listener baru
+                    input.addEventListener('input', inputHandler);
+                });
                 
-            //     // Kita tidak otomatis menampilkan kolom, tunggu hingga tombol diklik
-            //     // Tapi kita tetap mencatat stage untuk keperluan debugging
-            //     if (d1Values.length > 0) {
-            //     currentDuploStage = Math.max(currentDuploStage, 1);
-            //     }
-            //     if (d2Values.length > 0) {
-            //     currentDuploStage = Math.max(currentDuploStage, 2);
-            //     }
-            //     if (d3Values.length > 0) {
-            //     currentDuploStage = Math.max(currentDuploStage, 3);
-            //     }
+                console.log(`Setup flag event listeners for ${allInputs.length} inputs`);
+            }
+            function inputHandler() {
+                const row = this.closest('tr');
+                const flagCell = row.querySelector('.flag-cell');
                 
-            //     console.log("Current duplo stage after check:", currentDuploStage);
-            // }
-            
-            // // Cek nilai duplo yang ada, tapi tidak tampilkan kolom
-            // checkAndShowDuploColumns();
+                // Jika ini adalah input duplo, gunakan nilai duplo untuk flag
+                if (this.classList.contains('d1') || this.classList.contains('d2') || this.classList.contains('d3')) {
+                    updateFlag(this.value, flagCell);
+                    console.log(`Updating flag for duplo input with value: ${this.value}`);
+                } 
+                // Jika ini adalah input hasil/manual
+                else if (this.classList.contains('manualInput')) {
+                    updateFlag(this.value, flagCell);
+                    console.log(`Updating flag for manual input with value: ${this.value}`);
+                }
+            }
             
             function hideAllDuploColumns() {
                 document.querySelectorAll('.d1-column, .d2-column, .d3-column').forEach(col => {
@@ -1041,76 +1176,78 @@
                 const d3Values = Array.from(document.querySelectorAll('.d3')).map(input => 
                     input.value).filter(Boolean);
                 
-                console.log("D1 values:", d1Values);
-                console.log("D2 values:", d2Values);
-                console.log("D3 values:", d3Values);
+                // console.log("D1 values:", d1Values);
+                // console.log("D2 values:", d2Values);
+                // console.log("D3 values:", d3Values);
             }
 
             if (duploButton) {
-        duploButton.addEventListener('click', () => {
-            console.log("Duplo button clicked, currentStage SEBELUM:", currentDuploStage);
-            
-            const d1Columns = document.querySelectorAll('.d1-column');
-            const d2Columns = document.querySelectorAll('.d2-column');
-            const d3Columns = document.querySelectorAll('.d3-column');
-            const d1Inputs = document.querySelectorAll('.d1');
-            const d2Inputs = document.querySelectorAll('.d2');
-            const d3Inputs = document.querySelectorAll('.d3');
-            
-            // Logika untuk menampilkan kolom satu per satu
-            switch(currentDuploStage) {
-                case 0:
-                    // Tampilkan hanya kolom D1
-                    console.log("Menampilkan kolom D1");
-                    d1Columns.forEach(col => col.style.display = 'table-cell');
-                    d1Inputs.forEach(input => {
-                        input.disabled = false;
-                        if (input.value === '') input.focus();
-                    });
-                    currentDuploStage = 1;
-                    break;
-                case 1:
-                    // Tampilkan kolom D2 (D1 sudah ditampilkan)
-                    console.log("Menampilkan kolom D2");
-                    d2Columns.forEach(col => col.style.display = 'table-cell');
-                    d2Inputs.forEach(input => {
-                        input.disabled = false;
-                        if (input.value === '') input.focus();
-                    });
-                    currentDuploStage = 2;
-                    break;
-                case 2:
-                    // Tampilkan kolom D3 (D1 & D2 sudah ditampilkan)
-                    console.log("Menampilkan kolom D3");
-                    d3Columns.forEach(col => col.style.display = 'table-cell');
-                    d3Inputs.forEach(input => {
-                        input.disabled = false;
-                        if (input.value === '') input.focus();
-                    });
-                    currentDuploStage = 3;
-                    break;
-                default:
-                    // Semua kolom sudah ditampilkan
-                    console.log("Semua kolom duplo sudah aktif.");
-                    break;
+                duploButton.addEventListener('click', () => {
+                    // console.log("Duplo button clicked, currentStage SEBELUM:", currentDuploStage);
+                    
+                    const d1Columns = document.querySelectorAll('.d1-column');
+                    const d2Columns = document.querySelectorAll('.d2-column');
+                    const d3Columns = document.querySelectorAll('.d3-column');
+                    const d1Inputs = document.querySelectorAll('.d1');
+                    const d2Inputs = document.querySelectorAll('.d2');
+                    const d3Inputs = document.querySelectorAll('.d3');
+                    
+                    // Logika untuk menampilkan kolom satu per satu
+                    switch(currentDuploStage) {
+                        case 0:
+                            // Tampilkan hanya kolom D1
+                            console.log("Menampilkan kolom D1");
+                            d1Columns.forEach(col => col.style.display = 'table-cell');
+                            d1Inputs.forEach(input => {
+                                input.disabled = false;
+                                if (input.value === '') input.focus();
+                            });
+                            currentDuploStage = 1;
+                            break;
+                        case 1:
+                            // Tampilkan kolom D2 (D1 sudah ditampilkan)
+                            console.log("Menampilkan kolom D2");
+                            d2Columns.forEach(col => col.style.display = 'table-cell');
+                            d2Inputs.forEach(input => {
+                                input.disabled = false;
+                                if (input.value === '') input.focus();
+                            });
+                            currentDuploStage = 2;
+                            break;
+                        case 2:
+                            // Tampilkan kolom D3 (D1 & D2 sudah ditampilkan)
+                            console.log("Menampilkan kolom D3");
+                            d3Columns.forEach(col => col.style.display = 'table-cell');
+                            d3Inputs.forEach(input => {
+                                input.disabled = false;
+                                if (input.value === '') input.focus();
+                            });
+                            currentDuploStage = 3;
+                            break;
+                        default:
+                            // Semua kolom sudah ditampilkan
+                            console.log("Semua kolom duplo sudah aktif.");
+                            break;
+                    }
+                    setupFlagEventListeners();
+                    
+                    // Debug output
+                    console.log("Current duplo stage SESUDAH:", currentDuploStage);
+                    logDuploValues();
+                    
+                    // Aktifkan tombol verifikasi
+                    if (verifikasiHasilBtn) verifikasiHasilBtn.disabled = false;
+                    if (verifikasiDokterBtn) verifikasiDokterBtn.disabled = false;
+                });
             }
-            
-            // Debug output
-            console.log("Current duplo stage SESUDAH:", currentDuploStage);
-            logDuploValues();
-            
-            // Aktifkan tombol verifikasi
-            if (verifikasiHasilBtn) verifikasiHasilBtn.disabled = false;
-            if (verifikasiDokterBtn) verifikasiDokterBtn.disabled = false;
-        });
-    }
 
             // Event listener untuk input real-time flag
             document.querySelectorAll('.manualInput, .d1, .d2, .d3').forEach(input => {
-                input.addEventListener('input', function() {
-                const flagCell = this.closest('tr').querySelector('.flag-cell');
-                updateFlag(this.value, flagCell);
-                });
+                if (input.value) {
+                    const row = input.closest('tr');
+                    const flagCell = row.querySelector('.flag-cell');
+                    updateFlag(input.value, flagCell);
+                }
             });
 
             // Event listener untuk tombol verifikasi
@@ -1270,7 +1407,7 @@
                     });
                 });
             } else {
-                console.error("Tombol Duplo tidak ditemukan.");
+                // console.error("Tombol Duplo tidak ditemukan.");
             }
         });
 
@@ -1455,630 +1592,6 @@
 
 </script>
 
-
-{{-- <script> 
-    $(function() {
-        $('.preview').on('click', function(event) {
-            event.preventDefault();
-            const id = this.getAttribute('data-id');
-            const previewDataPasien = document.getElementById('previewDataPasien');
-
-            fetch(`/api/get-data-pasien/${id}`).then(response => {
-                if (!response.ok) {
-                    throw new Error("HTTP error" + response.status);
-                }
-                return response.json();
-            }).then(res => {
-                if (res.status === 'success') {
-                    const data_pasien = res.data;
-                    const data_pemeriksaan_pasien = res.data.dpp;
-
-                    console.log(data_pasien);
-                    console.log(data_pemeriksaan_pasien);
-                    // if (!data_pasien.dokter) {
-                    // console.error('Data dokter null');
-                    // return;
-                    // }
-
-                    let detailContent = '<div class="row">';
-
-                        // Loop hanya sekali
-                        data_pemeriksaan_pasien.forEach((e, i) => {
-                                detailContent += `
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="col-lg-8">
-                                            <div class="row" style="margin-bottom: -5px;">
-                                                <label for="staticEmail" class="col-sm-5 col-form-label font-bold">Cito</label>
-                                                <div class="col-lg-9">
-                                                    <i class='bx bxs-bell-ring mt-2 ml-1 text-danger' style="font-size: 23px;"></i>
-                                                </div>
-                                            </div>
-                                            <div class="row" style="margin-bottom: -10px;">
-                                                <label for="staticEmail" class="col-sm-5 col-form-label font-bold">No LAB</label>
-                                                <div class="col-lg-6">
-                                                    <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data_pasien.no_lab}">
-                                                </div>
-                                            </div>
-                                            <div class="row" style="margin-bottom: -10px;">
-                                                <label for="staticEmail" class="col-sm-5 col-form-label font-bold">No RM</label>
-                                                <div class="col-lg-6">
-                                                    <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data_pasien.no_rm}">
-                                                </div>
-                                            </div>
-                                            <div class="row" style="margin-bottom: -10px;">
-                                                <label for="staticEmail" class="col-sm-5 col-form-label font-bold">Nama</label>
-                                                <div class="col-lg-6">
-                                                    <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data_pasien.nama}">
-                                                </div>
-                                            </div>
-                                            <div class="row" style="margin-bottom: -10px;">
-                                                <label for="staticEmail" class="col-sm-5 col-form-label font-bold">Ruangan</label>
-                                                <div class="col-lg-6">
-                                                    <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data_pasien.asal_ruangan}">
-                                                </div>
-                                            </div>
-                                            <div class="row" style="margin-bottom: -10px;">
-                                                <label for="staticEmail" class="col-lg-5 col-form-label font-bold">Tanggal Lahir Usia</label>
-                                                <div class="col-lg-6">
-                                                    <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data_pasien.lahir} Tahun">
-                                                </div>
-                                            </div>
-                                            <div class="row" style="margin-bottom: -10px;">
-                                                <label for="staticEmail" class="col-sm-5 col-form-label font-bold">Dokter</label>
-                                                <div class="col-lg-6">
-                                                    <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": ${data_pasien.dokter.nama_dokter}">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="div">
-                                            <div class="timeline timeline-sm">
-                                                <div class="timeline-item">
-                                                    <div class="timeline-item-marker">
-                                                        <div class="timeline-item-marker-text">19.25</div>
-                                                        <div class="timeline-item-marker-indicator"><i class="bi bi-check-lg mb-2"></i></div>
-                                                    </div>
-                                                    <div class="timeline-item-content">Order</div>
-                                                </div>
-                                                <div class="timeline-item">
-                                                    <div class="timeline-item-marker">
-                                                        <div class="timeline-item-marker-text">19.35</div>
-                                                        <div class="timeline-item-marker-indicator"><i class="bi bi-check-lg mb-2"></i></div>
-                                                    </div>
-                                                    <div class="timeline-item-content">Payment</div>
-                                                </div>
-                                                <div class="timeline-item">
-                                                    <div class="timeline-item-marker">
-                                                        <div class="timeline-item-marker-text">19.50</div>
-                                                        <div class="timeline-item-marker-indicator"><i class="bi bi-check-lg mb-2"></i></div>
-                                                    </div>
-                                                    <div class="timeline-item-content">Sampling</div>
-                                                </div>
-                                                <div class="timeline-item">
-                                                    <div class="timeline-item-marker">
-                                                        <div class="timeline-item-marker-text">20.00</div>
-                                                        <div class="timeline-item-marker-indicator"><i class="bi bi-check-lg mb-2"></i></div>
-                                                    </div>
-                                                    <div class="timeline-item-content">Spesimen Collection</div>
-                                                </div>
-                                                <div class="timeline-item">
-                                                    <div class="timeline-item-marker">
-                                                        <div class="timeline-item-marker-text">20.15</div>
-                                                        <div class="timeline-item-marker-indicator"><i class="bi bi-check-lg mb-2"></i></div>
-                                                    </div>
-                                                    <div class="timeline-item-content">Spesimen Handling</div>
-                                                </div>
-                                                <div class="timeline-item">
-                                                    <div class="timeline-item-marker">
-                                                        <div class="timeline-item-marker-text">20.45</div>
-                                                        <div class="timeline-item-marker-indicator"><i class="bi bi-check-lg mb-2"></i></div>
-                                                    </div>
-                                                    <div class="timeline-item-content">Result</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `;
-                            });
-                            detailContent += '</div>';
-
-                    // Object.keys(Tabung).forEach(spesiment => {
-
-                    //   res.data.spesiment.forEach((e, i) => {
-                    //             let details = '';
-                        
-                    //             if (e.details && e.details.length > 0){
-                    //                 details = `<div class="detail-container col-12 col-md-6">`;
-                    //                 e.details.forEach(detail => {
-                    //                     const imageUrl = `/gambar/${detail.gambar}`;
-                    //                     const isChecked = (e.tabung === 'EDTA' && detail.nama_parameter === 'Normal' ) ||
-                    //                                         (e.tabung === 'CLOTH-ACT' && detail.nama_parameter === 'Normal') ||
-                    //                                         (e.tabung === 'CLOT-ACT' && detail.nama_parameter === 'Normal') ? 'checked' : '';
-
-                    //                     // const approvedDetail = res.data.approvedDetails.find(d => d.id === detail.id);
-                    //                     // const approvedChecked = approvedDetail ? 'checked' : '';
-                    //                     // const approvedNote = approvedDetail ? approvedDetail.note : '';
-
-                    //                     details +=  
-                    //                     `<div class="detail-item">
-                    //                         <div class="detail-text">${detail.nama_parameter}</div>
-                    //                         <div class="detail-image-container">
-                    //                             <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
-                    //                         </div>
-                    //                         <div class="detail-radio-container">
-                    //                             ${e.tabung === 'EDTA' ? `<input type="radio" name="kapasitas[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}
-                    //                             ${e.tabung === 'CLOTH-ACT' ? `<input type="radio" name="serumh[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}
-                    //                             ${e.tabung === 'CLOT-ACT' ? `<input type="radio" name="serum[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}    
-                    //                         </div>
-                    //                     </div>`;
-                    //                 });
-                    //                 details += `</div>`
-                    //             }
-
-                    //             let title = '';
-                    //             let subtext = '';
-                    //             if (e.tabung === 'EDTA') {
-                    //                 title = '<h5 class="title">Spesiment Collection</h5> <hr>';
-                    //             } else if (e.spesiment === 'Spesiment Collection') {
-                    //                 subtext = '<div class="subtext">Serum</div>';
-                    //             } else if (e.spesiment === 'Spesiment Handlings') {
-                    //                 title = '<h5>Spesiment Handlings</h5> <hr>';
-                    //                 subtext = '<div class="subtext">Serum</div>';
-                    //             }
-                                
-                    //             let note = '';
-                    //             if (e.tabung === 'EDTA' || e.tabung === 'CLOT-ACT', 'CLOTH-ACT') {
-                    //                     note = '<p class="mb-0"><strong>Note</strong></p>';
-                    //                 }
-
-                    //             detailContent += `${title}
-                    //                 <div class="accordion mb-2" id="accordion${e.tabung}">
-                                                        
-                    //                     <div class="accordion-item">
-                    //                         <h2 class="accordion-header" id="heading${e.tabung}">
-                    //                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">
-                    //                             Tabung ${e.tabung}
-                    //                             </button>
-                    //                         </h2>
-                    //                         <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}" data-bs-parent="#accordion${e.tabung}">
-                    //                             <div class="accordion-body">
-                                                    
-                    //                                 ${subtext}
-                    //                                 <div class="container">
-                    //                                     ${details}
-                    //                                 </div>
-                    //                                 ${note}
-                    //                                 ${e.tabung === 'EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
-                    //                                 ${e.tabung === 'CLOTH-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
-                    //                                 ${e.tabung === 'CLOT-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Write a note here"></textarea>` : ''}
-                                                    
-                    //                             </div>
-                    //                         </div>
-                    //                     </div>
-                    //                     </div>`;
-                    //          });
-                     
-                    // });
-                    
-                    previewDataPasien.innerHTML = detailContent;
-                    console.log(detailContent);
-                }
-            });
-        });
-    }) 
-</script> --}}
-
-{{-- <script>
-    function previewPasien(nolab) {
-        var y = document.getElementById("preview-pasien-close");
-        console.log(nolab);
-
-        //mengambil data pasien dari database
-        fetch('/api/previewpasien/'+nolab)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("HTTP error " + response.status);
-                }
-                return response.json();
-            })
-            .then(data => {
-                y.style.display = "none";
-                var status = document.getElementById("status");
-                var container = document.getElementById("container-preview");
-                var tanggal = document.getElementById("tanggal-pemeriksaan");
-
-                //megnhitung umur dari tanggal lahir
-                var dob = new Date(data.data_pasien.lahir);
-                var today = new Date();
-                var age = Math.floor((today-dob) / (365.25 * 24 * 60 * 60 * 1000));
-
-                var diagnosa = data.icd10.filter(function (el) {
-                    return el.code == data.data_pasien.diagnosa;
-                });
-
-                var dataPasien = `<div class="d-flex justify-content-between mx-3">
-                                    <div class="">
-                                    <div class="row" style="margin-bottom: -5px;">
-                                        <label for="staticEmail" class="col-sm-5 col-form-label font-weight-bold">Cito</label>
-                                        <div class="col-lg-6"">
-                                        <i class='bx bxs-bell-ring mt-2 ml-1 text-danger' style="font-size: 23px;"></i>
-                                        </div>
-                                        <div id="coba">asdfkj</div>
-                                    </div>
-                                    <div class="row" style="margin-bottom: -10px;">
-                                        <label for="staticEmail" class="col-sm-5 col-form-label font-weight-bold">No LAB</label>
-                                        <div class="col-lg-6"">
-                                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.no_lab +`">
-                                        </div>
-                                    </div>
-                                    <div class="row" style="margin-bottom: -10px;">
-                                        <label for="staticEmail" class="col-sm-5 col-form-label font-weight-bold">No RM</label>
-                                        <div class="col-lg-6"">
-                                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.no_rm +`">
-                                        </div>
-                                    </div>
-                                    <div class="row" style="margin-bottom: -10px;">
-                                        <label for="staticEmail" class="col-sm-5 col-form-label font-weight-bold">Nama</label>
-                                        <div class="col-lg-6"">
-                                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.nama +`">
-                                        </div>
-                                    </div>
-                                    <div class="row" style="margin-bottom: -10px;">
-                                        <label for="staticEmail" class="col-sm-5 col-form-label font-weight-bold">Ruangan</label>
-                                        <div class="col-lg-6"">
-                                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.asal_ruangan +`">
-                                        </div>
-                                    </div>
-                                    <div class="row" style="margin-bottom: -10px;">
-                                        <label for="staticEmail" class="col-lg-5 col-form-label font-weight-bold">Tanggal Lahir Usia</label>
-                                        <div class="col-lg-6">
-                                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": `+ data.data_pasien.lahir +`, `+ age +`th">
-                                        </div>
-                                    </div>
-                                    <div class="row" style="margin-bottom: -10px;">
-                                        <label for="staticEmail" class="col-sm-5 col-form-label font-weight-bold">Dokter</label>
-                                        <div class="col-lg-6"">
-                                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value=": Dr. Bande">
-                                        </div>
-                                    </div>
-                                    </div>
-                                    <div class="div">
-                                    <div class="timeline timeline-sm">
-                                        <div class="timeline-item">
-                                            <div class="timeline-item-marker">
-                                                <div class="timeline-item-marker-text">19.25</div>
-                                                <div class="timeline-item-marker-indicator"><i class="bx bx-check"></i></div>
-                                            </div>
-                                            <div class="timeline-item-content">Order</div>
-                                        </div>
-                                        <div class="timeline-item">
-                                            <div class="timeline-item-marker">
-                                                <div class="timeline-item-marker-text">19.35</div>
-                                                <div class="timeline-item-marker-indicator"><i class="bx bx-check"></i></div>
-                                            </div>
-                                            <div class="timeline-item-content">Payment</div>
-                                        </div>
-                                        <div class="timeline-item">
-                                            <div class="timeline-item-marker">
-                                                <div class="timeline-item-marker-text">19.50</div>
-                                                <div class="timeline-item-marker-indicator"><i class="bx bx-check"></i></div>
-                                            </div>
-                                            <div class="timeline-item-content">Sampling</div>
-                                        </div>
-                                        <div class="timeline-item">
-                                            <div class="timeline-item-marker">
-                                                <div class="timeline-item-marker-text">20.00</div>
-                                                <div class="timeline-item-marker-indicator"><i class="bx bx-check"></i></div>
-                                            </div>
-                                            <div class="timeline-item-content">Spesimen Collection</div>
-                                        </div>
-                                        <div class="timeline-item">
-                                            <div class="timeline-item-marker">
-                                                <div class="timeline-item-marker-text">20.15</div>
-                                                <div class="timeline-item-marker-indicator"><i class="bx bx-check"></i></div>
-                                            </div>
-                                            <div class="timeline-item-content">Spesimen Handling</div>
-                                        </div>
-                                        <div class="timeline-item">
-                                            <div class="timeline-item-marker">
-                                                <div class="timeline-item-marker-text">20.45</div>
-                                                <div class="timeline-item-marker-indicator"><i class="bx bx-check"></i></div>
-                                            </div>
-                                            <div class="timeline-item-content">Result</div>
-                                        </div>
-                                    </div>
-                                    </div>
-                                </div>`;
-
-                var previewButton =`<div class="row">
-                                        <div class="col-lg-2">
-                                            <button type="button" class="btn btn-outline-secondary btn-block">Manual</button>
-                                        </div>
-                                        <div class="col-lg-2">
-                                            <button type="button" class="btn btn-outline-info btn-block">Duplo</button>
-                                        </div>
-                                        <div class="col-lg-2">
-                                            <button type="button" class="btn btn-outline-warning btn-block" data-bs-toggle="modal" data-bs-target="#exampleModal">Sample History</button>
-                                        </div>
-                                        <div class="col-lg-2">
-                                            <button type="button" class="btn btn-outline-danger btn-block">Delete</button>
-                                        </div>
-                                    </div>`;
-
-                //perulangan untuk menampilkan pemeriksaan yang di pilih
-
-                var departement = "";
-                var pemeriksaan = "";
-
-                for (let i = 0; i < data.id_departement_pasien.length; i++) {
-                    departement += `<p class="h6 text-gray-800">`
-                                    //buat perintah where untuk mencari id_departement
-                                    for (let j = 0; j < data.data_departement.length; j++) {
-                                        if(data.data_departement[j].id_departement == data.id_departement_pasien[i].id_departement)
-                                            // departement += data.data_departement[j].nama_departement;
-                                            departement += `<table class="table" style="font-size: 14px;">
-                                                                <thead>
-                                                                <tr>
-                                                                    <th scope="col">Parameter</th>
-                                                                    <th scope="col">Hasil</th>
-                                                                    <!-- Kondisi Duplo -->
-                                                                    <th scope="col">Flag</th>
-                                                                    <th scope="col">Satuan</th>
-                                                                    <th scope="col">Range</th>
-                                                                </tr>
-                                                                </thead>
-                                                                <tr class="mt-2">
-                                                                    <th scope="row">`+ data.data_departement[j].nama_departement +`</th>
-                                                                </tr>
-                                                                <tbody>`;
-                                    }
-                                        for (let k = 0; k < data.data_pemeriksaan_pasien.length; k++) {
-                                            if(data.data_pemeriksaan_pasien[k].id_departement == data.id_departement_pasien[i].id_departement){
-                                                for (let l = 0; l < data.data_pemeriksaan.length; l++) {
-                                                    if(data.data_pemeriksaan_pasien[k].nama_parameter == data.data_pemeriksaan[l].nama_parameter){
-                                                        // departement += `<p class="text-gray-600 offset-md-3">`+ data.data_pemeriksaan[l].nama_pemeriksaan +`</p>`;
-                                                        if(data.data_pemeriksaan[l].nama_pemeriksaan == 'Darah Lengkap'){
-
-                                                            // departement = `<div id="">`;
-                                                                departement += `<tr class="">
-                                                                                    <td scope="row" class="col-4">`+ data.data_pemeriksaan[l].nama_pemeriksaan +`</th>
-                                                                                    <td></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center"></td>
-                                                                                    <td class="text-center"></td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">WBC</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">Lym#</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">Mid#</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">Gran#</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">Lym%</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">Mid%</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">Gran%</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">RBC</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">HGB</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">HCT</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">MCV</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">MCH</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">MCHC</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">RDW-CV</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">RDW-SD</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">PLT</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">MPV</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">PDW</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">PCT</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">P-LCC</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>
-                                                                                <tr class="" >
-                                                                                    <td scope="row" class="col-4 pl-5">P-LCR</td>
-                                                                                    <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                    <td></td>
-                                                                                    <td class="text-center">%</td>
-                                                                                    <td class="text-center">1-10</td>
-                                                                                </tr>`;
-
-
-                                                        }else{
-                                                            departement += `
-                                                                            <tr class="">
-                                                                                <td scope="row" class="col-4">`+ data.data_pemeriksaan[l].nama_pemeriksaan +`</td>
-                                                                                <td><input type="text" class="col-5 input-detail justify-content-center" readonly value=" "></td>
-                                                                                <td></td>
-                                                                                <td class="text-center">%</td>
-                                                                                <td class="text-center">1-10</td>
-                                                                            </tr>`;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    departement += `</tbody>
-                                                    </table>`
-                }
-
-
-                var citoMerah = `<label for="staticEmail" class="col-sm-5 col-form-label">Cito</label>
-                                <div class="col-sm-7">
-                                    <i class='bx bxs-bell-ring mt-2 ml-1 text-danger' style="font-size: 23px;"></i>
-                                </div>`;
-                var citoGray = `<label for="staticEmail" class="col-sm-5 col-form-label">Cito</label>
-                                <div class="col-sm-7">
-                                    <i class='bx bxs-bell-ring mt-2 ml-1 text-secondary' style="font-size: 23px;"></i>
-                                </div>`;
-
-                var html = `<div class="row">
-                                <div class="table-scroll table-pasien p-3" style="width: 100%;">
-                                    <div id="tabel-pemeriksaan-worklist">
-                                        <!-- tabel -->
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mt-3">
-                                <div class="col-lg-6">
-                                <button type="button" class="btn btn-outline-teal btn-block">Verifikasi Hasil</button>
-                                </div>
-                                <div class="col-lg-6">
-                                <button type="button" class="btn btn-outline-primary btn-block">Verifikasi Dokter PK</button>
-                                </div>
-                            </div>`
-
-                document.getElementById("preview-data-pasien").innerHTML = dataPasien;
-                document.getElementById("preview-button").innerHTML = previewButton;
-                document.getElementById("preview-pemeriksaan").innerHTML = html;
-                document.getElementById("tabel-pemeriksaan-worklist").innerHTML = departement;
-
-
-            })
-            .catch(error => ('Error:', error));
-
-    }
-</script> --}}
-
-
-{{-- <script>
-    $(document).ready(function() {
-    selesai();
-    });
-
-    function selesai() {
-    setTimeout(function() {
-        tampilData();
-        selesai();
-    }, 1000);
-    }
-
-    function tampilData() {
-    var link = '/worklist/tampildarahlengkap/' + nolab;
-    $.ajax({
-        url: link,
-        type: 'GET',
-        dataType: 'json',
-        success: function(data) {
-        // Kosongkan variabel coba sebelum diisi dengan data terbaru
-        $('#coba').html('');
-        var coba = data;
-        $('#coba').html(coba);
-        console.log(data);
-        }
-    });
-</script> --}}
 
 
 <script src="{{ asset('../js/ak.js') }}"></script>

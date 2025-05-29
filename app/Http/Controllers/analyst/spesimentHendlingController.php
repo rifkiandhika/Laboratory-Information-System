@@ -327,8 +327,9 @@ class spesimentHendlingController extends Controller
                         spesimentHandling::create([
                             'no_lab' => $pasien->no_lab,
                             'tabung' => 'CLOT-ACT',
-                            'serum' => 7, // Ini nilai contoh, sesuaikan dengan kebutuhan
+                            'serum' => 4, // Ini nilai contoh, sesuaikan dengan kebutuhan
                             'status' => 'Acc',
+                            'note' => 'Normal',
                             'tanggal' => now(),
                         ]);
                     }

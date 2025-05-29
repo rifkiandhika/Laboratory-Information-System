@@ -61,6 +61,7 @@
                                                 <th scope="col">No</th>
                                                 <th scope="col">Department Name </th>
                                                 <th scope="col">Details</th>
+                                                <th scope="col">Update Date</th>
                                                 <th scope="col">Action</th>
                                             </tr>
                                         </thead>
@@ -76,6 +77,11 @@
                                                         @foreach($Department->detailDepartments as $detail)
                                                             <li>{{ $detail->kode }} - {{ $detail->nama_parameter }} - {{ $detail->nama_pemeriksaan }} - {{ $detail->harga }} - {{ $detail->nilai_statik }} - {{ $detail->nilai_satuan }}</li>
                                                         @endforeach
+                                                    </td>
+                                                    <td>
+                                                        {{-- {{ \Carbon\Carbon::parse($Department->detailDepartments->updated_at)->format('d-m-Y') }} --}}
+                                                        {{ $Department->detailDepartments->sortByDesc('updated_at')->first()?->updated_at?->format('d-m-Y') }}
+
                                                     </td>
                                                     <td>
                                                         {{-- Edit --}}

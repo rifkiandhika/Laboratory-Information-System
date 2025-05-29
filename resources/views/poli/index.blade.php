@@ -1,4 +1,4 @@
-<title>Poli</title>
+<title>Room</title>
 @extends('layouts.admin')
 @section('content')
     <section>
@@ -6,7 +6,7 @@
             <div class="container-fluid">
                 <!-- Page Heading -->
                 <div class="d-sm-flex mb-3">
-                    <h1 class="h3 mb-0 text-gray-600">Poli Data</h1>
+                    <h1 class="h3 mb-0 text-gray-600">Room Data</h1>
                 </div>
 
                 <div class="row">
@@ -17,7 +17,7 @@
                                     <!-- Button trigger modal -->
                                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
                                         data-bs-target="#exampleModal">
-                                        + Add Poli
+                                        + Add Room
                                     </button>
 
                                     <!-- Modal -->
@@ -26,16 +26,21 @@
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel">Add Poli</h5>
+                                                    <h5 class="modal-title" id="exampleModalLabel">Add Room</h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                         aria-label="Close"></button>
                                                 </div>
                                                 <form action="{{ route('poli.store') }}" method="post">
                                                     @csrf
                                                     <div class="modal-body">
+                                                        <div class="form-group">
+                                                            <label for="Kode">Code</label>
+                                                            <input type="text" class="form-control"
+                                                                name="kode" placeholder="R1" required>
+                                                        </div>
                                                         <div class="poli">
-                                                            <label for="poli"><b>Poli Name</b></label>
-                                                            <input class="form-control" placeholder="Poli Gigi"
+                                                            <label for="poli"><b>Room Name</b></label>
+                                                            <input class="form-control" placeholder="Room"
                                                                 type="text" name="nama_poli">
                                                         </div>
                                                     </div>
@@ -57,7 +62,8 @@
                                         <thead style="font-size: 12px;">
                                             <tr>
                                                 <th scope="col">No</th>
-                                                <th scope="col">Poli Name</th>
+                                                <th scope="col">Code</th>
+                                                <th scope="col">Room Name</th>
                                                 <th scope="col">Action</th>
                                             </tr>
                                         </thead>
@@ -65,11 +71,15 @@
                                             @foreach ($polis as $x => $Poli)
                                                 <tr>
                                                     <td>{{ $x + 1 }}</td>
+                                                    <td>{{ $Poli->kode }}</td>
                                                     <td>{{ $Poli->nama_poli }}</td>
                                                     <td>
                                                         <button class="btn btn-success btn-edit"
                                                             data-id="{{ $Poli->id }}"
-                                                            data-name="{{ $Poli->nama_poli }}"><i
+                                                            data-kode="{{ $Poli->kode }}"
+                                                            data-name="{{ $Poli->nama_poli }}"
+                                                            >
+                                                            <i
                                                                 class="bi bi-pencil-square"></i>
                                                             Edit</button>
 
@@ -95,7 +105,7 @@
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="editModalLabel">Poli Edit</h5>
+                                                <h5 class="modal-title" id="editModalLabel">Room Edit</h5>
                                                 <button type="button" class="close" data-bs-dismiss="modal"
                                                     aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
@@ -106,7 +116,12 @@
                                                 @method('PUT')
                                                 <div class="modal-body">
                                                     <div class="form-group">
-                                                        <label for="NamaPoli">Poli</label>
+                                                        <label for="Kode">Code</label>
+                                                        <input type="text" class="form-control" id="Kode"
+                                                            name="kode" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="NamaPoli">Room</label>
                                                         <input type="text" class="form-control" id="NamaPoli"
                                                             name="nama_poli" required>
                                                     </div>
@@ -124,7 +139,7 @@
                             </div>
                         </div>
 
-                        <script src="{{ asset('js/time.js') }}"></script>
+                        {{-- <script src="{{ asset('js/time.js') }}"></script> --}}
 
 
     </section>
@@ -135,9 +150,13 @@
             $('.btn-edit').on('click', function() {
                 var id = $(this).data('id');
                 var name = $(this).data('name');
+                var kode = $(this).data('kode');
+
+                console.log("DEBUG:", { id, name, kode });
 
                 // set the values modal
                 $('#NamaPoli').val(name);
+                $('#Kode').val(kode);
 
                 // Form edit 
                 $('#editFormPoli').attr('action', '/poli/' + id);

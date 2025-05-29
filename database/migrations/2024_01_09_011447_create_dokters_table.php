@@ -14,13 +14,15 @@ return new class extends Migration
         Schema::create('dokters', function (Blueprint $table) {
             $table->id();
             $table->string('kode_dokter');
+            $table->string('nip');
             $table->string('nama_dokter');
             $table->string('id_poli');
+            $table->string('poli');
             $table->string('no_telp');
             $table->string('email');
             $table->timestamps();
 
-            
+
             // Cascade delete
             // $table->foreign('id_poli')->references('id')->on('dokters')->onDelete('cascade');
         });

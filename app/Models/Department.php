@@ -22,7 +22,7 @@ class Department extends Model
 
     public function detailDepartments()
     {
-        return $this->hasMany(DetailDepartment::class);
+        return $this->hasMany(DetailDepartment::class, 'department_id');
     }
 
 

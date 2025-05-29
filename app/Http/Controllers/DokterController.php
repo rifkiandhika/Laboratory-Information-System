@@ -15,7 +15,7 @@ class DokterController extends Controller
      */
     public function index()
     {
-        $dokters = dokter::with('poli')->get();
+        $dokters = dokter::with('polis')->get();
         $data['polis'] = Poli::all();
         return view("dokter.index", $data,  compact('dokters'));
     }
@@ -36,7 +36,9 @@ class DokterController extends Controller
         $request->validate([
             'kode_dokter' => 'required|unique:dokters,kode_dokter',
             'nama_dokter' => 'required|unique:dokters,nama_dokter',
+            'nip' => 'required',
             'id_poli' => 'required',
+            'poli' => 'required',
             'no_telp' => 'required|unique:dokters,no_telp',
             'email' => 'required|unique:dokters,email'
         ]);
@@ -68,17 +70,21 @@ class DokterController extends Controller
     {
         $request->validate([
             'kode_dokter' => ['required', Rule::unique('dokters')->ignore($id)],
+            'nip' => 'required',
             'nama_dokter' => 'required',
             'id_poli' => 'required',
+            'poli' => 'required',
             'no_telp' => ['required', Rule::unique('dokters')->ignore($id)],
             'email' => ['required', Rule::unique('dokters')->ignore($id)],
         ]);
 
         $dokters = dokter::findOrfail($id);
         // dd($id);
+        $dokters->nip = $request->nip;
         $dokters->kode_dokter = $request->kode_dokter;
         $dokters->nama_dokter = $request->nama_dokter;
         $dokters->id_poli = $request->id_poli;
+        $dokters->poli = $request->poli;
         $dokters->no_telp = $request->no_telp;
         $dokters->email = $request->email;
         $dokters->save();

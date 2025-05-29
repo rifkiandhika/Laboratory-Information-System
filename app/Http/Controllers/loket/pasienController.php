@@ -59,7 +59,7 @@ class pasienController extends Controller
     {
 
         $data['departments'] = Department::with('pemeriksaan')->get();
-        $data['dokters'] = dokter::with('poli')->get();
+        $data['dokters'] = dokter::with('polis')->get();
 
         $tanggal = date('dmy');
         $urutan = pasien::where('no_lab', 'like', 'LAB' . $tanggal . '%')->count() + 1;

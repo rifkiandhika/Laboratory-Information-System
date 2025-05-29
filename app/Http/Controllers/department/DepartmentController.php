@@ -55,6 +55,7 @@ class DepartmentController extends Controller
             'nilai_rujukan.*' => 'required',
             'nilai_satuan.*' => 'required',
             'tipe_inputan.*' => 'required',
+            'status.*' => 'required',
             'opsi_output.*' => 'required',
             'urutan.*' => 'required',
         ]);
@@ -79,6 +80,7 @@ class DepartmentController extends Controller
                 isset($request->nilai_satuan[$x]) &&
                 isset($request->tipe_inputan[$x]) &&
                 isset($request->opsi_output[$x]) &&
+                isset($request->status[$x]) &&
                 isset($request->urutan[$x])
             ) {
                 // Menyimpan detail department jika data lengkap
@@ -95,6 +97,7 @@ class DepartmentController extends Controller
                         'jasa_perawat' => $request->jasa_perawat[$x] ?? null,
                         'nilai_rujukan' => $request->nilai_rujukan[$x],
                         'nilai_satuan' => $request->nilai_satuan[$x],
+                        'status' => $request->status[$x],
                         'tipe_inputan' => $request->tipe_inputan[$x],
                         'opsi_output' => $request->opsi_output[$x],
                         'urutan' => $request->urutan[$x],
@@ -144,69 +147,73 @@ class DepartmentController extends Controller
         // Validasi data input
         $request->validate([
             'nama_department' => 'required|unique:departments,nama_department,' . $id,
-            'kode.*' => 'required',
+            'kode_hidden.*' => 'required',
             'nama_parameter.*' => 'required',
             'nama_pemeriksaan.*' => 'required',
             'harga.*' => 'required',
-            'nilai_statik.*' => 'required',
+            'nilai_rujukan.*' => 'required',
             'nilai_satuan.*' => 'required',
+            'tipe_inputan.*' => 'required',
+            'opsi_output.*' => 'required',
+            'urutan.*' => 'required',
+            'status.*' => 'nullable', // Checkbox bisa tidak ada
         ]);
 
         // Temukan department berdasarkan ID
-        $departments = Department::findOrFail($id);
+        $department = Department::findOrFail($id);
 
         // Update nama department
-        $departments->update([
+        $department->update([
             'nama_department' => $request->nama_department,
         ]);
 
-        // Ambil semua detail lama yang ada di database
-        $existingDetails = $departments->detailDepartments->keyBy('kode')->toArray();
+        // Ambil detail yang lama dari database
+        $existingDetails = $department->detailDepartments->keyBy('id');
 
-        // Tambahkan atau update detail baru
-        $array_length = count($request->nama_parameter);
-        for ($x = 0; $x < $array_length; $x++) {
-            $kode = $request->kode[$x];
+        // Iterasi input form
+        $count = count($request->nama_parameter);
+        for ($i = 0; $i < $count; $i++) {
+            $detailId = $request->id_detail[$i] ?? null;
+            $kode = $request->kode_hidden[$i];
 
-            // Cek apakah kode sudah ada dalam detail lama
-            if (isset($existingDetails[$kode])) {
-                // Jika kode sudah ada, kita update datanya
-                $detail = DetailDepartment::where('department_id', $departments->id)
-                    ->where('kode', $kode)
-                    ->first();
+            $data = [
+                'kode' => $kode,
+                'nama_parameter' => $request->nama_parameter[$i],
+                'nama_pemeriksaan' => $request->nama_pemeriksaan[$i],
+                'harga' => $request->harga[$i],
+                'jasa_sarana' => $request->jasa_sarana[$i] ?? null,
+                'jasa_pelayanan' => $request->jasa_pelayanan[$i] ?? null,
+                'jasa_dokter' => $request->jasa_dokter[$i] ?? null,
+                'jasa_bidan' => $request->jasa_bidan[$i] ?? null,
+                'jasa_perawat' => $request->jasa_perawat[$i] ?? null,
+                'nilai_rujukan' => $request->nilai_rujukan[$i],
+                'nilai_satuan' => $request->nilai_satuan[$i],
+                'status' => $request->status[$i] ?? 'deactive', // Jika tidak dicentang
+                'tipe_inputan' => $request->tipe_inputan[$i],
+                'opsi_output' => $request->opsi_output[$i],
+                'urutan' => $request->urutan[$i],
+            ];
 
-                $detail->update([
-                    'nama_parameter' => $request->nama_parameter[$x],
-                    'nama_pemeriksaan' => $request->nama_pemeriksaan[$x],
-                    'harga' => $request->harga[$x],
-                    'nilai_statik' => $request->nilai_statik[$x],
-                    'nilai_satuan' => $request->nilai_satuan[$x],
-                ]);
-
-                // Hapus dari daftar detail lama karena sudah diupdate
-                unset($existingDetails[$kode]);
+            if ($detailId) {
+                // Jika ID detail ada → update
+                DetailDepartment::where('id', $detailId)->update($data);
+                $existingDetails->forget($detailId); // Tandai sebagai sudah diproses
             } else {
-                // Jika kode belum ada, buat detail baru
-                DetailDepartment::create([
-                    'department_id' => $departments->id,
-                    'kode' => $kode,
-                    'nama_parameter' => $request->nama_parameter[$x],
-                    'nama_pemeriksaan' => $request->nama_pemeriksaan[$x],
-                    'harga' => $request->harga[$x],
-                    'nilai_statik' => $request->nilai_statik[$x],
-                    'nilai_satuan' => $request->nilai_satuan[$x],
-                ]);
+                // Jika tidak ada ID → tambahkan baru
+                $data['department_id'] = $department->id;
+                DetailDepartment::create($data);
             }
         }
 
-        // Jika ada detail lama yang tidak ada dalam input baru, Anda bisa menghapusnya
-        foreach ($existingDetails as $detail) {
-            DetailDepartment::where('id', $detail['id'])->delete();
-        }
+        // Hapus detail yang tidak ada lagi di input
+        // foreach ($existingDetails as $detail) {
+        //     $detail->delete();
+        // }
 
         toast('Berhasil Memperbarui Data Department', 'success');
         return redirect()->route('department.index');
     }
+
 
 
     /**

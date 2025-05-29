@@ -163,8 +163,8 @@
                                                     <strong>{{ $departement->nama_department }}</strong>
                                                 </div>
                                                 <!-- Child pemeriksaan -->
-                                                <div class="child-pemeriksaan">
-                                                    @foreach ($departement->detailDepartments as $x => $pemeriksaan)
+                                                @foreach ($departement->detailDepartments as $x => $pemeriksaan)
+                                                    @if ($pemeriksaan->status === 'active')
                                                         <div class="form-check">
                                                             <input style="cursor: pointer" class="form-check-input child-pemeriksaan"
                                                                 type="checkbox" name="pemeriksaan[]"
@@ -178,8 +178,8 @@
                                                                 Rp.{{ number_format($pemeriksaan->harga, 0, ',', '.') }}
                                                             </label>
                                                         </div>
-                                                    @endforeach
-                                                </div>
+                                                    @endif
+                                                @endforeach
                                             </div>
                                             <hr>
                                         </div>

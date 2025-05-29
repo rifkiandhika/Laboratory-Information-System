@@ -40,64 +40,70 @@ Add Department
                                         <table class="table table-bordered" id="tableDetail">
                                             <thead>
                                                 <tr>
-                                                    <th>Kode</th>
-                                                    <th>Parameter</th>
-                                                    <th>Pemeriksaan</th>
-                                                    <th>Tarif</th>
-                                                    <th>Komponen Tarif</th>
-                                                    <th>Nilai Rujukan</th>
-                                                    <th>Satuan</th>
-                                                    <th>Tipe Inputan Hasil</th>
-                                                    <th>Opsi Output an Hasil</th>
-                                                    <th>Metode</th>
+                                                    <th class="col-2">Kode</th>
+                                                    <th class="col-1">Parameter</th>
+                                                    <th class="col-1">Pemeriksaan</th>
+                                                    <th class="col-2">Tarif</th>
+                                                    <th class="col-1">Komponen Tarif</th>
+                                                    <th class="col-1">Nilai Rujukan</th>
+                                                    <th class="col-1">Satuan</th>
+                                                    <th class="col-1">Tipe Input</th>
+                                                    <th class="col-1">Opsi Output</th>
+                                                    <th class="col-1">Metode</th>
+                                                    <th class="col-1">Status</th>
                                                     <th>Aksi</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td class="col-2">
+                                                    <td>
                                                         <label for="otomatis">Otomatis <span class="text-danger">*</span></label>
                                                         <input type="text" name="kode[]" class="form-control" id="kode" required disabled>
                                                         <!-- Hidden input untuk mengirim nilai kode -->
                                                         <input type="hidden" name="kode_hidden[]" id="kode_hidden">
                                                     </td>                                                    
-                                                    <td class="col-2">
+                                                    <td>
                                                         <input type="text" name="nama_parameter[]" class="form-control" required>
                                                     </td>
-                                                    <td class="col-2">
+                                                    <td>
                                                         <input type="text" name="nama_pemeriksaan[]" class="form-control" required>
                                                     </td>
-                                                    <td class="col-2">
+                                                    <td>
                                                         <input type="number" name="harga[]" class="form-control" required>
                                                     </td>
-                                                    <td class="col-3">
+                                                    <td>
                                                         <label for="jasa_sarana">JASA SARANA:</label>
-                                                        <input type="text" name="jasa_sarana[]" class="form-control" required>
+                                                        <input type="number" name="jasa_sarana[]" class="form-control" required>
                                                         <label for="jasa_pelayanan">JASA PELAYANAN:</label>
-                                                        <input type="text" name="jasa_pelayanan[]" class="form-control" required>
+                                                        <input type="number" name="jasa_pelayanan[]" class="form-control" required>
                                                         <label for="jasa_dokter">JASA DOKTER:</label>
-                                                        <input type="text" name="jasa_dokter[]" class="form-control" >
+                                                        <input type="number" name="jasa_dokter[]" class="form-control" >
                                                         <label for="jasa_bidan">JASA BIDAN:</label>
-                                                        <input type="text" name="jasa_bidan[]" class="form-control" >
+                                                        <input type="number" name="jasa_bidan[]" class="form-control" >
                                                         <label for="jasa_perawat">JASA PERAWAT:</label>
-                                                        <input type="text" name="jasa_perawat[]" class="form-control" >
+                                                        <input type="number" name="jasa_perawat[]" class="form-control" >
                                                     </td>
-                                                    <td class="col-1">
+                                                    <td>
                                                         <input type="text" name="nilai_rujukan[]" class="form-control" required>
                                                     </td>
-                                                    <td class="col-1">
+                                                    <td>
                                                         <input type="text" name="nilai_satuan[]" class="form-control" required>
                                                     </td>
-                                                    <td class="col-1">
+                                                    <td>
                                                         <input type="text" name="tipe_inputan[]" class="form-control" required>
                                                     </td>
-                                                    <td class="col-1">
+                                                    <td>
                                                         <input type="text" name="opsi_output[]" class="form-control" required>
                                                     </td>
-                                                    <td class="col-1">
+                                                    <td>
                                                         <input type="text" name="urutan[]" class="form-control" required>
                                                     </td>
-                                                    <td class="col-3">
+                                                    <td class="text-center">
+                                                        <input type="hidden" name="status" value="deactive">
+                                                        <!-- Checkbox -->
+                                                        <input type="checkbox" name="status" value="active" class="form-check-input" {{ old('status') === 'active' ? 'checked' : '' }}>
+                                                    </td>
+                                                    <td>
                                                         <button type="button" class="btn btn-success btn-add"><i class="ti ti-plus"></i></button>
                                                     </td>
                                                 </tr>                                                
@@ -222,6 +228,11 @@ Add Department
                     </td>
                     <td class="col-1">
                         <input type="text" name="urutan[]" class="form-control" required>
+                    </td>
+                    <td class="text-center">
+                        <input type="hidden" name="status" value="deactive">
+                        <!-- Checkbox -->
+                        <input type="checkbox" name="status" value="active" class="form-check-input" {{ old('status') === 'active' ? 'checked' : '' }}>
                     </td>
                     <td class="col-3">
                         <button type="button" class="btn btn-success btn-add"><i class="ti ti-plus"></i></button>

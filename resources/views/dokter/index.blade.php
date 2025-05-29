@@ -40,15 +40,20 @@
                                                             <input class="form-control" placeholder="D01094" type="text"
                                                                 name="kode_dokter">
                                                         </div>
+                                                        <div class="nip">
+                                                            <label for="nip"><b>NIP/NIK</b></label>
+                                                            <input class="form-control" placeholder="355102" type="text"
+                                                                name="nip">
+                                                        </div>
                                                         <div class="namadokter">
                                                             <label for="nama-dokter"><b>Doctor Name</b></label>
                                                             <input class="form-control" placeholder="Abdul Mughni"
                                                                 type="text" name="nama_dokter">
                                                         </div>
                                                         <div class="poli">
-                                                            <label for="poli"><b>Poli</b></label>
+                                                            <label for="poli"><b>Room</b></label>
                                                             <select name="id_poli" id="" class="form-control">
-                                                                <option value="" hidden>Poli</option>
+                                                                <option value="" hidden>Room</option>
                                                                 @foreach ($polis as $Poli)
                                                                     <option class="form-control"
                                                                         value="{{ $Poli->id }}">
@@ -56,6 +61,11 @@
                                                                     </option>
                                                                 @endforeach
                                                             </select>
+                                                        </div>
+                                                        <div class="Poli">
+                                                            <label for="Poli"><b>Poli</b></label>
+                                                            <input class="form-control" type="text" placeholder="KIA"
+                                                                name="poli" required>
                                                         </div>
                                                         <div class="no-telp">
                                                             <label for="telp"><b>Phone Number</b></label>
@@ -86,7 +96,9 @@
                                             <tr>
                                                 <th scope="col">No.</th>
                                                 <th scope="col">Doctor Code</th>
+                                                <th scope="col">Nip/Nik</th>
                                                 <th scope="col">Doctor Name</th>
+                                                <th scope="col">Room</th>
                                                 <th scope="col">Poli</th>
                                                 <th scope="col">Phone Number</th>
                                                 <th scope="col">Email</th>
@@ -101,8 +113,10 @@
                                                 <tr>
                                                     <td>{{ $counter }}</td>
                                                     <td>{{ $dokter->kode_dokter }}</td>
+                                                    <td>{{ $dokter->nip }}</td>
                                                     <td>{{ $dokter->nama_dokter }}</td>
-                                                    <td>{{ $dokter->poli->nama_poli }}</td>
+                                                    <td>{{ $dokter->polis->nama_poli }}</td>
+                                                    <td>{{ $dokter->poli}}</td>
                                                     <td>{{ $dokter->no_telp }}</td>
                                                     <td>{{ $dokter->email }}</td>
                                                     <td>
@@ -110,7 +124,9 @@
                                                             data-id="{{ $dokter->id }}"
                                                             data-kode="{{ $dokter->kode_dokter }}"
                                                             data-nama="{{ $dokter->nama_dokter }}"
-                                                            data-poli="{{ $dokter->poli->id }}"
+                                                            data-room="{{ $dokter->polis->id }}"
+                                                            data-poli="{{ $dokter->poli }}"
+                                                            data-nip="{{ $dokter->nip }}"
                                                             data-telp="{{ $dokter->no_telp }}"
                                                             data-email="{{ $dokter->email }}"><i
                                                                 class="bi bi-pencil-square"></i>
@@ -153,14 +169,19 @@
                                                             <input class="form-control" type="text" id="kodedokter"
                                                                 name="kode_dokter" required>
                                                         </div>
+                                                        <div class="nip">
+                                                            <label for="nip"><b>NIP/NIK</b></label>
+                                                            <input class="form-control" placeholder="355102" type="text" id="Nip"
+                                                                name="nip">
+                                                        </div>
                                                         <div class="namadokter">
                                                             <label for="namadokter"><b>Doctor Name</b></label>
                                                             <input class="form-control" id="namadokter" type="text"
                                                                 name="nama_dokter" required>
                                                         </div>
                                                         <div class="poli">
-                                                            <label for="poli"><b>Poli</b></label>
-                                                            <select name="id_poli" id="poli" class="form-control">
+                                                            <label for="poli"><b>Room</b></label>
+                                                            <select name="id_poli" id="Room" class="form-control">
                                                                 <option value="" hidden selected>
                                                                 </option>
                                                                 @foreach ($polis as $Poli)
@@ -171,6 +192,11 @@
                                                                 @endforeach
                                                             </select>
 
+                                                        </div>
+                                                        <div class="Poli">
+                                                            <label for="Poli"><b>Poli</b></label>
+                                                            <input class="form-control" id="Poli" type="text"
+                                                                name="poli" required>
                                                         </div>
                                                         <div class="no-telp">
                                                             <label for="poli"><b>Phone Number</b></label>
@@ -209,13 +235,17 @@
                 var kode = $(this).data('kode');
                 var nama = $(this).data('nama');
                 var poli = $(this).data('poli');
+                var room = $(this).data('room');
+                var nip = $(this).data('nip');
                 var telp = $(this).data('telp');
                 var email = $(this).data('email');
 
                 // set the values modal
                 $('#kodedokter').val(kode);
+                $('#Nip').val(nip);
                 $('#namadokter').val(nama);
-                $('#poli').val(poli);
+                $('#Room').val(room);
+                $('#Poli').val(poli);
                 $('#telp').val(telp);
                 $('#email').val(email);
 

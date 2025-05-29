@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('tipe_inputan');
             $table->string('opsi_output');
             $table->string('urutan')->nullable();
+            $table->string('status')->default('deactive');
             $table->timestamps();
 
             // // Cascade delete
