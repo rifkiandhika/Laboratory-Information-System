@@ -226,50 +226,42 @@
                         <tr scope="row">
                             <th class="col-4 fw-bold">Jenis Pemeriksaan</th>
                             <th class="col-3 ml-2 fw-bold">Hasil</th>
+                            <th class="col-3 ml-2 fw-bold">D1</th>
+                            <th class="col-3 ml-2 fw-bold">D2</th>
+                            <th class="col-3 ml-2 fw-bold">D3</th>
                             <th class="col-2 fw-bold">Flag</th>
                             <th class="col-2 fw-bold">Satuan</th>
                             <th class="col-2 fw-bold">Range</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($data_pasien->dpp as $e)
-                            <tr>
-                                <th scope="row">{{ $e->data_departement->nama_department }}</th>
-                            </tr>
-
-                            @php
-                                // Ambil nama pemeriksaan untuk department ini
-                                $pemeriksaanNames = $e->pasiens->pluck('data_pemeriksaan.nama_pemeriksaan');
-                            @endphp
-
-                            @foreach ($pemeriksaanNames as $pemeriksaanName)
-                                @php
-                                    // Temukan hasil pemeriksaan yang sesuai berdasarkan nama_pemeriksaan
-                                    $hasilItem = $data_pasien->hasil_pemeriksaan->firstWhere('nama_pemeriksaan', $pemeriksaanName);
-                                @endphp
-
+                        <tbody>
+                            @foreach ($hasil_pemeriksaans->groupBy('departemen') as $departemen => $hasil_group)
                                 <tr>
-                                    <td>{{ $pemeriksaanName }}</td>
-                                    <td>{{ $hasilItem ? $hasilItem->hasil : 'Tidak ada hasil' }}</td>
-                                    <td class="flag">
-                                        @if($hasilItem && is_numeric($hasilItem->hasil))
-                                            @if(floatval($hasilItem->hasil) < 5)
-                                                <!-- atau -->
-                                                <i class="ti ti-arrow-down text-primary"></i>
-                                            @elseif(floatval($hasilItem->hasil) > 10)
-                                                <!-- atau -->
-                                                <i class="ti ti-arrow-up text-danger"></i>
-                                            @endif
-                                        @endif
-                                    </td>
-                                    <td class="text-center">{{ $hasilItem ? $hasilItem->satuan : 'Tidak ada satuan' }}</td>
-                                    <td><input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly/>1-10</td>
+                                    <th colspan="8" class="bg-light">{{ strtoupper($departemen) }}</th>
                                 </tr>
+                                @foreach ($hasil_group as $hasil)
+                                    <tr>
+                                        <td>{{ $hasil->nama_pemeriksaan }}</td>
+                                        <td>{{ $hasil->hasil ?? 'Tidak ada hasil' }}</td>
+                                        <td>{{ $hasil->duplo_d1 ?? '-' }}</td>
+                                        <td>{{ $hasil->duplo_d2 ?? '-' }}</td>
+                                        <td>{{ $hasil->duplo_d3 ?? '-' }}</td>
+                                        <td class="flag">
+                                            @if(is_numeric($hasil->hasil))
+                                                @if(floatval($hasil->hasil) < 5)
+                                                    <i class="ti ti-arrow-down text-primary"></i>
+                                                @elseif(floatval($hasil->hasil) > 10)
+                                                    <i class="ti ti-arrow-up text-danger"></i>
+                                                @endif
+                                            @endif
+                                        </td>
+                                        <td class="text-center">{{ $hasil->satuan ?? 'Tidak ada satuan' }}</td>
+                                        <td>1-10</td>
+                                    </tr>
+                                @endforeach
                             @endforeach
-                        @endforeach
-
-
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </div>

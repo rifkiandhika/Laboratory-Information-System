@@ -343,10 +343,11 @@
     </script>
     
     <!-- Button untuk setiap baris data -->
+@foreach ( $dataPasien as $x => $dpc )
 <button class="btn btn-sm btn-outline-secondary" onclick="openModal('{{ $dpc->no_lab }}')" {{ $dpc->status != 'diselesaikan' ? 'disabled' : '' }}>
     <i title="Print Result" class="ti ti-printer"></i>
 </button>
-
+@endforeach
 <!-- Modal yang akan digunakan bersama -->
 <div class="modal fade" id="noteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">

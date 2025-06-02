@@ -42,6 +42,7 @@ class resultController extends Controller
 
     public function print($no_lab, Request $request)
     {
+
         // return view('print-view.print-pasien');
         // dd('Fungsi print berhasil dipanggil');
         // dd($request);
@@ -56,7 +57,8 @@ class resultController extends Controller
             'dokter',
             'hasil_pemeriksaan'
         ])->first();
-        return view('print-view.print-pasien', compact('data_pasien', 'note'));
+        $hasil_pemeriksaans = HasilPemeriksaan::where('no_lab', $no_lab)->get();
+        return view('print-view.print-pasien', compact('data_pasien', 'note', 'hasil_pemeriksaans'));
     }
 
     /**
