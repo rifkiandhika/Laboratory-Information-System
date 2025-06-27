@@ -53,6 +53,7 @@
     <script src="{{ asset('/assets/vendor/js/helpers.js') }}"></script>
     {{-- Config JS --}}
     <script src="{{ asset('/assets/js/config.js') }}"></script>
+    <script src="{{ asset('/js/barcode.js') }}"></script>
 
 
     <!-- Helpers -->
