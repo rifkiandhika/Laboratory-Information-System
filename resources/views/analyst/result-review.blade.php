@@ -205,6 +205,15 @@
                                         <i title="Sample History" class="ti ti-clock"></i>
                                     </button>
 
+                                    {{-- Cek Hasil --}}
+                                    <button type="button"
+                                            class="btn btn-outline-secondary btn-sm btn-show-result"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#resultReviewModal"
+                                            data-id="{{ $dpc->id }}">
+                                        <i title="Check Hasil" class="ti ti-report-analytics"></i>
+                                    </button>
+
                                     
                                     <!-- Tombol Selesaikan -->
                                     <form id="kirimresult-{{ $dpc->id }}" action="result/done/{{ $dpc->id }}" method="POST" style="display: none;">
@@ -265,24 +274,28 @@
                         </div>
                     </div>
                 </div>
-                {{-- Print Result --}}
-                {{-- <div class="modal fade" id="printResult" tabindex="-1" aria-labelledby="printResultLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                {{-- View Result --}}
+                <div class="modal fade" id="resultReviewModal" tabindex="-1" aria-labelledby="resultReviewModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
                         <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="printResultLabel">Preview Cetak Hasil</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="resultReviewModalLabel">Result Review</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" id="modalResultContent">
+                            <div class="text-center">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
                             </div>
-                            <div class="modal-body">
-                                <iframe src="{{ route('print.pasien', $dpc->no_lab) }}" frameborder="0"></iframe>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                                <button type="button" class="btn btn-primary">Print</button>
+                            <p>Loading data...</p>
                             </div>
                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                        </div>
                     </div>
-                </div> --}}
+                </div>
               </div>
           </div>
       </div>
@@ -396,6 +409,366 @@
         noteModal.hide();
     }
 </script>
+
+{{-- Script View Result --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Event listener untuk tombol result review
+    document.querySelectorAll('[data-bs-target="#resultReviewModal"]').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            const noLab = this.getAttribute('data-id');
+            const modalContent = document.getElementById('modalResultContent');
+            
+            // Show loading state
+            modalContent.innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p>Loading data...</p>
+                </div>
+            `;
+            
+            // Fetch data
+            fetch(`/api/get-data-pasien/${noLab}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("HTTP error " + response.status);
+                    }
+                    return response.json();
+                })
+                .then(res => {
+                    if (res.status === 'success') {
+                        const data_pasien = res.data;
+                        const data_pemeriksaan_pasien = res.data.dpp;
+                        const hasil_pemeriksaan = res.data.hasil_pemeriksaan || [];
+                        
+                        // Generate content untuk modal
+                        const resultContent = getResultTableContent(data_pemeriksaan_pasien, data_pasien, hasil_pemeriksaan);
+                        modalContent.innerHTML = resultContent;
+                        
+                        // Initialize duplo column visibility setelah content dimuat
+                        setTimeout(() => {
+                            checkAndShowDuploColumns();
+                        }, 100);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    modalContent.innerHTML = `
+                        <div class="alert alert-danger" role="alert">
+                            <i class="ti ti-alert-circle"></i>
+                            Error loading data: ${error.message}
+                        </div>
+                    `;
+                });
+        });
+    });
+    
+    // Fungsi untuk menghitung usia
+    function calculateAge(birthDate) {
+        const birth = new Date(birthDate);
+        const today = new Date();
+        let age = today.getFullYear() - birth.getFullYear();
+        const monthDiff = today.getMonth() - birth.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+            age--;
+        }
+        return age;
+    }
+    
+    // Parameter hematologi
+    const hematologiParams = [
+        { nama: 'WBC', satuan: '10³/µL', normal_min: 4.0, normal_max: 10.0 },
+        { nama: 'LYM#', satuan: '10³/µL', normal_min: 1.0, normal_max: 4.0 },
+        { nama: 'MID#', satuan: '10³/µL', normal_min: 0.2, normal_max: 0.8 },
+        { nama: 'GRAN#', satuan: '10³/µL', normal_min: 2.0, normal_max: 7.0 },
+        { nama: 'LYM%', satuan: '%', normal_min: 20, normal_max: 40 },
+        { nama: 'MID%', satuan: '%', normal_min: 3, normal_max: 15 },
+        { nama: 'GRAN%', satuan: '%', normal_min: 50, normal_max: 70 },
+        { nama: 'RBC', satuan: '10⁶/µL', normal_min: 4.0, normal_max: 5.5 },
+        { nama: 'HGB', satuan: 'g/dL', normal_min: 12.0, normal_max: 16.0 },
+        { nama: 'HCT', satuan: '%', normal_min: 36, normal_max: 48 },
+        { nama: 'MCV', satuan: 'fL', normal_min: 80, normal_max: 100 },
+        { nama: 'MCH', satuan: 'pg', normal_min: 27, normal_max: 32 },
+        { nama: 'MCHC', satuan: 'g/dL', normal_min: 32, normal_max: 36 },
+        { nama: 'RDW-CV', satuan: '%', normal_min: 11.5, normal_max: 14.5 },
+        { nama: 'RDW-SD', satuan: 'fL', normal_min: 39, normal_max: 46 },
+        { nama: 'PLT', satuan: '10³/µL', normal_min: 150, normal_max: 450 },
+        { nama: 'MPV', satuan: 'fL', normal_min: 7.0, normal_max: 11.0 },
+        { nama: 'PDW', satuan: 'fL', normal_min: 10.0, normal_max: 18.0 },
+        { nama: 'PCT', satuan: '%', normal_min: 0.15, normal_max: 0.50 },
+        { nama: 'P-LCC', satuan: '10³/µL', normal_min: 30, normal_max: 90 },
+        { nama: 'P-LCR', satuan: '%', normal_min: 13, normal_max: 43 }
+    ];
+
+    // Fungsi untuk generate content hasil pemeriksaan dalam modal
+    function getResultTableContent(data_pemeriksaan_pasien, data_pasien, hasil_pemeriksaan) {
+        let content = `
+            <!-- Patient Information -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="card-title mb-0">Informasi Pasien</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <table class="table table-borderless table-sm">
+                                        <tr>
+                                            <td class="fw-bold">No LAB</td>
+                                            <td>: ${data_pasien.no_lab}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">No RM</td>
+                                            <td>: ${data_pasien.no_rm}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Nama</td>
+                                            <td>: ${data_pasien.nama}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <table class="table table-borderless table-sm">
+                                        <tr>
+                                            <td class="fw-bold">Ruangan</td>
+                                            <td>: ${data_pasien.asal_ruangan}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Usia</td>
+                                            <td>: ${calculateAge(data_pasien.lahir)} Tahun</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Dokter</td>
+                                            <td>: ${data_pasien.kode_dokter}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <form id="worklistForm" action="{{ route('worklist.store') }}" method="POST">
+                @csrf
+                <input type="hidden" name="no_lab" value="${data_pasien.no_lab}">
+                <input type="hidden" name="no_rm" value="${data_pasien.no_rm}">
+                <input type="hidden" name="nama" value="${data_pasien.nama}">
+                <input type="hidden" name="ruangan" value="${data_pasien.asal_ruangan}">
+                <input type="hidden" name="nama_dokter" value="${data_pasien.kode_dokter}">
+
+                <div id="tabel-pemeriksaan">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="col-2">PARAMETER</th>
+                                    <th class="col-2">HASIL</th>
+                                    <th class="col-2 duplo d1-column" style="display: none;">D1</th>
+                                    <th class="col-2 duplo d2-column" style="display: none;">D2</th>
+                                    <th class="col-2 duplo d3-column" style="display: none;">D3</th>
+                                    <th class="col-3">FLAG</th>
+                                    <th class="col-2">Unit</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+
+                    <div class="accordion" id="accordionPemeriksaan">
+                        ${data_pemeriksaan_pasien.map((department, idx) => {
+                            const hasHematologi = department.pasiens.some(p =>
+                                p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('hematologi')
+                            );
+
+                            return `
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading${idx}">
+                                    <button class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse${idx}"
+                                            aria-expanded="false" aria-controls="collapse${idx}">
+                                        <span>${department.data_departement.nama_department}</span>
+                                    </button>
+                                </h2>
+
+                                <div id="collapse${idx}" class="accordion-collapse collapse"
+                                    aria-labelledby="heading${idx}" data-bs-parent="#accordionPemeriksaan">
+                                    <div class="accordion-body">
+                                        <table class="table table-striped">
+                                            <thead style="visibility: collapse;">
+                                                <tr>
+                                                    <th class="col-2">PARAMETER</th>
+                                                    <th class="col-2">HASIL</th>
+                                                    <th class="col-2 duplo d1-column" style="display: none;">D1</th>
+                                                    <th class="col-2 duplo d2-column" style="display: none;">D2</th>
+                                                    <th class="col-2 duplo d3-column" style="display: none;">D3</th>
+                                                    <th class="col-3">FLAG</th>
+                                                    <th class="col-2">Unit</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${
+                                                    hasHematologi
+                                                        ? hematologiParams.map(param => {
+                                                            const hasilItem = hasil_pemeriksaan.find(item =>
+                                                                item.nama_pemeriksaan === param.nama
+                                                            ) || {};
+                                                            return renderPemeriksaanRow(param.nama, hasilItem, true, param);
+                                                        }).join('')
+                                                        : department.pasiens.map(p => {
+                                                            const hasilItem = hasil_pemeriksaan.find(item =>
+                                                                item.nama_pemeriksaan === p.data_pemeriksaan.nama_pemeriksaan
+                                                            ) || {};
+                                                            return renderPemeriksaanRow(
+                                                                p.data_pemeriksaan.nama_pemeriksaan, 
+                                                                hasilItem,
+                                                                false,
+                                                                null,
+                                                                p.data_pemeriksaan.nilai_satuan
+                                                            );
+                                                        }).join('')
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>
+            </form>
+
+            <style>
+                .hematologi-row {
+                    background-color: #f8f9ff;
+                }
+                .hematologi-row:hover {
+                    background-color: #e9ecff;
+                }
+                .text-success {
+                    color: #28a745 !important;
+                }
+                .hematologi-row small.text-muted {
+                    font-size: 0.75rem;
+                    margin-top: 2px;
+                }
+            </style>
+        `;
+        
+        // Tambahkan note jika ada
+        if (hasil_pemeriksaan.length > 0 && hasil_pemeriksaan[0].note) {
+            content += `
+                <div class="mt-3">
+                    <label class="fw-bold">Note:</label>
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="mb-0">${hasil_pemeriksaan[0].note}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        return content;
+    }
+
+    // Fungsi untuk render baris pemeriksaan
+    function renderPemeriksaanRow(namaPemeriksaan, hasilItem, isHematologi = false, paramHematologi = null, satuan = '') {
+        const nilaiHasil = hasilItem.hasil ? parseFloat(hasilItem.hasil) : null;
+        let flagIcon = '';
+        
+        if (nilaiHasil !== null) {
+            if (isHematologi && paramHematologi) {
+                if (nilaiHasil < paramHematologi.normal_min) {
+                    flagIcon = `<i class="ti ti-arrow-down text-primary"></i>`;
+                } else if (nilaiHasil > paramHematologi.normal_max) {
+                    flagIcon = `<i class="ti ti-arrow-up text-danger"></i>`;
+                }
+            } else {
+                if (nilaiHasil < 5) {
+                    flagIcon = `<i class="ti ti-arrow-down text-primary"></i>`;
+                } else if (nilaiHasil > 10) {
+                    flagIcon = `<i class="ti ti-arrow-up text-danger"></i>`;
+                }
+            }
+        }
+        
+        return `
+        <tr ${isHematologi ? 'class="hematologi-row"' : ''}>
+            <td class="col-2">
+                <strong>${namaPemeriksaan}</strong>
+                ${isHematologi ? `<small class="text-muted d-block">${paramHematologi.normal_min}-${paramHematologi.normal_max}</small>` : ''}
+                <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaan}" />
+            </td>
+            <td class="col-2">
+                <input type="number" name="hasil[]"
+                    class="form-control manualInput w-60 p-0 text-center"
+                    disabled value="${hasilItem.hasil || ''}"
+                    step="0.01" placeholder="" required />
+            </td>
+            {{-- 
+                    <td class="col-2 duplo d1-column text-center" style="display: none;">
+                <input type="number" name="duplo_d1[]"
+                    class="form-control d1 w-60 p-0 text-center"
+                    disabled value="${hasilItem.duplo_d1 || ''}" step="0.01" />
+            </td>
+            <td class="col-2 duplo d2-column" style="display: none;">
+                <input type="number" name="duplo_d2[]"
+                    class="form-control d2 w-60 p-0 text-center"
+                    disabled value="${hasilItem.duplo_d2 || ''}" step="0.01" />
+            </td>
+            <td class="col-2 duplo d3-column" style="display: none;">
+                <input type="number" name="duplo_d3[]"
+                    class="form-control d3 w-50 p-0 text-center"
+                    disabled value="${hasilItem.duplo_d3 || ''}" step="0.01" />
+            </td>
+            --}}
+            <td class="col-3 flag-cell">${flagIcon}</td>
+            <td>
+                <input type="hidden" name="satuan[]" class="form-control w-100 p-0"
+                    value="${isHematologi ? paramHematologi.satuan : satuan}" readonly />
+                ${isHematologi ? paramHematologi.satuan : satuan}
+            </td>
+        </tr>`;
+    }
+    
+    // Fungsi untuk mengecek dan menampilkan kolom duplo
+    function checkAndShowDuploColumns() {
+        const accordion = document.getElementById('accordionPemeriksaan');
+        if (!accordion) return;
+        
+        const d1Cells = accordion.querySelectorAll('.d1-column');
+        const d2Cells = accordion.querySelectorAll('.d2-column');
+        const d3Cells = accordion.querySelectorAll('.d3-column');
+        
+        let hasD1 = false;
+        let hasD2 = false;
+        let hasD3 = false;
+        
+        // Check if any D1, D2, D3 values exist
+        accordion.querySelectorAll('input.d1, input.d2, input.d3').forEach(input => {
+            if (input.value && input.value.trim() !== '') {
+                if (input.classList.contains('d1')) hasD1 = true;
+                if (input.classList.contains('d2')) hasD2 = true;
+                if (input.classList.contains('d3')) hasD3 = true;
+            }
+        });
+        
+        // Show/hide columns based on data availability
+        d1Cells.forEach(cell => cell.style.display = hasD1 ? 'table-cell' : 'none');
+        d2Cells.forEach(cell => cell.style.display = hasD2 ? 'table-cell' : 'none');
+        d3Cells.forEach(cell => cell.style.display = hasD3 ? 'table-cell' : 'none');
+    }
+});
+</script>
+
+
+
+
+
 
 <script>
    // Ambil semua elemen dengan class 'editBtn'

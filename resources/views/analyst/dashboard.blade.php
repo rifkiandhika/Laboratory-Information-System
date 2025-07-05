@@ -230,8 +230,12 @@ Dashboard|Spesiment
                                                             <i class="ti ti-arrow-back-up"></i>
                                                         </button>
 
-                                                        <a data-barcode="{{ $data1->no_lab }}" style="cursor: pointer" href="{{ route('print.barcode', $data1->no_lab) }}" class="btn btn-secondary barcode-btn" target="_blank"><i class="ti ti-barcode"></i></a>
                                                 
+                                                        <button class="btn btn-secondary barcode-btn"
+                                                                onclick="showBarcodeModal('{{ $data1->no_lab }}')"
+                                                                title="Tampilkan Barcode">
+                                                            <i class="ti ti-barcode"></i>
+                                                        </button>
 
                                                         <form id="delete-form-{{ $data1->id }}"
                                                             action="{{ route('analyst.destroy', $data1->no_lab) }}" method="POST"
@@ -287,6 +291,48 @@ Dashboard|Spesiment
                  </div>
             </div>
         </div>
+        {{-- Barcode Modal --}}
+    <div class="modal fade" id="barcodeModal" tabindex="-1" aria-labelledby="barcodeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="barcodeModalLabel">
+                        <i class="ti ti-barcode me-2"></i>Barcode Pasien
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="mb-3">
+                        <strong>No Lab: <span id="currentNoLab"></span></strong>
+                    </div>
+                    
+                    <!-- Canvas untuk Barcode -->
+                    <div class="barcode-container mb-3">
+                        <svg id="barcode"></svg>
+                    </div>
+                    
+                    <!-- Info Barcode -->
+                    <div class="alert alert-info">
+                        <small>
+                            <i class="ti ti-info-circle me-1"></i>
+                            Barcode ini menggunakan format Code 128 dan dapat di-scan dengan scanner barcode standar.
+                        </small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" onclick="printBarcode()">
+                        <i class="ti ti-printer me-1"></i>Print Barcode
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="downloadBarcode()">
+                        <i class="ti ti-download me-1"></i>Download PNG
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 </section>
@@ -317,7 +363,160 @@ Dashboard|Spesiment
             });
         });
     });
+</script>
+
+{{-- Script Barcode --}}
+    <script>
+        // Variabel global untuk menyimpan modal instance
+        let barcodeModal;
+        let currentBarcodeData = '';
+
+        // Inisialisasi modal saat document ready
+        document.addEventListener('DOMContentLoaded', function() {
+            barcodeModal = new bootstrap.Modal(document.getElementById('barcodeModal'));
+        });
+
+        // Fungsi untuk menampilkan barcode dalam modal
+        function showBarcodeModal(noLab) {
+            // Set no lab di modal
+            document.getElementById('currentNoLab').textContent = noLab;
+            currentBarcodeData = noLab;
+            
+            // Generate barcode menggunakan JsBarcode
+            try {
+                JsBarcode("#barcode", noLab, {
+                    format: "CODE128",
+                    width: 2,
+                    height: 100,
+                    displayValue: true,
+                    fontSize: 16,
+                    textMargin: 10,
+                    fontOptions: "bold"
+                });
+                
+                // Tampilkan modal
+                barcodeModal.show();
+                
+            } catch (error) {
+                alert('Error generating barcode: ' + error.message);
+            }
+        }
+
+        // Fungsi untuk generate barcode manual
+        function generateManualBarcode() {
+            const noLab = document.getElementById('manualNoLab').value.trim();
+            
+            if (!noLab) {
+                alert('Silakan masukkan No Lab terlebih dahulu!');
+                return;
+            }
+
+            showBarcodeModal(noLab);
+        }
+
+        // Fungsi untuk print barcode
+        function printBarcode() {
+            // Buat window baru untuk print
+            const printWindow = window.open('', '_blank');
+            const barcodeElement = document.getElementById('barcode');
+            
+            if (barcodeElement) {
+                const svgContent = barcodeElement.outerHTML;
+                
+                printWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Print Barcode - ${currentBarcodeData}</title>
+                        <style>
+                            body { 
+                                font-family: Arial, sans-serif; 
+                                text-align: center; 
+                                padding: 20px; 
+                            }
+                            .header { margin-bottom: 20px; }
+                            .barcode-container { margin: 20px 0; }
+                            @media print {
+                                body { margin: 0; }
+                                .no-print { display: none; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h3>Barcode Label</h3>
+                            <p><strong>No Lab: ${currentBarcodeData}</strong></p>
+                        </div>
+                        <div class="barcode-container">
+                            ${svgContent}
+                        </div>
+                        <div class="no-print">
+                            <button onclick="window.print()">Print</button>
+                            <button onclick="window.close()">Close</button>
+                        </div>
+                    </body>
+                    </html>
+                `);
+                
+                printWindow.document.close();
+                
+                // Auto print setelah loading
+                printWindow.onload = function() {
+                    printWindow.print();
+                };
+            }
+        }
+
+        // Fungsi untuk download barcode sebagai PNG
+        function downloadBarcode() {
+            const svgElement = document.getElementById('barcode');
+            
+            if (svgElement) {
+                // Convert SVG to Canvas
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                
+                // Set canvas size
+                canvas.width = svgElement.clientWidth || 400;
+                canvas.height = svgElement.clientHeight || 150;
+                
+                // Convert SVG to data URL
+                const svgData = new XMLSerializer().serializeToString(svgElement);
+                const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+                const url = URL.createObjectURL(svgBlob);
+                
+                img.onload = function() {
+                    // Draw image to canvas
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
+                    
+                    // Download canvas as PNG
+                    canvas.toBlob(function(blob) {
+                        const link = document.createElement('a');
+                        link.download = `barcode_${currentBarcodeData}.png`;
+                        link.href = URL.createObjectURL(blob);
+                        link.click();
+                        
+                        // Cleanup
+                        URL.revokeObjectURL(url);
+                        URL.revokeObjectURL(link.href);
+                    });
+                };
+                
+                img.src = url;
+            }
+        }
+
+        // Event listener untuk input manual (Enter key)
+        document.getElementById('manualNoLab').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateManualBarcode();
+            }
+        });
     </script>
+
 <script>
     function confirmBack(id) {
       Swal.fire({
