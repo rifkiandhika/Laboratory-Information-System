@@ -231,11 +231,11 @@ Dashboard|Spesiment
                                                         </button>
 
                                                 
-                                                        <button class="btn btn-secondary barcode-btn"
-                                                                onclick="showBarcodeModal('{{ $data1->no_lab }}')"
-                                                                title="Tampilkan Barcode">
+                                                        <button class="btn btn-secondary barcodeBtn"
+                                                            onclick="showBarcodeModal('{{ $data1->id }}', '{{ $data1->no_lab }}')"
+                                                            title="Tampilkan Barcode">
                                                             <i class="ti ti-barcode"></i>
-                                                        </button>
+                                                        </button>   
 
                                                         <form id="delete-form-{{ $data1->id }}"
                                                             action="{{ route('analyst.destroy', $data1->no_lab) }}" method="POST"
@@ -292,47 +292,47 @@ Dashboard|Spesiment
             </div>
         </div>
         {{-- Barcode Modal --}}
-    <div class="modal fade" id="barcodeModal" tabindex="-1" aria-labelledby="barcodeModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="barcodeModalLabel">
-                        <i class="ti ti-barcode me-2"></i>Barcode Pasien
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <div class="mb-3">
-                        <strong>No Lab: <span id="currentNoLab"></span></strong>
+            <div class="modal fade" id="barcodeModal" tabindex="-1" aria-labelledby="barcodeModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="barcodeModalLabel">
+                                <i class="ti ti-barcode me-2"></i>Barcode Pasien
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <div class="mb-3">
+                                <strong>No Lab: <span id="currentNoLab"></span></strong>
+                            </div>
+                            
+                            <!-- Dynamic Barcode Container -->
+                            <div class="row" id="barcodeRow">
+                                <!-- Barcode akan ditampilkan di sini secara dinamis -->
+                            </div>
+                            
+                            <!-- Info Barcode -->
+                            <div class="alert alert-info">
+                                <small>
+                                    <i class="ti ti-info-circle me-1"></i>
+                                    Barcode menggunakan format Code 128 dan dapat di-scan dengan scanner barcode standar.
+                                </small>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" onclick="printBarcode()">
+                                <i class="ti ti-printer me-1"></i>Print Barcode
+                            </button>
+                            <div class="btn-group" id="downloadButtons">
+                                <!-- Tombol download akan ditampilkan di sini secara dinamis -->
+                            </div>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Tutup
+                            </button>
+                        </div>
                     </div>
-                    
-                    <!-- Canvas untuk Barcode -->
-                    <div class="barcode-container mb-3">
-                        <svg id="barcode"></svg>
-                    </div>
-                    
-                    <!-- Info Barcode -->
-                    <div class="alert alert-info">
-                        <small>
-                            <i class="ti ti-info-circle me-1"></i>
-                            Barcode ini menggunakan format Code 128 dan dapat di-scan dengan scanner barcode standar.
-                        </small>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" onclick="printBarcode()">
-                        <i class="ti ti-printer me-1"></i>Print Barcode
-                    </button>
-                    <button type="button" class="btn btn-primary" onclick="downloadBarcode()">
-                        <i class="ti ti-download me-1"></i>Download PNG
-                    </button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        Tutup
-                    </button>
                 </div>
             </div>
-        </div>
-    </div>
 
 
 </section>
@@ -366,156 +366,201 @@ Dashboard|Spesiment
 </script>
 
 {{-- Script Barcode --}}
-    <script>
-        // Variabel global untuk menyimpan modal instance
-        let barcodeModal;
-        let currentBarcodeData = '';
+<script>
+    let barcodeModal;
+    let currentBarcodeData = '';
+    let availableDepartments = [];
+    let patientDepartments = [];
 
-        // Inisialisasi modal saat document ready
-        document.addEventListener('DOMContentLoaded', function() {
-            barcodeModal = new bootstrap.Modal(document.getElementById('barcodeModal'));
+    document.addEventListener('DOMContentLoaded', function () {
+        barcodeModal = new bootstrap.Modal(document.getElementById('barcodeModal'));
+    });
+
+    async function fetchPatientDepartments(id) {
+        try {
+            const response = await fetch(`/api/get-data-pasien/${id}`);
+            if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+            const res = await response.json();
+            if (res.data && Array.isArray(res.data.dpp)) {
+                patientDepartments = res.data.dpp;
+                return res.data.dpp;
+            }
+            return [];
+        } catch (error) {
+            console.error('Error fetching patient departments:', error);
+            throw error;
+        }
+    }
+
+    function detectDepartments(departments) {
+        const detected = [];
+        if (!Array.isArray(departments)) return [];
+
+        departments.forEach(dept => {
+            const name = (dept?.data_departement?.nama_department || '').toLowerCase();
+            if (name.includes('hematologi')) detected.push('hematologi');
+            if (name.includes('kimia')) detected.push('kimia');
         });
 
-        // Fungsi untuk menampilkan barcode dalam modal
-        function showBarcodeModal(noLab) {
-            // Set no lab di modal
+        return detected;
+    }
+
+    function getDepartmentConfig(key) {
+        const config = {
+            hematologi: {
+                code: 'H-',
+                name: 'Hematologi',
+                icon: 'ti-droplet',
+                class: 'bg-primary'
+            },
+            kimia: {
+                code: 'K-',
+                name: 'Kimia Klinik',
+                icon: 'ti-flask',
+                class: 'bg-success'
+            }
+        };
+        return config[key] || {
+            code: 'X-',
+            name: key,
+            icon: 'ti-medical-cross',
+            class: 'bg-secondary'
+        };
+    }
+
+    async function showBarcodeModal(id, noLab = '', departments = null) {
+        try {
+            if (!id) throw new Error("ID pasien tidak boleh kosong");
             document.getElementById('currentNoLab').textContent = noLab;
             currentBarcodeData = noLab;
-            
-            // Generate barcode menggunakan JsBarcode
-            try {
-                JsBarcode("#barcode", noLab, {
+
+            const barcodeRow = document.getElementById('barcodeRow');
+            const downloadButtons = document.getElementById('downloadButtons');
+            barcodeRow.innerHTML = '<div class="col-12 text-center"><div class="spinner-border"></div><p>Memuat data departemen...</p></div>';
+            downloadButtons.innerHTML = '';
+            barcodeModal.show();
+
+            if (!departments) {
+                departments = await fetchPatientDepartments(id);
+            }
+
+            availableDepartments = detectDepartments(departments);
+            generateBarcodeUI();
+
+        } catch (error) {
+            console.error("Error:", error);
+            document.getElementById('barcodeRow').innerHTML = `
+                <div class="col-12 text-center">
+                    <div class="alert alert-danger">Gagal memuat data: ${error.message}</div>
+                    <button class="btn btn-primary" onclick="showBarcodeModal('${id}', '${noLab}')">Coba Lagi</button>
+                </div>`;
+        }
+    }
+
+    function generateBarcodeUI() {
+        const barcodeRow = document.getElementById('barcodeRow');
+        const downloadButtons = document.getElementById('downloadButtons');
+
+        if (availableDepartments.length === 0) {
+            barcodeRow.innerHTML = `<div class="col-12 text-center"><div class="alert alert-warning">Departemen tidak ditemukan.</div></div>`;
+            downloadButtons.innerHTML = '';
+            return;
+        }
+
+        downloadButtons.innerHTML = `
+            <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="ti ti-download me-1"></i>Download
+            </button>
+            <ul class="dropdown-menu">
+                ${availableDepartments.map(d => {
+                    const c = getDepartmentConfig(d);
+                    return `<li><a class="dropdown-item" href="#" onclick="downloadBarcode('${d}')"><i class="${c.icon} me-1"></i>${c.name}</a></li>`;
+                }).join('')}
+            </ul>
+        `;
+
+        const colSize = availableDepartments.length === 1 ? '12' : '6';
+        barcodeRow.innerHTML = '';
+
+        availableDepartments.forEach(dept => {
+            const config = getDepartmentConfig(dept);
+            const code = config.code + currentBarcodeData;
+            const elementId = `barcode${dept}`;
+
+            barcodeRow.innerHTML += `
+                <div class="col-md-${colSize}">
+                    <div class="card mb-3">
+                        <div class="card-header ${config.class} text-white">
+                            <i class="ti ${config.icon} me-1"></i> ${config.name}
+                        </div>
+                        <div class="card-body text-center">
+                            <svg id="${elementId}"></svg>
+                            <div class="mt-2"><strong>${code}</strong></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        setTimeout(() => {
+            availableDepartments.forEach(dept => {
+                const config = getDepartmentConfig(dept);
+                const code = config.code + currentBarcodeData;
+                const elementId = `barcode${dept}`;
+                JsBarcode(`#${elementId}`, code, {
                     format: "CODE128",
                     width: 2,
-                    height: 100,
-                    displayValue: true,
-                    fontSize: 16,
-                    textMargin: 10,
-                    fontOptions: "bold"
+                    height: 80,
+                    displayValue: false,
+                    fontSize: 14,
+                    margin: 10
                 });
-                
-                // Tampilkan modal
-                barcodeModal.show();
-                
-            } catch (error) {
-                alert('Error generating barcode: ' + error.message);
-            }
-        }
+            });
+        }, 100);
+    }
 
-        // Fungsi untuk generate barcode manual
-        function generateManualBarcode() {
-            const noLab = document.getElementById('manualNoLab').value.trim();
-            
-            if (!noLab) {
-                alert('Silakan masukkan No Lab terlebih dahulu!');
-                return;
-            }
+    function downloadBarcode(dept) {
+        const elementId = `barcode${dept}`;
+        const svg = document.getElementById(elementId);
+        if (!svg) return alert('Barcode tidak ditemukan');
 
-            showBarcodeModal(noLab);
-        }
+        const config = getDepartmentConfig(dept);
+        const code = config.code + currentBarcodeData;
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 400;
+        canvas.height = 200;
 
-        // Fungsi untuk print barcode
-        function printBarcode() {
-            // Buat window baru untuk print
-            const printWindow = window.open('', '_blank');
-            const barcodeElement = document.getElementById('barcode');
-            
-            if (barcodeElement) {
-                const svgContent = barcodeElement.outerHTML;
-                
-                printWindow.document.write(`
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <title>Print Barcode - ${currentBarcodeData}</title>
-                        <style>
-                            body { 
-                                font-family: Arial, sans-serif; 
-                                text-align: center; 
-                                padding: 20px; 
-                            }
-                            .header { margin-bottom: 20px; }
-                            .barcode-container { margin: 20px 0; }
-                            @media print {
-                                body { margin: 0; }
-                                .no-print { display: none; }
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="header">
-                            <h3>Barcode Label</h3>
-                            <p><strong>No Lab: ${currentBarcodeData}</strong></p>
-                        </div>
-                        <div class="barcode-container">
-                            ${svgContent}
-                        </div>
-                        <div class="no-print">
-                            <button onclick="window.print()">Print</button>
-                            <button onclick="window.close()">Close</button>
-                        </div>
-                    </body>
-                    </html>
-                `);
-                
-                printWindow.document.close();
-                
-                // Auto print setelah loading
-                printWindow.onload = function() {
-                    printWindow.print();
-                };
-            }
-        }
+        const img = new Image();
+        const svgBlob = new Blob([new XMLSerializer().serializeToString(svg)], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(svgBlob);
 
-        // Fungsi untuk download barcode sebagai PNG
-        function downloadBarcode() {
-            const svgElement = document.getElementById('barcode');
-            
-            if (svgElement) {
-                // Convert SVG to Canvas
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const img = new Image();
-                
-                // Set canvas size
-                canvas.width = svgElement.clientWidth || 400;
-                canvas.height = svgElement.clientHeight || 150;
-                
-                // Convert SVG to data URL
-                const svgData = new XMLSerializer().serializeToString(svgElement);
-                const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
-                const url = URL.createObjectURL(svgBlob);
-                
-                img.onload = function() {
-                    // Draw image to canvas
-                    ctx.fillStyle = 'white';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(img, 0, 0);
-                    
-                    // Download canvas as PNG
-                    canvas.toBlob(function(blob) {
-                        const link = document.createElement('a');
-                        link.download = `barcode_${currentBarcodeData}.png`;
-                        link.href = URL.createObjectURL(blob);
-                        link.click();
-                        
-                        // Cleanup
-                        URL.revokeObjectURL(url);
-                        URL.revokeObjectURL(link.href);
-                    });
-                };
-                
-                img.src = url;
-            }
-        }
+        img.onload = () => {
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 50, 30, 300, 120);
 
-        // Event listener untuk input manual (Enter key)
-        document.getElementById('manualNoLab').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                generateManualBarcode();
-            }
-        });
-    </script>
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(config.name, canvas.width / 2, 25);
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText(code, canvas.width / 2, 170);
+            ctx.font = '10px Arial';
+            ctx.fillText(new Date().toLocaleDateString('id-ID'), canvas.width / 2, 190);
+
+            canvas.toBlob(blob => {
+                const link = document.createElement('a');
+                link.download = `barcode_${currentBarcodeData}_${dept}.png`;
+                link.href = URL.createObjectURL(blob);
+                link.click();
+            }, 'image/png');
+        };
+
+        img.onerror = () => alert("Gagal memuat gambar barcode");
+        img.src = url;
+    }
+</script>
 {{-- Script Kirim ke loket --}}
     <script>
         function confirmBack(id) {
@@ -750,7 +795,7 @@ Dashboard|Spesiment
                 res.data.spesiment.forEach((e, i) => {
                     
                     // Khusus untuk tabung EDTA, cek permission
-                    if (e.tabung === 'EDTA') {
+                    if (e.tabung === 'CLOTH-ACTIVATOR') {
                         // Skip jika tidak ada permission active untuk EDTA
                         if (!hasActiveEDTA) {
                             return;
@@ -777,7 +822,7 @@ Dashboard|Spesiment
                         e.details.forEach(detail => {
                             const imageUrl = `/gambar/${detail.gambar}`;
                             const isChecked = (e.tabung === 'K3-EDTA' && detail.nama_parameter === 'Normal') ||
-                                            (e.tabung === 'EDTA' && detail.nama_parameter === 'Normal') ? 'checked' : '';
+                                            (e.tabung === 'CLOTH-ACTIVATOR' && detail.nama_parameter === 'Normal') ? 'checked' : '';
 
                             details +=  
                             `<div class="detail-item">
@@ -787,7 +832,7 @@ Dashboard|Spesiment
                                 </div>
                                 <div class="detail-radio-container">
                                     ${e.tabung === 'K3-EDTA' ? `<input type="radio" name="kapasitas[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}
-                                    ${e.tabung === 'EDTA' ? `<input type="radio" name="serumh[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''} 
+                                    ${e.tabung === 'CLOTH-ACTIVATOR' ? `<input type="radio" name="serumh[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''} 
                                 </div>
                             </div>`;
                         });
@@ -801,7 +846,7 @@ Dashboard|Spesiment
                     }
 
                     let note = '';
-                    if (e.tabung === 'K3-EDTA' || e.tabung === 'EDTA') {
+                    if (e.tabung === 'K3-EDTA' || e.tabung === 'CLOTH-ACTIVATOR') {
                         note = '<p class="mb-0"><strong>Note</strong></p>';
                     }
 
@@ -821,7 +866,7 @@ Dashboard|Spesiment
                                         </div>
                                         ${note}
                                         ${e.tabung === 'K3-EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Tulis catatan disini"></textarea>` : ''}
-                                        ${e.tabung === 'EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Tulis catatan disini"></textarea>` : ''}
+                                        ${e.tabung === 'CLOTH-ACTIVATOR' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Tulis catatan disini"></textarea>` : ''}
                                     </div>
                                 </div>
                             </div>
