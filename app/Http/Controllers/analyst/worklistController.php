@@ -72,7 +72,7 @@ class worklistController extends Controller
             'duplo_d1.*' => 'nullable|numeric',
             'duplo_d2.*' => 'nullable|numeric',
             'duplo_d3.*' => 'nullable|numeric',
-            'note' => 'required',
+            'note' => 'nullable',
             'nama_pemeriksaan.*' => 'required',
             'hasil.*' => 'required',
             'range.*' => 'nullable',
@@ -91,7 +91,7 @@ class worklistController extends Controller
         $d1 = $request->input('duplo_d1', []);
         $d2 = $request->input('duplo_d2', []);
         $d3 = $request->input('duplo_d3', []);
-        $notes = $request->input('note');
+        $notes = $request->input('note', []);
         $ranges = $request->input('range', []);
         $satuans = $request->input('satuan', []);
         $departments = $request->input('department');
@@ -131,7 +131,7 @@ class worklistController extends Controller
                     'duplo_d1' => $d1[$x] ?? null,
                     'duplo_d2' => $d2[$x] ?? null,
                     'duplo_d3' => $d3[$x] ?? null,
-                    'note' => $notes,
+                    'note' => $notes[$x] ?? null,
                     'hasil' => $hasils[$x],
                     'range' => $ranges[$x] ?? null,
                     'satuan' => $satuans[$x] ?? null,
@@ -192,7 +192,7 @@ class worklistController extends Controller
             'duplo_d1.*' => 'nullable|numeric',
             'duplo_d2.*' => 'nullable|numeric',
             'duplo_d3.*' => 'nullable|numeric',
-            'note' => 'required',
+            'note' => 'nullable',
             'hasil' => 'required|array',
             'nama_pemeriksaan' => 'required|array',
             'department' => 'required|array',

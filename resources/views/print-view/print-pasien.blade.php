@@ -138,10 +138,12 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="row" class="p-0">Tanggal Lahir</th>
+                                <th scope="row" class="p-0">Umur</th>
                                 <td>
                                     <div>
-                                        :  <span class="ms-2" id="lahir">{{ $data_pasien->lahir }}</span>
+                                        : <span class="ms-2">
+                                            {{ \Carbon\Carbon::parse($data_pasien->lahir)->age }} tahun
+                                        </span>
                                     </div>
                                 </td>
                             </tr>
@@ -205,15 +207,6 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr>
-                            <th scope="row" class="p-0">Diagnosa</th>
-                            <td>
-                                <div>
-                                    :  <span class="ms-2" id="diagnosa">{{ $data_pasien->diagnosa }}</span>
-
-                                </div>
-                            </td>
-                        </tr>
                     </table>
                 </div>
             </div>
@@ -226,9 +219,6 @@
                         <tr scope="row">
                             <th class="col-4 fw-bold">Jenis Pemeriksaan</th>
                             <th class="col-3 ml-2 fw-bold">Hasil</th>
-                            <th class="col-3 ml-2 fw-bold">D1</th>
-                            <th class="col-3 ml-2 fw-bold">D2</th>
-                            <th class="col-3 ml-2 fw-bold">D3</th>
                             <th class="col-2 fw-bold">Flag</th>
                             <th class="col-2 fw-bold">Satuan</th>
                             <th class="col-2 fw-bold">Range</th>
@@ -244,9 +234,6 @@
                                     <tr>
                                         <td>{{ $hasil->nama_pemeriksaan }}</td>
                                         <td>{{ $hasil->hasil ?? 'Tidak ada hasil' }}</td>
-                                        <td>{{ $hasil->duplo_d1 ?? '-' }}</td>
-                                        <td>{{ $hasil->duplo_d2 ?? '-' }}</td>
-                                        <td>{{ $hasil->duplo_d3 ?? '-' }}</td>
                                         <td class="flag">
                                             @if(is_numeric($hasil->hasil))
                                                 @if(floatval($hasil->hasil) < 5)

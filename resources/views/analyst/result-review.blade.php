@@ -397,10 +397,6 @@
         const note = document.getElementById('patientNote').value;
         const noLab = document.getElementById('currentNoLab').value;
 
-        if (note.trim() === "") {
-            alert("Please enter a note before printing.");
-            return;
-        }
 
         // Tambahkan prefix 'analyst' ke URL
         const printUrl = `{{ url('analyst/print/pasien') }}/${noLab}?note=${encodeURIComponent(note)}`;
@@ -862,9 +858,9 @@ editBtns.forEach(function(editBtn) {
                 kapasitas = collectionItem.kapasitas;
                 noteFromCollection = collectionItem.note;
             }
-        } else if (e.tabung === 'K3') {
+        } else if (e.tabung === 'EDTA') {
             const collectionItem = scollection.find(item => 
-                item.no_lab === e.laravel_through_key && item.tabung === 'K3'
+                item.no_lab === e.laravel_through_key && item.tabung === 'EDTA'
             );
             if (collectionItem) {
                 detailsData = collectionItem.details.filter(detail => 
@@ -896,7 +892,7 @@ editBtns.forEach(function(editBtn) {
                     if (e.tabung === 'K3-EDTA' && kapasitas == detail.id) {
                         isChecked = 'checked';
                         isDisabled = '';
-                    } else if (e.tabung === 'K3' && serumh == detail.id) {
+                    } else if (e.tabung === 'EDTA' && serumh == detail.id) {
                         isChecked = 'checked';
                         isDisabled = '';
                     } else if (e.tabung === 'CLOT-ACT' && serum == detail.id) {
@@ -932,7 +928,7 @@ editBtns.forEach(function(editBtn) {
         }
 
         let note = '';
-        if (e.tabung === 'K3-EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'CLOTH-ACT') {
+        if (e.tabung === 'K3-EDTA' || e.tabung === 'EDTA' || e.tabung === 'CLOTH-ACT') {
             note = '<p class="mb-0"><strong>Note</strong></p>';
         }
 
@@ -953,7 +949,7 @@ editBtns.forEach(function(editBtn) {
                             ${note}
                             ${e.tabung === 'K3-EDTA' ? 
                                 `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
-                            ${e.tabung === 'CLOTH-ACT' ? 
+                            ${e.tabung === 'EDTA' ? 
                                 `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
                             ${e.tabung === 'CLOT-ACT' ? 
                                 `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromHandling || 'null'}" ${noteFromHandling ? '' : 'disabled'} disabled></textarea>` : ''}

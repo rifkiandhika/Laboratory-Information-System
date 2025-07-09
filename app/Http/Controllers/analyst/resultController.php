@@ -46,7 +46,7 @@ class resultController extends Controller
         // return view('print-view.print-pasien');
         // dd('Fungsi print berhasil dipanggil');
         // dd($request);
-        $note = $request->input('note');
+        $note = $request->input('note', '');
         // $data_pasien = pasien::with(['data_pemeriksaan_pasien.data_departement', 'dpp.pasiens', 'hasil_pemeriksaan'])->where('no_lab', $no_lab)->first();
         $data_pasien = pasien::where('no_lab', $no_lab)->with([
             'dpp.pasiens' => function ($query) use ($no_lab) {
