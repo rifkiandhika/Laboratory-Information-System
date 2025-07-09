@@ -26,10 +26,14 @@ Edit Spesiment
                             <form action="{{ route('spesiments.update', $spesiments->id) }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
+                                <h4>Edit Spesiment</h4>
+                                <hr>
                                 <div class="form-group">
-                                    <h4>Edit Spesiment</h4>
-                                    <hr>
-                                    <label for="id_departement">Departement</label>
+                                    <label for="Code">Code <span class="text-danger">*</span></label>
+                                    <input type="text" name="kode" id="kode" class="form-control" value="{{ $spesiments->kode }}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_departement">Departement <span class="text-danger">*</span></label>
                                     <select class="form-control" name="id_departement" id="department" required>
                                         <option value="" hidden>Select Department</option>
                                         @foreach ($departments as $Department)
@@ -42,11 +46,11 @@ Edit Spesiment
 
                                 </div>
                                 <div class="form-group">
-                                    <label for="spesiment">Spesiment</label>
+                                    <label for="spesiment">Spesiment <span class="text-danger">*</span></label>
                                     <input type="text" name="spesiment" id="spesiment" class="form-control" value="{{ $spesiments->spesiment }}" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="spesiment">Spesiment</label>
+                                    <label for="spesiment">Tabung <span class="text-danger">*</span></label>
                                     <input type="text" name="tabung" id="tabung" class="form-control" value="{{ $spesiments->tabung }}" required>
                                 </div>
                                 <div class="form-group">
@@ -55,7 +59,7 @@ Edit Spesiment
                                 </div>
                                 <div class="form-group">
                                     <hr>
-                                    <h4>Detail Spesiment</h4>
+                                    <h4>Detail Spesiment <span class="text-danger">*</span></h4>
                                     <hr>
                                     <div class="table-responsive">
                                         <table class="table table-bordered" id="tableDetail">

@@ -32,6 +32,7 @@ Spesiment
                                     <thead style="font-size: 12px;">
                                         <tr>
                                             <th scope="col">No</th>
+                                            <th scope="col">Kode</th>
                                             <th scope="col">Department</th>
                                             <th scope="col">Spesiment</th>
                                             <th scope="col">Tabung</th>
@@ -43,6 +44,7 @@ Spesiment
                                         @foreach ($spesiments as $x => $Spesiment)
                                             <tr>
                                                 <td>{{ $x + 1 }}</td>
+                                                <td>{{ $Spesiment->kode}}</td>
                                                 <td>{{ $Spesiment->department->nama_department}}</td>
                                                 <td>{{ $Spesiment->spesiment }}</td>
                                                 <td>{{ $Spesiment->tabung }}</td>

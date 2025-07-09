@@ -56,6 +56,7 @@ class DepartmentController extends Controller
             'nilai_satuan.*' => 'required',
             'tipe_inputan.*' => 'required',
             'status.*' => 'required',
+            'permission.*' => 'required',
             'opsi_output.*' => 'required',
             'urutan.*' => 'required',
         ]);
@@ -81,6 +82,7 @@ class DepartmentController extends Controller
                 isset($request->tipe_inputan[$x]) &&
                 isset($request->opsi_output[$x]) &&
                 isset($request->status[$x]) &&
+                isset($request->permission[$x]) &&
                 isset($request->urutan[$x])
             ) {
                 // Menyimpan detail department jika data lengkap
@@ -98,6 +100,7 @@ class DepartmentController extends Controller
                         'nilai_rujukan' => $request->nilai_rujukan[$x],
                         'nilai_satuan' => $request->nilai_satuan[$x],
                         'status' => $request->status[$x],
+                        'permission' => $request->permission[$x],
                         'tipe_inputan' => $request->tipe_inputan[$x],
                         'opsi_output' => $request->opsi_output[$x],
                         'urutan' => $request->urutan[$x],
@@ -157,6 +160,7 @@ class DepartmentController extends Controller
             'opsi_output.*' => 'required',
             'urutan.*' => 'required',
             'status.*' => 'nullable', // Checkbox bisa tidak ada
+            'permission.*' => 'nullable', // Checkbox bisa tidak ada
         ]);
 
         // Temukan department berdasarkan ID
@@ -189,6 +193,7 @@ class DepartmentController extends Controller
                 'nilai_rujukan' => $request->nilai_rujukan[$i],
                 'nilai_satuan' => $request->nilai_satuan[$i],
                 'status' => $request->status[$i] ?? 'deactive', // Jika tidak dicentang
+                'permission' => $request->permission[$i] ?? 'deactive', // Jika tidak dicentang
                 'tipe_inputan' => $request->tipe_inputan[$i],
                 'opsi_output' => $request->opsi_output[$i],
                 'urutan' => $request->urutan[$i],

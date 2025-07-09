@@ -591,9 +591,9 @@
                                     kapasitas = collectionItem.kapasitas;
                                     noteText = collectionItem.note; // Mengambil note untuk EDTA
                                 }
-                            } else if (e.tabung === 'K3') {
+                            } else if (e.tabung === 'EDTA') {
                                 const collectionItem = scollection.find(item => 
-                                    item.no_lab === e.laravel_through_key && item.tabung === 'K3'
+                                    item.no_lab === e.laravel_through_key && item.tabung === 'EDTA'
                                 );
                                 if (collectionItem) {
                                     hasCollectionData = true;
@@ -627,7 +627,7 @@
                                         if (e.tabung === 'K3-EDTA') {
                                             isChecked = kapasitas == detail.id ? 'checked' : '';
                                             isDisabled = kapasitas == detail.id ? '' : 'disabled';  // Disable yang tidak terpilih
-                                        } else if (e.tabung === 'K3') {
+                                        } else if (e.tabung === 'EDTA') {
                                             isChecked = serumh == detail.id ? 'checked' : '';
                                             isDisabled = serumh == detail.id ? '' : 'disabled';  // Disable yang tidak terpilih
                                         } else if (e.tabung === 'CLOT-ACT') {
@@ -650,7 +650,7 @@
                                         </div>
                                         <div class="detail-radio-container">
                                         ${e.tabung === 'K3-EDTA' ? `<input type="radio" name="kapasitas[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}
-                                        ${e.tabung === 'K3' ? `<input type="radio" name="serumh[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}    
+                                        ${e.tabung === 'EDTA' ? `<input type="radio" name="serumh[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}    
                                         ${e.tabung === 'CLOT-ACT' ? `<input type="radio" name="serum[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}    
                                         </div>
                                     </div>`;

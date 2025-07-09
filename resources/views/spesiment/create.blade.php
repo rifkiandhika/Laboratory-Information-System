@@ -25,10 +25,14 @@ Tambah Spesiment
                         <div class="card-body">
                             <form action="{{ route('spesiments.store') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
+                                <h4>Spesiment</h4>
+                                <hr>
                                 <div class="form-group">
-                                    <h4>Spesiment</h4>
-                                    <hr>
-                                    <label for="id_departement">Departement</label>
+                                    <label for="Kode">Code <span class="text-danger">*</span></label>
+                                    <input type="text" name="kode" id="kode" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_departement">Departement <span class="text-danger">*</span></label>
                                     <select name="id_departement" id="department" class="form-control">
                                         <option value="" hidden selected>
                                         </option>
@@ -39,14 +43,13 @@ Tambah Spesiment
                                             </option>
                                         @endforeach
                                     </select>
-
                                 </div>
                                 <div class="form-group">
-                                    <label for="spesiment">Spesiment</label>
+                                    <label for="spesiment">Spesiment <span class="text-danger">*</span></label>
                                     <input type="text" name="spesiment" id="spesiment" class="form-control" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="tabung">Tabung</label>
+                                    <label for="tabung">Tabung <span class="text-danger">*</span></label>
                                     <input type="text" name="tabung" id="tabung" class="form-control" required>
                                 </div>
                                 <div class="form-group">

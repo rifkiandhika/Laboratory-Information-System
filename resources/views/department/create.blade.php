@@ -40,68 +40,76 @@ Add Department
                                         <table class="table table-bordered" id="tableDetail">
                                             <thead>
                                                 <tr>
-                                                    <th class="col-2">Kode</th>
-                                                    <th class="col-1">Parameter</th>
-                                                    <th class="col-1">Pemeriksaan</th>
-                                                    <th class="col-2">Tarif</th>
-                                                    <th class="col-1">Komponen Tarif</th>
-                                                    <th class="col-1">Nilai Rujukan</th>
-                                                    <th class="col-1">Satuan</th>
-                                                    <th class="col-1">Tipe Input</th>
-                                                    <th class="col-1">Opsi Output</th>
-                                                    <th class="col-1">Metode</th>
-                                                    <th class="col-1">Status</th>
-                                                    <th>Aksi</th>
+                                                    <th class="col-11">Data Detail</th>
+                                                    <th class="col-2">Status</th>
+                                                    <th class="col-2">Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td>
-                                                        <label for="otomatis">Otomatis <span class="text-danger">*</span></label>
-                                                        <input type="text" name="kode[]" class="form-control" id="kode" required disabled>
-                                                        <!-- Hidden input untuk mengirim nilai kode -->
-                                                        <input type="hidden" name="kode_hidden[]" id="kode_hidden">
-                                                    </td>                                                    
-                                                    <td>
-                                                        <input type="text" name="nama_parameter[]" class="form-control" required>
+                                                     <td>
+                                                        <div class="row">
+                                                            <!-- Kolom Kiri -->
+                                                            <div class="col-md-6">
+                                                                <label for="Code">Code <span class="text-danger">*</span></label>
+                                                                <input type="text" name="kode[]" class="form-control" id="kode" required>
+                                                                <input type="hidden" name="kode_hidden[]" id="kode_hidden">
+
+                                                                <label class="mt-2">Nama Parameter <span class="text-danger">*</span></label>
+                                                                <input type="text" name="nama_parameter[]" class="form-control" required>
+
+                                                                <label class="mt-2">Nama Pemeriksaan <span class="text-danger">*</span></label>
+                                                                <input type="text" name="nama_pemeriksaan[]" class="form-control" required>
+
+                                                                <label class="mt-2">Harga <span class="text-danger">*</span></label>
+                                                                <input type="number" name="harga[]" class="form-control" required>
+
+                                                                <label class="mt-2">Nilai Rujukan <span class="text-danger">*</span></label>
+                                                                <input type="text" name="nilai_rujukan[]" class="form-control" required>
+
+                                                                <label class="mt-2">Nilai Satuan <span class="text-danger">*</span></label>
+                                                                <input type="text" name="nilai_satuan[]" class="form-control" required>
+                                                            </div>
+
+                                                            <!-- Kolom Kanan -->
+                                                            <div class="col-md-6">
+                                                                <label>JASA SARANA: <span class="text-danger">*</span></label>
+                                                                <input type="number" name="jasa_sarana[]" class="form-control" required>
+
+                                                                <label class="mt-2">JASA PELAYANAN: <span class="text-danger">*</span></label>
+                                                                <input type="number" name="jasa_pelayanan[]" class="form-control" required>
+
+                                                                <label class="mt-2">JASA DOKTER:</label>
+                                                                <input type="number" name="jasa_dokter[]" class="form-control">
+
+                                                                <label class="mt-2">JASA BIDAN:</label>
+                                                                <input type="number" name="jasa_bidan[]" class="form-control">
+
+                                                                <label class="mt-2">JASA PERAWAT:</label>
+                                                                <input type="number" name="jasa_perawat[]" class="form-control">
+
+                                                                <label class="mt-2">Tipe Inputan <span class="text-danger">*</span></label>
+                                                                <input type="text" name="tipe_inputan[]" class="form-control" required>
+
+                                                                <label class="mt-2">Opsi Output <span class="text-danger">*</span></label>
+                                                                <input type="text" name="opsi_output[]" class="form-control" required>
+
+                                                                <label class="mt-2">Urutan <span class="text-danger">*</span></label>
+                                                                <input type="text" name="urutan[]" class="form-control" required>
+                                                            </div>
+                                                        </div>
                                                     </td>
-                                                    <td>
-                                                        <input type="text" name="nama_pemeriksaan[]" class="form-control" required>
-                                                    </td>
-                                                    <td>
-                                                        <input type="number" name="harga[]" class="form-control" required>
-                                                    </td>
-                                                    <td>
-                                                        <label for="jasa_sarana">JASA SARANA:</label>
-                                                        <input type="number" name="jasa_sarana[]" class="form-control" required>
-                                                        <label for="jasa_pelayanan">JASA PELAYANAN:</label>
-                                                        <input type="number" name="jasa_pelayanan[]" class="form-control" required>
-                                                        <label for="jasa_dokter">JASA DOKTER:</label>
-                                                        <input type="number" name="jasa_dokter[]" class="form-control" >
-                                                        <label for="jasa_bidan">JASA BIDAN:</label>
-                                                        <input type="number" name="jasa_bidan[]" class="form-control" >
-                                                        <label for="jasa_perawat">JASA PERAWAT:</label>
-                                                        <input type="number" name="jasa_perawat[]" class="form-control" >
-                                                    </td>
-                                                    <td>
-                                                        <input type="text" name="nilai_rujukan[]" class="form-control" required>
-                                                    </td>
-                                                    <td>
-                                                        <input type="text" name="nilai_satuan[]" class="form-control" required>
-                                                    </td>
-                                                    <td>
-                                                        <input type="text" name="tipe_inputan[]" class="form-control" required>
-                                                    </td>
-                                                    <td>
-                                                        <input type="text" name="opsi_output[]" class="form-control" required>
-                                                    </td>
-                                                    <td>
-                                                        <input type="text" name="urutan[]" class="form-control" required>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <input type="hidden" name="status" value="deactive">
-                                                        <!-- Checkbox -->
-                                                        <input type="checkbox" name="status" value="active" class="form-check-input" {{ old('status') === 'active' ? 'checked' : '' }}>
+                                                    <td class="text-center align-middle" style="min-width: 180px;">
+                                                        <div class="d-flex justify-content-center align-items-center mb-1" style="gap: 8px; white-space: nowrap;">
+                                                            <label class="mb-0" style="font-size: 14px;">Active to loket?</label>
+                                                            <input type="hidden" name="status" value="deactive">
+                                                            <input type="checkbox" name="status" value="active" class="form-check-input align-middle" {{ old('status') === 'active' ? 'checked' : '' }}>
+                                                        </div>
+                                                        <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
+                                                            <label class="mb-0" style="font-size: 14px;">Check to Collection?</label>
+                                                            <input type="hidden" name="permission" value="deactive">
+                                                            <input type="checkbox" name="permission" value="active" class="form-check-input align-middle" {{ old('permission') === 'active' ? 'checked' : '' }}>
+                                                        </div>
                                                     </td>
                                                     <td>
                                                         <button type="button" class="btn btn-success btn-add"><i class="ti ti-plus"></i></button>
@@ -121,7 +129,7 @@ Add Department
                                     <br>
                                     <button type="button" id="add-detail-field" class="btn btn-secondary">Add Another Detail</button> --}}
                                 </div>
-                                <div class="text-end">
+                                <div class="text-end mt-2">
                                     <button type="submit" class="btn btn-primary">Submit</button>
                                 </div>
                             </form>
@@ -187,54 +195,71 @@ Add Department
         function btnFunction() {
             $(".btn-add").unbind('click').bind('click', function(){
                 let row = ` <tr>
-                    <td class="col-2">
-                        <label for="otomatis">Otomatis <span class="text-danger">*</span></label>
-                        <input type="text" name="kode[]" class="form-control kode" required disabled>
-                        <!-- Hidden input untuk mengirim nilai kode -->
-                        <input type="hidden" name="kode_hidden[]" class="kode_hidden">
-                    </td>                                                    
-                    <td class="col-2">
-                        <input type="text" name="nama_parameter[]" class="form-control" required>
+                    <td>
+                        <div class="row">
+                            <!-- Kolom Kiri -->
+                            <div class="col-md-6">
+                                <label for="otomatis">Code <span class="text-danger">*</span></label>
+                                <input type="text" name="kode[]" class="form-control" id="kode" required >
+                                <input type="hidden" name="kode_hidden[]" id="kode_hidden">
+
+                                <label class="mt-2">Nama Parameter</label>
+                                <input type="text" name="nama_parameter[]" class="form-control" required>
+
+                                <label class="mt-2">Nama Pemeriksaan</label>
+                                <input type="text" name="nama_pemeriksaan[]" class="form-control" required>
+
+                                <label class="mt-2">Harga</label>
+                                <input type="number" name="harga[]" class="form-control" required>
+
+                                <label class="mt-2">Nilai Rujukan</label>
+                                <input type="text" name="nilai_rujukan[]" class="form-control" required>
+
+                                <label class="mt-2">Nilai Satuan</label>
+                                <input type="text" name="nilai_satuan[]" class="form-control" required>
+                            </div>
+
+                            <!-- Kolom Kanan -->
+                            <div class="col-md-6">
+                                <label>JASA SARANA:</label>
+                                <input type="number" name="jasa_sarana[]" class="form-control" required>
+
+                                <label class="mt-2">JASA PELAYANAN:</label>
+                                <input type="number" name="jasa_pelayanan[]" class="form-control" required>
+
+                                <label class="mt-2">JASA DOKTER:</label>
+                                <input type="number" name="jasa_dokter[]" class="form-control">
+
+                                <label class="mt-2">JASA BIDAN:</label>
+                                <input type="number" name="jasa_bidan[]" class="form-control">
+
+                                <label class="mt-2">JASA PERAWAT:</label>
+                                <input type="number" name="jasa_perawat[]" class="form-control">
+
+                                <label class="mt-2">Tipe Inputan</label>
+                                <input type="text" name="tipe_inputan[]" class="form-control" required>
+
+                                <label class="mt-2">Opsi Output</label>
+                                <input type="text" name="opsi_output[]" class="form-control" required>
+
+                                <label class="mt-2">Urutan</label>
+                                <input type="text" name="urutan[]" class="form-control" required>
+                            </div>
+                        </div>
                     </td>
-                    <td class="col-2">
-                        <input type="text" name="nama_pemeriksaan[]" class="form-control" required>
+                    <td class="text-center align-middle" style="min-width: 180px;">
+                        <div class="d-flex justify-content-center align-items-center mb-1" style="gap: 8px; white-space: nowrap;">
+                            <label class="mb-0" style="font-size: 14px;">Active to loket?</label>
+                            <input type="hidden" name="status" value="deactive">
+                            <input type="checkbox" name="status" value="active" class="form-check-input align-middle" {{ old('status') === 'active' ? 'checked' : '' }}>
+                        </div>
+                        <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
+                            <label class="mb-0" style="font-size: 14px;">Check to Collection?</label>
+                            <input type="hidden" name="permission" value="deactive">
+                            <input type="checkbox" name="permission" value="active" class="form-check-input align-middle" {{ old('permission') === 'active' ? 'checked' : '' }}>
+                        </div>
                     </td>
-                    <td class="col-2">
-                        <input type="number" name="harga[]" class="form-control" required>
-                    </td>
-                    <td class="col-3">
-                        <label for="jasa_sarana">JASA SARANA:</label>
-                        <input type="text" name="jasa_sarana[]" class="form-control" required>
-                        <label for="jasa_pelayanan">JASA PELAYANAN:</label>
-                        <input type="text" name="jasa_pelayanan[]" class="form-control" required>
-                        <label for="jasa_dokter">JASA DOKTER:</label>
-                        <input type="text" name="jasa_dokter[]" class="form-control" >
-                        <label for="jasa_bidan">JASA BIDAN:</label>
-                        <input type="text" name="jasa_bidan[]" class="form-control" >
-                        <label for="jasa_perawat">JASA PERAWAT:</label>
-                        <input type="text" name="jasa_perawat[]" class="form-control" >
-                    </td>
-                    <td class="col-1">
-                        <input type="text" name="nilai_rujukan[]" class="form-control" required>
-                    </td>
-                    <td class="col-1">
-                        <input type="text" name="nilai_satuan[]" class="form-control" required>
-                    </td>
-                    <td class="col-1">
-                        <input type="text" name="tipe_inputan[]" class="form-control" required>
-                    </td>
-                    <td class="col-1">
-                        <input type="text" name="opsi_output[]" class="form-control" required>
-                    </td>
-                    <td class="col-1">
-                        <input type="text" name="urutan[]" class="form-control" required>
-                    </td>
-                    <td class="text-center">
-                        <input type="hidden" name="status" value="deactive">
-                        <!-- Checkbox -->
-                        <input type="checkbox" name="status" value="active" class="form-check-input" {{ old('status') === 'active' ? 'checked' : '' }}>
-                    </td>
-                    <td class="col-3">
+                    <td>
                         <button type="button" class="btn btn-success btn-add"><i class="ti ti-plus"></i></button>
                     </td>
                 </tr>`;

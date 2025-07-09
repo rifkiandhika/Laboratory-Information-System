@@ -43,6 +43,7 @@ class SpesimentController extends Controller
         $request->validate(
             [
                 'id_departement' => 'required',
+                'kode' => 'required',
                 'spesiment' => 'required',
                 'tabung' => 'required',
                 'note' => 'nullable',
@@ -58,6 +59,7 @@ class SpesimentController extends Controller
 
         $spesiments = Spesiment::create([
             'id_departement' => $request->id_departement,
+            'kode' => $request->kode,
             'spesiment' => $request->spesiment,
             'tabung' => $request->tabung,
             'note' => $request->note,
@@ -111,6 +113,7 @@ class SpesimentController extends Controller
     {
         $request->validate([
             'id_departement' => 'required',
+            'kode' => 'required',
             'spesiment' => 'required',
             'tabung' => 'required',
             'note' => 'nullable',
@@ -121,6 +124,7 @@ class SpesimentController extends Controller
         $spesiments = Spesiment::findOrFail($id);
         $spesiments->update([
             'id_departement' => $request->id_departement,
+            'kode' => $request->kode,
             'spesiment' => $request->spesiment,
             'tabung' => $request->tabung,
             'note' => $request->note,

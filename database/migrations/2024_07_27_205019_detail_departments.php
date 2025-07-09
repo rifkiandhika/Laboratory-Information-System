@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string('opsi_output');
             $table->string('urutan')->nullable();
             $table->string('status')->default('deactive');
+            $table->string('permission')->default('deactive');
             $table->timestamps();
 
             // // Cascade delete
