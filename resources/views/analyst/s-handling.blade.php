@@ -194,11 +194,7 @@
                                                 <input style="font-size: 20px; cursor: pointer;" type="checkbox" name="ids" id="checkbox" class="form-check-input checkbox_ids" value="{{ $dpc->id }}">
                                             </th>
                                             <td class="col-2">
-                                                @foreach ($dataHistory as $dh)
-                                                @if ($dh->no_lab == $dpc->no_lab)
-                                                {{ date('d-m-Y', strtotime($dh->waktu_proses)) }}/{{ date('H:i', strtotime($dh->waktu_proses)) }}
-                                                @endif
-                                                @endforeach
+                                                {{ date('d-m-Y', strtotime($dpc->tanggal_masuk)) }}/{{ date('H:i', strtotime($dpc->tanggal_masuk)) }}
                                             </td>
                                             <td>
                                                 <i class='ti ti-bell-filled {{ $dpc->cito == '1' ? 'text-danger' : 'text-secondary' }}' style="font-size: 23px;"></i>
@@ -226,7 +222,7 @@
                                             </td>
                                             <td class="col-4">
                                                 <button title="Preview" class="btn btn-outline-secondary btn-preview" data-id="{{ $dpc->id }}" data-bs-target="#modalSpesimen" data-bs-toggle="modal">
-                                                    <i class="ti ti-eye"></i>
+                                                    <i class="ti ti-test-pipe-2"></i>
                                                 </button>
                                                 
                                                 <button class="btn btn-secondary barcodeBtn btn-barcode"

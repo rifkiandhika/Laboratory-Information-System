@@ -220,7 +220,7 @@ Dashboard|Spesiment
                                                 </td>
                                                 <td>
                                                     <button title="Check Collection" class="btn btn-outline-secondary btn-preview" data-id={{ $data1->id }} data-bs-target="#modalSpesimen"
-                                                        data-bs-toggle="modal" ><i class="ti ti-temperature"></i></button>
+                                                        data-bs-toggle="modal" ><i class="ti ti-vaccine"></i></button>
 
                                                         <form id="spesimentBack-{{ $data1->id }}" action="{{ route('analyst.back', $data1->id) }}" method="POST" style="display: none;">
                                                             @csrf

@@ -165,6 +165,8 @@
                             </tr>
                         </table>
                     </div>
+                    <br>
+                    
                 <div class="col-6 col-md-6">
                     <table class="table-borderless">
                         <tr>
@@ -226,9 +228,9 @@
                     </thead>
                     <tbody>
                         <tbody>
-                            @foreach ($hasil_pemeriksaans->groupBy('departemen') as $departemen => $hasil_group)
+                            @foreach ($hasil_pemeriksaans->groupBy('department') as $department => $hasil_group)
                                 <tr>
-                                    <th colspan="8" class="bg-light">{{ strtoupper($departemen) }}</th>
+                                    <th colspan="8" class="bg-light">{{ strtoupper($department) }}</th>
                                 </tr>
                                 @foreach ($hasil_group as $hasil)
                                     <tr>

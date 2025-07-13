@@ -24,6 +24,7 @@ use App\Models\Department;
 use App\Models\DetailDepartment;
 use App\Models\dokter;
 use App\Models\Pemeriksaan;
+use App\Models\Report;
 use Carbon\Carbon;
 use Exception;
 
@@ -128,7 +129,32 @@ class pasienController extends Controller
                 'updated_at' => now(),
             ]);
             $no++;
+
+            // Simpan atau update ke report
+            $existingReport = Report::where('department', $data->department_id)
+                ->where('nolab', $request->nolab)
+                ->where('payment_method', $request->jenispelayanan)
+                ->where('id_parameter', $pemeriksaan)
+                ->where('nama_parameter', $data->nama_parameter)
+                ->whereDate('tanggal', now())
+                ->first();
+
+            if ($existingReport) {
+                $existingReport->increment('quantity');
+            } else {
+                Report::create([
+                    'nolab'   => $request->nolab,
+                    'department'   => $data->department_id,
+                    'payment_method'  => $request->jenispelayanan,
+                    'id_parameter'    => $pemeriksaan,
+                    'nama_parameter'  => $data->nama_parameter,
+                    'quantity'        => 1,
+                    'tanggal'         => now(),
+                ]);
+            }
         }
+
+
 
         // Menyimpan riwayat pasien
         historyPasien::create([

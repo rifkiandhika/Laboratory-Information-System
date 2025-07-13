@@ -102,13 +102,15 @@ Add Department
                                                     <td class="text-center align-middle" style="min-width: 180px;">
                                                         <div class="d-flex justify-content-center align-items-center mb-1" style="gap: 8px; white-space: nowrap;">
                                                             <label class="mb-0" style="font-size: 14px;">Active to loket?</label>
-                                                            <input type="hidden" name="status" value="deactive">
-                                                            <input type="checkbox" name="status" value="active" class="form-check-input align-middle" {{ old('status') === 'active' ? 'checked' : '' }}>
+                                                            <input type="hidden" name="status[]" value="deactive" class="status-hidden">
+                                                            <input type="checkbox" value="active" class="form-check-input align-middle status-checkbox" 
+                                                                {{ (old('status') && in_array('active', old('status'))) ? 'checked' : '' }}>
                                                         </div>
                                                         <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
                                                             <label class="mb-0" style="font-size: 14px;">Check to Collection?</label>
-                                                            <input type="hidden" name="permission" value="deactive">
-                                                            <input type="checkbox" name="permission" value="active" class="form-check-input align-middle" {{ old('permission') === 'active' ? 'checked' : '' }}>
+                                                            <input type="hidden" name="permission[]" value="deactive" class="permission-hidden">
+                                                            <input type="checkbox" value="active" class="form-check-input align-middle permission-checkbox" 
+                                                                {{ (old('permission') && in_array('active', old('permission'))) ? 'checked' : '' }}>
                                                         </div>
                                                     </td>
                                                     <td>
@@ -147,6 +149,43 @@ Add Department
 
 @push('script')
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle status checkboxes
+    document.querySelectorAll('.status-checkbox').forEach(function(checkbox, index) {
+        checkbox.addEventListener('change', function() {
+            const hiddenInput = document.querySelectorAll('.status-hidden')[index];
+            if (this.checked) {
+                hiddenInput.value = 'active';
+            } else {
+                hiddenInput.value = 'deactive';
+            }
+        });
+        
+        // Set initial state
+        if (checkbox.checked) {
+            document.querySelectorAll('.status-hidden')[index].value = 'active';
+        }
+    });
+    
+    // Handle permission checkboxes
+    document.querySelectorAll('.permission-checkbox').forEach(function(checkbox, index) {
+        checkbox.addEventListener('change', function() {
+            const hiddenInput = document.querySelectorAll('.permission-hidden')[index];
+            if (this.checked) {
+                hiddenInput.value = 'active';
+            } else {
+                hiddenInput.value = 'deactive';
+            }
+        });
+        
+        // Set initial state
+        if (checkbox.checked) {
+            document.querySelectorAll('.permission-hidden')[index].value = 'active';
+        }
+    });
+});
+</script>
+<script>
     document.addEventListener('DOMContentLoaded', function() {
     let kodeInput = document.getElementById('kode');
     let hiddenKodeInput = document.getElementById('kode_hidden');
@@ -170,7 +209,8 @@ Add Department
     generateKode();
 });
 
-</script><script>
+</script>
+<script>
     document.addEventListener('DOMContentLoaded', function() {
         // Fungsi untuk menghasilkan kode otomatis, misalnya berdasarkan tanggal
         function generateKode(row) {
@@ -250,13 +290,13 @@ Add Department
                     <td class="text-center align-middle" style="min-width: 180px;">
                         <div class="d-flex justify-content-center align-items-center mb-1" style="gap: 8px; white-space: nowrap;">
                             <label class="mb-0" style="font-size: 14px;">Active to loket?</label>
-                            <input type="hidden" name="status" value="deactive">
-                            <input type="checkbox" name="status" value="active" class="form-check-input align-middle" {{ old('status') === 'active' ? 'checked' : '' }}>
+                            <input type="hidden" name="status[]" value="deactive">
+                            <input type="checkbox" name="status[]" value="active" class="form-check-input align-middle" {{ old('status') === 'active' ? 'checked' : '' }}>
                         </div>
                         <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
                             <label class="mb-0" style="font-size: 14px;">Check to Collection?</label>
-                            <input type="hidden" name="permission" value="deactive">
-                            <input type="checkbox" name="permission" value="active" class="form-check-input align-middle" {{ old('permission') === 'active' ? 'checked' : '' }}>
+                            <input type="hidden" name="permission[]" value="deactive">
+                            <input type="checkbox" name="permission[]" value="active" class="form-check-input align-middle" {{ old('permission') === 'active' ? 'checked' : '' }}>
                         </div>
                     </td>
                     <td>

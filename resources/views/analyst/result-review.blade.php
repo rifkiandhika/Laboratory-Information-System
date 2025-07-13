@@ -116,6 +116,7 @@
       <div class="d-sm-flex  mt-3">
         <h1 class="h3 mb-0 text-gray-600">Result Review</h1>
       </div>
+      
 
       <!-- Content Row -->
       <div class="row mt-2">
@@ -124,7 +125,9 @@
               <!-- Card Header - Dropdown -->
               <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                   <h6 class="m-0 font-weight-bold" style="color: #96B6C5;">Result Pasien</h6>
+                  <a href="{{ route('result.report') }}" class="btn btn-primary">Report</a>
               </div>
+              
               <!-- Card Body -->
               <div class="card-body">
                 <div class="d-flex justify-content-between mb-3 pr-3">
