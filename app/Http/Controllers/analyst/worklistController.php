@@ -182,7 +182,7 @@ class worklistController extends Controller
 
     public function checkin(Request $request, $id)
     {
-        // Validasi input
+        // Validasi input - disesuaikan dengan function store
         $request->validate([
             'no_lab' => 'required',
             'no_rm' => 'required',
@@ -193,40 +193,84 @@ class worklistController extends Controller
             'duplo_d2.*' => 'nullable|numeric',
             'duplo_d3.*' => 'nullable|numeric',
             'note' => 'nullable',
-            'hasil' => 'required|array',
-            'nama_pemeriksaan' => 'required|array',
-            'department' => 'required|array',
+            'nama_pemeriksaan.*' => 'required',
+            'hasil.*' => 'required',
+            'range.*' => 'nullable',
+            'satuan.*' => 'nullable',
+            'department.*' => 'required',
         ]);
 
         try {
-            DB::beginTransaction(); // Mulai transaction untuk memastikan data konsisten
+            DB::beginTransaction();
+
+            // Ambil data dari request - sama seperti function store
+            $no_lab = $request->input('no_lab');
+            $no_rm = $request->input('no_rm');
+            $nama = $request->input('nama');
+            $ruangan = $request->input('ruangan');
+            $nama_dokter = $request->input('nama_dokter');
+            $nama_pemeriksaan = $request->input('nama_pemeriksaan', []);
+            $hasils = $request->input('hasil', []);
+            $d1 = $request->input('duplo_d1', []);
+            $d2 = $request->input('duplo_d2', []);
+            $d3 = $request->input('duplo_d3', []);
+            $notes = $request->input('note', []);
+            $ranges = $request->input('range', []);
+            $satuans = $request->input('satuan', []);
+            $departments = $request->input('department', []);
+
+            // Validasi panjang data nama_pemeriksaan dan hasil
+            if (empty($nama_pemeriksaan) || empty($hasils) || count($nama_pemeriksaan) !== count($hasils)) {
+                return redirect()->back()->withErrors(['message' => 'Data tidak valid atau kosong']);
+            }
 
             // Cari data pasien
             $pasien = Pasien::findOrFail($id);
 
             // Jika status Dikembalikan, hapus semua data terkait
             if ($pasien->status === 'Dikembalikan') {
-                // Hapus hasil pemeriksaan lama
-                HasilPemeriksaan::where('no_lab', $pasien->no_lab)->delete();
+                HasilPemeriksaan::where('no_lab', $no_lab)->delete();
             }
 
-            // Simpan hasil pemeriksaan baru
-            foreach ($request->nama_pemeriksaan as $index => $nama_pemeriksaan) {
-                HasilPemeriksaan::create([
-                    'no_lab' => $request->no_lab,
-                    'nama_pemeriksaan' => $nama_pemeriksaan,
-                    'hasil' => $request->hasil[$index],
-                    'duplo_d1' => $request->duplo_d1[$index],
-                    'duplo_d2' => $request->duplo_d2[$index],
-                    'duplo_d3' => $request->duplo_d3[$index],
-                    'note' => $request->note,
-                    'department' => $request->department[$index],
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
+            // Proses data pemeriksaan - sama seperti function store
+            foreach ($nama_pemeriksaan as $x => $pemeriksaan) {
+                $existingHasil = HasilPemeriksaan::where('no_lab', $no_lab)
+                    ->where('nama_pemeriksaan', $pemeriksaan)
+                    ->first();
+
+                if ($existingHasil) {
+                    // Jika data sudah ada, lakukan update
+                    $existingHasil->update([
+                        'hasil' => $hasils[$x] ?? $existingHasil->hasil,
+                        'range' => isset($ranges[$x]) ? $ranges[$x] : $existingHasil->range,
+                        'duplo_d1' => isset($d1[$x]) ? $d1[$x] : $existingHasil->duplo_d1,
+                        'duplo_d2' => isset($d2[$x]) ? $d2[$x] : $existingHasil->duplo_d2,
+                        'duplo_d3' => isset($d3[$x]) ? $d3[$x] : $existingHasil->duplo_d3,
+                        'satuan' => isset($satuans[$x]) ? $satuans[$x] : $existingHasil->satuan,
+                        'department' => isset($departments[$x]) ? $departments[$x] : $existingHasil->department,
+                    ]);
+                } else {
+                    // Jika data belum ada, buat data baru
+                    HasilPemeriksaan::create([
+                        'no_lab' => $no_lab,
+                        'no_rm' => $no_rm,
+                        'nama' => $nama,
+                        'ruangan' => $ruangan,
+                        'nama_dokter' => $nama_dokter,
+                        'nama_pemeriksaan' => $pemeriksaan,
+                        'duplo_d1' => isset($d1[$x]) ? $d1[$x] : null,
+                        'duplo_d2' => isset($d2[$x]) ? $d2[$x] : null,
+                        'duplo_d3' => isset($d3[$x]) ? $d3[$x] : null,
+                        'note' => isset($notes[$x]) ? $notes[$x] : null,
+                        'hasil' => $hasils[$x] ?? null,
+                        'range' => isset($ranges[$x]) ? $ranges[$x] : null,
+                        'satuan' => isset($satuans[$x]) ? $satuans[$x] : null,
+                        'department' => isset($departments[$x]) ? $departments[$x] : null,
+                    ]);
+                }
             }
 
-            // Update status pasien dan buat history baru
+            // Update status pasien
             $newStatus = $pasien->status === 'Dikembalikan' ? 'Diverifikasi Ulang' : 'Verifikasi Dokter';
 
             $pasien->update([
@@ -243,7 +287,7 @@ class worklistController extends Controller
                 'created_at' => now(),
             ]);
 
-            DB::commit(); // Commit transaksi jika semua berhasil
+            DB::commit();
 
             toast($pasien->status === 'Dikembalikan' ?
                 'Data telah diperbarui dan dikirim untuk verifikasi ulang' :
@@ -251,7 +295,7 @@ class worklistController extends Controller
 
             return redirect()->route('worklist.index');
         } catch (\Exception $e) {
-            DB::rollBack(); // Rollback jika terjadi kesalahan
+            DB::rollBack();
             toast('Terjadi kesalahan: ' . $e->getMessage(), 'error');
             return redirect()->back()->withInput();
         }

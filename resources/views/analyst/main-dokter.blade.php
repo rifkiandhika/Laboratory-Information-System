@@ -419,8 +419,8 @@
     document.addEventListener('DOMContentLoaded', function() {
 
     $(function() {
-         // {{-- fungsi menghitung usia --}}
-         function calculateAge(birthDate) {
+        // {{-- fungsi menghitung usia --}}
+        function calculateAge(birthDate) {
             const birth = new Date(birthDate);
             const today = new Date();
             let age = today.getFullYear() - birth.getFullYear();
@@ -461,22 +461,40 @@
                         const hasil = res.data.hasil_pemeriksaan;
 
                         populateModal(spesimen, scollection, shandling, history, data_pemeriksaan_pasien);
+                        function getDokterDisplay(labData, dokterData) {
+                        // Jika tidak ada data
+                        if (!labData || !dokterData) {
+                            return "Dokter tidak tersedia";
+                        }
 
-                        // const timelineItems = history.map(h => {
-                        //     const waktu = new Date(h.waktu_proses);
-                        //     const waktuFormatted = waktu.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        // Ambil kode dokter dari data lab
+                        const kodeDokterLab = labData?.kode_dokter;
 
-                        //     return `
-                        //         <div class="timeline-item w-100">
-                        //             <div class="timeline-item-marker">
-                        //                 <div class="timeline-item-marker-text">${waktuFormatted}</div>
-                        //                 <div class="timeline-item-marker-indicator clear text-white"><i class="ti ti-check"></i></div>
-                        //             </div>
-                        //             <div class="timeline-item-content">${h.proses}</div>
-                        //         </div>
-                        //     `;
-                        // }).join('');
+                        // Cek jika kode dokter lab sama dengan kode dokter di data dokter
+                        if (kodeDokterLab === dokterData.kode_dokter) {
+                            return dokterData.nama_dokter;
+                        }
 
+                        // Jika tidak sama, kembalikan kode dokter dari lab
+                        return kodeDokterLab || "Dokter tidak tersedia";
+                    }
+
+                    // Penggunaan
+                    const labData = data_pasien; // Data lab dengan kode_dokter
+                    const dokterData = data_pasien.kode_dokter; // Data dokter
+
+                    let dokterDisplay = getDokterDisplay(labData, dokterData);
+
+                    // Set nilai ke input
+                    let inputElement = document.querySelector('[name="dokter"]');
+                    if (inputElement) {
+                        inputElement.value = dokterDisplay;
+                    }
+
+                    // Debug logs
+                    // console.log('Lab Data:', labData);
+                    // console.log('Dokter Data:', dokterData);
+                    // console.log('Display Value:', dokterDisplay);
 
                         let detailContent = '<div class="row">';
 
@@ -528,7 +546,7 @@
                                 <div class="row mb-1">
                                     <label class="col-5 col-form-label fw-bold">Dokter</label>
                                     <div class="col-7">
-                                        <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.kode_dokter}">
+                                        <input type="text" readonly class="form-control-plaintext" value=": ${dokterDisplay} ">
                                     </div>
                                 </div>
                             </div>
@@ -553,22 +571,9 @@
 
                         // loader.style.display = 'none';
                         loader.hide();
-                        
-                        // const manualButton = document.getElementById('manualButton');
-                        // const manualInput = document.querySelectorAll('#manualInput');
-                        // const submitButton = document.querySelector('button[type="submit"]');
 
-                        // submitButton.disabled = true;
 
-                        // manualButton.addEventListener('click', () => {
-                        //     manualInput.forEach(input => {
-                        //         input.readOnly = false;
-                        //         input.classList.remove('readonly-input');
-                        //         input.focus(); // Optional: Focus on the first input
-                        //     });
-                        //     submitButton.disabled = false;
-                        // });
-                        // Populate modal with accordion content
+
                     }
                 })
                 .catch(error => {
@@ -582,112 +587,348 @@
             return `
                 <div class="preview-button" id="preview-button">
                     <div class="row">
-                        {{-- <div class="col-lg-3 mb-3">
-                            <button type="button" id="manualButton" class="btn btn-outline-secondary btn-block w-100">Manual</button>
+                        <div class="col-lg-12 mb-3">
+                            <button type="button" class="btn btn-outline-info btn-block w-100" data-bs-toggle="modal" data-bs-target="#sampleHistoryModal">Sample History<span class="badge bg-danger" style="display: none;">!</span></button>
                         </div>
-                        <div class="col-lg-3 mb-3">
-                            <button type="button" class="btn btn-outline-primary btn-block w-100">Duplo</button>
-                        </div> --}}
-                        <div class=" mb-3">
-                            <button type="button" class="btn btn-outline-info btn-block w-100" data-bs-toggle="modal" data-bs-target="#sampleHistoryModal">Sample History</button>
-                        </div>
-                        {{-- <div class="mb-3">
-                            <form id="delete-form-${data_pasien.id}"
-                                action="analyst/worklist/${data_pasien.id}" method="POST"
-                                style="display: none;">
-                                @csrf
-                                @method('DELETE')
-                            </form>
-                                                    
-                            <button class="btn btn-outline-danger w-100"
-                                onclick="confirmDelete(${data_pasien.id})">
-                                Delete
-                            </button> 
-                        </div>--}}
                     </div>
                 </div>
             `;
         }
 
-        function getTableContent(data_pemeriksaan_pasien, data_pasien, hasil) {
-        let content = `
-            <input type="hidden" name="no_lab" value="${data_pasien.no_lab}">
-            <input type="hidden" name="no_rm" value="${data_pasien.no_rm}">
-            <input type="hidden" name="nama" value="${data_pasien.nama}">
-            <input type="hidden" name="ruangan" value="${data_pasien.asal_ruangan}">
-            <input type="hidden" name="nama_dokter" value="${data_pasien.kode_dokter}">
+       function getTableContent(data_pemeriksaan_pasien, data_pasien, hasil) {
+    const hematologiParams = [
+        { nama: 'WBC', display_name: 'Leukosit', satuan: '10³/µL', normal_min: 4.0, normal_max: 10.0 },
+        { nama: 'LYM#', display_name: 'LYM#', satuan: '10³/µL', normal_min: 1.0, normal_max: 4.0 },
+        { nama: 'MID#', display_name: 'MID#', satuan: '10³/µL', normal_min: 0.2, normal_max: 0.8 },
+        { nama: 'GRAN#', display_name: 'GRAN#', satuan: '10³/µL', normal_min: 2.0, normal_max: 7.0 },
+        { nama: 'LYM%', display_name: 'Limfosit', satuan: '%', normal_min: 20, normal_max: 40 },
+        { nama: 'MID%', display_name: 'Monosit', satuan: '%', normal_min: 3, normal_max: 15 },
+        { nama: 'GRAN%', display_name: 'Granulosit', satuan: '%', normal_min: 50, normal_max: 70 },
+        { nama: 'RBC', display_name: 'Eritrosit', satuan: '10⁶/µL', normal_min: 4.0, normal_max: 5.5 },
+        { nama: 'HGB', display_name: 'Hemoglobin', satuan: 'g/dL', normal_min: 12.0, normal_max: 16.0 },
+        { nama: 'HCT', display_name: 'Hematokrit', satuan: '%', normal_min: 36, normal_max: 48 },
+        { nama: 'MCV', display_name: 'MCV', satuan: 'fL', normal_min: 80, normal_max: 100 },
+        { nama: 'MCH', display_name: 'MCH', satuan: 'pg', normal_min: 27, normal_max: 32 },
+        { nama: 'MCHC', display_name: 'MCHC', satuan: 'g/dL', normal_min: 32, normal_max: 36 },
+        { nama: 'RDW-CV', display_name: 'RDW-CV', satuan: '%', normal_min: 11.5, normal_max: 14.5 },
+        { nama: 'RDW-SD', display_name: 'RDW-SD', satuan: 'fL', normal_min: 39, normal_max: 46 },
+        { nama: 'PLT', display_name: 'Trombosit', satuan: '10³/µL', normal_min: 150, normal_max: 450 },
+        { nama: 'MPV', display_name: 'MPV', satuan: 'fL', normal_min: 7.0, normal_max: 11.0 },
+        { nama: 'PDW', display_name: 'PDW', satuan: 'fL', normal_min: 10.0, normal_max: 18.0 },
+        { nama: 'PCT', display_name: 'PCT', satuan: '%', normal_min: 0.15, normal_max: 0.50 },
+        { nama: 'P-LCC', display_name: 'P-LCC', satuan: '10³/µL', normal_min: 30, normal_max: 90 },
+        { nama: 'P-LCR', display_name: 'P-LCR', satuan: '%', normal_min: 13, normal_max: 43 }
+    ];
 
-            <div id="tabel-pemeriksaan" class="table-responsive">
-                <table class="table table-striped" id="worklistTable">
+    // Buat map dari data hasil pemeriksaan yang ada di database
+    const hasilMap = {};
+    if (hasil && hasil.length > 0) {
+        hasil.forEach(item => {
+            hasilMap[item.nama_pemeriksaan] = {
+                hasil: item.hasil || '',
+                duplo_d1: item.duplo_d1 || '',
+                duplo_d2: item.duplo_d2 || '',
+                duplo_d3: item.duplo_d3 || '',
+                range: item.range || '',
+                satuan: item.satuan || '',
+                note: item.note || ''
+            };
+        });
+    }
+
+    // Create a map of OBX data by parameter name for quick lookup (fallback jika tidak ada data database)
+    const obxMap = {};
+    if (data_pasien.obx) {
+        data_pasien.obx.forEach(obxItem => {
+            if (!obxMap[obxItem.identifier_name]) {
+                obxMap[obxItem.identifier_name] = [];
+            }
+            obxMap[obxItem.identifier_name].push(obxItem.identifier_value);
+        });
+    }
+
+    function getDataValues(parameterName, namaPemeriksaan) {
+        // Prioritas: data dari database, kemudian OBX sebagai fallback
+        if (hasilMap[namaPemeriksaan] || hasilMap[parameterName]) {
+            const data = hasilMap[namaPemeriksaan] || hasilMap[parameterName];
+            return {
+                duplo_d1: data.duplo_d1,
+                duplo_d2: data.duplo_d2,
+                duplo_d3: data.duplo_d3,
+                hasilUtama: data.hasil,
+                satuan: data.satuan,
+                range: data.range
+            };
+        }
+        
+        // Fallback ke OBX jika tidak ada data database
+        const values = obxMap[parameterName] || [];
+        return {
+            duplo_d1: values[0] || '',
+            duplo_d2: values[1] || '',
+            duplo_d3: values[2] || '',
+            hasilUtama: values[0] || '',
+            satuan: '',
+            range: ''
+        };
+    }
+
+    // Cek apakah ada data duplo untuk menentukan kolom mana yang perlu ditampilkan
+    function checkDuploColumns() {
+        const duploStatus = {
+            hasD1: false,
+            hasD2: false,
+            hasD3: false
+        };
+
+        // Cek dari data database
+        Object.values(hasilMap).forEach(item => {
+            if (item.duplo_d1 && item.duplo_d1.trim() !== '') duploStatus.hasD1 = true;
+            if (item.duplo_d2 && item.duplo_d2.trim() !== '') duploStatus.hasD2 = true;
+            if (item.duplo_d3 && item.duplo_d3.trim() !== '') duploStatus.hasD3 = true;
+        });
+
+        // Jika tidak ada data database, cek OBX
+        if (!duploStatus.hasD1 && !duploStatus.hasD2 && !duploStatus.hasD3) {
+            Object.values(obxMap).forEach(values => {
+                if (values[0] && values[0].trim() !== '') duploStatus.hasD1 = true;
+                if (values[1] && values[1].trim() !== '') duploStatus.hasD2 = true;
+                if (values[2] && values[2].trim() !== '') duploStatus.hasD3 = true;
+            });
+        }
+
+        return duploStatus;
+    }
+
+    const duploStatus = checkDuploColumns();
+
+    function updateFlag(value, flagCell, parameter = null, isHematologi = false) {
+        const nilaiHasil = parseFloat(value);
+        let flagIcon = '';
+        
+        if (!isNaN(nilaiHasil)) {
+            if (isHematologi && parameter) {
+                // range normal untuk parameter hematologi
+                const paramData = hematologiParams.find(p => p.nama === parameter);
+                if (paramData) {
+                    if (nilaiHasil < paramData.normal_min) {
+                        flagIcon = `<i class="ti ti-arrow-down text-primary"></i> Low`;
+                    } else if (nilaiHasil > paramData.normal_max) {
+                        flagIcon = `<i class="ti ti-arrow-up text-danger"></i> High`;
+                    } else {
+                        flagIcon = `<i class="ti ti-check text-success"></i> Normal`;
+                    }
+                }
+            } else {
+                // Flag logic untuk non-hematologi
+                if (nilaiHasil < 5) {
+                    flagIcon = `<i class="ti ti-arrow-down text-primary"></i>`;
+                } else if (nilaiHasil > 10) {
+                    flagIcon = `<i class="ti ti-arrow-up text-danger"></i>`;
+                }
+            }
+        }
+        if (flagCell && flagCell.innerHTML !== undefined) {
+            flagCell.innerHTML = flagIcon;
+        }
+        return flagIcon;
+    }
+
+    const labData = data_pasien;
+    const dokterData = data_pasien.dokter;
+    const isDikembalikan = data_pasien.status === "Dikembalikan";
+    const obx = data_pasien.obx;
+
+    // Ambil note dari database jika ada
+    const noteValue = hasil.length > 0 && hasil[0].note ? hasil[0].note : '';
+
+    const content = `
+        
+        <input type="hidden" name="no_lab" value="${data_pasien.no_lab}">
+        <input type="hidden" name="no_rm" value="${data_pasien.no_rm}">
+        <input type="hidden" name="nama" value="${data_pasien.nama}">
+        <input type="hidden" name="ruangan" value="${data_pasien.asal_ruangan}">
+        <input type="hidden" name="nama_dokter" value="${data_pasien.kode_dokter}">
+        
+        <div id="tabel-pemeriksaan">
+            <div class="table-responsive">
+                <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th class="col-3">Parameter</th>
-                            <th class="col-3">Hasil</th>
-                            <th class="col-3 duplo d1-column" style="display: none;">D1</th>
-                            <th class="col-3 duplo d2-column" style="display: none;">D2</th>
-                            <th class="col-3 duplo d3-column" style="display: none;">D3</th>
-                            <th class="col-2">Flag</th>
-                            <th class="col-2">Satuan</th>
-                            <th class="col-2">Range</th>
+                            <th class="col-2">PARAMETER</th>
+                            <th class="col-2">HASIL</th>
+                            <th class="col-1"></th>
+                            <th class="col-2 duplo d1-column" style="display: ${duploStatus.hasD1 ? 'table-cell' : 'none'};">D1</th>
+                            <th class="col-2 duplo d2-column" style="display: ${duploStatus.hasD2 ? 'table-cell' : 'none'};">D2</th>
+                            <th class="col-2 duplo d3-column" style="display: ${duploStatus.hasD3 ? 'table-cell' : 'none'};">D3</th>
+                            <th class="col-3">FLAG</th>
+                            <th class="col-2">Unit</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        ${data_pemeriksaan_pasien.map(e => `
-                            <tr>
-                                <th scope="row">${e.data_departement.nama_department}</th>
-                                <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
-                                ${e.pasiens.map(p => {
-                                    const hasilItem = hasil.find(item => item.nama_pemeriksaan === p.data_pemeriksaan.nama_pemeriksaan) || {};
-                                    const rowId = p.data_pemeriksaan.id;
-                                    const nilaiHasil = hasilItem.hasil ? parseFloat(hasilItem.hasil) : null;
-                                    let flagIcon = '';
-
-                                    if (nilaiHasil !== null) {
-                                        if (nilaiHasil < 5) {
-                                            flagIcon = `<i class="ti ti-arrow-down text-primary"></i>`;
-                                        } else if (nilaiHasil > 10) {
-                                            flagIcon = `<i class="ti ti-arrow-up text-danger"></i>`;
-                                        }
-                                    }
-
-                                    return `
-                                    <tr data-id="${rowId}">
-                                        <td>${p.data_pemeriksaan.nama_pemeriksaan}</td>
-                                        <input type="hidden" name="nama_pemeriksaan[]" value="${p.data_pemeriksaan.nama_pemeriksaan}" />
-                                        <td>
-                                            <input type="number" name="hasil[]" class="form-control text-center w-50 p-0 manualInput" disabled value="${hasilItem.hasil || ''}" required/>
-                                        </td>
-                                        <td class="duplo d1-column" style="display: none;">
-                                            <input type="number" name="duplo_d1" class="form-control text-center w-50 p-0 d1" disabled value="${hasilItem.duplo_d1 || ''}"/>
-                                        </td>
-                                        <td class="duplo d2-column" style="display: none;">
-                                            <input type="number" name="duplo_d2" class="form-control text-center w-50 p-0 d2" disabled value="${hasilItem.duplo_d2 || ''}"/>
-                                        </td>
-                                        <td class="duplo d3-column" style="display: none;">
-                                            <input type="number" name="duplo_d3" class="form-control text-center w-50 p-0 d3" disabled value="${hasilItem.duplo_d3 || ''}"/>
-                                        </td>
-                                        <td class="text-center flag-cell">${flagIcon}</td>
-                                        <td>
-                                            <input type="hidden" name="satuan[]" class="form-control w-50 p-0" value="${p.data_pemeriksaan.nilai_satuan}" readonly/>
-                                            ${p.data_pemeriksaan.nilai_satuan}
-                                        </td>
-                                        <td>
-                                            <input type="hidden" name="range[]" class="form-control w-50 p-0" value="1-10" readonly/>1-10
-                                        </td>
-                                    </tr>
-                                    `;
-                                }).join('')}
-                            </tr>
-                        `).join('')}
-                    </tbody>
                 </table>
-                <br>
-                <label>Note<span class="text-danger">*</span></label>
-                <div>
-                    <textarea class="form-control" name="note" col="3" row="3" disabled>${hasil.length > 0 && hasil[0].note ? hasil[0].note : ''}</textarea>
-                </div>
-
-                <br>
+            </div>
+            
+            <div class="accordion" id="accordionPemeriksaan">
+                ${data_pemeriksaan_pasien.map((e, idx) => `
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading${idx}">
+                            <button class="accordion-button collapsed" type="button" 
+                                    data-bs-toggle="collapse" data-bs-target="#collapse${idx}"
+                                    aria-expanded="false" aria-controls="collapse${idx}">
+                                <span>${e.data_departement.nama_department}</span>
+                            </button>
+                        </h2>
+                        
+                        <div id="collapse${idx}" class="accordion-collapse collapse" 
+                            aria-labelledby="heading${idx}" data-bs-parent="#accordionPemeriksaan">
+                            <div class="accordion-body">
+                                <table class="table table-striped">
+                                    <thead style="visibility: collapse;">
+                                        <tr>
+                                            <th class="col-2">PARAMETER</th>
+                                            <th class="col-2">HASIL</th>
+                                            <th class="col-1"></th>
+                                            <th class="col-2 duplo d1-column" style="display: ${duploStatus.hasD1 ? 'table-cell' : 'none'};">D1</th>
+                                            <th class="col-2 duplo d2-column" style="display: ${duploStatus.hasD2 ? 'table-cell' : 'none'};">D2</th>
+                                            <th class="col-2 duplo d3-column" style="display: ${duploStatus.hasD3 ? 'table-cell' : 'none'};">D3</th>
+                                            <th class="col-3">FLAG</th>
+                                            <th class="col-2">Unit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${(() => {
+                                            // Cek apakah ada pemeriksaan hematologi di grup ini
+                                            const hasHematologi = e.pasiens.some(p => 
+                                                p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('hematologi')
+                                            );
+                                            
+                                            if (hasHematologi) {
+                                                // Jika ada hematologi, tampilkan parameter hematologi lengkap
+                                                return hematologiParams.map((param, paramIdx) => {
+                                                    // Cari data hasil untuk parameter ini
+                                                    const dataValues = getDataValues(param.nama, param.nama);
+                                                    const rowId = `hematologi_${idx}_${paramIdx}`;
+                                                    const flagContent = updateFlag(dataValues.hasilUtama, {innerHTML: ''}, param.nama, true);
+                                                    
+                                                    return `
+                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" class="hematologi-row">
+                                                        <td class="col-2">
+                                                            <strong>${param.display_name}</strong>
+                                                            <small class="text-muted d-block">${param.normal_min}-${param.normal_max}</small>
+                                                            <input type="hidden" name="nama_pemeriksaan[]" value="${param.nama}" />
+                                                            <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                        </td>
+                                                        <td class="col-2">
+                                                            <input type="number" name="hasil[]" 
+                                                                class="form-control manualInput w-60 p-0 text-center" 
+                                                                value="${dataValues.hasilUtama}" 
+                                                                step="0.01" placeholder="" readonly />
+                                                        </td>
+                                                        <td class="col-1">
+                                                            <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
+                                                                    data-index="${paramIdx}" disabled>
+                                                                <i class="ti ti-switch-2"></i>
+                                                            </button>
+                                                        </td>
+                                                        <td class="col-2 duplo d1-column text-center" style="display: ${duploStatus.hasD1 ? 'table-cell' : 'none'};">
+                                                            <input type="number" name="duplo_d1[]" 
+                                                                class="form-control d1 w-60 p-0 text-center" 
+                                                                value="${dataValues.duplo_d1}" step="0.01" readonly />
+                                                        </td>
+                                                        <td class="col-2 duplo d2-column" style="display: ${duploStatus.hasD2 ? 'table-cell' : 'none'};">
+                                                            <input type="number" name="duplo_d2[]" 
+                                                                class="form-control d2 w-60 p-0 text-center" 
+                                                                value="${dataValues.duplo_d2}" step="0.01" readonly />
+                                                        </td>
+                                                        <td class="col-2 duplo d3-column" style="display: ${duploStatus.hasD3 ? 'table-cell' : 'none'};">
+                                                            <input type="number" name="duplo_d3[]" 
+                                                                class="form-control d3 w-50 p-0 text-center" 
+                                                                value="${dataValues.duplo_d3}" step="0.01" readonly />
+                                                        </td>
+                                                        <td class="col-3 flag-cell">
+                                                            ${flagContent}
+                                                        </td>
+                                                        <td>
+                                                            <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
+                                                                value="${dataValues.satuan || param.satuan}" readonly />
+                                                            <input type="hidden" name="range[]" class="form-control w-100 p-0" 
+                                                                value="${dataValues.range || param.normal_min + '-' + param.normal_max}" readonly />
+                                                            ${dataValues.satuan || param.satuan}
+                                                        </td>
+                                                    </tr>
+                                                    `;
+                                                }).join('');
+                                            } else {
+                                                // Jika bukan hematologi, tampilkan seperti biasa
+                                                return e.pasiens.map(p => {
+                                                    const dataValues = getDataValues(p.data_pemeriksaan.nama_parameter, p.data_pemeriksaan.nama_pemeriksaan);
+                                                    const rowId = p.data_pemeriksaan.id;
+                                                    const flagContent = updateFlag(dataValues.hasilUtama, {innerHTML: ''}, p.data_pemeriksaan.nama_parameter);
+                                                    
+                                                    return `
+                                                    <tr data-id="${rowId}" data-parameter="${p.data_pemeriksaan.nama_parameter}">
+                                                        <td class="col-2">
+                                                            <strong>${p.data_pemeriksaan.nama_pemeriksaan}</strong>
+                                                            <input type="hidden" name="nama_pemeriksaan[]" 
+                                                                value="${p.data_pemeriksaan.nama_pemeriksaan}" />
+                                                            <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                        </td>
+                                                        <td class="col-2">
+                                                            <input type="number" name="hasil[]" 
+                                                                class="form-control manualInput w-60 p-0" 
+                                                                value="${dataValues.hasilUtama}" readonly />
+                                                        </td>
+                                                        <td class="col-1">
+                                                            <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
+                                                                    data-index="0" disabled>
+                                                                <i class="ti ti-switch-2"></i>
+                                                            </button>
+                                                        </td>
+                                                        <td class="col-2 duplo d1-column text-center" style="display: ${duploStatus.hasD1 ? 'table-cell' : 'none'};">
+                                                            <input type="number" name="duplo_d1[]" 
+                                                                class="form-control d1 w-60 p-0 text-center" 
+                                                                value="${dataValues.duplo_d1}" readonly />
+                                                        </td>
+                                                        <td class="col-2 duplo d2-column" style="display: ${duploStatus.hasD2 ? 'table-cell' : 'none'};">
+                                                            <input type="number" name="duplo_d2[]" 
+                                                                class="form-control d2 w-60 p-0 text-center" 
+                                                                value="${dataValues.duplo_d2}" readonly />
+                                                        </td>
+                                                        <td class="col-2 duplo d3-column" style="display: ${duploStatus.hasD3 ? 'table-cell' : 'none'};">
+                                                            <input type="number" name="duplo_d3[]" 
+                                                                class="form-control d3 w-50 p-0 text-center" 
+                                                                value="${dataValues.duplo_d3}" readonly />
+                                                        </td>
+                                                        <td class="col-3 flag-cell">
+                                                            ${flagContent}
+                                                        </td>
+                                                        <td>
+                                                            <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
+                                                                value="${dataValues.satuan || p.data_pemeriksaan.nilai_satuan}" readonly />
+                                                            <input type="hidden" name="range[]" class="form-control w-100 p-0" 
+                                                                value="${dataValues.range}" readonly />
+                                                            ${dataValues.satuan || p.data_pemeriksaan.nilai_satuan}
+                                                        </td>
+                                                    </tr>
+                                                    `;
+                                                }).join('');
+                                            }
+                                        })()}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            
+            <div>
+                <label>Note</label>
+                <textarea class="form-control" name="note" cols="3" rows="3" 
+                        placeholder="" readonly>${noteValue}</textarea>
+            </div>
+        </div>
+        
                 <div class="row w-100 text-center">
                     <div class="col-lg-6 mt-2">
                         <form id="dokterForm-${data_pasien.id}"
@@ -706,230 +947,270 @@
                         <button class="btn btn-outline-primary w-100" onclick="confirmDokter(${data_pasien.id})">Verifikasi</button>
                     </div>
                 </div>
-            </div>
-        `;
+    
+    <style>
+        .hematologi-row {
+            background-color: #f8f9ff;
+        }
+        .hematologi-row:hover {
+            background-color: #e9ecff;
+        }
+        .text-success {
+            color: #28a745 !important;
+        }
+        .hematologi-row small.text-muted {
+            font-size: 0.75rem;
+            margin-top: 2px;
+        }
+        .form-control[readonly] {
+            background-color: #f8f9fa;
+            opacity: 1;
+        }
+    </style>
+    `;
 
-        setTimeout(() => {
-            function checkAndShowDuploColumns() {
-                const d1Inputs = document.querySelectorAll('.d1');
-                const d2Inputs = document.querySelectorAll('.d2');
-                const d3Inputs = document.querySelectorAll('.d3');
+    setTimeout(() => {
+        // Referensi elemen-elemen yang diperlukan
+        const kembalikanBtn = document.getElementById('kembalikanBtn');
+        const releaseBtn = document.getElementById('releaseBtn');
 
-                let hasD1 = false;
-                let hasD2 = false;
-                let hasD3 = false;
-
-                d1Inputs.forEach(input => { if (input.value.trim() !== '') hasD1 = true; });
-                d2Inputs.forEach(input => { if (input.value.trim() !== '') hasD2 = true; });
-                d3Inputs.forEach(input => { if (input.value.trim() !== '') hasD3 = true; });
-
-                document.querySelectorAll('.d1-column').forEach(col => col.style.display = hasD1 ? 'table-cell' : 'none');
-                document.querySelectorAll('.d2-column').forEach(col => col.style.display = hasD2 ? 'table-cell' : 'none');
-                document.querySelectorAll('.d3-column').forEach(col => col.style.display = hasD3 ? 'table-cell' : 'none');
-            }
-
-            // Jalankan setelah halaman dimuat
-            checkAndShowDuploColumns();
-
-            // Event listener untuk input real-time flag
-            document.querySelectorAll('.manualInput, .d1, .d2, .d3').forEach(input => {
-                input.addEventListener('input', function() {
-                    const flagCell = this.closest('tr').querySelector('.flag-cell');
-                    updateFlag(this.value, flagCell);
-                });
-            });
-
-            // Fungsi update flag
-            function updateFlag(value, flagCell) {
-                let flagIcon = '';
-                const nilai = parseFloat(value);
-
-                if (!isNaN(nilai)) {
-                    if (nilai < 5) {
-                        flagIcon = `<i class="ti ti-arrow-down text-primary"></i>`;
-                    } else if (nilai > 10) {
-                        flagIcon = `<i class="ti ti-arrow-up text-danger"></i>`;
-                    }
+        // Event listener untuk tombol kembalikan
+        if (kembalikanBtn) {
+            kembalikanBtn.addEventListener('click', () => {
+                if (confirm('Apakah Anda yakin ingin mengembalikan hasil ke Analyst?')) {
+                    // Buat form baru untuk kembalikan
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `worklist/return/${data_pasien.id}`;
+                    
+                    // Tambahkan CSRF token
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_token';
+                    csrfInput.value = csrfToken;
+                    form.appendChild(csrfInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
                 }
+            });
+        }
 
-                flagCell.innerHTML = flagIcon;
+        // Event listener untuk tombol release
+        if (releaseBtn) {
+            releaseBtn.addEventListener('click', () => {
+                if (confirm('Apakah Anda yakin ingin me-release hasil pemeriksaan?')) {
+                    document.getElementById('worklistForm').action = `worklist/release/${data_pasien.id}`;
+                    document.getElementById('worklistForm').submit();
+                }
+            });
+        }
+    }, 0);
+
+    return content;
+}
+
+// Export fungsi jika diperlukan
+window.getTableContent = getTableContent;
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+        let duploCount = 0;
+        const duploButton = document.getElementById('duploButton');
+        
+            if (duploButton) {
+                duploButton.addEventListener('click', () => {
+                    duploCount++;
+                    // console.log('Duplo Button Clicked. Count:', duploCount); // Debugging tombol yang diklik
+
+                    // Menambahkan kolom baru pada setiap baris tabel
+                    const rows = document.querySelectorAll('#worklistTable tbody tr');
+                    
+                    rows.forEach(row => {
+                        const newDuploCell = document.createElement('td');
+                        newDuploCell.classList.add('text-center'); // Jika ingin centering
+                        newDuploCell.textContent = `D${duploCount}`;
+                        row.appendChild(newDuploCell);
+                    });
+                });
+            } else {
+                // console.error("Tombol Duplo tidak ditemukan.");
             }
+        });
 
 
-        }, 100);
-
-        return content;
-    }
 
 
         function populateModal(spesimen, scollection, shandling, history, data_pemeriksaan_pasien) {
-            const accordion = document.getElementById('sampleHistoryAccordion');
-            const historyItem = history.find(h => h.proses === 'Dikembalikan oleh dokter');
-            let accordionContent = '';
-            let noteContent = '';
+    const accordion = document.getElementById('sampleHistoryAccordion');
+    const historyItem = history.find(h => h.proses === 'Dikembalikan oleh dokter');
+    let accordionContent = '';
+    let noteContent = '';
 
-            accordionContent += `
-            <hr>
-            <h5>Detail Sampling</h5>
-            <hr>
-            <h5>History</h5>
-            <ul class="step-wizard-list mt-4">
-                ${history.map((h, index) => {
-                    // Membuat objek Date dari h.created_at
-                    let createdAt = new Date(h.created_at);
+    accordionContent += `
+    <hr>
+    <h5>Detail Sampling</h5>
+    <hr>
+    <h5>History</h5>
+    <ul class="step-wizard-list mt-4">
+        ${history.map((h, index) => {
+            // Membuat objek Date dari h.created_at
+            let createdAt = new Date(h.created_at);
 
-                    // Format tanggal dan waktu sesuai dengan yang diinginkan
-                    let formattedDate = createdAt.toLocaleString('id-ID', {
-                        year: 'numeric', 
-                        month: 'numeric', 
-                        day: 'numeric',
-                        hour: '2-digit', 
-                        minute: '2-digit'
-                    });
-
-                    return `
-                        <li class="step-wizard-item">
-                            <span class="progress-count">${index + 1}</span>
-                            <span class="progress-label">${h.proses}</span>
-                            <span class="progress-label">${formattedDate}</span>
-                        </li>
-                    `;
-                }).join('')}
-            </ul>
-        `;
-
-            spesimen.forEach(e => {
-                let details = '';
-                let detailsData = [];
-                let kapasitas, serumh, serum;
-                let processTime = '';
-
-                const checkInSpesimen = history.find(h => h.status === 'Check in spesiment');
-                let noteFromCollection = null;
-                let noteFromHandling = null;
-
-                if (e.tabung === 'K3-EDTA') {
-                    const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key);
-                    if (collectionItem) {
-                        detailsData = collectionItem.details.filter(detail => 
-                            e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                        );
-                        kapasitas = collectionItem.kapasitas;
-                        noteFromCollection = collectionItem.note;
-                    }
-                } else if (e.tabung === 'K3') {
-                    const collectionItem = scollection.find(item => 
-                        item.no_lab === e.laravel_through_key && item.tabung === 'K3'
-                    );
-                    if (collectionItem) {
-                        detailsData = collectionItem.details.filter(detail => 
-                            e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                        );
-                        serumh = collectionItem.serumh;
-                        noteFromCollection = collectionItem.note;
-                    }
-                } else if (e.tabung === 'CLOT-ACT') {
-                    const handlingItem = shandling.find(item => item.no_lab === e.laravel_through_key);
-                    if (handlingItem) {
-                        detailsData = handlingItem.details.filter(detail => 
-                            e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                        );
-                        serum = handlingItem.serum;
-                        noteFromHandling = handlingItem.note;
-                    }
-                }
-
-                if (e.details && e.details.length > 0){
-                    details = `<div class="detail-container col-12 col-md-6">`;
-                    e.details.forEach(detail => {
-                        const imageUrl = `/gambar/${detail.gambar}`;
-                        let isChecked = '';
-                        let isDisabled = 'disabled';
-
-                        const matchedDetail = detailsData.find(d => d.id === detail.id)
-                        if(matchedDetail){
-                            if (e.tabung === 'K3-EDTA' && kapasitas == detail.id) {
-                                isChecked = 'checked';
-                                isDisabled = '';
-                            } else if (e.tabung === 'K3' && serumh == detail.id) {
-                                isChecked = 'checked';
-                                isDisabled = '';
-                            } else if (e.tabung === 'CLOT-ACT' && serum == detail.id) {
-                                isChecked = 'checked';
-                                isDisabled = '';
-                            }
-                        }
-
-                        details +=  
-                        `<div class="detail-item">
-                            <div class="detail-text">${detail.nama_parameter}</div>
-                            <div class="detail-image-container">
-                                <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
-                            </div>
-                            <div class="detail-radio-container ">
-                                <input type="radio" name="${e.tabung}" class="detail.radio" value="${detail.id}" ${isChecked} ${isDisabled} />  
-                            </div>
-                        </div>`;
-                    });
-                    details += `</div>`
-                }
-
-                let title = '';
-                let subtext = '';
-
-                if (e.tabung === 'K3-EDTA') {
-                    title = '<h5 class="title">Spesiment Collection</h5> <hr>';
-                } else if (e.tabung === 'CLOTH-ACT') {
-                    subtext = '<div class="subtext">Serum</div>';
-                } else if (e.tabung === 'CLOT-ACT') {
-                    title = '<h5 class="title mt-3">Spesiment Handlings</h5> <hr>';
-                    subtext = '<div class="subtext">Serum</div>';
-                }
-
-                let note = '';
-                if (e.tabung === 'K3-EDTA' || e.tabung === 'CLOT-ACT' || e.tabung === 'CLOTH-ACT') {
-                    note = '<p class="mb-0"><strong>Note</strong></p>';
-                }
-
-                accordionContent += `${title}
-                    <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">                          
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="heading${e.tabung}">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">
-                                Tabung ${e.tabung}
-                                </button>
-                            </h2>
-                            <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}" data-bs-parent="#accordion${e.tabung}">
-                                <div class="accordion-body">
-                                    ${subtext}
-                                    <div class="container">
-                                        ${details}
-                                    </div>
-                                    ${note}
-                                    ${e.tabung === 'K3-EDTA' ? 
-                                        `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
-                                    ${e.tabung === 'CLOTH-ACT' ? 
-                                        `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
-                                    ${e.tabung === 'CLOT-ACT' ? 
-                                        `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromHandling || 'null'}" ${noteFromHandling ? '' : 'disabled'} disabled></textarea>` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+            // Format tanggal dan waktu sesuai dengan yang diinginkan
+            let formattedDate = createdAt.toLocaleString('id-ID', {
+                year: 'numeric', 
+                month: 'numeric', 
+                day: 'numeric',
+                hour: '2-digit', 
+                minute: '2-digit'
             });
 
-            if (historyItem && historyItem.note) {
-                accordionContent += `
-                    <div class="col-lg-12">
-                        <label class="fw-bold mt-2">Note</label>
-                        <textarea id="noteTextarea" class="form-control" row="3" placeholder="${historyItem.note}" disabled></textarea>
-                    </div>
-                `;
-            }
+            return `
+                <li class="step-wizard-item">
+                    <span class="progress-count">${index + 1}</span>
+                    <span class="progress-label">${h.proses}</span>
+                    <span class="progress-label">${formattedDate}</span>
+                </li>
+            `;
+        }).join('')}
+    </ul>
+`;
 
-            accordion.innerHTML = accordionContent;
+    spesimen.forEach(e => {
+        let details = '';
+        let detailsData = [];
+        let kapasitas, serumh, serum;
+        let processTime = '';
+
+        const checkInSpesimen = history.find(h => h.status === 'Check in spesiment');
+        let noteFromCollection = null;
+        let noteFromHandling = null;
+
+        if (e.tabung === 'K3-EDTA') {
+            const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key);
+            if (collectionItem) {
+                detailsData = collectionItem.details.filter(detail => 
+                    e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                );
+                kapasitas = collectionItem.kapasitas;
+                noteFromCollection = collectionItem.note;
+            }
+        } else if (e.tabung === 'EDTA') {
+            const collectionItem = scollection.find(item => 
+                item.no_lab === e.laravel_through_key && item.tabung === 'EDTA'
+            );
+            if (collectionItem) {
+                detailsData = collectionItem.details.filter(detail => 
+                    e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                );
+                serumh = collectionItem.serumh;
+                noteFromCollection = collectionItem.note;
+            }
+        } else if (e.tabung === 'CLOT-ACT') {
+            const handlingItem = shandling.find(item => item.no_lab === e.laravel_through_key);
+            if (handlingItem) {
+                detailsData = handlingItem.details.filter(detail => 
+                    e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                );
+                serum = handlingItem.serum;
+                noteFromHandling = handlingItem.note;
+            }
         }
+
+        if (e.details && e.details.length > 0){
+            details = `<div class="detail-container col-12 col-md-6">`;
+            e.details.forEach(detail => {
+                const imageUrl = `/gambar/${detail.gambar}`;
+                let isChecked = '';
+                let isDisabled = 'disabled';
+
+                const matchedDetail = detailsData.find(d => d.id === detail.id)
+                if(matchedDetail){
+                    if (e.tabung === 'K3-EDTA' && kapasitas == detail.id) {
+                        isChecked = 'checked';
+                        isDisabled = '';
+                    } else if (e.tabung === 'EDTA' && serumh == detail.id) {
+                        isChecked = 'checked';
+                        isDisabled = '';
+                    } else if (e.tabung === 'CLOT-ACT' && serum == detail.id) {
+                        isChecked = 'checked';
+                        isDisabled = '';
+                    }
+                }
+
+                details +=  
+                `<div class="detail-item">
+                    <div class="detail-text">${detail.nama_parameter}</div>
+                    <div class="detail-image-container">
+                        <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
+                    </div>
+                    <div class="detail-radio-container ">
+                        <input type="radio" name="${e.tabung}" class="detail.radio" value="${detail.id}" ${isChecked} ${isDisabled} />  
+                    </div>
+                </div>`;
+            });
+            details += `</div>`
+        }
+
+        let title = '';
+        let subtext = '';
+
+        if (e.tabung === 'K3-EDTA') {
+            title = '<h5 class="title">Spesiment Collection</h5> <hr>';
+        } else if (e.tabung === 'CLOTH-ACT') {
+            subtext = '<div class="subtext">Serum</div>';
+        } else if (e.tabung === 'CLOT-ACT') {
+            title = '<h5 class="title mt-3">Spesiment Handlings</h5> <hr>';
+            subtext = '<div class="subtext">Serum</div>';
+        }
+
+        let note = '';
+        if (e.tabung === 'K3-EDTA' || e.tabung === 'EDTA' || e.tabung === 'CLOTH-ACT') {
+            note = '<p class="mb-0"><strong>Note</strong></p>';
+        }
+
+        accordionContent += `${title}
+            <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">                          
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading${e.tabung}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">
+                        Tabung ${e.tabung}
+                        </button>
+                    </h2>
+                    <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}" data-bs-parent="#accordion${e.tabung}">
+                        <div class="accordion-body">
+                            ${subtext}
+                            <div class="container">
+                                ${details}
+                            </div>
+                            ${note}
+                            ${e.tabung === 'K3-EDTA' ? 
+                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
+                            ${e.tabung === 'EDTA' ? 
+                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
+                            ${e.tabung === 'CLOT-ACT' ? 
+                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromHandling || 'null'}" ${noteFromHandling ? '' : 'disabled'} ></textarea>` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    if (historyItem && historyItem.note) {
+        accordionContent += `
+            <div class="col-lg-12">
+                <label class="fw-bold mt-2">Note</label>
+                <textarea id="noteTextarea" class="form-control" row="3" placeholder="${historyItem.note}" disabled></textarea>
+            </div>
+        `;
+    }
+
+    accordion.innerHTML = accordionContent;
+}
+
     });
     });
 </script>
