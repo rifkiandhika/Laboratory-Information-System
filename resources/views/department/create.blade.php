@@ -89,7 +89,11 @@ Add Department
                                                                 <input type="number" name="jasa_perawat[]" class="form-control">
 
                                                                 <label class="mt-2">Tipe Inputan <span class="text-danger">*</span></label>
-                                                                <input type="text" name="tipe_inputan[]" class="form-control" required>
+                                                                <select name="tipe_inputan[]" class="form-select" id="" required>
+                                                                    <option value="" selected hidden class="form-control">Choose</option>
+                                                                    <option value="Text" class="form-control">Text</option>
+                                                                    <option value="Negatif" class="form-control">Negatif</option>
+                                                                </select>
 
                                                                 <label class="mt-2">Opsi Output <span class="text-danger">*</span></label>
                                                                 <input type="text" name="opsi_output[]" class="form-control" required>
@@ -277,7 +281,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <input type="number" name="jasa_perawat[]" class="form-control">
 
                                 <label class="mt-2">Tipe Inputan</label>
-                                <input type="text" name="tipe_inputan[]" class="form-control" required>
+                                <select name="tipe_inputan[]" class="form-select" id="" required>
+                                    <option value="Text">Text</option>
+                                    <option value="Negatif">Negatif</option>
+                                </select>
 
                                 <label class="mt-2">Opsi Output</label>
                                 <input type="text" name="opsi_output[]" class="form-control" required>

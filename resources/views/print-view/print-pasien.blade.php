@@ -148,6 +148,14 @@
                                 </td>
                             </tr>
                             <tr>
+                                <th scope="row" class="p-0">Jenis Kelamin</th>
+                                <td>
+                                    <div>
+                                        :  <span class="ms-2" id="jenis_kelamin">{{ $data_pasien->jenis_kelamin }}</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
                                 <th scope="row" class="p-0">Alamat Pasien</th>
                                 <td>
                                     <div>
@@ -224,6 +232,7 @@
                             <th class="col-2 fw-bold">Flag</th>
                             <th class="col-2 fw-bold">Satuan</th>
                             <th class="col-2 fw-bold">Range</th>
+                            <th class="col-2 fw-bold">Nilai Rujukan</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -233,6 +242,59 @@
                                     <th colspan="8" class="bg-light">{{ strtoupper($department) }}</th>
                                 </tr>
                                 @foreach ($hasil_group as $hasil)
+                                @php
+                                        $rujukanDefaults = [
+                                            'WBC' => 'L. 4.0-10.0 P. 4.0-10.0',
+                                            'LYM#' => '1.0-3.0',
+                                            'MID#' => '0.2-1.0',
+                                            'GRAN#' => '2.0-7.0',
+                                            'LYM%' => '20-40',
+                                            'MID%' => '3-10',
+                                            'GRAN%' => '50-70',
+                                            'RBC' => 'L. 4.5-5.9 P. 4.1-5.1',
+                                            'HGB' => 'L. 13-17 P. 12-15',
+                                            'HCT' => 'L. 40-50 P. 36-46',
+                                            'MCV' => '80-100',
+                                            'MCH' => '27-33',
+                                            'MCHC' => '32-36',
+                                            'RDW-CV' => '11-14',
+                                            'RDW-SD' => '37-54',
+                                            'PLT' => '150-450',
+                                            'MPV' => '7.5-11.5',
+                                            'PDW' => '9.0-14.0',
+                                            'PCT' => '0.2-0.5',
+                                            'P-LCC' => '50-100',
+                                            'P-LCR' => '15-35',
+                                        ];
+                                    @endphp
+                                    @php
+                                        $jenis_kelamin = strtolower($data_pasien->jenis_kelamin); // laki-laki atau perempuan
+
+                                        // Ambil dari mapping DB dulu
+                                        $raw_rujukan = $nilai_rujukan_map[$hasil->nama_pemeriksaan] ?? null;
+
+                                        // Kalau null, cek apakah ada default (untuk hematologi)
+                                        if (is_null($raw_rujukan) && isset($rujukanDefaults[$hasil->nama_pemeriksaan])) {
+                                            $raw_rujukan = $rujukanDefaults[$hasil->nama_pemeriksaan];
+                                        }
+
+                                         $nilai_rujukan = '';
+
+                                        // Gunakan regex untuk ambil nilai Laki-laki dan Perempuan
+                                        preg_match('/L\.\s*([\d\.,\-–]+)/', $raw_rujukan, $match_l);
+                                        preg_match('/P\.\s*([\d\.,\-–]+)/', $raw_rujukan, $match_p);
+
+                                        if ($jenis_kelamin === 'laki-laki' && isset($match_l[1])) {
+                                            $nilai_rujukan = $match_l[1];
+                                        } elseif ($jenis_kelamin === 'perempuan' && isset($match_p[1])) {
+                                            $nilai_rujukan = $match_p[1];
+                                        }
+
+                                        // Jika tidak pakai L./P., tampilkan langsung
+                                        if (empty($nilai_rujukan) && !str_contains($raw_rujukan, 'L.') && !str_contains($raw_rujukan, 'P.')) {
+                                            $nilai_rujukan = $raw_rujukan;
+                                        }
+                                    @endphp
                                     <tr>
                                         <td>{{ $hasil->nama_pemeriksaan }}</td>
                                         <td>{{ $hasil->hasil ?? 'Tidak ada hasil' }}</td>
@@ -247,6 +309,7 @@
                                         </td>
                                         <td class="text-center">{{ $hasil->satuan ?? 'Tidak ada satuan' }}</td>
                                         <td>1-10</td>
+                                        <td>{{ $nilai_rujukan ?: '-' }}</td>
                                     </tr>
                                 @endforeach
                             @endforeach

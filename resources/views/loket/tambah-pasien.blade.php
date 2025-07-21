@@ -73,7 +73,7 @@
                                         <label for="exampleFormControlSelect1" class="fw-bold">Gender<strong class="text-danger"> *</strong></label>
                                         <select class="form-select" id="exampleFormControlSelect1" name="jeniskelamin">
                                             <option selected>Choose Gender</option>
-                                            <option value="Laki²">Laki²</option>
+                                            <option value="Laki-Laki">Laki-Laki</option>
                                             <option value="Perempuan">Perempuan</option>
                                         </select>
                                     </div>

@@ -924,27 +924,27 @@
 
        function getTableContent(data_pemeriksaan_pasien, data_pasien, hasil) {
     const hematologiParams = [
-        { nama: 'WBC', display_name: 'Leukosit', satuan: '10³/µL', normal_min: 4.0, normal_max: 10.0 },
-        { nama: 'LYM#', display_name: 'LYM#', satuan: '10³/µL', normal_min: 1.0, normal_max: 4.0 },
-        { nama: 'MID#', display_name: 'MID#', satuan: '10³/µL', normal_min: 0.2, normal_max: 0.8 },
-        { nama: 'GRAN#', display_name: 'GRAN#', satuan: '10³/µL', normal_min: 2.0, normal_max: 7.0 },
-        { nama: 'LYM%', display_name: 'Limfosit', satuan: '%', normal_min: 20, normal_max: 40 },
-        { nama: 'MID%', display_name: 'Monosit', satuan: '%', normal_min: 3, normal_max: 15 },
-        { nama: 'GRAN%', display_name: 'Granulosit', satuan: '%', normal_min: 50, normal_max: 70 },
-        { nama: 'RBC', display_name: 'Eritrosit', satuan: '10⁶/µL', normal_min: 4.0, normal_max: 5.5 },
-        { nama: 'HGB', display_name: 'Hemoglobin', satuan: 'g/dL', normal_min: 12.0, normal_max: 16.0 },
-        { nama: 'HCT', display_name: 'Hematokrit', satuan: '%', normal_min: 36, normal_max: 48 },
-        { nama: 'MCV', display_name: 'MCV', satuan: 'fL', normal_min: 80, normal_max: 100 },
-        { nama: 'MCH', display_name: 'MCH', satuan: 'pg', normal_min: 27, normal_max: 32 },
-        { nama: 'MCHC', display_name: 'MCHC', satuan: 'g/dL', normal_min: 32, normal_max: 36 },
-        { nama: 'RDW-CV', display_name: 'RDW-CV', satuan: '%', normal_min: 11.5, normal_max: 14.5 },
-        { nama: 'RDW-SD', display_name: 'RDW-SD', satuan: 'fL', normal_min: 39, normal_max: 46 },
-        { nama: 'PLT', display_name: 'Trombosit', satuan: '10³/µL', normal_min: 150, normal_max: 450 },
-        { nama: 'MPV', display_name: 'MPV', satuan: 'fL', normal_min: 7.0, normal_max: 11.0 },
-        { nama: 'PDW', display_name: 'PDW', satuan: 'fL', normal_min: 10.0, normal_max: 18.0 },
-        { nama: 'PCT', display_name: 'PCT', satuan: '%', normal_min: 0.15, normal_max: 0.50 },
-        { nama: 'P-LCC', display_name: 'P-LCC', satuan: '10³/µL', normal_min: 30, normal_max: 90 },
-        { nama: 'P-LCR', display_name: 'P-LCR', satuan: '%', normal_min: 13, normal_max: 43 }
+        { nama: 'WBC', display_name: 'Leukosit', satuan: '10³/µL', normal_min: 4.0, normal_max: 10.0, nilai_rujukan: 'L.13,3-17 P.11,7-15,7'},
+        { nama: 'LYM#', display_name: 'LYM#', satuan: '10³/µL', normal_min: 1.0, normal_max: 4.0, nilai_rujukan: 'L.13,3-17 P.11,7-15,7'},
+        { nama: 'MID#', display_name: 'MID#', satuan: '10³/µL', normal_min: 0.2, normal_max: 0.8, nilai_rujukan: 'L.13,3-17 P.11,7-15,7'},
+        { nama: 'GRAN#', display_name: 'GRAN#', satuan: '10³/µL', normal_min: 2.0, normal_max: 7.0, nilai_rujukan: 'L.13,3-17 P.11,7-15,7'},
+        { nama: 'LYM%', display_name: 'Limfosit', satuan: '%', normal_min: 20, normal_max: 40, nilai_rujukan: 'L.13,3-17 P.11,7-15,7'},
+        { nama: 'MID%', display_name: 'Monosit', satuan: '%', normal_min: 3, normal_max: 15, nilai_rujukan: 'L.13,3-17 P.11,7-15,7' },
+        { nama: 'GRAN%', display_name: 'Granulosit', satuan: '%', normal_min: 50, normal_max: 70, nilai_rujukan: 'L.13,3-17 P.11,7-15,7' },
+        { nama: 'RBC', display_name: 'Eritrosit', satuan: '10⁶/µL', normal_min: 4.0, normal_max: 5.5, nilai_rujukan: 'L.13,3-17 P.11,7-15,7' },
+        { nama: 'HGB', display_name: 'Hemoglobin', satuan: 'g/dL', normal_min: 12.0, normal_max: 16.0, nilai_rujukan: 'L.13,3-17 P.11,7-15,7' },
+        { nama: 'HCT', display_name: 'Hematokrit', satuan: '%', normal_min: 36, normal_max: 48, nilai_rujukan: 'L.13,3-17 P.11,7-15,7' },
+        { nama: 'MCV', display_name: 'MCV', satuan: 'fL', normal_min: 80, normal_max: 100, nilai_rujukan: 'L.13,3-17 P.11,7-15,7' },
+        { nama: 'MCH', display_name: 'MCH', satuan: 'pg', normal_min: 27, normal_max: 32, nilai_rujukan: 'L.13,3-17 P.11,7-15,7' },
+        { nama: 'MCHC', display_name: 'MCHC', satuan: 'g/dL', normal_min: 32, normal_max: 36, nilai_rujukan: 'L.13,3-17 P.11,7-15,7' },
+        { nama: 'RDW-CV', display_name: 'RDW-CV', satuan: '%', normal_min: 11.5, normal_max: 14.5, nilai_rujukan: 'L.13,3-17 P.11,7-15,7' },
+        { nama: 'RDW-SD', display_name: 'RDW-SD', satuan: 'fL', normal_min: 39, normal_max: 46, nilai_rujukan: 'L.13,3-17 P.11,7-15,7' },
+        { nama: 'PLT', display_name: 'Trombosit', satuan: '10³/µL', normal_min: 150, normal_max: 450, nilai_rujukan: 'L.13,3-17 P.11,7-15,7' },
+        { nama: 'MPV', display_name: 'MPV', satuan: 'fL', normal_min: 7.0, normal_max: 11.0, nilai_rujukan: 'L.13,3-17 P.11,7-15,7' },
+        { nama: 'PDW', display_name: 'PDW', satuan: 'fL', normal_min: 10.0, normal_max: 18.0, nilai_rujukan: 'L.13,3-17 P.11,7-15,7' },
+        { nama: 'PCT', display_name: 'PCT', satuan: '%', normal_min: 0.15, normal_max: 0.50, nilai_rujukan: 'L.13,3-17 P.11,7-15,7' },
+        { nama: 'P-LCC', display_name: 'P-LCC', satuan: '10³/µL', normal_min: 30, normal_max: 90, nilai_rujukan: 'L.13,3-17 P.11,7-15,7' },
+        { nama: 'P-LCR', display_name: 'P-LCR', satuan: '%', normal_min: 13, normal_max: 43, nilai_rujukan: 'L.13,3-17 P.11,7-15,7' }
     ];
 
     // Create a map of OBX data by parameter name for quick lookup
@@ -1092,6 +1092,7 @@
                                                             <strong>${param.display_name}</strong>
                                                             <small class="text-muted d-block">${param.normal_min}-${param.normal_max}</small>
                                                             <input type="hidden" name="nama_pemeriksaan[]" value="${param.nama}" />
+                                                            <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan}" />
                                                             <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
                                                         </td>
                                                         <td class="col-2">
@@ -1144,6 +1145,7 @@
                                                             <strong>${p.data_pemeriksaan.nama_pemeriksaan}</strong>
                                                             <input type="hidden" name="nama_pemeriksaan[]" 
                                                                 value="${p.data_pemeriksaan.nama_pemeriksaan}" />
+                                                            <input type="hidden" name="nilai_rujukan[]" value="" />
                                                             <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
                                                         </td>
                                                         <td class="col-2">
@@ -1180,6 +1182,7 @@
                                                                 value="${p.data_pemeriksaan.nilai_satuan}" readonly />
                                                             ${p.data_pemeriksaan.nilai_satuan}
                                                         </td>
+                                                        
                                                     </tr>
                                                     `;
                                                 }).join('');

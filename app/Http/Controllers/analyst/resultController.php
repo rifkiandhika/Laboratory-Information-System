@@ -48,12 +48,8 @@ class resultController extends Controller
 
     public function print($no_lab, Request $request)
     {
-
-        // return view('print-view.print-pasien');
-        // dd('Fungsi print berhasil dipanggil');
-        // dd($request);
         $note = $request->input('note', '');
-        // $data_pasien = pasien::with(['data_pemeriksaan_pasien.data_departement', 'dpp.pasiens', 'hasil_pemeriksaan'])->where('no_lab', $no_lab)->first();
+
         $data_pasien = pasien::where('no_lab', $no_lab)->with([
             'dpp.pasiens' => function ($query) use ($no_lab) {
                 $query->where('no_lab', $no_lab);
@@ -63,9 +59,24 @@ class resultController extends Controller
             'dokter',
             'hasil_pemeriksaan'
         ])->first();
+
         $hasil_pemeriksaans = HasilPemeriksaan::where('no_lab', $no_lab)->get();
-        return view('print-view.print-pasien', compact('data_pasien', 'note', 'hasil_pemeriksaans'));
+
+        // 🔥 Buat mapping nama_pemeriksaan => nilai_rujukan
+        $nilai_rujukan_map = [];
+
+        foreach ($data_pasien->dpp as $dpp) {
+            foreach ($dpp->pasiens as $pasien) {
+                $pemeriksaan = $pasien->data_pemeriksaan;
+                if ($pemeriksaan && !empty($pemeriksaan->nama_pemeriksaan)) {
+                    $nilai_rujukan_map[$pemeriksaan->nama_pemeriksaan] = $pemeriksaan->nilai_rujukan ?? '';
+                }
+            }
+        }
+
+        return view('print-view.print-pasien', compact('data_pasien', 'note', 'hasil_pemeriksaans', 'nilai_rujukan_map'));
     }
+
 
     /**
      * Show the form for creating a new resource.

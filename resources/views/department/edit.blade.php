@@ -92,7 +92,11 @@ Edit Department
                                                                     <input type="text" name="jasa_perawat[{{ $x }}]" class="form-control" value="{{ $detail->jasa_perawat }}">
 
                                                                     <label class="mt-2">Tipe Inputan</label>
-                                                                    <input type="text" name="tipe_inputan[{{ $x }}]" class="form-control" value="{{ $detail->tipe_inputan }}" required>
+                                                                    <select name="tipe_inputan[{{ $x }}]" class="form-select" id="" required>
+                                                                        <option value="" selected hidden>{{ $detail->tipe_inputan }}</option>
+                                                                        <option value="Text">Text</option>
+                                                                        <option value="Negatif">Negatif</option>
+                                                                    </select>
 
                                                                     <label class="mt-2">Opsi Output</label>
                                                                     <input type="text" name="opsi_output[{{ $x }}]" class="form-control" value="{{ $detail->opsi_output }}" required>
@@ -225,7 +229,11 @@ Edit Department
                                 <input type="number" name="jasa_perawat[]" class="form-control">
 
                                 <label class="mt-2">Tipe Inputan</label>
-                                <input type="text" name="tipe_inputan[]" class="form-control" required>
+                                <select name="tipe_inputan[]" class="form-select" id="" required>
+                                    <option value="" selected hidden>Choose</option>
+                                    <option value="Text">Text</option>
+                                    <option value="Negatif">Negatif</option>
+                                </select>
 
                                 <label class="mt-2">Opsi Output</label>
                                 <input type="text" name="opsi_output[]" class="form-control" required>
