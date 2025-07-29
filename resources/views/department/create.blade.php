@@ -92,7 +92,7 @@ Add Department
                                                                 <select name="tipe_inputan[]" class="form-select" id="" required>
                                                                     <option value="" selected hidden class="form-control">Choose</option>
                                                                     <option value="Text" class="form-control">Text</option>
-                                                                    <option value="Negatif" class="form-control">Negatif</option>
+                                                                    <option value="Dropdown" class="form-control">Dropdown</option>
                                                                 </select>
 
                                                                 <label class="mt-2">Opsi Output <span class="text-danger">*</span></label>
@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <label class="mt-2">Tipe Inputan</label>
                                 <select name="tipe_inputan[]" class="form-select" id="" required>
                                     <option value="Text">Text</option>
-                                    <option value="Negatif">Negatif</option>
+                                    <option value="Dropdown">Dropdown</option>
                                 </select>
 
                                 <label class="mt-2">Opsi Output</label>

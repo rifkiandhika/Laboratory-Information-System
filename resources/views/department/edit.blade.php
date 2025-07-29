@@ -92,10 +92,10 @@ Edit Department
                                                                     <input type="text" name="jasa_perawat[{{ $x }}]" class="form-control" value="{{ $detail->jasa_perawat }}">
 
                                                                     <label class="mt-2">Tipe Inputan</label>
-                                                                    <select name="tipe_inputan[{{ $x }}]" class="form-select" id="" required>
-                                                                        <option value="" selected hidden>{{ $detail->tipe_inputan }}</option>
-                                                                        <option value="Text">Text</option>
-                                                                        <option value="Negatif">Negatif</option>
+                                                                    <select name="tipe_inputan[{{ $x }}]" class="form-select" required>
+                                                                        <option value="" hidden>Pilih tipe inputan</option>
+                                                                        <option value="Text" {{ $detail->tipe_inputan == 'Text' ? 'selected' : '' }}>Text</option>
+                                                                        <option value="Dropdown" {{ $detail->tipe_inputan == 'Dropdown' ? 'selected' : '' }}>Dropdown</option>
                                                                     </select>
 
                                                                     <label class="mt-2">Opsi Output</label>
@@ -232,7 +232,7 @@ Edit Department
                                 <select name="tipe_inputan[]" class="form-select" id="" required>
                                     <option value="" selected hidden>Choose</option>
                                     <option value="Text">Text</option>
-                                    <option value="Negatif">Negatif</option>
+                                    <option value="Dropdown">Dropdown</option>
                                 </select>
 
                                 <label class="mt-2">Opsi Output</label>
