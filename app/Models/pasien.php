@@ -65,9 +65,16 @@ class pasien extends Model
     {
         return $this->hasMany(pemeriksaan_pasien::class, 'no_lab', 'no_lab');
     }
-    public function obx()
+    // public function obx()
+    // {
+    //     return $this->hasMany(obx::class, 'tanggal', 'tanggal');
+    // }
+
+    public function getObrsAttribute()
     {
-        return $this->hasMany(obx::class, 'tanggal', 'tanggal');
+        return obr::whereRaw("REPLACE(order_number, 'H-', '') = ?", [$this->no_lab])
+            ->with(['obx']) // ambil obx sesuai relasi dari obr
+            ->get();
     }
 
     public function age()

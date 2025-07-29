@@ -15,4 +15,9 @@ class obx extends Model
     {
         return $this->belongsTo(pasien::class, 'tanggal', 'tanggal');
     }
+
+    public function obr()
+    {
+        return $this->belongsTo(obr::class, 'message_control_id', 'message_control_id');
+    }
 }
