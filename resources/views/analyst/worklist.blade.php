@@ -1127,12 +1127,14 @@
                         const obxMap = {};
 
                         // Process data from obrs->obx relationship
-                        (data_pasien.obrs || []).forEach(obr => {
-                            (obr.obx || []).forEach(obxItem => {
-                                const key = (obxItem.identifier_name || '').toLowerCase().trim();
-                                if (!obxMap[key]) obxMap[key] = [];
-                                obxMap[key].push(obxItem.identifier_value); // gunakan identifier_value untuk isi nilai
-                            });
+                        data_pasien.obrs.forEach(obr => {
+                            if (Array.isArray(obr.obx)) {
+                                obr.obx.forEach(obxItem => {
+                                    const key = (obxItem.identifier_name || '').toLowerCase().trim();
+                                    if (!obxMap[key]) obxMap[key] = [];
+                                    obxMap[key].push(obxItem.identifier_value);
+                                });
+                            }
                         });
 
                         // Fallback: Also check direct obx relationship if exists
@@ -1151,12 +1153,24 @@
 
                         function getObxValues(parameterName) {
                             const key = (parameterName || '').toLowerCase().trim();
-                            const values = obxMap[key] || [];
+                            const obxItems = [];
+
+                            data_pasien.obrs.forEach(obr => {
+                                if (Array.isArray(obr.obx)) {
+                                    obr.obx.forEach(obx => {
+                                        const name = (obx.identifier_name || '').toLowerCase().trim();
+                                        if (name === key) {
+                                            obxItems.push(obx.identifier_value);
+                                        }
+                                    });
+                                }
+                            });
+
                             return {
-                                duplo_d1: values[0] || '',
-                                duplo_d2: values[1] || '',
-                                duplo_d3: values[2] || '',
-                                hasilUtama: values[0] || ''
+                                duplo_d1: obxItems[0] ?? '',
+                                duplo_d2: obxItems[1] ?? '',
+                                duplo_d3: obxItems[2] ?? '',
+                                hasilUtama: obxItems[0] ?? ''
                             };
                         }
 
