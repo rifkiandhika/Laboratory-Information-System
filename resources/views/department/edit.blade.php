@@ -67,7 +67,7 @@ Edit Department
                                                                     <label class="mt-2">Harga</label>
                                                                     <input type="number" name="harga[{{ $x }}]" class="form-control" value="{{ $detail->harga }}" required>
 
-                                                                    <label class="mt-2">Nilai Rujukan</label>
+                                                                    <label class="mt-2">Nilai Rujukan (L.13,3-17 P.11,7-15,7)</label>
                                                                     <input type="text" name="nilai_rujukan[{{ $x }}]" class="form-control" value="{{ $detail->nilai_rujukan }}" required>
 
                                                                     <label class="mt-2">Nilai Satuan</label>
@@ -91,18 +91,26 @@ Edit Department
                                                                     <label class="mt-2">JASA PERAWAT:</label>
                                                                     <input type="text" name="jasa_perawat[{{ $x }}]" class="form-control" value="{{ $detail->jasa_perawat }}">
 
+                                                                   @php
+                                                                        $isDropdown = $detail->tipe_inputan === 'Dropdown';
+                                                                    @endphp
+
                                                                     <label class="mt-2">Tipe Inputan</label>
-                                                                    <select name="tipe_inputan[{{ $x }}]" class="form-select" required>
+                                                                    <select name="tipe_inputan[{{ $x }}]" class="form-select tipe-inputan" data-index="{{ $x }}" required>
                                                                         <option value="" hidden>Pilih tipe inputan</option>
                                                                         <option value="Text" {{ $detail->tipe_inputan == 'Text' ? 'selected' : '' }}>Text</option>
                                                                         <option value="Dropdown" {{ $detail->tipe_inputan == 'Dropdown' ? 'selected' : '' }}>Dropdown</option>
                                                                     </select>
 
-                                                                    <label class="mt-2">Opsi Output</label>
-                                                                    <input type="text" name="opsi_output[{{ $x }}]" class="form-control" value="{{ $detail->opsi_output }}" required>
+                                                                    <div class="opsi-output-wrapper mt-2" id="opsi-wrapper-{{ $x }}" style="{{ $isDropdown ? '' : 'display: none;' }}">
+                                                                        <label>Opsi Output</label>
+                                                                        <input type="text" name="opsi_output[{{ $x }}]" class="form-control" value="{{ $detail->opsi_output }}" {{ $isDropdown ? 'required' : '' }}>
+                                                                    </div>
 
-                                                                    <label class="mt-2">Urutan</label>
-                                                                    <input type="text" name="urutan[{{ $x }}]" class="form-control" value="{{ $detail->urutan }}" required>
+                                                                    <div class="urutan-wrapper mt-2" id="urutan-wrapper-{{ $x }}" style="{{ $isDropdown ? '' : 'display: none;' }}">
+                                                                        <label>Urutan</label>
+                                                                        <input type="text" name="urutan[{{ $x }}]" class="form-control" value="{{ $detail->urutan }}" {{ $isDropdown ? 'required' : '' }}>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -118,7 +126,18 @@ Edit Department
                                                                 class="form-check-input align-middle"
                                                                 {{ $detail->status === 'active' ? 'checked' : '' }}>
                                                         </div>
-
+                                                        <br>
+                                                        {{-- Active Barcode --}}
+                                                        <div class="d-flex justify-content-center align-items-center mb-1" style="gap: 8px; white-space: nowrap;">
+                                                            <label class="mb-0" style="font-size: 14px;">Active Barcode?</label>
+                                                            <input type="hidden" name="barcode_hidden[{{ $x }}]" value="deactive">
+                                                            <input type="checkbox"
+                                                                name="barcode[{{ $x }}]"
+                                                                value="active"
+                                                                class="form-check-input align-middle"
+                                                                {{ $detail->barcode === 'active' ? 'checked' : '' }}>
+                                                        </div>
+                                                        <br>
                                                         <!-- Check to Collection -->
                                                         <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
                                                             <label class="mb-0" style="font-size: 14px;">Check to Collection?</label>
@@ -128,6 +147,17 @@ Edit Department
                                                                 value="active"
                                                                 class="form-check-input align-middle"
                                                                 {{ $detail->permission === 'active' ? 'checked' : '' }}>
+                                                        </div>
+                                                        <br>
+                                                        <!-- Check to Handling -->
+                                                        <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
+                                                            <label class="mb-0" style="font-size: 14px;">Check to Handling?</label>
+                                                            <input type="hidden" name="handling_hidden[{{ $x }}]" value="deactive">
+                                                            <input type="checkbox"
+                                                                name="handling[{{ $x }}]"
+                                                                value="active"
+                                                                class="form-check-input align-middle"
+                                                                {{ $detail->handling === 'active' ? 'checked' : '' }}>
                                                         </div>
                                                     </td>
 
@@ -204,7 +234,7 @@ Edit Department
                                 <label class="mt-2">Harga</label>
                                 <input type="number" name="harga[]" class="form-control" required>
 
-                                <label class="mt-2">Nilai Rujukan</label>
+                                <label class="mt-2">Nilai Rujukan (L.13,3-17 P.11,7-15,7)</label>
                                 <input type="text" name="nilai_rujukan[]" class="form-control" required>
 
                                 <label class="mt-2">Nilai Satuan</label>
@@ -250,9 +280,19 @@ Edit Department
                             <input type="checkbox" name="status" value="active" class="form-check-input align-middle" {{ old('status') === 'active' ? 'checked' : '' }}>
                         </div>
                         <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
+                            <label class="mb-0" style="font-size: 14px;">Active Barcode?</label>
+                            <input type="hidden" name="barcode[]" value="deactive">
+                            <input type="checkbox" name="barcode[]" value="active" class="form-check-input align-middle" {{ old('barcode') === 'active' ? 'checked' : '' }}>
+                        </div>
+                        <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
                             <label class="mb-0" style="font-size: 14px;">Check to Collection?</label>
                             <input type="hidden" name="permission" value="deactive">
                             <input type="checkbox" name="permission" value="active" class="form-check-input align-middle" {{ old('permission') === 'active' ? 'checked' : '' }}>
+                        </div>
+                        <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
+                            <label class="mb-0" style="font-size: 14px;">Check to Handling?</label>
+                            <input type="hidden" name="handling[]" value="deactive">
+                            <input type="checkbox" name="handling[]" value="active" class="form-check-input align-middle" {{ old('handling') === 'active' ? 'checked' : '' }}>
                         </div>
                     </td>
                     <td>
@@ -279,6 +319,30 @@ Edit Department
 
         // Panggil fungsi btnFunction ketika halaman dimuat
         btnFunction();
+
+        // function Dropdown
+        document.querySelectorAll('.tipe-inputan').forEach(function(select) {
+            select.addEventListener('change', function () {
+                const index = this.getAttribute('data-index');
+                const opsiWrapper = document.getElementById(`opsi-wrapper-${index}`);
+                const urutanWrapper = document.getElementById(`urutan-wrapper-${index}`);
+
+                const opsiInput = opsiWrapper.querySelector('input');
+                const urutanInput = urutanWrapper.querySelector('input');
+
+                if (this.value === 'Dropdown') {
+                    opsiWrapper.style.display = 'block';
+                    urutanWrapper.style.display = 'block';
+                    opsiInput.required = true;
+                    urutanInput.required = true;
+                } else {
+                    opsiWrapper.style.display = 'none';
+                    urutanWrapper.style.display = 'none';
+                    opsiInput.required = false;
+                    urutanInput.required = false;
+                }
+            });
+        });
     });
 </script>
 

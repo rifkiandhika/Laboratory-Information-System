@@ -64,7 +64,7 @@ Add Department
                                                                 <label class="mt-2">Harga <span class="text-danger">*</span></label>
                                                                 <input type="number" name="harga[]" class="form-control" required>
 
-                                                                <label class="mt-2">Nilai Rujukan <span class="text-danger">*</span></label>
+                                                                <label class="mt-2">Nilai Rujukan (L.13,3-17 P.11,7-15,7)<span class="text-danger">*</span></label>
                                                                 <input type="text" name="nilai_rujukan[]" class="form-control" required>
 
                                                                 <label class="mt-2">Nilai Satuan <span class="text-danger">*</span></label>
@@ -89,17 +89,21 @@ Add Department
                                                                 <input type="number" name="jasa_perawat[]" class="form-control">
 
                                                                 <label class="mt-2">Tipe Inputan <span class="text-danger">*</span></label>
-                                                                <select name="tipe_inputan[]" class="form-select" id="" required>
-                                                                    <option value="" selected hidden class="form-control">Choose</option>
-                                                                    <option value="Text" class="form-control">Text</option>
-                                                                    <option value="Dropdown" class="form-control">Dropdown</option>
+                                                                <select name="tipe_inputan[]" class="form-select tipe-inputan" required>
+                                                                    <option value="" selected hidden>Choose</option>
+                                                                    <option value="Text">Text</option>
+                                                                    <option value="Dropdown">Dropdown</option>
                                                                 </select>
 
-                                                                <label class="mt-2">Opsi Output <span class="text-danger">*</span></label>
-                                                                <input type="text" name="opsi_output[]" class="form-control" required>
+                                                                <div class="opsi-output-wrapper mt-2" style="display: none;">
+                                                                    <label>Opsi Output</label>
+                                                                    <input type="text" name="opsi_output[]" class="form-control">
+                                                                </div>
 
-                                                                <label class="mt-2">Urutan <span class="text-danger">*</span></label>
-                                                                <input type="text" name="urutan[]" class="form-control" required>
+                                                                <div class="urutan-wrapper mt-2" style="display: none;">
+                                                                    <label>Urutan <span class="text-danger">*</span></label>
+                                                                    <input type="text" name="urutan[]" class="form-control">
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </td>
@@ -110,11 +114,26 @@ Add Department
                                                             <input type="checkbox" value="active" class="form-check-input align-middle status-checkbox" 
                                                                 {{ (old('status') && in_array('active', old('status'))) ? 'checked' : '' }}>
                                                         </div>
+                                                        <br>
+                                                        <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
+                                                            <label class="mb-0" style="font-size: 14px;">Active Barcode?</label>
+                                                            <input type="hidden" name="barcode[]" value="deactive" class="permission-hidden">
+                                                            <input type="checkbox" value="active" class="form-check-input align-middle permission-checkbox" 
+                                                                {{ (old('barcode') && in_array('active', old('barcode'))) ? 'checked' : '' }}>
+                                                        </div>
+                                                        <br>
                                                         <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
                                                             <label class="mb-0" style="font-size: 14px;">Check to Collection?</label>
                                                             <input type="hidden" name="permission[]" value="deactive" class="permission-hidden">
                                                             <input type="checkbox" value="active" class="form-check-input align-middle permission-checkbox" 
                                                                 {{ (old('permission') && in_array('active', old('permission'))) ? 'checked' : '' }}>
+                                                        </div>
+                                                        <br>
+                                                        <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
+                                                            <label class="mb-0" style="font-size: 14px;">Check to Handling?</label>
+                                                            <input type="hidden" name="handling[]" value="deactive" class="permission-hidden">
+                                                            <input type="checkbox" value="active" class="form-check-input align-middle permission-checkbox" 
+                                                                {{ (old('handling') && in_array('active', old('handling'))) ? 'checked' : '' }}>
                                                         </div>
                                                     </td>
                                                     <td>
@@ -187,6 +206,24 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.permission-hidden')[index].value = 'active';
         }
     });
+        const tipeSelect = document.querySelector('.tipe-inputan');
+        const opsiWrapper = document.querySelector('.opsi-output-wrapper');
+        const urutanWrapper = document.querySelector('.urutan-wrapper');
+
+        tipeSelect.addEventListener('change', function () {
+            if (this.value === 'Dropdown') {
+                opsiWrapper.style.display = 'block';
+                urutanWrapper.style.display = 'block';
+                // Optionally make them required
+                opsiWrapper.querySelector('input').required = true;
+                urutanWrapper.querySelector('input').required = true;
+            } else {
+                opsiWrapper.style.display = 'none';
+                urutanWrapper.style.display = 'none';
+                opsiWrapper.querySelector('input').required = false;
+                urutanWrapper.querySelector('input').required = false;
+            }
+        });
 });
 </script>
 <script>
@@ -256,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <label class="mt-2">Harga</label>
                                 <input type="number" name="harga[]" class="form-control" required>
 
-                                <label class="mt-2">Nilai Rujukan</label>
+                                <label class="mt-2">Nilai Rujukan (L.13,3-17 P.11,7-15,7)</label>
                                 <input type="text" name="nilai_rujukan[]" class="form-control" required>
 
                                 <label class="mt-2">Nilai Satuan</label>
@@ -301,9 +338,19 @@ document.addEventListener('DOMContentLoaded', function() {
                             <input type="checkbox" name="status[]" value="active" class="form-check-input align-middle" {{ old('status') === 'active' ? 'checked' : '' }}>
                         </div>
                         <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
+                            <label class="mb-0" style="font-size: 14px;">Active Barcode?</label>
+                            <input type="hidden" name="barcode[]" value="deactive">
+                            <input type="checkbox" name="barcode[]" value="active" class="form-check-input align-middle" {{ old('barcode') === 'active' ? 'checked' : '' }}>
+                        </div>
+                        <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
                             <label class="mb-0" style="font-size: 14px;">Check to Collection?</label>
                             <input type="hidden" name="permission[]" value="deactive">
                             <input type="checkbox" name="permission[]" value="active" class="form-check-input align-middle" {{ old('permission') === 'active' ? 'checked' : '' }}>
+                        </div>
+                        <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
+                            <label class="mb-0" style="font-size: 14px;">Check to Handling?</label>
+                            <input type="hidden" name="handling[]" value="deactive">
+                            <input type="checkbox" name="handling[]" value="active" class="form-check-input align-middle" {{ old('handling') === 'active' ? 'checked' : '' }}>
                         </div>
                     </td>
                     <td>

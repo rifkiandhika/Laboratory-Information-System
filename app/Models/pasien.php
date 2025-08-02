@@ -14,6 +14,7 @@ class pasien extends Model
     protected $guarded = [];
     protected $table = 'pasiens';
 
+
     public function data_pemeriksaan_pasien()
     {
         return $this->hasMany(pemeriksaan_pasien::class, 'no_lab', 'no_lab');

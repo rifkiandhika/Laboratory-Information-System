@@ -563,7 +563,7 @@
   }
   </script>
   {{-- Script Barcode --}}
-<<script>
+<script>
     let barcodeModal;
     let currentBarcodeData = '';
     let availableDepartments = [];
@@ -591,12 +591,18 @@
 
     function detectDepartments(departments) {
         const detected = [];
+
         if (!Array.isArray(departments)) return [];
 
         departments.forEach(dept => {
+            const pemeriksaan = dept?.pasiens?.[0]?.data_pemeriksaan;
             const name = (dept?.data_departement?.nama_department || '').toLowerCase();
-            if (name.includes('hematologi')) detected.push('hematologi');
-            if (name.includes('kimia')) detected.push('kimia');
+
+            // Tambahkan logika pengecekan agar hanya departemen dengan barcode aktif yang terdeteksi
+            if (pemeriksaan && pemeriksaan.barcode === 'active') {
+                if (name.includes('hematologi')) detected.push('hematologi');
+                if (name.includes('kimia')) detected.push('kimia');
+            }
         });
 
         return detected;
@@ -608,13 +614,13 @@
                 code: 'H-',
                 name: 'Hematologi',
                 icon: 'ti-droplet',
-                class: 'bg-primary'
+                class: 'bg-success'
             },
             kimia: {
                 code: 'K-',
                 name: 'Kimia Klinik',
                 icon: 'ti-flask',
-                class: 'bg-success'
+                class: 'bg-primary'
             }
         };
         return config[key] || {
@@ -664,6 +670,7 @@
             return;
         }
 
+        // Tombol download tetap seperti yang kamu inginkan
         downloadButtons.innerHTML = `
             <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
                 <i class="ti ti-download me-1"></i>Download
@@ -684,6 +691,7 @@
             const code = config.code + currentBarcodeData;
             const elementId = `barcode${dept}`;
 
+            // Render hanya untuk departemen yang aktif
             barcodeRow.innerHTML += `
                 <div class="col-md-${colSize}">
                     <div class="card mb-3">
@@ -699,12 +707,20 @@
             `;
         });
 
+        // Render barcode hanya untuk departemen yang aktif
         setTimeout(() => {
             availableDepartments.forEach(dept => {
                 const config = getDepartmentConfig(dept);
                 const code = config.code + currentBarcodeData;
                 const elementId = `barcode${dept}`;
-                JsBarcode(`#${elementId}`, code, {
+                const target = document.getElementById(elementId);
+
+                if (!target) {
+                    console.warn(`Element #${elementId} tidak ditemukan, barcode tidak dirender.`);
+                    return;
+                }
+
+                JsBarcode(target, code, {
                     format: "CODE128",
                     width: 2,
                     height: 80,

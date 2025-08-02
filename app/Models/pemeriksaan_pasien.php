@@ -48,4 +48,8 @@ class pemeriksaan_pasien extends Model
     {
         return $this->hasMany(Spesiment::class, 'id_departement', 'id_departement');
     }
+    public function detail_department()
+    {
+        return $this->belongsTo(DetailDepartment::class, 'id_parameter', 'id');
+    }
 }

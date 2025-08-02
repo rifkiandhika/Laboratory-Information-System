@@ -139,7 +139,6 @@
                             </div>
                         </div>
 
-                        <script src="{{ asset('js/time.js') }}"></script>
 
 
     </section>

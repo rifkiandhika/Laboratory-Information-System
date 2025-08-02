@@ -557,10 +557,15 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center">
+
+                    <div id="patientInfo" class="mb-3 text-center">
+                        <!-- Nama dan Tanggal Lahir akan ditampilkan di sini -->
+                    </div>
+
                     <div class="mb-3">
                         <strong>No Lab: <span id="currentNoLab"></span></strong>
                     </div>
-                    
+                                    
                     <!-- Dynamic Barcode Container -->
                     <div class="row" id="barcodeRow">
                         <!-- Barcode akan ditampilkan di sini secara dinamis -->
@@ -575,9 +580,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" onclick="printBarcode()">
+                    {{-- <button type="button" class="btn btn-success" onclick="printBarcode()">
                         <i class="ti ti-printer me-1"></i>Print Barcode
-                    </button>
+                    </button> --}}
                     <div class="btn-group" id="downloadButtons">
                         <!-- Tombol download akan ditampilkan di sini secara dinamis -->
                     </div>
@@ -849,174 +854,174 @@
 
 
 
-    <script>
-        $(function() {
-            let detailPembayaran = document.getElementById('detailPembayaran');
-            $('.btn-payment').on('click', function() {
-                const id = this.getAttribute('data-payment');
+<script>
+    $(function() {
+        let detailPembayaran = document.getElementById('detailPembayaran');
+        $('.btn-payment').on('click', function() {
+            const id = this.getAttribute('data-payment');
 
-                fetch(`/api/get-data-pasien/${id}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("HTTP error" + response.status);
-                    }
-                    return response.json();
-                }).then(res => {
-                    if (res.status === 'success') {
-                        let data_pasien = res.data;
-                        let data_pemeriksaan_pasien = res.data.dpp;
-                        // let data_harga = res.data.pasiens;
+            fetch(`/api/get-data-pasien/${id}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP error" + response.status);
+                }
+                return response.json();
+            }).then(res => {
+                if (res.status === 'success') {
+                    let data_pasien = res.data;
+                    let data_pemeriksaan_pasien = res.data.dpp;
+                    // let data_harga = res.data.pasiens;
 
-                        let detailContent = '<div class="row">';
-                        let totalHarga = 0;
-                        let departmentIds = new Set();
+                    let detailContent = '<div class="row">';
+                    let totalHarga = 0;
+                    let departmentIds = new Set();
 
-                        // Memfilter data dengan status "baru" dari `pasiens`
-                        data_pemeriksaan_pasien.forEach((e) => {
-                            let filteredPasiens = e.pasiens.filter(pemeriksaan => pemeriksaan.status === 'baru');
+                    // Memfilter data dengan status "baru" dari `pasiens`
+                    data_pemeriksaan_pasien.forEach((e) => {
+                        let filteredPasiens = e.pasiens.filter(pemeriksaan => pemeriksaan.status === 'baru');
 
-                            if (filteredPasiens.length > 0) {
-                                let departmentName = e.data_departement.nama_department;
+                        if (filteredPasiens.length > 0) {
+                            let departmentName = e.data_departement.nama_department;
 
-                                if (!departmentIds.has(e.id_departement)) {
-                                    departmentIds.add(e.id_departement);
-                                    detailContent += `<div class="col-12 col-md-6" id="${e.id_departement}">
-                                                        <h6>${departmentName}</h6>
-                                                        <ol>`;
-                                }
-
-                                filteredPasiens.forEach((pemeriksaan) => {
-                                    detailContent += `<li>${pemeriksaan.data_pemeriksaan.nama_pemeriksaan} - Rp ${pemeriksaan.data_pemeriksaan.harga}</li>`;
-                                    totalHarga += Number(pemeriksaan.data_pemeriksaan.harga);
-                                });
-                                console.log(totalHarga);
-
-                                detailContent += `</ol><hr></div>`;
+                            if (!departmentIds.has(e.id_departement)) {
+                                departmentIds.add(e.id_departement);
+                                detailContent += `<div class="col-12 col-md-6" id="${e.id_departement}">
+                                                    <h6>${departmentName}</h6>
+                                                    <ol>`;
                             }
-                        });
 
-                        detailContent += '</div>';
-                        let pembayaranContent = `
-                            <h5>Payment Details</h5>
-                            <hr>
-                            <div class="row mb-3">
-                                <div class="col-12 col-md-6">
-                                    <label>Payment Method</label>
-                                    <input class="form-control " type="text" name="no_lab" value="${data_pasien.no_lab}" readonly hidden>
-                                    <input class="form-control bg-secondary-subtle" type="text" name="metode_pembayaran" value="${data_pasien.jenis_pelayanan}" readonly>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <label>Total Payment</label>
-                                    <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran_asli" name="total_pembayaran_asli" value="${totalHarga}" readonly>
-                                </div>
-                                ${data_pasien.jenis_pelayanan === 'bpjs' ? `
-                                    <div class="col-12 col-md-6">
-                                        <label>No Bpjs</label>
-                                        <input class="form-control" id="no_pasien" name="no_pasien" type="number"  required />
-                                    </div>
-                                ` : ''}
-                                ${data_pasien.jenis_pelayanan === 'asuransi' ? `
-                                    <div class="col-12 col-md-6">
-                                        <label>No Asuransi</label>
-                                        <input class="form-control" id="no_pasien" name="no_pasien" type="number" required />
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <label>Penjamin</label>
-                                        <input class="form-control" id="penjamin" name="penjamin" type="text" required />
-                                    </div>
-                                ` : ''}
-                                <div class="col-12 col-md-6">
-                                    <label>Officer</label>
-                                    <input class="form-control" type="text" name="petugas" required>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <label>Disc</label>
-                                    <input class="form-control " id="diskon" name="diskon" type="number" placeholder="Enter discount if any" value="" min="0">
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <label>Payment Amount</label>
-                                    <input class="form-control " id="jumlah_bayar" name="jumlah_bayar" type="number" value="">
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <label>Total Payment Disc</label>
-                                    <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran" name="total_pembayaran" value="${totalHarga}" readonly>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <label>Change Money</label>
-                                    <input class="form-control bg-secondary-subtle" value="" id="kembalian" name="kembalian" readonly>
-                                </div>
+                            filteredPasiens.forEach((pemeriksaan) => {
+                                detailContent += `<li>${pemeriksaan.data_pemeriksaan.nama_pemeriksaan} - Rp ${pemeriksaan.data_pemeriksaan.harga}</li>`;
+                                totalHarga += Number(pemeriksaan.data_pemeriksaan.harga);
+                            });
+                            console.log(totalHarga);
+
+                            detailContent += `</ol><hr></div>`;
+                        }
+                    });
+
+                    detailContent += '</div>';
+                    let pembayaranContent = `
+                        <h5>Payment Details</h5>
+                        <hr>
+                        <div class="row mb-3">
+                            <div class="col-12 col-md-6">
+                                <label>Payment Method</label>
+                                <input class="form-control " type="text" name="no_lab" value="${data_pasien.no_lab}" readonly hidden>
+                                <input class="form-control bg-secondary-subtle" type="text" name="metode_pembayaran" value="${data_pasien.jenis_pelayanan}" readonly>
                             </div>
-                        `;
-                        detailContent += pembayaranContent;
+                            <div class="col-12 col-md-6">
+                                <label>Total Payment</label>
+                                <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran_asli" name="total_pembayaran_asli" value="${totalHarga}" readonly>
+                            </div>
+                            ${data_pasien.jenis_pelayanan === 'bpjs' ? `
+                                <div class="col-12 col-md-6">
+                                    <label>No Bpjs</label>
+                                    <input class="form-control" id="no_pasien" name="no_pasien" type="number"  required />
+                                </div>
+                            ` : ''}
+                            ${data_pasien.jenis_pelayanan === 'asuransi' ? `
+                                <div class="col-12 col-md-6">
+                                    <label>No Asuransi</label>
+                                    <input class="form-control" id="no_pasien" name="no_pasien" type="number" required />
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label>Penjamin</label>
+                                    <input class="form-control" id="penjamin" name="penjamin" type="text" required />
+                                </div>
+                            ` : ''}
+                            <div class="col-12 col-md-6">
+                                <label>Officer</label>
+                                <input class="form-control" type="text" name="petugas" required>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label>Disc</label>
+                                <input class="form-control " id="diskon" name="diskon" type="number" placeholder="Enter discount if any" value="" min="0">
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label>Payment Amount</label>
+                                <input class="form-control " id="jumlah_bayar" name="jumlah_bayar" type="number" value="">
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label>Total Payment Disc</label>
+                                <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran" name="total_pembayaran" value="${totalHarga}" readonly>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label>Change Money</label>
+                                <input class="form-control bg-secondary-subtle" value="" id="kembalian" name="kembalian" readonly>
+                            </div>
+                        </div>
+                    `;
+                    detailContent += pembayaranContent;
 
-                        detailPembayaran.innerHTML = detailContent;
+                    detailPembayaran.innerHTML = detailContent;
 
-                        function hitungTotalPembayaran() {
-                            let totalPembayaranAsli = parseFloat(document.getElementById('total_pembayaran_asli').value);
-                            let diskon = parseFloat(document.getElementById('diskon').value) || 0;
-                            let totalSetelahDiskon = totalPembayaranAsli - diskon;
-                            if (totalSetelahDiskon < 0) {
-                                totalSetelahDiskon = 0;
-                            }
-                            document.getElementById('total_pembayaran').value = totalSetelahDiskon;
+                    function hitungTotalPembayaran() {
+                        let totalPembayaranAsli = parseFloat(document.getElementById('total_pembayaran_asli').value);
+                        let diskon = parseFloat(document.getElementById('diskon').value) || 0;
+                        let totalSetelahDiskon = totalPembayaranAsli - diskon;
+                        if (totalSetelahDiskon < 0) {
+                            totalSetelahDiskon = 0;
                         }
+                        document.getElementById('total_pembayaran').value = totalSetelahDiskon;
+                    }
 
-                        function hitungKembalian() {
-                            let totalPembayaran = parseFloat(document.getElementById('total_pembayaran').value);
-                            let jumlahBayar = parseFloat(document.getElementById('jumlah_bayar').value) || 0;
-                            let kembalian = jumlahBayar - totalPembayaran;
-                            document.getElementById('kembalian').value = kembalian >= 0 ? kembalian : 0;
+                    function hitungKembalian() {
+                        let totalPembayaran = parseFloat(document.getElementById('total_pembayaran').value);
+                        let jumlahBayar = parseFloat(document.getElementById('jumlah_bayar').value) || 0;
+                        let kembalian = jumlahBayar - totalPembayaran;
+                        document.getElementById('kembalian').value = kembalian >= 0 ? kembalian : 0;
 
-                            let submitButton = document.getElementById('submit-button');
-                            if (jumlahBayar >= totalPembayaran) {
-                                submitButton.disabled = false;
-                            } else {
-                                submitButton.disabled = true;
-                            }
-                        }
-
-                        document.getElementById('jumlah_bayar').addEventListener('input', function() {
-                            hitungTotalPembayaran();
-                            hitungKembalian();
-                        });
-
-                        document.getElementById('diskon').addEventListener('input', function() {
-                            hitungTotalPembayaran();
-                            hitungKembalian();
-                        });
-                        document.getElementById('submit-button').disabled = true;
-
-                        if (data_pasien.status === 'Telah Dibayar') {
-                            document.querySelector('.btn-payment').disabled = true;
-                        }
-
-                        // Jika status pasien 'Dikembalikan Analyst', ambil data no_pasien dari API
-                        if (data_pasien.status === 'Dikembalikan Analyst') {
-                            fetch(`/api/get-data-pasien/${id}`).then(response => response.json())
-                            .then(data => {
-                                let pembayaranArray = data.data.pembayaran;
-
-                                // Pastikan pembayaranArray adalah array dan memiliki elemen
-                                if (Array.isArray(pembayaranArray) && pembayaranArray.length > 0) {
-                                    let pembayaran = pembayaranArray[0]; // Ambil elemen pertama dari array
-                                    let no_pasien = pembayaran.no_pasien; // Ambil no_pasien dari objek
-                                    let nopasienInput = document.getElementById('no_pasien');
-
-                                    if (data_pasien.jenis_pelayanan === 'bpjs' || data_pasien.jenis_pelayanan === 'asuransi') {
-                                        nopasienInput.value = no_pasien;
-                                        nopasienInput.disabled = true;
-                                    }
-                                } else {
-                                    console.error('Pembayaran is an empty array or not an array');
-                                }
-                            }).catch(error => console.error('Error fetching no_pasien:', error));
+                        let submitButton = document.getElementById('submit-button');
+                        if (jumlahBayar >= totalPembayaran) {
+                            submitButton.disabled = false;
+                        } else {
+                            submitButton.disabled = true;
                         }
                     }
-                });
+
+                    document.getElementById('jumlah_bayar').addEventListener('input', function() {
+                        hitungTotalPembayaran();
+                        hitungKembalian();
+                    });
+
+                    document.getElementById('diskon').addEventListener('input', function() {
+                        hitungTotalPembayaran();
+                        hitungKembalian();
+                    });
+                    document.getElementById('submit-button').disabled = true;
+
+                    if (data_pasien.status === 'Telah Dibayar') {
+                        document.querySelector('.btn-payment').disabled = true;
+                    }
+
+                    // Jika status pasien 'Dikembalikan Analyst', ambil data no_pasien dari API
+                    if (data_pasien.status === 'Dikembalikan Analyst') {
+                        fetch(`/api/get-data-pasien/${id}`).then(response => response.json())
+                        .then(data => {
+                            let pembayaranArray = data.data.pembayaran;
+
+                            // Pastikan pembayaranArray adalah array dan memiliki elemen
+                            if (Array.isArray(pembayaranArray) && pembayaranArray.length > 0) {
+                                let pembayaran = pembayaranArray[0]; // Ambil elemen pertama dari array
+                                let no_pasien = pembayaran.no_pasien; // Ambil no_pasien dari objek
+                                let nopasienInput = document.getElementById('no_pasien');
+
+                                if (data_pasien.jenis_pelayanan === 'bpjs' || data_pasien.jenis_pelayanan === 'asuransi') {
+                                    nopasienInput.value = no_pasien;
+                                    nopasienInput.disabled = true;
+                                }
+                            } else {
+                                console.error('Pembayaran is an empty array or not an array');
+                            }
+                        }).catch(error => console.error('Error fetching no_pasien:', error));
+                    }
+                }
             });
         });
+    });
 
-    </script>
+</script>
     
 <script>
     $(function(e){
@@ -1050,34 +1055,36 @@
 
 </script>
 
-    <!-- menghitung kembalian -->
-    <script>
-        function hitungKembalian(jumlahbayar) {
-            var kembalian = document.getElementsByName('kembalian')[0];
-            var hargapemeriksaan = document.getElementsByName('hargapemeriksaan')[0];
-            var button = document.getElementById('btn-varifikasi');
-            var total = jumlahbayar - hargapemeriksaan.value;
+{{-- menghitung kembalian --}}
+<script>
+    function hitungKembalian(jumlahbayar) {
+        var kembalian = document.getElementsByName('kembalian')[0];
+        var hargapemeriksaan = document.getElementsByName('hargapemeriksaan')[0];
+        var button = document.getElementById('btn-varifikasi');
+        var total = jumlahbayar - hargapemeriksaan.value;
 
-            if (total < 0) {
-                total = 0;
-                button.disabled = true;
-                button.style.cursor = "not-allowed";
-            } else {
-                total = total;
-                button.disabled = false;
-                button.style.cursor = "pointer";
-            }
-
-            kembalian.value = total;
+        if (total < 0) {
+            total = 0;
+            button.disabled = true;
+            button.style.cursor = "not-allowed";
+        } else {
+            total = total;
+            button.disabled = false;
+            button.style.cursor = "pointer";
         }
-    </script>
 
-    {{-- Script Barcode --}}
+        kembalian.value = total;
+    }
+</script>
+
+{{-- Script Barcode --}}
 <script>
     let barcodeModal;
     let currentBarcodeData = '';
     let availableDepartments = [];
     let patientDepartments = [];
+    let currentPatientName = '';
+    let currentPatientDOB = '';
 
     document.addEventListener('DOMContentLoaded', function () {
         barcodeModal = new bootstrap.Modal(document.getElementById('barcodeModal'));
@@ -1100,40 +1107,61 @@
     }
 
     function detectDepartments(departments) {
-        const detected = [];
-        if (!Array.isArray(departments)) return [];
+        const activeDepts = [];
 
-        departments.forEach(dept => {
-            const name = (dept?.data_departement?.nama_department || '').toLowerCase();
-            if (name.includes('hematologi')) detected.push('hematologi');
-            if (name.includes('kimia')) detected.push('kimia');
+        departments.forEach((dept) => {
+            const pemeriksaan = dept?.pasiens?.[0]?.data_pemeriksaan;
+            if (pemeriksaan && pemeriksaan.barcode === 'active') {
+                const deptName = dept.data_departement?.nama_department?.toLowerCase();
+                if (deptName) {
+                    activeDepts.push(deptName); // contoh: "kimia klinik"
+                }
+            }
         });
 
-        return detected;
+        return activeDepts;
     }
 
-    function getDepartmentConfig(key) {
-        const config = {
-            hematologi: {
-                code: 'H-',
-                name: 'Hematologi',
-                icon: 'ti-droplet',
-                class: 'bg-primary'
-            },
-            kimia: {
-                code: 'K-',
-                name: 'Kimia Klinik',
-                icon: 'ti-flask',
-                class: 'bg-success'
-            }
-        };
-        return config[key] || {
-            code: 'X-',
-            name: key,
-            icon: 'ti-medical-cross',
-            class: 'bg-secondary'
-        };
+    function getDepartmentConfig(deptName) {
+        switch (deptName.toLowerCase()) {
+            case 'hematologi':
+                return {
+                    name: 'Hematologi',
+                    code: 'H-',
+                    icon: 'ti-droplet',
+                    class: 'bg-success' // Ungu
+                };
+            case 'kimia klinik':
+                return {
+                    name: 'Kimia Klinik',
+                    code: 'K-',
+                    icon: 'ti-flask',
+                    class: 'bg-primary' // Hijau
+                };
+            case 'imunoserologi':
+                return {
+                    name: 'Imunoserologi',
+                    code: 'I-',
+                    icon: 'ti-shield',
+                    class: 'bg-warning' // Kuning
+                };
+            case 'mikrobiologi':
+                return {
+                    name: 'Mikrobiologi',
+                    code: 'M-',
+                    icon: 'ti-bug',
+                    class: 'bg-danger' // Merah
+                };
+            default:
+                return {
+                    name: deptName,
+                    code: 'X-',
+                    icon: 'ti-alert-circle',
+                    class: 'bg-secondary' // Default abu-abu
+                };
+        }
     }
+
 
     async function showBarcodeModal(id, noLab = '', departments = null) {
         try {
@@ -1143,15 +1171,38 @@
 
             const barcodeRow = document.getElementById('barcodeRow');
             const downloadButtons = document.getElementById('downloadButtons');
+            const patientInfo = document.getElementById('patientInfo');
+
             barcodeRow.innerHTML = '<div class="col-12 text-center"><div class="spinner-border"></div><p>Memuat data departemen...</p></div>';
             downloadButtons.innerHTML = '';
+            patientInfo.innerHTML = '';
             barcodeModal.show();
 
+            let resData;
             if (!departments) {
-                departments = await fetchPatientDepartments(id);
+                const response = await fetch(`/api/get-data-pasien/${id}`);
+                if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+                const res = await response.json();
+                departments = res.data.dpp;
+                resData = res.data;
             }
 
             availableDepartments = detectDepartments(departments);
+
+            if (resData && resData.nama && resData.lahir) {
+                const formattedLahir = new Date(resData.lahir).toLocaleDateString('id-ID', {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                });
+
+                currentPatientName = resData.nama;
+                currentPatientDOB = formattedLahir;
+
+                patientInfo.innerHTML = `
+                    <h6 class="mb-1"><strong>Nama : ${resData.nama}</strong></h6>
+                    <p class="text-muted mb-0">Tanggal Lahir : ${formattedLahir}</p>
+                `;
+            }
+
             generateBarcodeUI();
 
         } catch (error) {
@@ -1174,6 +1225,7 @@
             return;
         }
 
+        
         downloadButtons.innerHTML = `
             <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
                 <i class="ti ti-download me-1"></i>Download
@@ -1181,7 +1233,9 @@
             <ul class="dropdown-menu">
                 ${availableDepartments.map(d => {
                     const c = getDepartmentConfig(d);
-                    return `<li><a class="dropdown-item" href="#" onclick="downloadBarcode('${d}')"><i class="${c.icon} me-1"></i>${c.name}</a></li>`;
+                    return `
+                        <li><a class="dropdown-item" href="#" onclick="downloadBarcode('${d}')"><i class="me-1"></i>Download ${c.name}</a></li>
+                    `;
                 }).join('')}
             </ul>
         `;
@@ -1189,6 +1243,7 @@
         const colSize = availableDepartments.length === 1 ? '12' : '6';
         barcodeRow.innerHTML = '';
 
+        // Generate tampilan barcode
         availableDepartments.forEach(dept => {
             const config = getDepartmentConfig(dept);
             const code = config.code + currentBarcodeData;
@@ -1209,22 +1264,30 @@
             `;
         });
 
+        // Render barcode
         setTimeout(() => {
             availableDepartments.forEach(dept => {
                 const config = getDepartmentConfig(dept);
                 const code = config.code + currentBarcodeData;
                 const elementId = `barcode${dept}`;
-                JsBarcode(`#${elementId}`, code, {
-                    format: "CODE128",
-                    width: 2,
-                    height: 80,
-                    displayValue: false,
-                    fontSize: 14,
-                    margin: 10
-                });
+                const svgEl = document.getElementById(elementId);
+
+                if (svgEl) {
+                    JsBarcode(svgEl, code, {
+                        format: "CODE128",
+                        width: 2,
+                        height: 80,
+                        displayValue: false,
+                        fontSize: 14,
+                        margin: 10
+                    });
+                } else {
+                    console.warn(`Element #${elementId} tidak ditemukan, barcode tidak dirender.`);
+                }
             });
         }, 100);
     }
+
 
     function downloadBarcode(dept) {
         const elementId = `barcode${dept}`;
@@ -1236,7 +1299,7 @@
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = 400;
-        canvas.height = 200;
+        canvas.height = 240;
 
         const img = new Image();
         const svgBlob = new Blob([new XMLSerializer().serializeToString(svg)], { type: 'image/svg+xml' });
@@ -1245,16 +1308,19 @@
         img.onload = () => {
             ctx.fillStyle = '#fff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 50, 30, 300, 120);
+            ctx.drawImage(img, 50, 40, 300, 100);
 
             ctx.fillStyle = '#000';
             ctx.font = 'bold 16px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText(config.name, canvas.width / 2, 25);
-            ctx.font = 'bold 14px Arial';
-            ctx.fillText(code, canvas.width / 2, 170);
+            ctx.fillText(config.name, canvas.width / 2, 30);
+            ctx.font = '14px Arial';
+            ctx.fillText(code, canvas.width / 2, 160);
+            ctx.font = '12px Arial';
+            ctx.fillText(`Nama: ${currentPatientName}`, canvas.width / 2, 180);
+            ctx.fillText(`Tanggal Lahir: ${currentPatientDOB}`, canvas.width / 2, 200);
             ctx.font = '10px Arial';
-            ctx.fillText(new Date().toLocaleDateString('id-ID'), canvas.width / 2, 190);
+            ctx.fillText(new Date().toLocaleDateString('id-ID'), canvas.width / 2, 220);
 
             canvas.toBlob(blob => {
                 const link = document.createElement('a');
@@ -1267,7 +1333,13 @@
         img.onerror = () => alert("Gagal memuat gambar barcode");
         img.src = url;
     }
+
+    // Agar bisa diakses oleh elemen HTML
+    window.showBarcodeModal = showBarcodeModal;
+    window.downloadBarcode = downloadBarcode;
+    
 </script>
+
 
 
     <script src="{{ asset('js/time.js') }}"></script>

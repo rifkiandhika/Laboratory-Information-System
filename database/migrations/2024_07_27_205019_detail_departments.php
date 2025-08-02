@@ -31,6 +31,8 @@ return new class extends Migration
             $table->string('urutan')->nullable();
             $table->string('status')->default('deactive');
             $table->string('permission')->default('deactive');
+            $table->string('barcode')->default('deactive');
+            $table->string('handling')->default('deactive');
             $table->timestamps();
 
             // // Cascade delete

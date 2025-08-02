@@ -953,716 +953,798 @@
                     }
 
                     function getTableContent(data_pemeriksaan_pasien, data_pasien, hasil) {
-                        const hematologiParams = [{
-                                nama: 'WBC',
-                                display_name: 'Leukosit',
-                                satuan: '10³/µL',
-                                normal_min: 4.0,
-                                normal_max: 10.0,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'LYM#',
-                                display_name: 'LYM#',
-                                satuan: '10³/µL',
-                                normal_min: 1.0,
-                                normal_max: 4.0,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'MID#',
-                                display_name: 'MID#',
-                                satuan: '10³/µL',
-                                normal_min: 0.2,
-                                normal_max: 0.8,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'GRAN#',
-                                display_name: 'GRAN#',
-                                satuan: '10³/µL',
-                                normal_min: 2.0,
-                                normal_max: 7.0,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'LYM%',
-                                display_name: 'Limfosit',
-                                satuan: '%',
-                                normal_min: 20,
-                                normal_max: 40,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'MID%',
-                                display_name: 'Monosit',
-                                satuan: '%',
-                                normal_min: 3,
-                                normal_max: 15,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'GRAN%',
-                                display_name: 'Granulosit',
-                                satuan: '%',
-                                normal_min: 50,
-                                normal_max: 70,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'RBC',
-                                display_name: 'Eritrosit',
-                                satuan: '10⁶/µL',
-                                normal_min: 4.0,
-                                normal_max: 5.5,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'HGB',
-                                display_name: 'Hemoglobin',
-                                satuan: 'g/dL',
-                                normal_min: 12.0,
-                                normal_max: 16.0,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'HCT',
-                                display_name: 'Hematokrit',
-                                satuan: '%',
-                                normal_min: 36,
-                                normal_max: 48,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'MCV',
-                                display_name: 'MCV',
-                                satuan: 'fL',
-                                normal_min: 80,
-                                normal_max: 100,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'MCH',
-                                display_name: 'MCH',
-                                satuan: 'pg',
-                                normal_min: 27,
-                                normal_max: 32,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'MCHC',
-                                display_name: 'MCHC',
-                                satuan: 'g/dL',
-                                normal_min: 32,
-                                normal_max: 36,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'RDW-CV',
-                                display_name: 'RDW-CV',
-                                satuan: '%',
-                                normal_min: 11.5,
-                                normal_max: 14.5,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'RDW-SD',
-                                display_name: 'RDW-SD',
-                                satuan: 'fL',
-                                normal_min: 39,
-                                normal_max: 46,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'PLT',
-                                display_name: 'Trombosit',
-                                satuan: '10³/µL',
-                                normal_min: 150,
-                                normal_max: 450,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'MPV',
-                                display_name: 'MPV',
-                                satuan: 'fL',
-                                normal_min: 7.0,
-                                normal_max: 11.0,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'PDW',
-                                display_name: 'PDW',
-                                satuan: 'fL',
-                                normal_min: 10.0,
-                                normal_max: 18.0,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'PCT',
-                                display_name: 'PCT',
-                                satuan: '%',
-                                normal_min: 0.15,
-                                normal_max: 0.50,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'P-LCC',
-                                display_name: 'P-LCC',
-                                satuan: '10³/µL',
-                                normal_min: 30,
-                                normal_max: 90,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            },
-                            {
-                                nama: 'P-LCR',
-                                display_name: 'P-LCR',
-                                satuan: '%',
-                                normal_min: 13,
-                                normal_max: 43,
-                                nilai_rujukan: 'L.13,3-17 P.11,7-15,7'
-                            }
-                        ];
+            const hematologiParams = [
+                {
+                    nama: 'WBC',
+                    display_name: 'Leukosit',
+                    satuan: '10³/µL',
+                    normal_min_l: 4.0,      // Laki-laki min
+                    normal_max_l: 10.0,     // Laki-laki max
+                    normal_min_p: 4.0,      // Perempuan min
+                    normal_max_p: 10.0,     // Perempuan max
+                    nilai_rujukan_l: '4,0-10,0',
+                    nilai_rujukan_p: '4,0-10,0'
+                },
+                {
+                    nama: 'LYM#',
+                    display_name: 'LYM#',
+                    satuan: '10³/µL',
+                    normal_min_l: 1.0,
+                    normal_max_l: 4.0,
+                    normal_min_p: 1.0,
+                    normal_max_p: 4.0,
+                    nilai_rujukan_l: '1,0-4,0',
+                    nilai_rujukan_p: '1,0-4,0'
+                },
+                {
+                    nama: 'MID#',
+                    display_name: 'MID#',
+                    satuan: '10³/µL',
+                    normal_min_l: 0.2,
+                    normal_max_l: 0.8,
+                    normal_min_p: 0.2,
+                    normal_max_p: 0.8,
+                    nilai_rujukan_l: '0,2-0,8',
+                    nilai_rujukan_p: '0,2-0,8'
+                },
+                {
+                    nama: 'GRAN#',
+                    display_name: 'GRAN#',
+                    satuan: '10³/µL',
+                    normal_min_l: 2.0,
+                    normal_max_l: 7.0,
+                    normal_min_p: 2.0,
+                    normal_max_p: 7.0,
+                    nilai_rujukan_l: '2-7',
+                    nilai_rujukan_p: '2-7'
+                },
+                {
+                    nama: 'LYM%',
+                    display_name: 'Limfosit',
+                    satuan: '%',
+                    normal_min_l: 20,
+                    normal_max_l: 40,
+                    normal_min_p: 20,
+                    normal_max_p: 40,
+                    nilai_rujukan_l: '20-40',
+                    nilai_rujukan_p: '20-40'
+                },
+                {
+                    nama: 'MID%',
+                    display_name: 'Monosit',
+                    satuan: '%',
+                    normal_min_l: 3,
+                    normal_max_l: 15,
+                    normal_min_p: 3,
+                    normal_max_p: 15,
+                    nilai_rujukan_l: '3-15',
+                    nilai_rujukan_p: '3-15'
+                },
+                {
+                    nama: 'GRAN%',
+                    display_name: 'Granulosit',
+                    satuan: '%',
+                    normal_min_l: 50,
+                    normal_max_l: 70,
+                    normal_min_p: 50,
+                    normal_max_p: 70,
+                    nilai_rujukan_l: '50-70',
+                    nilai_rujukan_p: '50-70'
+                },
+                {
+                    nama: 'RBC',
+                    display_name: 'Eritrosit',
+                    satuan: 'Juta/mm³',
+                    normal_min_l: 4.5,
+                    normal_max_l: 6.5,
+                    normal_min_p: 3.0,      // Berbeda untuk perempuan
+                    normal_max_p: 6.0,      // Berbeda untuk perempuan
+                    nilai_rujukan_l: '4,5-6,5',
+                    nilai_rujukan_p: '3,0-6,0'
+                },
+                {
+                    nama: 'HGB',
+                    display_name: 'Hemoglobin',
+                    satuan: 'g/dL',
+                    normal_min_l: 13.3,
+                    normal_max_l: 17.0,
+                    normal_min_p: 11.7,     // Berbeda untuk perempuan
+                    normal_max_p: 15.7,     // Berbeda untuk perempuan
+                    nilai_rujukan_l: '13,3-17,0',
+                    nilai_rujukan_p: '11,7-15,7'
+                },
+                {
+                    nama: 'HCT',
+                    display_name: 'Hematokrit',
+                    satuan: '%',
+                    normal_min_l: 36,
+                    normal_max_l: 48,
+                    normal_min_p: 36,
+                    normal_max_p: 48,
+                    nilai_rujukan_l: '36-48',
+                    nilai_rujukan_p: '36-48'
+                },
+                {
+                    nama: 'MCV',
+                    display_name: 'MCV',
+                    satuan: 'fL',
+                    normal_min_l: 80,
+                    normal_max_l: 100,
+                    normal_min_p: 80,
+                    normal_max_p: 100,
+                    nilai_rujukan_l: '80-100',
+                    nilai_rujukan_p: '80-100'
+                },
+                {
+                    nama: 'MCH',
+                    display_name: 'MCH',
+                    satuan: 'pg',
+                    normal_min_l: 27,
+                    normal_max_l: 32,
+                    normal_min_p: 27,
+                    normal_max_p: 32,
+                    nilai_rujukan_l: '27-32',
+                    nilai_rujukan_p: '27-32'
+                },
+                {
+                    nama: 'MCHC',
+                    display_name: 'MCHC',
+                    satuan: 'g/dL',
+                    normal_min_l: 32,
+                    normal_max_l: 36,
+                    normal_min_p: 32,
+                    normal_max_p: 36,
+                    nilai_rujukan_l: '32-36',
+                    nilai_rujukan_p: '32-36'
+                },
+                {
+                    nama: 'RDW-CV',
+                    display_name: 'RDW-CV',
+                    satuan: '%',
+                    normal_min_l: 11.5,
+                    normal_max_l: 14.5,
+                    normal_min_p: 11.5,
+                    normal_max_p: 14.5,
+                    nilai_rujukan_l: '11,5-14,5',
+                    nilai_rujukan_p: '11,5-14,5'
+                },
+                {
+                    nama: 'RDW-SD',
+                    display_name: 'RDW-SD',
+                    satuan: 'fL',
+                    normal_min_l: 39,
+                    normal_max_l: 46,
+                    normal_min_p: 39,
+                    normal_max_p: 46,
+                    nilai_rujukan_l: '39-46',
+                    nilai_rujukan_p: '39-46'
+                },
+                {
+                    nama: 'PLT',
+                    display_name: 'Trombosit',
+                    satuan: '10³/µL',
+                    normal_min_l: 150,
+                    normal_max_l: 350,
+                    normal_min_p: 150,
+                    normal_max_p: 350,
+                    nilai_rujukan_l: '150-350',
+                    nilai_rujukan_p: '150-350'
+                },
+                {
+                    nama: 'MPV',
+                    display_name: 'MPV',
+                    satuan: 'fL',
+                    normal_min_l: 7,
+                    normal_max_l: 11,
+                    normal_min_p: 7,
+                    normal_max_p: 11,
+                    nilai_rujukan_l: '7-11',
+                    nilai_rujukan_p: '7-11'
+                },
+                {
+                    nama: 'PDW',
+                    display_name: 'PDW',
+                    satuan: 'fL',
+                    normal_min_l: 10,
+                    normal_max_l: 18,
+                    normal_min_p: 10,
+                    normal_max_p: 18,
+                    nilai_rujukan_l: '10-18',
+                    nilai_rujukan_p: '10-18'
+                },
+                {
+                    nama: 'PCT',
+                    display_name: 'PCT',
+                    satuan: '%',
+                    normal_min_l: 0.15,
+                    normal_max_l: 0.50,
+                    normal_min_p: 0.15,
+                    normal_max_p: 0.50,
+                    nilai_rujukan_l: '0,15-0,50',
+                    nilai_rujukan_p: '0,15-0,50'
+                },
+                {
+                    nama: 'P-LCC',
+                    display_name: 'P-LCC',
+                    satuan: '10³/µL',
+                    normal_min_l: 30,
+                    normal_max_l: 90,
+                    normal_min_p: 30,
+                    normal_max_p: 90,
+                    nilai_rujukan_l: '30-90',
+                    nilai_rujukan_p: '30-90'
+                },
+                {
+                    nama: 'P-LCR',
+                    display_name: 'P-LCR',
+                    satuan: '%',
+                    normal_min_l: 13,
+                    normal_max_l: 43,
+                    normal_min_p: 13,
+                    normal_max_p: 43,
+                    nilai_rujukan_l: '13-43',
+                    nilai_rujukan_p: '13-43'
+                }
+            ];
 
-                        // Create a comprehensive map of OBX data from obrs relationship
-                        const obxMap = {};
+            // Fungsi untuk mendapatkan nilai normal berdasarkan jenis kelamin
+            function getNormalValues(param, jenisKelamin) {
+                const isLakiLaki = jenisKelamin && jenisKelamin.toLowerCase() === 'l' || jenisKelamin && jenisKelamin.toLowerCase() === 'laki-laki';
+                
+                return {
+                    min: isLakiLaki ? param.normal_min_l : param.normal_min_p,
+                    max: isLakiLaki ? param.normal_max_l : param.normal_max_p,
+                    rujukan: isLakiLaki ? param.nilai_rujukan_l : param.nilai_rujukan_p,
+                    display: isLakiLaki ? 
+                        `${param.normal_min_l}-${param.normal_max_l}` : 
+                        `${param.normal_min_p}-${param.normal_max_p}`
+                };
+            }
 
-                        // Process data from obrs->obx relationship
-                        data_pasien.obrs.forEach(obr => {
-                            if (Array.isArray(obr.obx)) {
-                                obr.obx.forEach(obxItem => {
-                                    const key = (obxItem.identifier_name || '').toLowerCase().trim();
-                                    if (!obxMap[key]) obxMap[key] = [];
-                                    obxMap[key].push(obxItem.identifier_value);
-                                });
+            // Create a comprehensive map of OBX data from obrs relationship
+            const obxMap = {};
+
+            // Process data from obrs->obx relationship
+            data_pasien.obrs.forEach(obr => {
+                if (Array.isArray(obr.obx)) {
+                    obr.obx.forEach(obxItem => {
+                        const key = (obxItem.identifier_name || '').toLowerCase().trim();
+                        if (!obxMap[key]) obxMap[key] = [];
+                        obxMap[key].push(obxItem.identifier_value);
+                    });
+                }
+            });
+
+            // Fallback: Also check direct obx relationship if exists
+            if (data_pasien.obx && Array.isArray(data_pasien.obx)) {
+                data_pasien.obx.forEach(obxItem => {
+                    const paramName = obxItem.identifier_name;
+                    if (!obxMap[paramName]) {
+                        obxMap[paramName] = [];
+                    }
+                    if (obxItem.identifier_value || obxItem.observation_value) {
+                        obxMap[paramName].push(obxItem.identifier_value || obxItem.observation_value);
+                    }
+                });
+            }
+
+            function getObxValues(parameterName) {
+                const key = (parameterName || '').toLowerCase().trim();
+                const obxItems = [];
+
+                data_pasien.obrs.forEach(obr => {
+                    if (Array.isArray(obr.obx)) {
+                        obr.obx.forEach(obx => {
+                            const name = (obx.identifier_name || '').toLowerCase().trim();
+                            if (name === key) {
+                                obxItems.push(obx.identifier_value);
                             }
                         });
+                    }
+                });
 
-                        // Fallback: Also check direct obx relationship if exists
-                        if (data_pasien.obx && Array.isArray(data_pasien.obx)) {
-                            data_pasien.obx.forEach(obxItem => {
-                                const paramName = obxItem.identifier_name;
-                                if (!obxMap[paramName]) {
-                                    obxMap[paramName] = [];
-                                }
-                                if (obxItem.identifier_value || obxItem.observation_value) {
-                                    obxMap[paramName].push(obxItem.identifier_value || obxItem
-                                        .observation_value);
-                                }
-                            });
-                        }
+                return {
+                    duplo_d1: obxItems[0] ?? '',
+                    duplo_d2: obxItems[1] ?? '',
+                    duplo_d3: obxItems[2] ?? '',
+                    hasilUtama: obxItems[0] ?? ''
+                };
+            }
 
-                        function getObxValues(parameterName) {
-                            const key = (parameterName || '').toLowerCase().trim();
-                            const obxItems = [];
+            function getInitialFlagContent(value, parameter = null, isHematologi = false) {
+                const nilaiHasil = parseFloat(value);
+                let flagIcon = '';
 
-                            data_pasien.obrs.forEach(obr => {
-                                if (Array.isArray(obr.obx)) {
-                                    obr.obx.forEach(obx => {
-                                        const name = (obx.identifier_name || '').toLowerCase().trim();
-                                        if (name === key) {
-                                            obxItems.push(obx.identifier_value);
-                                        }
-                                    });
-                                }
-                            });
-
-                            return {
-                                duplo_d1: obxItems[0] ?? '',
-                                duplo_d2: obxItems[1] ?? '',
-                                duplo_d3: obxItems[2] ?? '',
-                                hasilUtama: obxItems[0] ?? ''
-                            };
-                        }
-
-                        function getInitialFlagContent(value, parameter = null, isHematologi = false) {
-                            const nilaiHasil = parseFloat(value);
-                            let flagIcon = '';
-
-                            if (!isNaN(nilaiHasil) && value !== '') {
-                                if (isHematologi && parameter) {
-                                    // range normal untuk parameter hematologi
-                                    const paramData = hematologiParams.find(p => p.nama === parameter);
-                                    if (paramData) {
-                                        if (nilaiHasil < paramData.normal_min) {
-                                            flagIcon = `<i class="ti ti-arrow-down text-primary"></i> Low`;
-                                        } else if (nilaiHasil > paramData.normal_max) {
-                                            flagIcon = `<i class="ti ti-arrow-up text-danger"></i> High`;
-                                        } else {
-                                            flagIcon = `<i class="ti ti-check text-success"></i> Normal`;
-                                        }
-                                    }
-                                } else {
-                                    // Flag logic untuk non-hematologi (sesuaikan dengan logic Anda)
-                                    if (nilaiHasil < 5) {
-                                        flagIcon = `<i class="ti ti-arrow-down text-primary"></i>`;
-                                    } else if (nilaiHasil > 10) {
-                                        flagIcon = `<i class="ti ti-arrow-up text-danger"></i>`;
-                                    }
-                                }
-                            }
-                            return flagIcon;
-                        }
-// Debug logging - hapus setelah masalah teratasi
-    console.log('Data pemeriksaan pasien:', data_pemeriksaan_pasien);
-    console.log('Data pasien obrs:', data_pasien.obrs);
-    console.log('OBX Map:', obxMap);
-    
-
-    const content = `
-<form id="worklistForm" action="{{ route('worklist.store') }}" method="POST">
-    @csrf
-    
-    <input type="hidden" name="no_lab" value="${data_pasien.no_lab}">
-    <input type="hidden" name="no_rm" value="${data_pasien.no_rm}">
-    <input type="hidden" name="nama" value="${data_pasien.nama}">
-    <input type="hidden" name="ruangan" value="${data_pasien.asal_ruangan}">
-    <input type="hidden" name="nama_dokter" value="${data_pasien.kode_dokter}">
-    
-    <div id="tabel-pemeriksaan">
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th class="col-2">PARAMETER</th>
-                        <th class="col-2">HASIL</th>
-                        <th class="col-1"></th>
-                        <th class="col-2 duplo d1-column" style="display: none;">D1</th>
-                        <th class="col-2 duplo d2-column" style="display: none;">D2</th>
-                        <th class="col-2 duplo d3-column" style="display: none;">D3</th>
-                        <th class="col-3">FLAG</th>
-                        <th class="col-2">Unit</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-        
-        <div class="accordion" id="accordionPemeriksaan">
-            ${data_pemeriksaan_pasien.map((e, idx) => `
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="heading${idx}">
-                                <button class="accordion-button collapsed" type="button" 
-                                        data-bs-toggle="collapse" data-bs-target="#collapse${idx}"
-                                        aria-expanded="false" aria-controls="collapse${idx}">
-                                    <span>${e.data_departement.nama_department}</span>
-                                </button>
-                            </h2>
+                if (!isNaN(nilaiHasil) && value !== '') {
+                    if (isHematologi && parameter) {
+                        // range normal untuk parameter hematologi berdasarkan jenis kelamin
+                        const paramData = hematologiParams.find(p => p.nama === parameter);
+                        if (paramData) {
+                            const normalValues = getNormalValues(paramData, data_pasien.jenis_kelamin);
                             
-                            <div id="collapse${idx}" class="accordion-collapse collapse" 
-                                aria-labelledby="heading${idx}" data-bs-parent="#accordionPemeriksaan">
-                                <div class="accordion-body">
-                                    <table class="table table-striped">
-                                        <thead style="visibility: collapse;">
-                                            <tr>
-                                                <th class="col-2">PARAMETER</th>
-                                                <th class="col-2">HASIL</th>
-                                                <th class="col-1"></th>
-                                                <th class="col-2 duplo d1-column" style="display: none;">D1</th>
-                                                <th class="col-2 duplo d2-column" style="display: none;">D2</th>
-                                                <th class="col-2 duplo d3-column" style="display: none;">D3</th>
-                                                <th class="col-3">FLAG</th>
-                                                <th class="col-2">Unit</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            ${(() => {
-                                                // Debug log untuk setiap department
-                                                console.log(`Department ${idx}:`, e.data_departement.nama_department);
-                                                console.log(`Pasiens in department:`, e.pasiens);
-                                                
-                                                // Cek apakah ada pemeriksaan hematologi di grup ini
-                                                const hasHematologi = e.pasiens.some(p => {
-                                                    const isHematologi = p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('hematologi');
-                                                    console.log(`Checking ${p.data_pemeriksaan.nama_pemeriksaan}: ${isHematologi}`);
-                                                    return isHematologi;
-                                                });
-                                                
-                                                console.log(`Has hematologi: ${hasHematologi}`);
-                                                
-                                                if (hasHematologi) {
-                                                    // Jika ada hematologi, tampilkan parameter hematologi lengkap
-                                                    // Cari nama pemeriksaan hematologi yang sebenarnya
-                                                    const hematologiPemeriksaan = e.pasiens.find(p => 
-                                                        p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('hematologi')
-                                                    );
-                                                    const namaPemeriksaanHematologi = hematologiPemeriksaan ? hematologiPemeriksaan.data_pemeriksaan.nama_pemeriksaan : 'Hematologi Lengkap';
-                                                    
-                                                    return hematologiParams.map((param, paramIdx) => {
-                                                        // Cari data hasil untuk parameter ini
-                                                        const obxValues = getObxValues(param.nama);
-                                                        const rowId = `hematologi_${idx}_${paramIdx}`;
-                                                        const initialFlag = getInitialFlagContent(obxValues.hasilUtama, param.nama, true);
-                                                        
-                                                        return `
-                                                <tr data-id="${rowId}" data-parameter="${param.nama}" class="hematologi-row">
-                                                    <td class="col-2">
-                                                        <strong>${param.display_name}</strong>
-                                                        <small class="text-muted d-block">${param.normal_min}-${param.normal_max}</small>
-                                                        <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanHematologi}" />
-                                                        <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                        <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan}" />
-                                                        <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
-                                                    </td>
-                                                    <td class="col-2">
-                                                        <input type="number" name="hasil[]" 
-                                                            class="form-control manualInput w-60 p-0 text-center" 
-                                                            disabled value="${obxValues.hasilUtama || ''}" 
-                                                            step="0.01" placeholder="" required />
-                                                    </td>
-                                                    <td class="col-1">
-                                                        <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
-                                                                data-index="${paramIdx}" data-switch-index="0">
-                                                            <i class="ti ti-switch-2"></i>
-                                                        </button>
-                                                    </td>
-                                                    <td class="col-2 duplo d1-column text-center" style="display: none;">
-                                                        <input type="number" name="duplo_d1[]" 
-                                                            class="form-control d1 w-60 p-0 text-center" 
-                                                            disabled value="${obxValues.duplo_d1 || ''}" step="0.01" />
-                                                    </td>
-                                                    <td class="col-2 duplo d2-column" style="display: none;">
-                                                        <input type="number" name="duplo_d2[]" 
-                                                            class="form-control d2 w-60 p-0 text-center" 
-                                                            disabled value="${obxValues.duplo_d2 || ''}" step="0.01" />
-                                                    </td>
-                                                    <td class="col-2 duplo d3-column" style="display: none;">
-                                                        <input type="number" name="duplo_d3[]" 
-                                                            class="form-control d3 w-50 p-0 text-center" 
-                                                            disabled value="${obxValues.duplo_d3 || ''}" step="0.01" />
-                                                    </td>
-                                                    <td class="col-3 flag-cell">
-                                                        ${initialFlag}
-                                                    </td>
-                                                    <td>
-                                                        <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
-                                                            value="${param.satuan}" readonly />
-                                                        ${param.satuan}
-                                                    </td>
-                                                </tr>
-                                                `;
-                                                    }).join('');
-                                                } else {
-                                                    // Jika bukan hematologi, tampilkan seperti biasa
-                                                    console.log(`Processing non-hematologi for department: ${e.data_departement.nama_department}`);
-                                                    
-                                                    return e.pasiens.map((p, pIdx) => {
-                                                        console.log(`Processing pemeriksaan: ${p.data_pemeriksaan.nama_pemeriksaan}`);
-                                                        console.log(`Parameter: ${p.data_pemeriksaan.nama_parameter}`);
-                                                        
-                                                        const obxValues = getObxValues(p.data_pemeriksaan.nama_parameter);
-                                                        const rowId = p.data_pemeriksaan.id;
-                                                        const initialFlag = getInitialFlagContent(obxValues.hasilUtama, p.data_pemeriksaan.nama_parameter, false);
-                                                        
-                                                        console.log(`OBX values for ${p.data_pemeriksaan.nama_parameter}:`, obxValues);
-                                                        
-                                                        return `
-                                                <tr data-id="${rowId}" data-parameter="${p.data_pemeriksaan.nama_parameter}">
-                                                    <td class="col-2">
-                                                        <strong>${p.data_pemeriksaan.nama_pemeriksaan}</strong>
-                                                        <input type="hidden" name="nama_pemeriksaan[]" 
-                                                            value="${p.data_pemeriksaan.nama_pemeriksaan}" />
-                                                        <input type="hidden" name="parameter_name[]" 
-                                                            value="${p.data_pemeriksaan.nama_parameter}" />
-                                                        <input type="hidden" name="nilai_rujukan[]" value="${p.data_pemeriksaan.nilai_rujukan || ''}" />
-                                                        <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
-                                                    </td>
-                                                    <td class="col-2">
-                                                        <input type="number" name="hasil[]" 
-                                                            class="form-control manualInput w-60 p-0" 
-                                                            disabled value="${obxValues.hasilUtama || ''}" required />
-                                                    </td>
-                                                    <td class="col-1">
-                                                        <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
-                                                                data-index="${pIdx}" data-switch-index="0">
-                                                            <i class="ti ti-switch-2"></i>
-                                                        </button>
-                                                    </td>
-                                                    <td class="col-2 duplo d1-column text-center" style="display: none;">
-                                                        <input type="number" name="duplo_d1[]" 
-                                                            class="form-control d1 w-60 p-0 text-center" 
-                                                            disabled value="${obxValues.duplo_d1 || ''}" />
-                                                    </td>
-                                                    <td class="col-2 duplo d2-column" style="display: none;">
-                                                        <input type="number" name="duplo_d2[]" 
-                                                            class="form-control d2 w-60 p-0 text-center" 
-                                                            disabled value="${obxValues.duplo_d2 || ''}" />
-                                                    </td>
-                                                    <td class="col-2 duplo d3-column" style="display: none;">
-                                                        <input type="number" name="duplo_d3[]" 
-                                                            class="form-control d3 w-50 p-0 text-center" 
-                                                            disabled value="${obxValues.duplo_d3 || ''}" />
-                                                    </td>
-                                                    <td class="col-3 flag-cell">
-                                                        ${initialFlag}
-                                                    </td>
-                                                    <td>
-                                                        <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
-                                                            value="${p.data_pemeriksaan.nilai_satuan || ''}" readonly />
-                                                        ${p.data_pemeriksaan.nilai_satuan || ''}
-                                                    </td>
-                                                </tr>
-                                                
-                                                `;
-                                }).join('');
+                            if (nilaiHasil < normalValues.min) {
+                                flagIcon = `<i class="ti ti-arrow-down text-primary"></i> Low`;
+                            } else if (nilaiHasil > normalValues.max) {
+                                flagIcon = `<i class="ti ti-arrow-up text-danger"></i> High`;
+                            } else {
+                                flagIcon = `<i class="ti ti-check text-success"></i> Normal`;
+                            }
                         }
-                    })()}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-            `).join('')}
-        </div>
-        
-        <div>
-            <label>Note</label>
-            <textarea class="form-control" name="note" cols="3" rows="3" 
-                    placeholder="Masukkan catatan pemeriksaan...">${hasil.length > 0 && hasil[0].note ? hasil[0].note : ''}</textarea>
-        </div>
-    </div>
-    
-    <div class="row">
-        <div class="col-lg-12 mb-3 mt-2">
-            <button type="button" id="verifikasiHasilBtn" 
-                    class="btn btn-outline-info btn-block w-100" disabled>Verifikasi Hasil</button>
-        </div>
-        <div class="col-lg-12 mt-2">
-            <button type="button" id="verifikasiDokterBtn" 
-                    class="btn btn-outline-primary w-100" disabled>Verifikasi Dokter PK</button>
-        </div>
-    </div>
-</form>
-
-<style>
-    .hematologi-row {
-        background-color: #f8f9ff;
-    }
-    .hematologi-row:hover {
-        background-color: #e9ecff;
-    }
-    .text-success {
-        color: #28a745 !important;
-    }
-    .text-primary {
-        color: #007bff !important;
-    }
-    .text-danger {
-        color: #dc3545 !important;
-    }
-    .hematologi-row small.text-muted {
-        font-size: 0.75rem;
-        margin-top: 2px;
-    }
-</style>
-`;
-
-    setTimeout(() => {
-        // Referensi elemen-elemen yang diperlukan
-        const verifikasiHasilBtn = document.getElementById('verifikasiHasilBtn');
-        const verifikasiDokterBtn = document.getElementById('verifikasiDokterBtn');
-        const manualButton = document.getElementById('manualButton');
-        const duploButton = document.getElementById('duploButton');
-        let currentDuploStage = 0;
-
-        // Update fungsi updateFlag untuk mendukung hematologi
-        function updateFlag(value, flagCell, parameter = null) {
-            const numValue = parseFloat(value);
-            const row = flagCell.closest('tr');
-            const isHematologi = row && row.classList.contains('hematologi-row');
-
-            if (!isNaN(numValue) && value !== '') {
-                if (isHematologi && parameter) {
-                    // Cari range normal untuk parameter hematologi
-                    const paramData = hematologiParams.find(p => p.nama === parameter);
-                    if (paramData) {
-                        if (numValue < paramData.normal_min) {
-                            flagCell.innerHTML = '<i class="ti ti-arrow-down text-primary"></i> Low';
-                        } else if (numValue > paramData.normal_max) {
-                            flagCell.innerHTML = '<i class="ti ti-arrow-up text-danger"></i> High';
-                        } else {
-                            flagCell.innerHTML = '<i class="ti ti-check text-success"></i> Normal';
+                    } else {
+                        // Flag logic untuk non-hematologi (sesuaikan dengan logic Anda)
+                        if (nilaiHasil < 5) {
+                            flagIcon = `<i class="ti ti-arrow-down text-primary"></i>`;
+                        } else if (nilaiHasil > 10) {
+                            flagIcon = `<i class="ti ti-arrow-up text-danger"></i>`;
                         }
                     }
-                } else {
-                    // Flag logic untuk non-hematologi
-                    if (numValue < 5) {
-                        flagCell.innerHTML = '<i class="ti ti-arrow-down text-primary"></i>';
-                    } else if (numValue > 10) {
-                        flagCell.innerHTML = '<i class="ti ti-arrow-up text-danger"></i>';
+                }
+                return flagIcon;
+            }
+
+            const content = `
+            <form id="worklistForm" action="{{ route('worklist.store') }}" method="POST">
+                @csrf
+                
+                <input type="hidden" name="no_lab" value="${data_pasien.no_lab}">
+                <input type="hidden" name="no_rm" value="${data_pasien.no_rm}">
+                <input type="hidden" name="nama" value="${data_pasien.nama}">
+                <input type="hidden" name="ruangan" value="${data_pasien.asal_ruangan}">
+                <input type="hidden" name="nama_dokter" value="${data_pasien.kode_dokter}">
+                
+                <div id="tabel-pemeriksaan">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="col-2">PARAMETER</th>
+                                    <th class="col-2">HASIL</th>
+                                    <th class="col-1"></th>
+                                    <th class="col-2 duplo d1-column" style="display: none;">D1</th>
+                                    <th class="col-2 duplo d2-column" style="display: none;">D2</th>
+                                    <th class="col-2 duplo d3-column" style="display: none;">D3</th>
+                                    <th class="col-3">FLAG</th>
+                                    <th class="col-2">Unit</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    
+                    <div class="accordion" id="accordionPemeriksaan">
+                        ${data_pemeriksaan_pasien.map((e, idx) => `
+                        <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading${idx}">
+                            <button class="accordion-button collapsed" type="button" 
+                                    data-bs-toggle="collapse" data-bs-target="#collapse${idx}"
+                                    aria-expanded="false" aria-controls="collapse${idx}">
+                                <span>${e.data_departement.nama_department}</span>
+                            </button>
+                        </h2>
+                        
+                        <div id="collapse${idx}" class="accordion-collapse collapse" 
+                            aria-labelledby="heading${idx}" data-bs-parent="#accordionPemeriksaan">
+                            <div class="accordion-body">
+                                <table class="table table-striped">
+                                    <thead style="visibility: collapse;">
+                                        <tr>
+                                            <th class="col-2">PARAMETER</th>
+                                            <th class="col-2">HASIL</th>
+                                            <th class="col-1"></th>
+                                            <th class="col-2 duplo d1-column" style="display: none;">D1</th>
+                                            <th class="col-2 duplo d2-column" style="display: none;">D2</th>
+                                            <th class="col-2 duplo d3-column" style="display: none;">D3</th>
+                                            <th class="col-3">FLAG</th>
+                                            <th class="col-2">Unit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${(() => {
+                                            // Cek apakah ada pemeriksaan hematologi di grup ini
+                                            const hasHematologi = e.pasiens.some(p => {
+                                                const isHematologi = p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('hematologi');
+                                                return isHematologi;
+                                            });
+                                            
+                                            if (hasHematologi) {
+                                                // Jika ada hematologi, tampilkan parameter hematologi lengkap
+                                                const hematologiPemeriksaan = e.pasiens.find(p => 
+                                                    p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('hematologi')
+                                                );
+                                                const namaPemeriksaanHematologi = hematologiPemeriksaan ? hematologiPemeriksaan.data_pemeriksaan.nama_pemeriksaan : 'Hematologi Lengkap';
+                                                
+                                                return hematologiParams.map((param, paramIdx) => {
+                                                    // Cari data hasil untuk parameter ini
+                                                    const obxValues = getObxValues(param.nama);
+                                                    const rowId = `hematologi_${idx}_${paramIdx}`;
+                                                    const initialFlag = getInitialFlagContent(obxValues.hasilUtama, param.nama, true);
+                                                    const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
+                                                    
+                                                    return `
+                                            <tr data-id="${rowId}" data-parameter="${param.nama}" class="hematologi-row">
+                                                <td class="col-2">
+                                                    <strong>${param.display_name}</strong>
+                                                    <small class="text-muted d-block">${normalValues.display}</small>
+                                                    <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanHematologi}" />
+                                                    <input type="hidden" name="parameter_name[]" value="${param.nama}" />
+                                                    <input type="hidden" name="nilai_rujukan[]" value="${normalValues.rujukan}" />
+                                                    <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                </td>
+                                                <td class="col-2">
+                                                    <input type="number" name="hasil[]" 
+                                                        class="form-control manualInput w-60 p-0 text-center" 
+                                                        disabled value="${obxValues.hasilUtama || ''}" 
+                                                        step="0.01" placeholder="" required />
+                                                </td>
+                                                <td class="col-1">
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
+                                                            data-index="${paramIdx}" data-switch-index="0">
+                                                        <i class="ti ti-switch-2"></i>
+                                                    </button>
+                                                </td>
+                                                <td class="col-2 duplo d1-column text-center" style="display: none;">
+                                                    <input type="number" name="duplo_d1[]" 
+                                                        class="form-control d1 w-60 p-0 text-center" 
+                                                        disabled value="${obxValues.duplo_d1 || ''}" step="0.01" />
+                                                </td>
+                                                <td class="col-2 duplo d2-column" style="display: none;">
+                                                    <input type="number" name="duplo_d2[]" 
+                                                        class="form-control d2 w-60 p-0 text-center" 
+                                                        disabled value="${obxValues.duplo_d2 || ''}" step="0.01" />
+                                                </td>
+                                                <td class="col-2 duplo d3-column" style="display: none;">
+                                                    <input type="number" name="duplo_d3[]" 
+                                                        class="form-control d3 w-50 p-0 text-center" 
+                                                        disabled value="${obxValues.duplo_d3 || ''}" step="0.01" />
+                                                </td>
+                                                <td class="col-3 flag-cell">
+                                                    ${initialFlag}
+                                                </td>
+                                                <td>
+                                                    <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
+                                                        value="${param.satuan}" readonly />
+                                                    ${param.satuan}
+                                                </td>
+                                            </tr>
+                                            `;
+                                                }).join('');
+                                            } else {
+                                                return e.pasiens.map((p, pIdx) => {
+                                                    const obxValues = getObxValues(p.data_pemeriksaan.nama_parameter);
+                                                    const rowId = p.data_pemeriksaan.id;
+                                                    const initialFlag = getInitialFlagContent(obxValues.hasilUtama, p.data_pemeriksaan.nama_parameter, false);
+                                                    
+                                                    return `
+                                            <tr data-id="${rowId}" data-parameter="${p.data_pemeriksaan.nama_parameter}">
+                                                <td class="col-2">
+                                                    <strong>${p.data_pemeriksaan.nama_pemeriksaan}</strong>
+                                                    <input type="hidden" name="nama_pemeriksaan[]" 
+                                                        value="${p.data_pemeriksaan.nama_pemeriksaan}" />
+                                                    <input type="hidden" name="parameter_name[]" 
+                                                        value="${p.data_pemeriksaan.nama_parameter}" />
+                                                    <input type="hidden" name="nilai_rujukan[]" value="${p.data_pemeriksaan.nilai_rujukan || ''}" />
+                                                    <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                </td>
+                                                <td class="col-2">
+                                                <!-- Input Text -->
+                                                <input 
+                                                    type="text" 
+                                                    name="hasil[]" 
+                                                    class="form-control manualInput w-60 p-0 hasil-input" 
+                                                    value="${obxValues.hasilUtama || ''}" 
+                                                    disabled 
+                                                    style="display: ${p.data_pemeriksaan.tipe_inputan === 'Text' ? 'block' : 'none'}" 
+                                                />
+
+                                                <!-- Select Dropdown -->
+                                                <select 
+                                                    name="hasil[]" 
+                                                    class="form-select manualInput w-60 p-0 hasil-select" 
+                                                    disabled 
+                                                    style="display: ${p.data_pemeriksaan.tipe_inputan === 'Dropdown' ? 'block' : 'none'}"
+                                                >
+                                                    ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
+                                                    <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>
+                                                        ${opt.trim()}
+                                                    </option>
+                                                    `).join('')}
+                                                </select>
+                                                </td>
+                                                <td class="col-1">
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
+                                                            data-index="${pIdx}" data-switch-index="0">
+                                                        <i class="ti ti-switch-2"></i>
+                                                    </button>
+                                                </td>
+                                                <td class="col-2 duplo d1-column text-center" style="display: none;">
+                                                    <input type="number" name="duplo_d1[]" 
+                                                        class="form-control d1 w-60 p-0 text-center" 
+                                                        disabled value="${obxValues.duplo_d1 || ''}" />
+                                                </td>
+                                                <td class="col-2 duplo d2-column" style="display: none;">
+                                                    <input type="number" name="duplo_d2[]" 
+                                                        class="form-control d2 w-60 p-0 text-center" 
+                                                        disabled value="${obxValues.duplo_d2 || ''}" />
+                                                </td>
+                                                <td class="col-2 duplo d3-column" style="display: none;">
+                                                    <input type="number" name="duplo_d3[]" 
+                                                        class="form-control d3 w-50 p-0 text-center" 
+                                                        disabled value="${obxValues.duplo_d3 || ''}" />
+                                                </td>
+                                                <td class="col-3 flag-cell">
+                                                    ${initialFlag}
+                                                </td>
+                                                <td>
+                                                    <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
+                                                        value="${p.data_pemeriksaan.nilai_satuan || ''}" readonly />
+                                                    ${p.data_pemeriksaan.nilai_satuan || ''}
+                                                </td>
+                                            </tr>
+                                            `;
+                                                }).join('');
+                                            }
+                                        })()}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div>
+                        <label>Note</label>
+                        <textarea class="form-control" name="note" cols="3" rows="3" 
+                                placeholder="Masukkan catatan pemeriksaan...">${hasil.length > 0 && hasil[0].note ? hasil[0].note : ''}</textarea>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-12 mb-3 mt-2">
+                        <button type="button" id="verifikasiHasilBtn" 
+                                class="btn btn-outline-info btn-block w-100" disabled>Verifikasi Hasil</button>
+                    </div>
+                    <div class="col-lg-12 mt-2">
+                        <button type="button" id="verifikasiDokterBtn" 
+                                class="btn btn-outline-primary w-100" disabled>Verifikasi Dokter PK</button>
+                    </div>
+                </div>
+            </form>
+
+            <style>
+                .hematologi-row {
+                    background-color: #f8f9ff;
+                }
+                .hematologi-row:hover {
+                    background-color: #e9ecff;
+                }
+                .text-success {
+                    color: #28a745 !important;
+                }
+                .text-primary {
+                    color: #007bff !important;
+                }
+                .text-danger {
+                    color: #dc3545 !important;
+                }
+                .hematologi-row small.text-muted {
+                    font-size: 0.75rem;
+                    margin-top: 2px;
+                }
+            </style>
+            `;
+
+            setTimeout(() => {
+                // Referensi elemen-elemen yang diperlukan
+                const verifikasiHasilBtn = document.getElementById('verifikasiHasilBtn');
+                const verifikasiDokterBtn = document.getElementById('verifikasiDokterBtn');
+                const manualButton = document.getElementById('manualButton');
+                const duploButton = document.getElementById('duploButton');
+                let currentDuploStage = 0;
+
+                // Update fungsi updateFlag untuk mendukung hematologi dengan jenis kelamin
+                function updateFlag(value, flagCell, parameter = null) {
+                    const numValue = parseFloat(value);
+                    const row = flagCell.closest('tr');
+                    const isHematologi = row && row.classList.contains('hematologi-row');
+
+                    if (!isNaN(numValue) && value !== '') {
+                        if (isHematologi && parameter) {
+                            // Cari range normal untuk parameter hematologi berdasarkan jenis kelamin
+                            const paramData = hematologiParams.find(p => p.nama === parameter);
+                            if (paramData) {
+                                const normalValues = getNormalValues(paramData, data_pasien.jenis_kelamin);
+                                
+                                if (numValue < normalValues.min) {
+                                    flagCell.innerHTML = '<i class="ti ti-arrow-down text-primary"></i> Low';
+                                } else if (numValue > normalValues.max) {
+                                    flagCell.innerHTML = '<i class="ti ti-arrow-up text-danger"></i> High';
+                                } else {
+                                    flagCell.innerHTML = '<i class="ti ti-check text-success"></i> Normal';
+                                }
+                            }
+                        } else {
+                            // Flag logic untuk non-hematologi
+                            if (numValue < 5) {
+                                flagCell.innerHTML = '<i class="ti ti-arrow-down text-primary"></i>';
+                            } else if (numValue > 10) {
+                                flagCell.innerHTML = '<i class="ti ti-arrow-up text-danger"></i>';
+                            } else {
+                                flagCell.innerHTML = '';
+                            }
+                        }
                     } else {
                         flagCell.innerHTML = '';
                     }
                 }
-            } else {
-                flagCell.innerHTML = '';
-            }
-        }
 
-        function setupFlagEventListeners() {
-            const allInputs = document.querySelectorAll('.manualInput, .d1, .d2, .d3');
-            allInputs.forEach(input => {
-                input.removeEventListener('input', inputHandler);
-                input.addEventListener('input', inputHandler);
-            });
-            console.log(`Setup flag event listeners for ${allInputs.length} inputs`);
-        }
-
-        function inputHandler() {
-            const row = this.closest('tr');
-            const flagCell = row.querySelector('.flag-cell');
-            const parameter = row.dataset.parameter;
-
-            updateFlag(this.value, flagCell, parameter);
-        }
-
-        function hideAllDuploColumns() {
-            document.querySelectorAll('.d1-column, .d2-column, .d3-column').forEach(col => {
-                col.style.display = 'none';
-            });
-            document.querySelectorAll('.d1, .d2, .d3').forEach(input => {
-                input.disabled = true;
-            });
-        }
-
-        hideAllDuploColumns();
-
-        function logDuploValues() {
-            const d1Values = Array.from(document.querySelectorAll('.d1')).map(input => input.value).filter(Boolean);
-            const d2Values = Array.from(document.querySelectorAll('.d2')).map(input => input.value).filter(Boolean);
-            const d3Values = Array.from(document.querySelectorAll('.d3')).map(input => input.value).filter(Boolean);
-            console.log('D1 Values:', d1Values);
-            console.log('D2 Values:', d2Values);
-            console.log('D3 Values:', d3Values);
-        }
-
-        if (duploButton) {
-            duploButton.addEventListener('click', () => {
-                const d1Columns = document.querySelectorAll('.d1-column');
-                const d2Columns = document.querySelectorAll('.d2-column');
-                const d3Columns = document.querySelectorAll('.d3-column');
-                const d1Inputs = document.querySelectorAll('.d1');
-                const d2Inputs = document.querySelectorAll('.d2');
-                const d3Inputs = document.querySelectorAll('.d3');
-
-                switch (currentDuploStage) {
-                    case 0:
-                        console.log("Menampilkan kolom D1");
-                        d1Columns.forEach(col => col.style.display = 'table-cell');
-                        d1Inputs.forEach(input => {
-                            input.disabled = false;
-                        });
-                        currentDuploStage = 1;
-                        break;
-                    case 1:
-                        console.log("Menampilkan kolom D2");
-                        d2Columns.forEach(col => col.style.display = 'table-cell');
-                        d2Inputs.forEach(input => {
-                            input.disabled = false;
-                        });
-                        currentDuploStage = 2;
-                        break;
-                    case 2:
-                        console.log("Menampilkan kolom D3");
-                        d3Columns.forEach(col => col.style.display = 'table-cell');
-                        d3Inputs.forEach(input => {
-                            input.disabled = false;
-                        });
-                        currentDuploStage = 3;
-                        break;
-                    default:
-                        console.log("Semua kolom duplo sudah aktif.");
-                        break;
+                function setupFlagEventListeners() {
+                    const allInputs = document.querySelectorAll('.manualInput, .d1, .d2, .d3');
+                    allInputs.forEach(input => {
+                        input.removeEventListener('input', inputHandler);
+                        input.addEventListener('input', inputHandler);
+                    });
+                    console.log(`Setup flag event listeners for ${allInputs.length} inputs`);
                 }
+
+                function inputHandler() {
+                    const row = this.closest('tr');
+                    const flagCell = row.querySelector('.flag-cell');
+                    const parameter = row.dataset.parameter;
+
+                    updateFlag(this.value, flagCell, parameter);
+                }
+
+                function hideAllDuploColumns() {
+                    document.querySelectorAll('.d1-column, .d2-column, .d3-column').forEach(col => {
+                        col.style.display = 'none';
+                    });
+                    document.querySelectorAll('.d1, .d2, .d3').forEach(input => {
+                        input.disabled = true;
+                    });
+                }
+
+                hideAllDuploColumns();
+
+                function logDuploValues() {
+                    const d1Values = Array.from(document.querySelectorAll('.d1')).map(input => input.value).filter(Boolean);
+                    const d2Values = Array.from(document.querySelectorAll('.d2')).map(input => input.value).filter(Boolean);
+                    const d3Values = Array.from(document.querySelectorAll('.d3')).map(input => input.value).filter(Boolean);
+                    // console.log('D1 Values:', d1Values);
+                    // console.log('D2 Values:', d2Values);
+                    // console.log('D3 Values:', d3Values);
+                }
+
+                if (duploButton) {
+                    duploButton.addEventListener('click', () => {
+                        const d1Columns = document.querySelectorAll('.d1-column');
+                        const d2Columns = document.querySelectorAll('.d2-column');
+                        const d3Columns = document.querySelectorAll('.d3-column');
+                        const d1Inputs = document.querySelectorAll('.d1');
+                        const d2Inputs = document.querySelectorAll('.d2');
+                        const d3Inputs = document.querySelectorAll('.d3');
+
+                        switch (currentDuploStage) {
+                            case 0:
+                                console.log("Menampilkan kolom D1");
+                                d1Columns.forEach(col => col.style.display = 'table-cell');
+                                d1Inputs.forEach(input => {
+                                    input.disabled = false;
+                                });
+                                currentDuploStage = 1;
+                                break;
+                            case 1:
+                                console.log("Menampilkan kolom D2");
+                                d2Columns.forEach(col => col.style.display = 'table-cell');
+                                d2Inputs.forEach(input => {
+                                    input.disabled = false;
+                                });
+                                currentDuploStage = 2;
+                                break;
+                            case 2:
+                                console.log("Menampilkan kolom D3");
+                                d3Columns.forEach(col => col.style.display = 'table-cell');
+                                d3Inputs.forEach(input => {
+                                    input.disabled = false;
+                                });
+                                currentDuploStage = 3;
+                                break;
+                            default:
+                                console.log("Semua kolom duplo sudah aktif.");
+                                break;
+                        }
+                        setupFlagEventListeners();
+                        console.log("Current duplo stage SESUDAH:", currentDuploStage);
+                        logDuploValues();
+
+                        if (verifikasiHasilBtn) verifikasiHasilBtn.disabled = false;
+                        if (verifikasiDokterBtn) verifikasiDokterBtn.disabled = false;
+                    });
+                }
+
+                // Setup initial flag event listeners
                 setupFlagEventListeners();
-                console.log("Current duplo stage SESUDAH:", currentDuploStage);
-                logDuploValues();
 
-                if (verifikasiHasilBtn) verifikasiHasilBtn.disabled = false;
-                if (verifikasiDokterBtn) verifikasiDokterBtn.disabled = false;
-            });
-        }
+                // Event listener untuk tombol verifikasi
+                if (verifikasiHasilBtn) {
+                    verifikasiHasilBtn.addEventListener('click', () => {
+                        document.getElementById('worklistForm').action = "{{ route('worklist.store') }}";
+                        document.getElementById('worklistForm').submit();
+                    });
+                }
 
-        // Setup initial flag event listeners
-        setupFlagEventListeners();
+                if (verifikasiDokterBtn) {
+                    verifikasiDokterBtn.addEventListener('click', () => {
+                        document.getElementById('worklistForm').action = `worklist/checkin/${data_pasien.id}`;
+                        document.getElementById('worklistForm').submit();
+                    });
+                }
 
-        // Event listener untuk tombol verifikasi
-        if (verifikasiHasilBtn) {
-            verifikasiHasilBtn.addEventListener('click', () => {
-                document.getElementById('worklistForm').action = "{{ route('worklist.store') }}";
-                document.getElementById('worklistForm').submit();
-            });
-        }
+                // Tombol manual input
+                if (manualButton) {
+                    manualButton.addEventListener('click', () => {
+                        document.querySelectorAll('.manualInput').forEach(el => {
+                            if (el.style.display !== 'none') {
+                                el.disabled = false;
+                            }
+                        });
 
-        if (verifikasiDokterBtn) {
-            verifikasiDokterBtn.addEventListener('click', () => {
-                document.getElementById('worklistForm').action = `worklist/checkin/${data_pasien.id}`;
-                document.getElementById('worklistForm').submit();
-            });
-        }
+                        document.querySelectorAll('.d1, .d2, .d3').forEach(input => {
+                            input.disabled = true;
+                        });
 
-        // Tombol manual input
-        if (manualButton) {
-            manualButton.addEventListener('click', () => {
-                document.querySelectorAll('.manualInput').forEach(input => {
-                    input.disabled = false;
+                        if (verifikasiHasilBtn) verifikasiHasilBtn.disabled = false;
+                        if (verifikasiDokterBtn) verifikasiDokterBtn.disabled = false;
+                    });
+                }
+
+                // Tombol switch
+                document.querySelectorAll('.switch-btn').forEach((button) => {
+                    button.addEventListener('click', function() {
+                        const row = this.closest('tr');
+                        const hasilInput = row.querySelector('.manualInput');
+                        const d1Input = row.querySelector('.d1');
+                        const d2Input = row.querySelector('.d2');
+                        const d3Input = row.querySelector('.d3');
+                        const flagCell = row.querySelector('.flag-cell');
+                        const parameter = row.dataset.parameter;
+
+                        let currentIndex = parseInt(this.getAttribute('data-switch-index')) || 0;
+
+                        const updateValues = () => {
+                            switch (currentIndex) {
+                                case 0:
+                                    if (d1Input && window.getComputedStyle(d1Input.closest('.d1-column')).display !== 'none') {
+                                        const tempHasil = hasilInput.value;
+                                        hasilInput.value = d1Input.value;
+                                        d1Input.value = tempHasil;
+                                    }
+                                    break;
+                                case 1:
+                                    if (d2Input && window.getComputedStyle(d2Input.closest('.d2-column')).display !== 'none') {
+                                        const tempHasil = hasilInput.value;
+                                        hasilInput.value = d2Input.value;
+                                        d2Input.value = tempHasil;
+                                    }
+                                    break;
+                                case 2:
+                                    if (d3Input && window.getComputedStyle(d3Input.closest('.d3-column')).display !== 'none') {
+                                        const tempHasil = hasilInput.value;
+                                        hasilInput.value = d3Input.value;
+                                        d3Input.value = tempHasil;
+                                    }
+                                    break;
+                            }
+                        };
+
+                        updateValues();
+                        currentIndex = (currentIndex + 1) % 3;
+                        this.setAttribute('data-switch-index', currentIndex);
+                        updateFlag(hasilInput.value, flagCell, parameter);
+                    });
                 });
+            }, 0);
 
-                document.querySelectorAll('.d1, .d2, .d3').forEach(input => {
-                    input.disabled = true;
-                });
-
-                if (verifikasiHasilBtn) verifikasiHasilBtn.disabled = false;
-                if (verifikasiDokterBtn) verifikasiDokterBtn.disabled = false;
-            });
-        }
-
-        // Tombol switch
-        document.querySelectorAll('.switch-btn').forEach((button) => {
-            button.addEventListener('click', function() {
-                const row = this.closest('tr');
-                const hasilInput = row.querySelector('.manualInput');
-                const d1Input = row.querySelector('.d1');
-                const d2Input = row.querySelector('.d2');
-                const d3Input = row.querySelector('.d3');
-                const flagCell = row.querySelector('.flag-cell');
-                const parameter = row.dataset.parameter;
-
-                let currentIndex = parseInt(this.getAttribute('data-switch-index')) || 0;
-
-                const updateValues = () => {
-                    switch (currentIndex) {
-                        case 0:
-                            if (d1Input && window.getComputedStyle(d1Input.closest('.d1-column')).display !== 'none') {
-                                const tempHasil = hasilInput.value;
-                                hasilInput.value = d1Input.value;
-                                d1Input.value = tempHasil;
-                            }
-                            break;
-                        case 1:
-                            if (d2Input && window.getComputedStyle(d2Input.closest('.d2-column')).display !== 'none') {
-                                const tempHasil = hasilInput.value;
-                                hasilInput.value = d2Input.value;
-                                d2Input.value = tempHasil;
-                            }
-                            break;
-                        case 2:
-                            if (d3Input && window.getComputedStyle(d3Input.closest('.d3-column')).display !== 'none') {
-                                const tempHasil = hasilInput.value;
-                                hasilInput.value = d3Input.value;
-                                d3Input.value = tempHasil;
-                            }
-                            break;
-                    }
-                };
-
-                updateValues();
-                currentIndex = (currentIndex + 1) % 3;
-                this.setAttribute('data-switch-index', currentIndex);
-                updateFlag(hasilInput.value, flagCell, parameter);
-            });
-        });
-    }, 0);
-
-    return content;
+            return content;
         }
 
         // Export fungsi jika diperlukan
@@ -1721,19 +1803,12 @@
                 minute: '2-digit'
             });
 
-            return ` <
-                li class = "step-wizard-item" >
-                <
-                span class = "progress-count" > $ {
-                    index + 1
-                } < /span> <
-            span class = "progress-label" > $ {
-                h.proses
-            } < /span> <
-            span class = "progress-label" > $ {
-                formattedDate
-            } < /span> < /
-            li >
+            return ` 
+             <li class="step-wizard-item">
+                <span class="progress-count">${index + 1}</span>
+                <span class="progress-label">${h.proses}</span>
+                <span class="progress-label">${formattedDate}</span>
+            </li>
                 `;
         }).join('')}
     </ul>

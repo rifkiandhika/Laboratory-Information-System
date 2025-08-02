@@ -35,18 +35,12 @@ class pasienController extends Controller
      */
     public function index(Request $request)
     {
-        // $data_pasien_cito = pasien::where('cito', 1)->where('status', 'Belum Dilayani')->get();
-        // $data_pasien = pasien::where('cito', 0)->where('status', 'Belum Dilayani')->get();
         $data = pasien::where('status', 'Belum Dilayani')->count();
         $tanggal = pasien::whereDate('created_at', Carbon::today())->count();
         $dl = pasien::where('status', 'Telah Dikirim ke Lab')->count();
         $data_pasien = pasien::where('status', 'Belum Dilayani')->orderBy('cito', 'desc')->paginate(20);
         $payment = pasien::where('status', 'Telah Dibayar')->orderBy('cito', 'desc')->paginate(20);
         $dikembalikan = pasien::where('status', 'Dikembalikan Analyst')->orderBy('cito', 'desc')->paginate(20);
-        // $data_pemeriksaan_pasien = pemeriksaan_pasien::all();
-        // dd($data_pasien);
-        // $data_departement = Department::all();
-        // $data_pemeriksaan = Pemeriksaan::all();
         broadcast(new DataUpdated($data));
 
 
@@ -76,6 +70,7 @@ class pasienController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         if ($request->cito) {
             $cito = 1;
         } else {
@@ -433,23 +428,65 @@ class pasienController extends Controller
     public function checkin(Request $request)
     {
         $ids = $request->ids;
-        pasien::whereIn('id', $ids)->update(['status' => 'Telah Dikirim ke Lab']);
-        $pasien = pasien::whereIn('id', $ids)->get();
+        $pasiens = pasien::whereIn('id', $ids)
+            ->with('data_pemeriksaan_pasien.data_pemeriksaan')
+            ->get();
 
-        foreach ($pasien as $pasiens) {
+        foreach ($pasiens as $pasien) {
+            $has_permission_active = false;
+            $has_handling_active = false;
+            $has_full_active = false;
+
+            foreach ($pasien->data_pemeriksaan_pasien as $pemeriksaan) {
+                $detail = $pemeriksaan->data_pemeriksaan;
+                if (!$detail) continue;
+
+                $permission = $detail->permission === 'active';
+                $handling = $detail->handling === 'active';
+
+                if ($permission && $handling) {
+                    $has_full_active = true;
+                    break; // status pasti Telah Dikirim ke Lab → tidak perlu lanjut
+                }
+
+                if ($handling) {
+                    $has_handling_active = true;
+                }
+
+                if ($permission) {
+                    $has_permission_active = true;
+                }
+            }
+
+            // Urutan prioritas status
+            if ($has_full_active) {
+                $status = 'Telah Dikirim ke Lab';
+                $proses = 'Dikirim ke dashboard';
+                $tempat = 'Laboratorium';
+            } elseif ($has_handling_active) {
+                $status = 'Acc Collection';
+                $proses = 'Spesimen Diterima';
+                $tempat = 'Spesiment Handling';
+            } else {
+                $status = 'Check In Spesiment';
+                $proses = 'Check In ke Spesiment';
+                $tempat = 'Worklist';
+            }
+
+            $pasien->update(['status' => $status]);
 
             historyPasien::create([
-                'no_lab' => $pasiens->no_lab,
-                'proses' => 'Dikirim ke dashboard',
-                'tempat' => 'Laboratorium',
+                'no_lab' => $pasien->no_lab,
+                'proses' => $proses,
+                'tempat' => $tempat,
                 'waktu_proses' => now(),
                 'created_at' => now(),
             ]);
         }
-        toast('Pasien telah dikirim ke Lab', 'success');
-        return response()->json(['success' => 'Data berhasil Dikonfirmasi!']);
-    }
 
+        toast('Pasien telah diproses', 'success');
+        return response()->json(['success' => 'Data berhasil dikonfirmasi!']);
+    }
 
     public function previewPrint($lab)
     {

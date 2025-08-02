@@ -40,7 +40,7 @@ class DepartmentController extends Controller
     public function store(Request $request)
     {
         // Validasi data
-        // dd($request);
+        // dd($request->all());
         $request->validate([
             'nama_department' => 'required|unique:departments,nama_department',
             'kode_hidden.*' => 'required', // Memastikan kode_hidden diterima
@@ -57,8 +57,10 @@ class DepartmentController extends Controller
             'tipe_inputan.*' => 'required',
             'status.*' => 'required',
             'permission.*' => 'required',
-            'opsi_output.*' => 'required',
-            'urutan.*' => 'required',
+            'barcode.*' => 'required',
+            'handling.*' => 'required',
+            'opsi_output.*' => 'nullable',
+            'urutan.*' => 'nullable',
         ]);
 
         // Membuat department baru
@@ -80,10 +82,10 @@ class DepartmentController extends Controller
                 isset($request->nilai_rujukan[$x]) &&
                 isset($request->nilai_satuan[$x]) &&
                 isset($request->tipe_inputan[$x]) &&
-                isset($request->opsi_output[$x]) &&
                 isset($request->status[$x]) &&
                 isset($request->permission[$x]) &&
-                isset($request->urutan[$x])
+                isset($request->barcode[$x]) &&
+                isset($request->handling[$x])
             ) {
                 // Menyimpan detail department jika data lengkap
                 try {
@@ -101,9 +103,11 @@ class DepartmentController extends Controller
                         'nilai_satuan' => $request->nilai_satuan[$x],
                         'status' => $request->status[$x],
                         'permission' => $request->permission[$x],
+                        'barcode' => $request->barcode[$x],
+                        'handling' => $request->handling[$x],
                         'tipe_inputan' => $request->tipe_inputan[$x],
-                        'opsi_output' => $request->opsi_output[$x],
-                        'urutan' => $request->urutan[$x],
+                        'opsi_output' => $request->opsi_output[$x] ?? null,
+                        'urutan' => $request->urutan[$x] ?? null,
                     ]);
                 } catch (Exception $e) {
                     // Menangani error jika ada
@@ -161,6 +165,8 @@ class DepartmentController extends Controller
             'urutan.*' => 'required',
             'status.*' => 'nullable', // Checkbox bisa tidak ada
             'permission.*' => 'nullable', // Checkbox bisa tidak ada
+            'barcode.*' => 'nullable', // Checkbox bisa tidak ada
+            'handling.*' => 'nullable', // Checkbox bisa tidak ada
         ]);
 
         // Temukan department berdasarkan ID
@@ -194,6 +200,8 @@ class DepartmentController extends Controller
                 'nilai_satuan' => $request->nilai_satuan[$i],
                 'status' => $request->status[$i] ?? 'deactive', // Jika tidak dicentang
                 'permission' => $request->permission[$i] ?? 'deactive', // Jika tidak dicentang
+                'barcode' => $request->barcode[$i] ?? 'deactive', // Jika tidak dicentang
+                'handling' => $request->handling[$i] ?? 'deactive', // Jika tidak dicentang
                 'tipe_inputan' => $request->tipe_inputan[$i],
                 'opsi_output' => $request->opsi_output[$i],
                 'urutan' => $request->urutan[$i],

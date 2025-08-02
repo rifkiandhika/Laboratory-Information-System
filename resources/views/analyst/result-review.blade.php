@@ -761,7 +761,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                             <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
                                                         </td>
                                                         <td class="col-2">
-                                                            <input type="number" name="hasil[]" 
+                                                            <input type="text" name="hasil[]" 
                                                                 class="form-control manualInput w-60 p-0" 
                                                                 value="${dataValues.hasilUtama}" readonly />
                                                         </td>
