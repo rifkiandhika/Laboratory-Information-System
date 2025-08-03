@@ -194,22 +194,6 @@ Edit Department
 @push('script')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Fungsi generate kode otomatis berdasarkan tanggal
-    function generateKode(row) {
-        let date = new Date();
-        let year = date.getFullYear();
-        let month = ('0' + (date.getMonth() + 1)).slice(-2);
-        let day = ('0' + date.getDate()).slice(-2);
-        let kode = `${year}${month}${day}`;
-
-        let kodeInput = row.querySelector('.kode');
-        let hiddenKodeInput = row.querySelector('.kode_hidden');
-
-        if (kodeInput && hiddenKodeInput) {
-            kodeInput.value = kode;
-            hiddenKodeInput.value = kode;
-        }
-    }
 
     // Fungsi utama untuk add/remove baris
     function btnFunction() {
@@ -222,7 +206,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="col-md-6">
                             <label for="otomatis">Code <span class="text-danger">*</span></label>
                             <input type="text" name="kode[]" class="form-control kode" required>
-                            <input type="hidden" name="kode_hidden[]" class="kode_hidden">
 
                             <label class="mt-2">Nama Parameter</label>
                             <input type="text" name="nama_parameter[]" class="form-control" required>

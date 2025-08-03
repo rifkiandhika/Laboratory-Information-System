@@ -43,7 +43,7 @@ class DepartmentController extends Controller
         // dd($request->all());
         $request->validate([
             'nama_department' => 'required|unique:departments,nama_department',
-            'kode_hidden.*' => 'required', // Memastikan kode_hidden diterima
+            'kode*' => 'required', // Memastikan kode_hidden diterima
             'nama_parameter.*' => 'required',
             'nama_pemeriksaan.*' => 'required',
             'harga.*' => 'required',
@@ -75,7 +75,7 @@ class DepartmentController extends Controller
         for ($x = 0; $x < $array_length; $x++) {
             // Pastikan semua data ada untuk setiap index
             if (
-                isset($request->kode_hidden[$x]) &&
+                isset($request->kode[$x]) &&
                 isset($request->nama_parameter[$x]) &&
                 isset($request->nama_pemeriksaan[$x]) &&
                 isset($request->harga[$x]) &&
@@ -90,7 +90,7 @@ class DepartmentController extends Controller
                 // Menyimpan detail department jika data lengkap
                 try {
                     $departments->detailDepartments()->create([
-                        'kode' => $request->kode_hidden[$x], // Menggunakan kode_hidden
+                        'kode' => $request->kode[$x], // Menggunakan kode_hidden
                         'nama_parameter' => $request->nama_parameter[$x],
                         'nama_pemeriksaan' => $request->nama_pemeriksaan[$x],
                         'harga' => $request->harga[$x],
@@ -154,7 +154,7 @@ class DepartmentController extends Controller
         // Validasi data input
         $request->validate([
             'nama_department' => 'required|unique:departments,nama_department,' . $id,
-            'kode_hidden.*' => 'required',
+            'kode.*' => 'required',
             'nama_parameter.*' => 'required',
             'nama_pemeriksaan.*' => 'required',
             'harga.*' => 'required',
@@ -184,7 +184,7 @@ class DepartmentController extends Controller
         $count = count($request->nama_parameter);
         for ($i = 0; $i < $count; $i++) {
             $detailId = $request->id_detail[$i] ?? null;
-            $kode = $request->kode_hidden[$i];
+            $kode = $request->kode[$i];
 
             $data = [
                 'kode' => $kode,

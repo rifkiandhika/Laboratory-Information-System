@@ -227,48 +227,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    let kodeInput = document.getElementById('kode');
-    let hiddenKodeInput = document.getElementById('kode_hidden');
-
-    // Fungsi untuk menghasilkan kode otomatis, misalnya berdasarkan tanggal
-    function generateKode() {
-        let date = new Date();
-        let year = date.getFullYear();
-        let month = ('0' + (date.getMonth() + 1)).slice(-2); // Menambahkan 0 di depan jika bulan < 10
-        let day = ('0' + date.getDate()).slice(-2); // Menambahkan 0 di depan jika hari < 10
-
-        // Membuat format kode seperti: KODE-YYYYMMDD
-        let kode = `${year}${month}${day}`;
-
-        // Set nilai pada input disabled dan hidden
-        kodeInput.value = kode;
-        hiddenKodeInput.value = kode;
-    }
-
-    // Panggil fungsi generateKode ketika halaman dimuat
-    generateKode();
-});
-
-</script>
-<script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Fungsi generate kode otomatis berdasarkan tanggal
-    function generateKode(row) {
-        let date = new Date();
-        let year = date.getFullYear();
-        let month = ('0' + (date.getMonth() + 1)).slice(-2);
-        let day = ('0' + date.getDate()).slice(-2);
-        let kode = `${year}${month}${day}`;
 
-        let kodeInput = row.querySelector('.kode');
-        let hiddenKodeInput = row.querySelector('.kode_hidden');
-
-        if (kodeInput && hiddenKodeInput) {
-            kodeInput.value = kode;
-            hiddenKodeInput.value = kode;
-        }
-    }
 
     // Fungsi utama untuk add/remove baris
     function btnFunction() {
