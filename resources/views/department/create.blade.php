@@ -328,7 +328,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             $("#tableDetail > tbody:last-child").append(row);
             let newRow = $("#tableDetail > tbody:last-child tr:last-child")[0];
-            generateKode(newRow);
             setupDropdownListeners();
             btnFunction();
         });
