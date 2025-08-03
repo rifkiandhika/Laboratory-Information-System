@@ -252,132 +252,159 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Fungsi untuk menghasilkan kode otomatis, misalnya berdasarkan tanggal
-        function generateKode(row) {
-            let date = new Date();
-            let year = date.getFullYear();
-            let month = ('0' + (date.getMonth() + 1)).slice(-2); // Menambahkan 0 di depan jika bulan < 10
-            let day = ('0' + date.getDate()).slice(-2); // Menambahkan 0 di depan jika hari < 10
+document.addEventListener('DOMContentLoaded', function () {
+    // Fungsi generate kode otomatis berdasarkan tanggal
+    function generateKode(row) {
+        let date = new Date();
+        let year = date.getFullYear();
+        let month = ('0' + (date.getMonth() + 1)).slice(-2);
+        let day = ('0' + date.getDate()).slice(-2);
+        let kode = `${year}${month}${day}`;
 
-            // Membuat format kode seperti: KODE-YYYYMMDD
-            let kode = `${year}${month}${day}`;
+        let kodeInput = row.querySelector('.kode');
+        let hiddenKodeInput = row.querySelector('.kode_hidden');
 
-            // Cari input dalam row dan set nilai otomatis ke input kode dan kode_hidden
-            let kodeInput = row.querySelector('.kode');
-            let hiddenKodeInput = row.querySelector('.kode_hidden');
-
-            if (kodeInput && hiddenKodeInput) {
-                kodeInput.value = kode;
-                hiddenKodeInput.value = kode;
-            }
+        if (kodeInput && hiddenKodeInput) {
+            kodeInput.value = kode;
+            hiddenKodeInput.value = kode;
         }
+    }
 
-        function btnFunction() {
-            $(".btn-add").unbind('click').bind('click', function(){
-                let row = ` <tr>
-                    <td>
-                        <div class="row">
-                            <!-- Kolom Kiri -->
-                            <div class="col-md-6">
-                                <label for="otomatis">Code <span class="text-danger">*</span></label>
-                                <input type="text" name="kode[]" class="form-control" id="kode" required >
-                                <input type="hidden" name="kode_hidden[]" id="kode_hidden">
+    // Fungsi utama untuk add/remove baris
+    function btnFunction() {
+        $(".btn-add").unbind('click').bind('click', function () {
+            let row = `
+            <tr>
+                <td>
+                    <div class="row">
+                        <!-- Kolom Kiri -->
+                        <div class="col-md-6">
+                            <label for="otomatis">Code <span class="text-danger">*</span></label>
+                            <input type="text" name="kode[]" class="form-control kode" required>
+                            <input type="hidden" name="kode_hidden[]" class="kode_hidden">
 
-                                <label class="mt-2">Nama Parameter</label>
-                                <input type="text" name="nama_parameter[]" class="form-control" required>
+                            <label class="mt-2">Nama Parameter</label>
+                            <input type="text" name="nama_parameter[]" class="form-control" required>
 
-                                <label class="mt-2">Nama Pemeriksaan</label>
-                                <input type="text" name="nama_pemeriksaan[]" class="form-control" required>
+                            <label class="mt-2">Nama Pemeriksaan</label>
+                            <input type="text" name="nama_pemeriksaan[]" class="form-control" required>
 
-                                <label class="mt-2">Harga</label>
-                                <input type="number" name="harga[]" class="form-control" required>
+                            <label class="mt-2">Harga</label>
+                            <input type="number" name="harga[]" class="form-control" required>
 
-                                <label class="mt-2">Nilai Rujukan (L.13,3-17 P.11,7-15,7)</label>
-                                <input type="text" name="nilai_rujukan[]" class="form-control" required>
+                            <label class="mt-2">Nilai Rujukan (L.13,3-17 P.11,7-15,7)</label>
+                            <input type="text" name="nilai_rujukan[]" class="form-control" required>
 
-                                <label class="mt-2">Nilai Satuan</label>
-                                <input type="text" name="nilai_satuan[]" class="form-control" required>
+                            <label class="mt-2">Nilai Satuan</label>
+                            <input type="text" name="nilai_satuan[]" class="form-control" required>
+                        </div>
+
+                        <!-- Kolom Kanan -->
+                        <div class="col-md-6">
+                            <label>JASA SARANA:</label>
+                            <input type="number" name="jasa_sarana[]" class="form-control" required>
+
+                            <label class="mt-2">JASA PELAYANAN:</label>
+                            <input type="number" name="jasa_pelayanan[]" class="form-control" required>
+
+                            <label class="mt-2">JASA DOKTER:</label>
+                            <input type="number" name="jasa_dokter[]" class="form-control">
+
+                            <label class="mt-2">JASA BIDAN:</label>
+                            <input type="number" name="jasa_bidan[]" class="form-control">
+
+                            <label class="mt-2">JASA PERAWAT:</label>
+                            <input type="number" name="jasa_perawat[]" class="form-control">
+
+                            <label class="mt-2">Tipe Inputan</label>
+                            <select name="tipe_inputan[]" class="form-select tipe-inputan">
+                                <option value="" hidden>Pilih tipe inputan</option>
+                                <option value="Text">Text</option>
+                                <option value="Dropdown">Dropdown</option>
+                            </select>
+
+                            <div class="opsi-output-wrapper mt-2" style="display: none;">
+                                <label>Opsi Output</label>
+                                <input type="text" name="opsi_output[]" class="form-control">
                             </div>
 
-                            <!-- Kolom Kanan -->
-                            <div class="col-md-6">
-                                <label>JASA SARANA:</label>
-                                <input type="number" name="jasa_sarana[]" class="form-control" required>
-
-                                <label class="mt-2">JASA PELAYANAN:</label>
-                                <input type="number" name="jasa_pelayanan[]" class="form-control" required>
-
-                                <label class="mt-2">JASA DOKTER:</label>
-                                <input type="number" name="jasa_dokter[]" class="form-control">
-
-                                <label class="mt-2">JASA BIDAN:</label>
-                                <input type="number" name="jasa_bidan[]" class="form-control">
-
-                                <label class="mt-2">JASA PERAWAT:</label>
-                                <input type="number" name="jasa_perawat[]" class="form-control">
-
-                                <label class="mt-2">Tipe Inputan</label>
-                                <select name="tipe_inputan[]" class="form-select" id="" required>
-                                    <option value="Text">Text</option>
-                                    <option value="Dropdown">Dropdown</option>
-                                </select>
-
-                                <label class="mt-2">Opsi Output</label>
-                                <input type="text" name="opsi_output[]" class="form-control">
-
-                                <label class="mt-2">Urutan</label>
+                            <div class="urutan-wrapper mt-2" style="display: none;">
+                                <label>Urutan</label>
                                 <input type="text" name="urutan[]" class="form-control">
                             </div>
                         </div>
-                    </td>
-                    <td class="text-center align-middle" style="min-width: 180px;">
-                        <div class="d-flex justify-content-center align-items-center mb-1" style="gap: 8px; white-space: nowrap;">
-                            <label class="mb-0" style="font-size: 14px;">Active to loket?</label>
-                            <input type="hidden" name="status[]" value="deactive">
-                            <input type="checkbox" name="status[]" value="active" class="form-check-input align-middle" {{ old('status') === 'active' ? 'checked' : '' }}>
-                        </div>
-                        <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
-                            <label class="mb-0" style="font-size: 14px;">Active Barcode?</label>
-                            <input type="hidden" name="barcode[]" value="deactive">
-                            <input type="checkbox" name="barcode[]" value="active" class="form-check-input align-middle" {{ old('barcode') === 'active' ? 'checked' : '' }}>
-                        </div>
-                        <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
-                            <label class="mb-0" style="font-size: 14px;">Check to Collection?</label>
-                            <input type="hidden" name="permission[]" value="deactive">
-                            <input type="checkbox" name="permission[]" value="active" class="form-check-input align-middle" {{ old('permission') === 'active' ? 'checked' : '' }}>
-                        </div>
-                        <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
-                            <label class="mb-0" style="font-size: 14px;">Check to Handling?</label>
-                            <input type="hidden" name="handling[]" value="deactive">
-                            <input type="checkbox" name="handling[]" value="active" class="form-check-input align-middle" {{ old('handling') === 'active' ? 'checked' : '' }}>
-                        </div>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-success btn-add"><i class="ti ti-plus"></i></button>
-                    </td>
-                </tr>`;
+                    </div>
+                </td>
+                <td class="text-center align-middle" style="min-width: 180px;">
+                    <div class="d-flex justify-content-center align-items-center mb-1" style="gap: 8px; white-space: nowrap;">
+                        <label class="mb-0" style="font-size: 14px;">Active to loket?</label>
+                        <input type="hidden" name="status[]" value="deactive">
+                        <input type="checkbox" name="status[]" value="active" class="form-check-input align-middle">
+                    </div>
+                    <br>
+                    <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
+                        <label class="mb-0" style="font-size: 14px;">Active Barcode?</label>
+                        <input type="hidden" name="barcode[]" value="deactive">
+                        <input type="checkbox" name="barcode[]" value="active" class="form-check-input align-middle">
+                    </div>
+                    <br>
+                    <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
+                        <label class="mb-0" style="font-size: 14px;">Check to Collection?</label>
+                        <input type="hidden" name="permission[]" value="deactive">
+                        <input type="checkbox" name="permission[]" value="active" class="form-check-input align-middle">
+                    </div>
+                    <br>
+                    <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
+                        <label class="mb-0" style="font-size: 14px;">Check to Handling?</label>
+                        <input type="hidden" name="handling[]" value="deactive">
+                        <input type="checkbox" name="handling[]" value="active" class="form-check-input align-middle">
+                    </div>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-success btn-add"><i class="ti ti-plus"></i></button>
+                    <button type="button" class="btn btn-danger btn-remove"><i class="ti ti-trash"></i></button>
+                </td>
+            </tr>`;
 
-                // Tambahkan baris baru ke dalam tabel
-                $("#tableDetail > tbody:last-child").append(row);
+            $("#tableDetail > tbody:last-child").append(row);
+            let newRow = $("#tableDetail > tbody:last-child tr:last-child")[0];
+            generateKode(newRow);
+            setupDropdownListeners();
+            btnFunction();
+        });
 
-                // Panggil generateKode() pada row yang baru saja ditambahkan
-                let newRow = $("#tableDetail > tbody:last-child tr:last-child")[0];
-                generateKode(newRow);
+        $(".btn-remove").unbind('click').bind('click', function () {
+            $(this).closest('tr').remove();
+        });
+    }
 
-                // Panggil btnFunction() lagi agar fungsi tetap aktif pada tombol add/remove
-                btnFunction();
-            });
+    // Fungsi untuk menyesuaikan tampilan dropdown dinamis
+    function setupDropdownListeners() {
+        document.querySelectorAll('.tipe-inputan').forEach(function (select) {
+            select.removeEventListener('change', handleDropdownChange); // mencegah duplikat listener
+            select.addEventListener('change', handleDropdownChange);
+        });
+    }
 
-            // Event untuk menghapus baris
-            $(".btn-remove").unbind('click').bind('click', function(){
-                $(this).closest('tr').remove();
-            });
+    // Fungsi yang dijalankan ketika tipe inputan berubah
+    function handleDropdownChange() {
+        const wrapper = this.closest('.col-md-6');
+        const opsiWrapper = wrapper.querySelector('.opsi-output-wrapper');
+        const urutanWrapper = wrapper.querySelector('.urutan-wrapper');
+
+        if (this.value === 'Dropdown') {
+            opsiWrapper.style.display = 'block';
+            urutanWrapper.style.display = 'block';
+        } else {
+            opsiWrapper.style.display = 'none';
+            urutanWrapper.style.display = 'none';
         }
+    }
 
-        // Panggil fungsi btnFunction ketika halaman dimuat
-        btnFunction();
-    });
+    // Inisialisasi saat pertama kali halaman dimuat
+    btnFunction();
+    setupDropdownListeners();
+});
 </script>
 
     

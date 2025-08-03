@@ -161,8 +161,8 @@ class DepartmentController extends Controller
             'nilai_rujukan.*' => 'required',
             'nilai_satuan.*' => 'required',
             'tipe_inputan.*' => 'required',
-            'opsi_output.*' => 'required',
-            'urutan.*' => 'required',
+            'opsi_output.*' => 'nullable',
+            'urutan.*' => 'nullable',
             'status.*' => 'nullable', // Checkbox bisa tidak ada
             'permission.*' => 'nullable', // Checkbox bisa tidak ada
             'barcode.*' => 'nullable', // Checkbox bisa tidak ada
@@ -203,8 +203,8 @@ class DepartmentController extends Controller
                 'barcode' => $request->barcode[$i] ?? 'deactive', // Jika tidak dicentang
                 'handling' => $request->handling[$i] ?? 'deactive', // Jika tidak dicentang
                 'tipe_inputan' => $request->tipe_inputan[$i],
-                'opsi_output' => $request->opsi_output[$i],
-                'urutan' => $request->urutan[$i],
+                'opsi_output' => $request->opsi_output[$i] ?? null,
+                'urutan' => $request->urutan[$i] ?? null,
             ];
 
             if ($detailId) {
