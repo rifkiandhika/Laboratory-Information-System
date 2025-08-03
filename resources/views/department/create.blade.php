@@ -88,8 +88,8 @@ Add Department
                                                                 <label class="mt-2">JASA PERAWAT:</label>
                                                                 <input type="number" name="jasa_perawat[]" class="form-control">
 
-                                                                <label class="mt-2">Tipe Inputan <span class="text-danger">*</span></label>
-                                                                <select name="tipe_inputan[]" class="form-select tipe-inputan" required>
+                                                                <label class="mt-2">Tipe Inputan</label>
+                                                                <select name="tipe_inputan[]" class="form-select tipe-inputan">
                                                                     <option value="" selected hidden>Choose</option>
                                                                     <option value="Text">Text</option>
                                                                     <option value="Dropdown">Dropdown</option>
@@ -324,10 +324,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </select>
 
                                 <label class="mt-2">Opsi Output</label>
-                                <input type="text" name="opsi_output[]" class="form-control" required>
+                                <input type="text" name="opsi_output[]" class="form-control">
 
                                 <label class="mt-2">Urutan</label>
-                                <input type="text" name="urutan[]" class="form-control" required>
+                                <input type="text" name="urutan[]" class="form-control">
                             </div>
                         </div>
                     </td>
