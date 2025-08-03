@@ -1425,7 +1425,7 @@
                                                     <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
                                                 </td>
                                                 <td class="col-2">
-                                                <!-- Input Text -->
+                                               <!-- Input Text -->
                                                 <input 
                                                     type="text" 
                                                     name="hasil[]" 
@@ -1442,12 +1442,16 @@
                                                     disabled 
                                                     style="display: ${p.data_pemeriksaan.tipe_inputan === 'Dropdown' ? 'block' : 'none'}"
                                                 >
-                                                    ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
-                                                    <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>
-                                                        ${opt.trim()}
-                                                    </option>
-                                                    `).join('')}
+                                                    ${p.data_pemeriksaan.tipe_inputan === 'Dropdown' && p.data_pemeriksaan.opsi_output ? 
+                                                        p.data_pemeriksaan.opsi_output.split(';').map(opt => `
+                                                            <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>
+                                                                ${opt.trim()}
+                                                            </option>
+                                                        `).join('') 
+                                                        : '<option value="">Pilih...</option>'
+                                                    }
                                                 </select>
+                                                    
                                                 </td>
                                                 <td class="col-1">
                                                     <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
