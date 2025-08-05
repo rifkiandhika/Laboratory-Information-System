@@ -57,10 +57,12 @@ class analystDasboard extends Controller
     public function store(Request $request)
     {
         // Validasi input
+        // dd($request->all());
         $request->validate([
             'no_lab' => 'required',
             'kapasitas' => 'required_without:serumh|array',
             'serumh' => 'required_without:kapasitas|array',
+            'clotact' => 'required_without:clotact|array',
             'note' => 'nullable|array',
         ]);
 
@@ -68,6 +70,7 @@ class analystDasboard extends Controller
         $no_lab = $request->input('no_lab');
         $kapasitas = $request->input('kapasitas', []);
         $serumh = $request->input('serumh', []);
+        $clotact = $request->input('clotact', []);
         $notes = $request->input('note', []);
         $status = $request->input('status', 'Acc Collection');
 
@@ -102,6 +105,24 @@ class analystDasboard extends Controller
                 'serumh' => $ser, // gunakan field 'kapasitas' jika 'serumh' tidak ada di database
                 'status' => 'Acc',
                 'note' => $notes[$j] ?? null,
+                'tanggal' => now(),
+            ]);
+
+            historyPasien::create([
+                'no_lab' => $no_lab,
+                'proses' => 'Acc Collection',
+                'tempat' => 'Laboratorium',
+                'waktu_proses' => now(),
+            ]);
+        }
+        // Simpan data baru untuk clotact (tabung IMUNOLOGY)
+        foreach ($clotact as $c => $clot) {
+            spesimentCollection::create([
+                'no_lab' => $no_lab,
+                'tabung' => 'CLOTH-ACT',
+                'clotact' => $clot, // gunakan field 'kapasitas' jika 'serumh' tidak ada di database
+                'status' => 'Acc',
+                'note' => $notes[$c] ?? null,
                 'tanggal' => now(),
             ]);
 

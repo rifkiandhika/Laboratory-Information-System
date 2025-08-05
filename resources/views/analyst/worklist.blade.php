@@ -1545,7 +1545,7 @@
                                                             <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
                                                         </td>
                                                         <td class="col-2">
-                                                    <!-- Input Text -->
+                                                         <!-- Input Text -->
                                                         <input 
                                                             type="text" 
                                                             name="hasil[]" 
@@ -1580,20 +1580,67 @@
                                                             </button>
                                                         </td>
                                                         <td class="col-2 duplo d1-column text-center" style="display: none;">
+                                                        ${
+                                                            p.data_pemeriksaan.tipe_inputan === 'Dropdown' && p.data_pemeriksaan.opsi_output ?
+                                                            `
+                                                            <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
+                                                                    <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>
+                                                                        ${opt.trim()}
+                                                                    </option>
+                                                                `).join('')}
+                                                            </select>
+                                                            `
+                                                            :
+                                                            `
                                                             <input type="number" name="duplo_d1[]" 
                                                                 class="form-control d1 w-60 p-0 text-center" 
                                                                 disabled value="${obxValues.duplo_d1 || ''}" />
-                                                        </td>
-                                                        <td class="col-2 duplo d2-column" style="display: none;">
+                                                            `
+                                                        }
+                                                    </td>
+
+                                                    <td class="col-2 duplo d2-column" style="display: none;">
+                                                        ${
+                                                            p.data_pemeriksaan.tipe_inputan === 'Dropdown' && p.data_pemeriksaan.opsi_output ?
+                                                            `
+                                                            <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                                ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
+                                                                    <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>
+                                                                        ${opt.trim()}
+                                                                    </option>
+                                                                `).join('')}
+                                                            </select>
+                                                            `
+                                                            :
+                                                            `
                                                             <input type="number" name="duplo_d2[]" 
                                                                 class="form-control d2 w-60 p-0 text-center" 
                                                                 disabled value="${obxValues.duplo_d2 || ''}" />
-                                                        </td>
-                                                        <td class="col-2 duplo d3-column" style="display: none;">
+                                                            `
+                                                        }
+                                                    </td>
+
+                                                    <td class="col-2 duplo d3-column" style="display: none;">
+                                                        ${
+                                                            p.data_pemeriksaan.tipe_inputan === 'Dropdown' && p.data_pemeriksaan.opsi_output ?
+                                                            `
+                                                            <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
+                                                                    <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>
+                                                                        ${opt.trim()}
+                                                                    </option>
+                                                                `).join('')}
+                                                            </select>
+                                                            `
+                                                            :
+                                                            `
                                                             <input type="number" name="duplo_d3[]" 
                                                                 class="form-control d3 w-50 p-0 text-center" 
                                                                 disabled value="${obxValues.duplo_d3 || ''}" />
-                                                        </td>
+                                                            `
+                                                        }
+                                                    </td>
                                                         <td class="col-3 flag-cell">
                                                             ${initialFlag}
                                                         </td>
@@ -2023,7 +2070,7 @@
             spesimen.forEach(e => {
                 let details = '';
                 let detailsData = [];
-                let kapasitas, serumh, serum;
+                let kapasitas, serumh, serum, serumc, clotact;
                 let processTime = '';
 
                 const checkInSpesimen = history.find(h => h.status === 'Check in spesiment');
@@ -2031,7 +2078,7 @@
                 let noteFromHandling = null;
 
                 if (e.tabung === 'K3-EDTA') {
-                    const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key);
+                    const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key && item.tabung === 'K3-EDTA');
                     if (collectionItem) {
                         detailsData = collectionItem.details.filter(detail =>
                             e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
@@ -2050,8 +2097,26 @@
                         serumh = collectionItem.serumh;
                         noteFromCollection = collectionItem.note;
                     }
+                } else if (e.tabung === 'CLOTH-ACT') {
+                    const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key);
+                    if (collectionItem) {
+                        detailsData = collectionItem.details.filter(detail =>
+                            e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                        );
+                        clotact = collectionItem.clotact;
+                        noteFromCollection = collectionItem.note;
+                    }
                 } else if (e.tabung === 'CLOT-ACT') {
-                    const handlingItem = shandling.find(item => item.no_lab === e.laravel_through_key);
+                    const handlingItem = shandling.find(item => item.no_lab === e.laravel_through_key && item.tabung === 'CLOT-ACT');
+                    if (handlingItem) {
+                        detailsData = handlingItem.details.filter(detail =>
+                            e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                        );
+                        serum = handlingItem.serum;
+                        noteFromHandling = handlingItem.note;
+                    }
+                } else if (e.tabung === 'CLOT-') {
+                    const handlingItem = shandling.find(item => item.no_lab === e.laravel_through_key && item.tabung === 'CLOT');
                     if (handlingItem) {
                         detailsData = handlingItem.details.filter(detail =>
                             e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
@@ -2076,7 +2141,13 @@
                             } else if (e.tabung === 'EDTA' && serumh == detail.id) {
                                 isChecked = 'checked';
                                 isDisabled = '';
+                            } else if (e.tabung === 'CLOTH-ACT' && clotact == detail.id) {
+                                isChecked = 'checked';
+                                isDisabled = '';
                             } else if (e.tabung === 'CLOT-ACT' && serum == detail.id) {
+                                isChecked = 'checked';
+                                isDisabled = '';
+                            } else if (e.tabung === 'CLOT-' && serum == detail.id) {
                                 isChecked = 'checked';
                                 isDisabled = '';
                             }
@@ -2109,7 +2180,7 @@
                 }
 
                 let note = '';
-                if (e.tabung === 'K3-EDTA' || e.tabung === 'EDTA' || e.tabung === 'CLOTH-ACT') {
+                if (e.tabung === 'K3-EDTA' || e.tabung === 'EDTA' || e.tabung === 'CLOTH-ACT' || e.tabung === 'CLOT-ACT' || e.tabung === 'CLOT-') {
                     note = '<p class="mb-0"><strong>Note</strong></p>';
                 }
 
@@ -2132,7 +2203,11 @@
                                 `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
                             ${e.tabung === 'EDTA' ? 
                                 `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
+                            ${e.tabung === 'CLOTH-ACT' ? 
+                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} ></textarea>` : ''}
                             ${e.tabung === 'CLOT-ACT' ? 
+                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromHandling || 'null'}" ${noteFromHandling ? '' : 'disabled'} ></textarea>` : ''}
+                            ${e.tabung === 'CLOT-' ? 
                                 `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromHandling || 'null'}" ${noteFromHandling ? '' : 'disabled'} ></textarea>` : ''}
                         </div>
                     </div>

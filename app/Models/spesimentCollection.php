@@ -9,15 +9,6 @@ class spesimentCollection extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'no_lab',
-        'tabung',
-        'kapasitas',
-        'serumh',
-        'status',
-        'note',
-        'tanggal'
-    ];
     protected $guarded = [];
 
     public function spesimentHandlings()

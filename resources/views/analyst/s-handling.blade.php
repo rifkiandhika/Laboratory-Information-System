@@ -776,182 +776,158 @@
 </script>
 
 <script>
-    $(function() {
-        let detailSpesiment = document.getElementById('detailSpesiment');
-        
-        $('.btn-preview').on('click', function() {
-            const id = this.getAttribute('data-id');
+   $(function () {
+    let detailSpesiment = document.getElementById('detailSpesiment');
 
-            fetch(`/api/get-data-pasien/${id}`).then(response => {
-                if (!response.ok) {
-                    throw new Error("HTTP error" + response.status);
-                }
-                return response.json();
-            }).then(res => {
-                if (res.status === 'success') {
-                    data_pasien = res.data;
-                    data_pemeriksaan_pasien = res.data.dpp;
-                    const spesimen = res.data.spesiment; // Load spesimen data
-                    const scollection = res.data.spesimentcollection;
-                    const shandling = res.data.spesimenthandling;
-                    let status = data_pasien.status;
+    $('.btn-preview').on('click', function () {
+        const id = this.getAttribute('data-id');
 
-                    if (status == 'Spesiment') {
-                        $('#verification').attr('style', `display:none`);
-                    } else {
-                        $('#verification').attr('style', `display:inherit`);
-                    }
+        fetch(`/api/get-data-pasien/${id}`).then(response => {
+            if (!response.ok) throw new Error("HTTP error " + response.status);
+            return response.json();
+        }).then(res => {
+            if (res.status === 'success') {
+                let data_pasien = res.data;
+                let scollection = res.data.spesimentcollection;
+                let spesimen = res.data.spesiment; // spesimen array
+                let data_pemeriksaan_pasien = res.data.dpp;
 
-                    let detailContent = '<div class="row">';
-                    let Tabung = {};
+                let detailContent = '';
+                detailContent += `<h5 class="title mt-3">Inspection Details</h5><hr><div class="row">`;
 
-                    data_pemeriksaan_pasien.forEach((e, i) => {
-                        detailContent += `
-                            <input type="hidden" name="no_lab" value="${e.no_lab}">
-                            <div class="col-12 col-md-6" id="${e.id_departement}">
-                                <h6>${e.data_departement.nama_department}</h6>
-                                <ol>`;
-                        e.pasiens.forEach(e => {
-                            detailContent += `<li>${e.data_pemeriksaan.nama_pemeriksaan}</li>`;
-                            if(!Tabung[e.spesiment]) {
-                                Tabung[e.spesiment] = [];
-                            }
-                            Tabung[e.spesiment] += `<li>${e.data_pemeriksaan.nama_pemeriksaan}</li>`;  
-                        });
-                        detailContent += `</ol><hr></div>`;
-                    });
-                    detailContent += '</div>';
+            data_pemeriksaan_pasien.forEach(e => {
+                detailContent += `
+                    <input type="hidden" name="no_lab" value="${e.no_lab}">
+                    <div class="col-12 col-md-6" id="${e.id_departement}">
+                        <h6>${e.data_departement.nama_department}</h6>
+                        <ol>
+                `;
+                e.pasiens.forEach(p => {
+                    detailContent += `<li>${p.data_pemeriksaan.nama_pemeriksaan}</li>`;
+                });
 
-                    Object.keys(Tabung).forEach(spesiment => {
-                        res.data.spesiment.forEach((e, i) => {
-                            let details = '';
-                            let detailsData = [];
-                            let serum;
-                            let processTime = '';
-                            let noteText = ''; // Variable untuk menyimpan note
-
-                            // Check if collection data exists for the current specimen
-                            let hasCollectionData = false;
-                            
-                            if (e.tabung === 'K3-EDTA') {
-                                const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key);
-                                if (collectionItem) {
-                                    hasCollectionData = true;
-                                    detailsData = collectionItem.details.filter(detail => 
-                                        e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                                    );
-                                    kapasitas = collectionItem.kapasitas;
-                                    noteText = collectionItem.note; // Mengambil note untuk EDTA
-                                }
-                            } else if (e.tabung === 'CLOTH-ACTIVATOR') {
-                                const collectionItem = scollection.find(item => 
-                                    item.no_lab === e.laravel_through_key && item.tabung === 'EDTA'
-                                );
-                                if (collectionItem) {
-                                    hasCollectionData = true;
-                                    detailsData = collectionItem.details.filter(detail => 
-                                        e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                                    );
-                                    serumh = collectionItem.serumh;
-                                    noteText = collectionItem.note; // Mengambil note untuk K3
-                                }
-                            } else if (e.tabung === 'CLOT-ACT') {
-                                const handlingItem = shandling.find(item => item.no_lab === e.laravel_through_key);
-                                if (handlingItem) {
-                                    hasCollectionData = true;
-                                    detailsData = handlingItem.details.filter(detail => 
-                                        e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                                    );
-                                    serum = handlingItem.serum;
-                                    noteText = handlingItem.note; // Mengambil note untuk CLOT-ACT
-                                }
-                            }
-
-                            if (e.details && e.details.length > 0) {
-                                details = `<div class="detail-container col-12 col-md-6">`;
-                                e.details.forEach(detail => {
-                                    const imageUrl = `/gambar/${detail.gambar}`;
-                                    let isChecked = '';
-                                    let isDisabled = '';  // Default to enabled
-
-                                    if (hasCollectionData) {
-                                        // Jika ada data di database
-                                        if (e.tabung === 'K3-EDTA') {
-                                            isChecked = kapasitas == detail.id ? 'checked' : '';
-                                            isDisabled = kapasitas == detail.id ? '' : 'disabled';  // Disable yang tidak terpilih
-                                        } else if (e.tabung === 'CLOTH-ACTIVATOR') {
-                                            isChecked = serumh == detail.id ? 'checked' : '';
-                                            isDisabled = serumh == detail.id ? '' : 'disabled';  // Disable yang tidak terpilih
-                                        } else if (e.tabung === 'CLOT-ACT') {
-                                            isChecked = serum == detail.id ? 'checked' : '';
-                                            isDisabled = serum == detail.id ? '' : 'disabled';  // Disable yang tidak terpilih
-                                        }
-                                    } else {
-                                        // Jika tidak ada data, set normal sebagai default dan semua radio enabled
-                                        if (detail.nama_parameter.toLowerCase().includes('normal')) {
-                                            isChecked = 'checked';
-                                        }
-                                        isDisabled = '';  // Semua radio button enabled
-                                    }
-
-                                    details += `
-                                    <div class="detail-item">
-                                        <div class="detail-text">${detail.nama_parameter}</div>
-                                        <div class="detail-image-container">
-                                            <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
-                                        </div>
-                                        <div class="detail-radio-container">
-                                        ${e.tabung === 'K3-EDTA' ? `<input type="radio" name="kapasitas[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}
-                                        ${e.tabung === 'CLOTH-ACTIVATOR' ? `<input type="radio" name="serumh[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}    
-                                        ${e.tabung === 'CLOT-ACT' ? `<input type="radio" name="serum[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}    
-                                        </div>
-                                    </div>`;
-                                });
-                                details += `</div>`;
-                            }
-
-                            let title = '';
-                            let subtext = '';
-
-                            // Filter and only add details for CLOT-ACT
-                            if (e.tabung === 'CLOT-ACT') {
-                                title = '<h5 class="title mt-3">Spesiment Handlings</h5> <hr>';
-                                subtext = '<div class="subtext">Serum</div>';
-                            }
-
-                            let note = '';
-                            if (e.tabung === 'CLOT-ACT') {
-                                note = '<p class="mb-0"><strong>Note</strong></p>';
-                            }
-                            
-                            detailContent += `${title}
-                            <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">                          
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading${e.tabung}">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">
-                                            Tabung ${e.tabung}
-                                        </button>
-                                    </h2>
-                                    <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}" data-bs-parent="#accordion${e.tabung}">
-                                        <div class="accordion-body">
-                                            ${subtext}
-                                            <div class="container">
-                                                ${details}
-                                            </div>
-                                            ${note}
-                                            <textarea class="form-control" name="note[]" row="3" placeholder="${noteText || 'null'}" ${hasCollectionData ? 'disabled' : ''}></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>`;
-                        });
-                    });
-
-                    detailSpesiment.innerHTML = detailContent;
-                }
+                detailContent += `</ol><hr></div>`;
             });
+
+            detailContent += `</div>`;
+
+                // Tentukan tabung yang masuk ke Spesiment Collection dan Handlings
+                const collectionTabs = ['K3-EDTA', 'CLOTH-ACTIVATOR', 'CLOTH-ACT'];
+                const handlingTabs = ['CLOT-ACT']; // misalnya tabung lain untuk handling
+
+                // Render Spesiment Collection dulu: paksa urutan CLOTH-ACT di atas
+                let hasCollectionHeader = false;
+                collectionTabs.forEach(tabungName => {
+                    spesimen
+                        .filter(e => e.tabung === tabungName)
+                        .forEach(e => {
+                            if (!hasCollectionHeader) {
+                                detailContent += `<h5 class="title mt-3">Spesiment Collection</h5><hr>`;
+                                hasCollectionHeader = true;
+                            }
+                            detailContent += generateAccordionHTML(e, scollection);
+                        });
+                });
+
+                // Render sisanya (Handlings) jika ada
+                let hasHandlingHeader = false;
+                spesimen
+                    .filter(e => !collectionTabs.includes(e.tabung))
+                    .forEach(e => {
+                        if (!hasHandlingHeader) {
+                            detailContent += `<h5 class="title mt-3">Spesiment Handlings</h5><hr>`;
+                            hasHandlingHeader = true;
+                        }
+                        detailContent += generateAccordionHTML(e, scollection);
+                    });
+
+                detailSpesiment.innerHTML = detailContent;
+            }
         });
-    })
+    });
+});
+
+// fungsi yang menghasilkan HTML accordion untuk setiap tabung
+function generateAccordionHTML(e, scollection) {
+    let details = '';
+    let hasCollectionData = false;
+    let noteText = '';
+    let kapasitas, serumh, clotact;
+
+    const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key && item.tabung === e.tabung);
+    if (collectionItem) {
+        hasCollectionData = true;
+        noteText = collectionItem.note || '';
+        kapasitas = collectionItem.kapasitas;
+        serumh = collectionItem.serumh;
+        clotact = collectionItem.clotact;
+    }
+
+    if (e.details && e.details.length > 0) {
+        details = `<div class="detail-container col-12 col-md-6">`;
+        e.details.forEach(detail => {
+            const imageUrl = `/gambar/${detail.gambar}`;
+            let isChecked = '';
+            let isDisabled = '';
+
+            if (hasCollectionData) {
+                if (e.tabung === 'K3-EDTA') {
+                    isChecked = kapasitas == detail.id ? 'checked' : '';
+                    isDisabled = kapasitas == detail.id ? '' : 'disabled';
+                } else if (e.tabung === 'CLOTH-ACTIVATOR') {
+                    isChecked = serumh == detail.id ? 'checked' : '';
+                    isDisabled = serumh == detail.id ? '' : 'disabled';
+                } else if (e.tabung === 'CLOTH-ACT') {
+                    isChecked = clotact == detail.id ? 'checked' : '';
+                    isDisabled = clotact == detail.id ? '' : 'disabled';
+                }
+            } else {
+                if (detail.nama_parameter.toLowerCase().includes('normal')) {
+                    isChecked = 'checked';
+                }
+                isDisabled = '';
+            }
+
+            details += `
+            <div class="detail-item">
+                <div class="detail-text">${detail.nama_parameter}</div>
+                <div class="detail-image-container">
+                    <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>
+                </div>
+                <div class="detail-radio-container">
+                    ${e.tabung === 'K3-EDTA' ? `<input type="radio" name="kapasitas[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}
+                    ${e.tabung === 'CLOTH-ACTIVATOR' ? `<input type="radio" name="serumh[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}
+                    ${e.tabung === 'CLOTH-ACT' ? `<input type="radio" name="clotact[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}
+                    ${e.tabung === 'CLOT-ACT' ? `<input type="radio" name="serum[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}
+                    ${e.tabung === 'CLOT-' ? `<input type="radio" name="serumc[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}
+                </div>
+            </div>`;
+        });
+        details += `</div>`;
+    }
+
+    let note = (e.tabung === 'CLOTH-ACT' || e.tabung === 'CLOT-ACT') ?
+        '<p class="mb-0"><strong>Note</strong></p>' : '';
+
+    return `
+    <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading${e.tabung}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}">
+                    Tabung ${e.tabung}
+                </button>
+            </h2>
+            <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}">
+                <div class="accordion-body">
+                    <div class="container">${details}</div>
+                    ${note}
+                    <textarea class="form-control" name="note[]" row="3" placeholder="${noteText || 'null'}" ${hasCollectionData ? 'disabled' : ''}></textarea>
+                </div>
+            </div>
+        </div>
+    </div>`;
+}
+
 </script>
 
 

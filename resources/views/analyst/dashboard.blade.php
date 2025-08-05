@@ -793,7 +793,7 @@ Dashboard|Spesiment
                         // Cek apakah ini pemeriksaan kimia klinik yang membutuhkan EDTA
                         // atau cek berdasarkan nama pemeriksaan
                         const isEDTARelated = dept.data_departement?.nama_department === 'Kimia Klinik' ||
-                                            dept.data_departement?.nama_department === 'Kimia Klinik' ||
+                                            dept.data_departement?.nama_department === 'IMMUNOLOGY' ||
                                             pasien.data_pemeriksaan?.nama_pemeriksaan?.toLowerCase();
                         
                         
@@ -813,7 +813,7 @@ Dashboard|Spesiment
                 res.data.spesiment.forEach((e, i) => {
                     
                     // Khusus untuk tabung EDTA, cek permission
-                    if (e.tabung === 'CLOTH-ACTIVATOR' || e.tabung === 'K3-EDTA') {
+                    if (e.tabung === 'CLOTH-ACTIVATOR' || e.tabung === 'K3-EDTA' || e.tabung === 'CLOTH-ACT') {
                         // Skip jika tidak ada permission active untuk EDTA
                         if (!hasActiveEDTA) {
                             return;
@@ -821,7 +821,7 @@ Dashboard|Spesiment
                     }
                     
                     // Untuk tabung CLOT-ACT, tambahkan pengecekan khusus jika diperlukan
-                    if (e.tabung === 'CLOT-ACT') {
+                    if (e.tabung === 'CLOT-ACT' || e.tabung === 'CLOT-') {
                         // Cek apakah ada pemeriksaan yang memerlukan CLOT-ACT
                         const needsCLOTACT = data_pemeriksaan_pasien.some(dept => 
                             dept.pasiens.some(p => p.spesiment === 'CLOT-ACT' && p.data_pemeriksaan?.permission === 'active')
@@ -840,6 +840,7 @@ Dashboard|Spesiment
                         e.details.forEach(detail => {
                             const imageUrl = `/gambar/${detail.gambar}`;
                             const isChecked = (e.tabung === 'K3-EDTA' && detail.nama_parameter === 'Normal') ||
+                                            (e.tabung === 'CLOTH-ACT' && detail.nama_parameter === 'Normal') ||
                                             (e.tabung === 'CLOTH-ACTIVATOR' && detail.nama_parameter === 'Normal') ? 'checked' : '';
 
                             details +=  
@@ -850,6 +851,7 @@ Dashboard|Spesiment
                                 </div>
                                 <div class="detail-radio-container">
                                     ${e.tabung === 'K3-EDTA' ? `<input type="radio" name="kapasitas[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}
+                                    ${e.tabung === 'CLOTH-ACT' ? `<input type="radio" name="clotact[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''} 
                                     ${e.tabung === 'CLOTH-ACTIVATOR' ? `<input type="radio" name="serumh[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''} 
                                 </div>
                             </div>`;
@@ -860,11 +862,11 @@ Dashboard|Spesiment
                     let title = '';
                     let subtext = '';
                     if (e.tabung === 'K3-EDTA') {
-                        title = '<h5 class="title">Pengambilan Spesimen</h5> <hr>';
+                        title = '<h5 class="title">Spesiment Collection</h5> <hr>';
                     }
 
                     let note = '';
-                    if (e.tabung === 'K3-EDTA' || e.tabung === 'CLOTH-ACTIVATOR') {
+                    if (e.tabung === 'K3-EDTA' || e.tabung === 'CLOTH-ACTIVATOR' || e.tabung === 'CLOTH-ACT') {
                         note = '<p class="mb-0"><strong>Note</strong></p>';
                     }
 
@@ -885,6 +887,7 @@ Dashboard|Spesiment
                                         ${note}
                                         ${e.tabung === 'K3-EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Tulis catatan disini"></textarea>` : ''}
                                         ${e.tabung === 'CLOTH-ACTIVATOR' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Tulis catatan disini"></textarea>` : ''}
+                                        ${e.tabung === 'CLOTH-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Tulis catatan disini"></textarea>` : ''}
                                     </div>
                                 </div>
                             </div>

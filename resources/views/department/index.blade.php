@@ -53,8 +53,8 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                <div class="table-scroll table-pasien" style="width: 100%;  max-height: 550px;">
-                                    <table class="table table-striped table-bordered w-100 d-block d-md-table "
+                                <div>
+                                    <table class="table table-striped table-bordered table-responsive w-100 d-block d-md-table "
                                         id="myTable">
                                         <thead style="font-size: 12px;">
                                             <tr>

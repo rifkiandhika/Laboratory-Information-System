@@ -8,15 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class spesimentHandling extends Model
 {
     use HasFactory;
-
-    protected $fillable = [
-        'no_lab',
-        'tabung',
-        'serum',
-        'status',
-        'note',
-        'tanggal'
-    ];
+    protected $guarded = [];
 
     public function department()
     {
