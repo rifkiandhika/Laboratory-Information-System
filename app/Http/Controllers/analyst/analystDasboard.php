@@ -101,7 +101,7 @@ class analystDasboard extends Controller
         foreach ($serumh as $j => $ser) {
             spesimentCollection::create([
                 'no_lab' => $no_lab,
-                'tabung' => 'EDTA',
+                'tabung' => 'CLOTH-ACTIVATOR',
                 'serumh' => $ser, // gunakan field 'kapasitas' jika 'serumh' tidak ada di database
                 'status' => 'Acc',
                 'note' => $notes[$j] ?? null,

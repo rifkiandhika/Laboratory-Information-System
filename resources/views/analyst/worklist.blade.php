@@ -2068,93 +2068,170 @@
 `;
 
             spesimen.forEach(e => {
-                let details = '';
-                let detailsData = [];
-                let kapasitas, serumh, serum, serumc, clotact;
-                let processTime = '';
+            // console.log('=== Processing Specimen ===');
+            // console.log('Tabung:', e.tabung);
+            // console.log('Laravel through key:', e.laravel_through_key);
+            
+            let details = '';
+            let detailsData = [];
+            let kapasitas, serumh, serum, serumc, clotact;
+            let processTime = '';
 
-                const checkInSpesimen = history.find(h => h.status === 'Check in spesiment');
-                let noteFromCollection = null;
-                let noteFromHandling = null;
+            const checkInSpesimen = history.find(h => h.status === 'Check in spesiment');
+            let noteFromCollection = null;
+            let noteFromHandling = null;
 
-                if (e.tabung === 'K3-EDTA') {
-                    const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key && item.tabung === 'K3-EDTA');
-                    if (collectionItem) {
-                        detailsData = collectionItem.details.filter(detail =>
-                            e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                        );
-                        kapasitas = collectionItem.kapasitas;
-                        noteFromCollection = collectionItem.note;
-                    }
-                } else if (e.tabung === 'EDTA') {
-                    const collectionItem = scollection.find(item =>
+            if (e.tabung === 'K3-EDTA') {
+                const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key && item.tabung === 'K3-EDTA');
+                if (collectionItem) {
+                    detailsData = collectionItem.details ? collectionItem.details.filter(detail =>
+                        e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                    ) : [];
+                    kapasitas = collectionItem.kapasitas;
+                    noteFromCollection = collectionItem.note;
+                }
+            } else if (e.tabung === 'CLOTH-ACTIVATOR') {
+                // console.log('--- DEBUGGING CLOTH-ACTIVATOR ---');
+                // Coba cari dengan nama CLOTH-ACTIVATOR dulu
+                let collectionItem = scollection.find(item =>
+                    item.no_lab === e.laravel_through_key && item.tabung === 'CLOTH-ACTIVATOR'
+                );
+                
+                // Jika tidak ada, cari dengan nama EDTA (karena di database kemungkinan tersimpan sebagai EDTA)
+                if (!collectionItem) {
+                    // console.log('CLOTH-ACTIVATOR not found, trying EDTA...');
+                    collectionItem = scollection.find(item =>
                         item.no_lab === e.laravel_through_key && item.tabung === 'EDTA'
                     );
-                    if (collectionItem) {
-                        detailsData = collectionItem.details.filter(detail =>
-                            e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                        );
-                        serumh = collectionItem.serumh;
-                        noteFromCollection = collectionItem.note;
-                    }
-                } else if (e.tabung === 'CLOTH-ACT') {
-                    const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key);
-                    if (collectionItem) {
-                        detailsData = collectionItem.details.filter(detail =>
-                            e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                        );
-                        clotact = collectionItem.clotact;
-                        noteFromCollection = collectionItem.note;
-                    }
-                } else if (e.tabung === 'CLOT-ACT') {
-                    const handlingItem = shandling.find(item => item.no_lab === e.laravel_through_key && item.tabung === 'CLOT-ACT');
-                    if (handlingItem) {
-                        detailsData = handlingItem.details.filter(detail =>
-                            e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                        );
-                        serum = handlingItem.serum;
-                        noteFromHandling = handlingItem.note;
-                    }
-                } else if (e.tabung === 'CLOT-') {
-                    const handlingItem = shandling.find(item => item.no_lab === e.laravel_through_key && item.tabung === 'CLOT');
-                    if (handlingItem) {
-                        detailsData = handlingItem.details.filter(detail =>
-                            e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                        );
-                        serum = handlingItem.serum;
-                        noteFromHandling = handlingItem.note;
-                    }
                 }
+                
+                // console.log('CLOTH-ACTIVATOR collectionItem:', collectionItem);
+                
+                if (collectionItem) {
+                    detailsData = collectionItem.details ? collectionItem.details.filter(detail =>
+                        e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                    ) : [];
+                    serumh = collectionItem.serumh;
+                    noteFromCollection = collectionItem.note;
+                    
+                    // console.log('CLOTH-ACTIVATOR serumh value:', serumh, 'type:', typeof serumh);
+                    // console.log('CLOTH-ACTIVATOR noteFromCollection:', noteFromCollection);
+                    // console.log('CLOTH-ACTIVATOR detailsData:', detailsData);
+                } else {
+                    // console.log('CLOTH-ACTIVATOR collectionItem not found');
+                }
+            } else if (e.tabung === 'CLOTH-ACT') {
+                // console.log('--- DEBUGGING CLOTH-ACT ---');
+                // console.log('Searching for scollection with no_lab:', e.laravel_through_key);
+                // console.log('All scollection items:', scollection);
+                
+                // Coba cari dengan nama CLOTH-ACT
+                let collectionItem = scollection.find(item => 
+                    item.no_lab === e.laravel_through_key && item.tabung === 'CLOTH-ACT'
+                );
+                
+                // console.log('CLOTH-ACT with tabung filter:', collectionItem);
+                
+                // Jika tidak ditemukan, coba cari tanpa filter tabung dan ambil yang punya clotact
+                if (!collectionItem) {
+                    // console.log('CLOTH-ACT not found with tabung filter, trying without filter...');
+                    const allItems = scollection.filter(item => item.no_lab === e.laravel_through_key);
+                    // console.log('All items with matching no_lab:', allItems);
+                    
+                    // Cari item yang punya field clotact
+                    collectionItem = allItems.find(item => item.clotact);
+                    // console.log('Found item with clotact:', collectionItem);
+                }
+                
+                if (collectionItem) {
+                    // Jika details ada, filter berdasarkan specimen details
+                    if (collectionItem.details && collectionItem.details.length > 0) {
+                        detailsData = collectionItem.details.filter(detail =>
+                            e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                        );
+                    } else {
+                        // Fallback: jika collection.details kosong, gunakan semua details dari specimen
+                        // console.log('CLOTH-ACT collectionItem.details is empty, using specimen details as fallback');
+                        detailsData = e.details;
+                    }
+                    
+                    clotact = collectionItem.clotact;
+                    noteFromCollection = collectionItem.note;
+                    
+                    // console.log('CLOTH-ACT clotact value:', clotact, 'type:', typeof clotact);
+                    // console.log('CLOTH-ACT noteFromCollection:', noteFromCollection);
+                    // console.log('CLOTH-ACT detailsData:', detailsData);
+                } else {
+                    // console.log('CLOTH-ACT collectionItem NOT FOUND after all attempts');
+                }
+            } else if (e.tabung === 'CLOT-ACT') {
+                const handlingItem = shandling.find(item => item.no_lab === e.laravel_through_key && item.tabung === 'CLOT-ACT');
+                if (handlingItem) {
+                    detailsData = handlingItem.details ? handlingItem.details.filter(detail =>
+                        e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                    ) : [];
+                    serum = handlingItem.serum;
+                    noteFromHandling = handlingItem.note;
+                }
+            } else if (e.tabung === 'CLOT-') {
+                const handlingItem = shandling.find(item => item.no_lab === e.laravel_through_key && item.tabung === 'CLOT');
+                if (handlingItem) {
+                    detailsData = handlingItem.details ? handlingItem.details.filter(detail =>
+                        e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
+                    ) : [];
+                    serum = handlingItem.serum;
+                    noteFromHandling = handlingItem.note;
+                }
+            }
 
-                if (e.details && e.details.length > 0) {
-                    details = `<div class="detail-container col-12 col-md-6">`;
-                    e.details.forEach(detail => {
-                        const imageUrl = `/gambar/${detail.gambar}`;
-                        let isChecked = '';
-                        let isDisabled = 'disabled';
+            if (e.details && e.details.length > 0) {
+                details = `<div class="detail-container col-12 col-md-6">`;
+                e.details.forEach(detail => {
+                    // console.log('--- Processing Detail ---');
+                    // console.log('Detail ID:', detail.id, 'type:', typeof detail.id);
+                    
+                    const imageUrl = `/gambar/${detail.gambar}`;
+                    let isChecked = '';
+                    let isDisabled = 'disabled';
 
-                        const matchedDetail = detailsData.find(d => d.id === detail.id)
-                        if (matchedDetail) {
-                            if (e.tabung === 'K3-EDTA' && kapasitas == detail.id) {
-                                isChecked = 'checked';
-                                isDisabled = '';
-                            } else if (e.tabung === 'EDTA' && serumh == detail.id) {
-                                isChecked = 'checked';
-                                isDisabled = '';
-                            } else if (e.tabung === 'CLOTH-ACT' && clotact == detail.id) {
-                                isChecked = 'checked';
-                                isDisabled = '';
-                            } else if (e.tabung === 'CLOT-ACT' && serum == detail.id) {
-                                isChecked = 'checked';
-                                isDisabled = '';
-                            } else if (e.tabung === 'CLOT-' && serum == detail.id) {
-                                isChecked = 'checked';
-                                isDisabled = '';
-                            }
+                    // Untuk CLOTH-ACT, gunakan fallback logic jika detailsData kosong tapi ada clotact
+                    let matchedDetail = detailsData.find(d => d.id === detail.id);
+                    let shouldCheck = false;
+                    
+                    // console.log('Matched detail for', e.tabung, ':', matchedDetail);
+                    
+                    // Perbaikan logic: untuk CLOTH-ACT, jika ada clotact maka enable checking
+                    if (matchedDetail || (e.tabung === 'CLOTH-ACT' && clotact)) {
+                        // console.log(`Checking conditions for ${e.tabung}...`);
+                        
+                        if (e.tabung === 'K3-EDTA' && parseInt(kapasitas) === detail.id) {
+                            shouldCheck = true;
+                            // console.log('K3-EDTA should be checked');
+                        } else if (e.tabung === 'CLOTH-ACTIVATOR' && parseInt(serumh) === detail.id) {
+                            shouldCheck = true;
+                            // console.log(`CLOTH-ACTIVATOR should be checked - serumh: ${serumh}, detail.id: ${detail.id}`);
+                        } else if (e.tabung === 'CLOTH-ACT' && parseInt(clotact) === detail.id) {
+                            shouldCheck = true;
+                            // console.log(`CLOTH-ACT should be checked - clotact: ${clotact}, detail.id: ${detail.id}`);
+                        } else if (e.tabung === 'CLOT-ACT' && parseInt(serum) === detail.id) {
+                            shouldCheck = true;
+                            // console.log('CLOT-ACT should be checked');
+                        } else if (e.tabung === 'CLOT-' && parseInt(serum) === detail.id) {
+                            shouldCheck = true;
+                            // console.log('CLOT- should be checked');
                         }
 
-                        details +=
-                            `<div class="detail-item">
+                        if (shouldCheck) {
+                            isChecked = 'checked';
+                            isDisabled = '';
+                            // console.log(`${e.tabung} final state: CHECKED`);
+                        }
+                    } else {
+                        // console.log(`${e.tabung} - no match found or no required value`);
+                    }
+
+                    details +=
+                        `<div class="detail-item">
                     <div class="detail-text">${detail.nama_parameter}</div>
                     <div class="detail-image-container">
                         <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
@@ -2163,28 +2240,30 @@
                         <input type="radio" name="${e.tabung}" class="detail.radio" value="${detail.id}" ${isChecked} ${isDisabled} />  
                     </div>
                 </div>`;
-                    });
-                    details += `</div>`
-                }
+                });
+                details += `</div>`
+            }
 
-                let title = '';
-                let subtext = '';
+            let title = '';
+            let subtext = '';
 
-                if (e.tabung === 'K3-EDTA') {
-                    title = '<h5 class="title">Spesiment Collection</h5> <hr>';
-                } else if (e.tabung === 'CLOTH-ACT') {
-                    subtext = '<div class="subtext">Serum</div>';
-                } else if (e.tabung === 'CLOT-ACT') {
-                    title = '<h5 class="title mt-3">Spesiment Handlings</h5> <hr>';
-                    subtext = '<div class="subtext">Serum</div>';
-                }
+            if (e.tabung === 'K3-EDTA') {
+                title = '<h5 class="title">Spesiment Collection</h5> <hr>';
+            } else if (e.tabung === 'CLOTH-ACTIVATOR') {
+                subtext = '<div class="subtext">Serum</div>';
+            } else if (e.tabung === 'CLOTH-ACT') {
+                subtext = '<div class="subtext">Serum</div>';
+            } else if (e.tabung === 'CLOT-ACT') {
+                title = '<h5 class="title mt-3">Spesiment Handlings</h5> <hr>';
+                subtext = '<div class="subtext">Serum</div>';
+            }
 
-                let note = '';
-                if (e.tabung === 'K3-EDTA' || e.tabung === 'EDTA' || e.tabung === 'CLOTH-ACT' || e.tabung === 'CLOT-ACT' || e.tabung === 'CLOT-') {
-                    note = '<p class="mb-0"><strong>Note</strong></p>';
-                }
+            let note = '';
+            if (e.tabung === 'K3-EDTA' || e.tabung === 'CLOTH-ACTIVATOR' || e.tabung === 'CLOTH-ACT' || e.tabung === 'CLOT-ACT' || e.tabung === 'CLOT-') {
+                note = '<p class="mb-0"><strong>Note</strong></p>';
+            }
 
-                accordionContent += `${title}
+            accordionContent += `${title}
             <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">                          
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="heading${e.tabung}">
@@ -2200,21 +2279,23 @@
                             </div>
                             ${note}
                             ${e.tabung === 'K3-EDTA' ? 
-                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
-                            ${e.tabung === 'EDTA' ? 
-                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
+                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'No note available'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
+                            ${e.tabung === 'CLOTH-ACTIVATOR' ? 
+                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'No note available'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
                             ${e.tabung === 'CLOTH-ACT' ? 
-                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} ></textarea>` : ''}
+                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'No note available'}" ${noteFromCollection ? '' : 'disabled'}></textarea>` : ''}
                             ${e.tabung === 'CLOT-ACT' ? 
-                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromHandling || 'null'}" ${noteFromHandling ? '' : 'disabled'} ></textarea>` : ''}
+                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromHandling || 'No note available'}" ${noteFromHandling ? '' : 'disabled'}></textarea>` : ''}
                             ${e.tabung === 'CLOT-' ? 
-                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromHandling || 'null'}" ${noteFromHandling ? '' : 'disabled'} ></textarea>` : ''}
+                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromHandling || 'No note available'}" ${noteFromHandling ? '' : 'disabled'}></textarea>` : ''}
                         </div>
                     </div>
                 </div>
             </div>
         `;
-            });
+
+            // console.log('=== End Processing Specimen ===\n');
+        });
 
             if (historyItem && historyItem.note) {
                 accordionContent += `
