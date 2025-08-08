@@ -13,7 +13,7 @@ class Spesiment extends Model
 
     public function department()
     {
-        return $this->belongsTo(Department::class, 'id_departement');
+        return $this->belongsTo(Department::class, 'department_id', 'id');
     }
 
     public function details()

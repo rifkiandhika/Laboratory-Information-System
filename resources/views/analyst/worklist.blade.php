@@ -1187,6 +1187,62 @@
                 }
             ];
 
+            // Tambahkan const WidalParams di bawah hematologiParams
+            const WidalParams = [
+                {
+                    nama: 'Salmonella Typhi H',
+                    display_name: 'Salmonella Typhi H',
+                    satuan: '-',
+                    normal_min_l: '-',
+                    normal_max_l: '-',
+                    normal_min_p: '-',
+                    normal_max_p: '-',
+                    nilai_rujukan_l: '-',
+                    nilai_rujukan_p: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
+                },
+                {
+                    nama: 'Salmonella Typhi O',
+                    display_name: 'Salmonella Typhi O',
+                    satuan: '-',
+                    normal_min_l: '-',
+                    normal_max_l: '-',
+                    normal_min_p: '-',
+                    normal_max_p: '-',
+                    nilai_rujukan_l: '-',
+                    nilai_rujukan_p: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
+                },
+                {
+                    nama: 'Salmonella Paratyphi AO',
+                    display_name: 'Salmonella Paratyphi AO',
+                    satuan: '-',
+                    normal_min_l: '-',
+                    normal_max_l: '-',
+                    normal_min_p: '-',
+                    normal_max_p: '-',
+                    nilai_rujukan_l: '-',
+                    nilai_rujukan_p: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
+                },
+                {
+                    nama: 'Salmonella Paratyphi BO',
+                    display_name: 'Salmonella Paratyphi BO',
+                    satuan: '-',
+                    normal_min_l: '-',
+                    normal_max_l: '-',
+                    normal_min_p: '-',
+                    normal_max_p: '-',
+                    nilai_rujukan_l: '-',
+                    nilai_rujukan_p: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
+                }
+            ];
+
             // Fungsi untuk mendapatkan nilai normal berdasarkan jenis kelamin
             function getNormalValues(param, jenisKelamin) {
                 const isLakiLaki = jenisKelamin && jenisKelamin.toLowerCase() === 'l' || jenisKelamin && jenisKelamin.toLowerCase() === 'laki-laki';
@@ -1424,6 +1480,12 @@
                                                 const isHematologi = p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('hematologi');
                                                 return isHematologi;
                                             });
+
+                                            // Cek apakah ada pemeriksaan widal di grup ini
+                                            const hasWidal = e.pasiens.some(p => {
+                                                const isWidal = p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('widal');
+                                                return isWidal;
+                                            });
                                             
                                             if (hasHematologi) {
                                                 // Jika ada hematologi, tampilkan parameter hematologi lengkap
@@ -1478,6 +1540,84 @@
                                                 </td>
                                                 <td class="col-3 flag-cell">
                                                     ${initialFlag}
+                                                </td>
+                                                <td>
+                                                    <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
+                                                        value="${param.satuan}" readonly />
+                                                    ${param.satuan}
+                                                </td>
+                                            </tr>
+                                            `;
+                                                }).join('');
+                                            } else if (hasWidal) {
+                                                // Jika ada widal, tampilkan parameter widal lengkap
+                                                const widalPemeriksaan = e.pasiens.find(p => 
+                                                    p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('widal')
+                                                );
+                                                const namaPemeriksaanWidal = widalPemeriksaan ? widalPemeriksaan.data_pemeriksaan.nama_pemeriksaan : 'Widal';
+                                                
+                                                return WidalParams.map((param, paramIdx) => {
+                                                    // Cari data hasil untuk parameter ini
+                                                    const obxValues = getObxValues(param.nama);
+                                                    const rowId = `widal_${idx}_${paramIdx}`;
+                                                    const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
+                                                    
+                                                    return `
+                                            <tr data-id="${rowId}" data-parameter="${param.nama}" class="widal-row">
+                                                <td class="col-2">
+                                                    <strong>${param.display_name}</strong>
+                                                    <small class="text-muted d-block">${normalValues.display}</small>
+                                                    <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanWidal}" />
+                                                    <input type="hidden" name="parameter_name[]" value="${param.nama}" />
+                                                    <input type="hidden" name="nilai_rujukan[]" value="${normalValues.rujukan}" />
+                                                    <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                </td>
+                                                <td class="col-2">
+                                                    <select name="hasil[]" 
+                                                        class="form-select manualInput w-60 p-0" 
+                                                        disabled>
+                                                        ${param.opsi_output.split(';').map(opt => `
+                                                            <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>
+                                                                ${opt.trim()}
+                                                            </option>
+                                                        `).join('')}
+                                                    </select>
+                                                </td>
+                                                <td class="col-1">
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
+                                                            data-index="${paramIdx}" data-switch-index="0">
+                                                        <i class="ti ti-switch-2"></i>
+                                                    </button>
+                                                </td>
+                                                <td class="col-2 duplo d1-column text-center" style="display: none;">
+                                                    <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                        ${param.opsi_output.split(';').map(opt => `
+                                                            <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>
+                                                                ${opt.trim()}
+                                                            </option>
+                                                        `).join('')}
+                                                    </select>
+                                                </td>
+                                                <td class="col-2 duplo d2-column" style="display: none;">
+                                                    <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                        ${param.opsi_output.split(';').map(opt => `
+                                                            <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>
+                                                                ${opt.trim()}
+                                                            </option>
+                                                        `).join('')}
+                                                    </select>
+                                                </td>
+                                                <td class="col-2 duplo d3-column" style="display: none;">
+                                                    <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                        ${param.opsi_output.split(';').map(opt => `
+                                                            <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>
+                                                                ${opt.trim()}
+                                                            </option>
+                                                        `).join('')}
+                                                    </select>
+                                                </td>
+                                                <td class="col-3 flag-cell">
+                                                    <!-- Untuk widal tidak ada flag normal/abnormal -->
                                                 </td>
                                                 <td>
                                                     <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
@@ -1688,6 +1828,12 @@
                 .hematologi-row:hover {
                     background-color: #e9ecff;
                 }
+                .widal-row {
+                    background-color: #fff8e1;
+                }
+                .widal-row:hover {
+                    background-color: #fff3c4;
+                }
                 .text-success {
                     color: #28a745 !important;
                 }
@@ -1697,7 +1843,8 @@
                 .text-danger {
                     color: #dc3545 !important;
                 }
-                .hematologi-row small.text-muted {
+                .hematologi-row small.text-muted,
+                .widal-row small.text-muted {
                     font-size: 0.75rem;
                     margin-top: 2px;
                 }
@@ -1719,9 +1866,17 @@
                 const numValue = parseFloat(value);
                 const row = flagCell.closest('tr');
                 const isHematologi = row && row.classList.contains('hematologi-row');
+                const isWidal = row && row.classList.contains('widal-row');
 
                 // console.log('Parsed numValue:', numValue);
                 // console.log('Is hematologi:', isHematologi);
+                // console.log('Is widal:', isWidal);
+
+                if (isWidal) {
+                    // Untuk widal, tidak ada flag normal/abnormal
+                    flagCell.innerHTML = '';
+                    return;
+                }
 
                 if (!isNaN(numValue) && value !== '') {
                     if (isHematologi && parameter) {
@@ -1834,7 +1989,9 @@
                     const allInputs = document.querySelectorAll('.manualInput, .d1, .d2, .d3');
                     allInputs.forEach(input => {
                         input.removeEventListener('input', inputHandler);
+                        input.removeEventListener('change', inputHandler);
                         input.addEventListener('input', inputHandler);
+                        input.addEventListener('change', inputHandler); // Untuk select elements
                     });
                     // console.log(`Setup flag event listeners for ${allInputs.length} inputs`);
                 }
@@ -1950,7 +2107,7 @@
                     });
                 }
 
-                // Tombol switch
+                // Tombol switch - Updated untuk menangani select dan input
                 document.querySelectorAll('.switch-btn').forEach((button) => {
                     button.addEventListener('click', function() {
                         const row = this.closest('tr');
