@@ -7,6 +7,7 @@ use App\Models\Department;
 use App\Models\DetailDepartment;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class DepartmentController extends Controller
@@ -118,12 +119,13 @@ class DepartmentController extends Controller
                 dd("Missing data at index $x");
             }
         }
-
-        // Memberikan feedback jika berhasil
-        toast('Berhasil Menambahkan Data Department', 'success');
-
         // Redirect ke halaman department.index
-        return redirect()->route('department.index');
+        return redirect()->route('department.index')->with('success', 'Data Saved!')
+            ->with('swal', [
+                'title' => 'Success!',
+                'text' => 'Data Saved.',
+                'icon' => 'success'
+            ]);;
     }
 
 
@@ -149,82 +151,105 @@ class DepartmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        // Validasi data input
-        $request->validate([
-            'nama_department' => 'required|unique:departments,nama_department,' . $id,
-            'kode.*' => 'required',
-            'nama_parameter.*' => 'required',
-            'nama_pemeriksaan.*' => 'required',
-            'harga.*' => 'required',
-            'nilai_rujukan.*' => 'required',
-            'nilai_satuan.*' => 'required',
-            'tipe_inputan.*' => 'required',
-            'opsi_output.*' => 'nullable',
-            'urutan.*' => 'nullable',
-            'status.*' => 'nullable', // Checkbox bisa tidak ada
-            'permission.*' => 'nullable', // Checkbox bisa tidak ada
-            'barcode.*' => 'nullable', // Checkbox bisa tidak ada
-            'handling.*' => 'nullable', // Checkbox bisa tidak ada
-        ]);
+        try {
+            DB::beginTransaction();
 
-        // Temukan department berdasarkan ID
-        $department = Department::findOrFail($id);
+            // Update department
+            $department = Department::findOrFail($id);
+            $department->nama_department = $request->nama_department;
+            $department->save();
 
-        // Update nama department
-        $department->update([
-            'nama_department' => $request->nama_department,
-        ]);
-
-        // Ambil detail yang lama dari database
-        $existingDetails = $department->detailDepartments->keyBy('id');
-
-        // Iterasi input form
-        $count = count($request->nama_parameter);
-        for ($i = 0; $i < $count; $i++) {
-            $detailId = $request->id_detail[$i] ?? null;
-            $kode = $request->kode[$i];
-
-            $data = [
-                'kode' => $kode,
-                'nama_parameter' => $request->nama_parameter[$i],
-                'nama_pemeriksaan' => $request->nama_pemeriksaan[$i],
-                'harga' => $request->harga[$i],
-                'jasa_sarana' => $request->jasa_sarana[$i] ?? null,
-                'jasa_pelayanan' => $request->jasa_pelayanan[$i] ?? null,
-                'jasa_dokter' => $request->jasa_dokter[$i] ?? null,
-                'jasa_bidan' => $request->jasa_bidan[$i] ?? null,
-                'jasa_perawat' => $request->jasa_perawat[$i] ?? null,
-                'nilai_rujukan' => $request->nilai_rujukan[$i],
-                'nilai_satuan' => $request->nilai_satuan[$i],
-                'status' => $request->status[$i] ?? 'deactive', // Jika tidak dicentang
-                'permission' => $request->permission[$i] ?? 'deactive', // Jika tidak dicentang
-                'barcode' => $request->barcode[$i] ?? 'deactive', // Jika tidak dicentang
-                'handling' => $request->handling[$i] ?? 'deactive', // Jika tidak dicentang
-                'tipe_inputan' => $request->tipe_inputan[$i],
-                'opsi_output' => $request->opsi_output[$i] ?? null,
-                'urutan' => $request->urutan[$i] ?? null,
-            ];
-
-            if ($detailId) {
-                // Jika ID detail ada → update
-                DetailDepartment::where('id', $detailId)->update($data);
-                $existingDetails->forget($detailId); // Tandai sebagai sudah diproses
-            } else {
-                // Jika tidak ada ID → tambahkan baru
-                $data['department_id'] = $department->id;
-                DetailDepartment::create($data);
+            // Handle penghapusan data existing
+            if ($request->has('delete_detail')) {
+                $deleteIds = array_filter($request->delete_detail); // Remove empty values
+                if (!empty($deleteIds)) {
+                    DetailDepartment::whereIn('id', $deleteIds)->delete();
+                }
             }
+
+            // Update existing data
+            if ($request->has('id_detail')) {
+                foreach ($request->id_detail as $index => $detailId) {
+                    if ($detailId && !in_array($detailId, $request->delete_detail ?? [])) {
+                        $detail = DetailDepartment::find($detailId);
+                        if ($detail) {
+                            $detail->update([
+                                'kode' => $request->kode[$index] ?? '',
+                                'nama_parameter' => $request->nama_parameter[$index] ?? '',
+                                'nama_pemeriksaan' => $request->nama_pemeriksaan[$index] ?? '',
+                                'harga' => $request->harga[$index] ?? 0,
+                                'nilai_rujukan' => $request->nilai_rujukan[$index] ?? '',
+                                'nilai_satuan' => $request->nilai_satuan[$index] ?? '',
+                                'jasa_sarana' => $request->jasa_sarana[$index] ?? 0,
+                                'jasa_pelayanan' => $request->jasa_pelayanan[$index] ?? 0,
+                                'jasa_dokter' => $request->jasa_dokter[$index] ?? 0,
+                                'jasa_bidan' => $request->jasa_bidan[$index] ?? 0,
+                                'jasa_perawat' => $request->jasa_perawat[$index] ?? 0,
+                                'tipe_inputan' => $request->tipe_inputan[$index] ?? '',
+                                'opsi_output' => $request->opsi_output[$index] ?? '',
+                                'urutan' => $request->urutan[$index] ?? '',
+                                'status' => isset($request->status[$index]) ? 'active' : 'deactive',
+                                'barcode' => isset($request->barcode[$index]) ? 'active' : 'deactive',
+                                'permission' => isset($request->permission[$index]) ? 'active' : 'deactive',
+                                'handling' => isset($request->handling[$index]) ? 'active' : 'deactive',
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            // Handle new data (data yang tidak punya id_detail)
+            $existingCount = count($request->id_detail ?? []);
+            $totalCount = count($request->nama_parameter ?? []);
+
+            for ($i = $existingCount; $i < $totalCount; $i++) {
+                if (isset($request->nama_parameter[$i]) && !empty($request->nama_parameter[$i])) {
+                    DetailDepartment::create([
+                        'department_id' => $department->id,
+                        'kode' => $request->kode[$i] ?? '',
+                        'nama_parameter' => $request->nama_parameter[$i],
+                        'nama_pemeriksaan' => $request->nama_pemeriksaan[$i] ?? '',
+                        'harga' => $request->harga[$i] ?? 0,
+                        'nilai_rujukan' => $request->nilai_rujukan[$i] ?? '',
+                        'nilai_satuan' => $request->nilai_satuan[$i] ?? '',
+                        'jasa_sarana' => $request->jasa_sarana[$i] ?? 0,
+                        'jasa_pelayanan' => $request->jasa_pelayanan[$i] ?? 0,
+                        'jasa_dokter' => $request->jasa_dokter[$i] ?? 0,
+                        'jasa_bidan' => $request->jasa_bidan[$i] ?? 0,
+                        'jasa_perawat' => $request->jasa_perawat[$i] ?? 0,
+                        'tipe_inputan' => $request->tipe_inputan[$i] ?? '',
+                        'opsi_output' => $request->opsi_output[$i] ?? '',
+                        'urutan' => $request->urutan[$i] ?? '',
+                        'status' => isset($request->status[$i]) ? 'active' : 'deactive',
+                        'barcode' => isset($request->barcode[$i]) ? 'active' : 'deactive',
+                        'permission' => isset($request->permission[$i]) ? 'active' : 'deactive',
+                        'handling' => isset($request->handling[$i]) ? 'active' : 'deactive',
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route('department.index')
+                ->with('success', 'Department berhasil diupdate!')
+                ->with('swal', [
+                    'title' => 'Berhasil!',
+                    'text' => 'Data department berhasil diperbarui.',
+                    'icon' => 'success'
+                ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()
+                ->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])
+                ->with('swal', [
+                    'title' => 'Error!',
+                    'text' => 'Terjadi kesalahan: ' . $e->getMessage(),
+                    'icon' => 'error'
+                ])
+                ->withInput();
         }
-
-        // Hapus detail yang tidak ada lagi di input
-        // foreach ($existingDetails as $detail) {
-        //     $detail->delete();
-        // }
-
-        toast('Berhasil Memperbarui Data Department', 'success');
-        return redirect()->route('department.index');
     }
 
 
@@ -244,7 +269,11 @@ class DepartmentController extends Controller
         // Jika tidak ada pemeriksaan berelasi, hapus department
         $departments->delete();
 
-        toast('Data Berhasi Di Hapus', 'success');
-        return redirect()->route('department.index');
+        return redirect()->route('department.index')->with('success', 'Department berhasil dihapus!')
+            ->with('swal', [
+                'title' => 'Berhasil!',
+                'text' => 'Data department berhasil dihapus.',
+                'icon' => 'success'
+            ]);
     }
 }

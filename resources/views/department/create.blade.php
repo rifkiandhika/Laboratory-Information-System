@@ -73,11 +73,11 @@ Add Department
 
                                                             <!-- Kolom Kanan -->
                                                             <div class="col-md-6">
-                                                                <label>JASA SARANA: <span class="text-danger">*</span></label>
-                                                                <input type="number" name="jasa_sarana[]" class="form-control" required>
+                                                                <label>JASA SARANA:</label>
+                                                                <input type="number" name="jasa_sarana[]" class="form-control" >
 
-                                                                <label class="mt-2">JASA PELAYANAN: <span class="text-danger">*</span></label>
-                                                                <input type="number" name="jasa_pelayanan[]" class="form-control" required>
+                                                                <label class="mt-2">JASA PELAYANAN:</label>
+                                                                <input type="number" name="jasa_pelayanan[]" class="form-control">
 
                                                                 <label class="mt-2">JASA DOKTER:</label>
                                                                 <input type="number" name="jasa_dokter[]" class="form-control">
@@ -88,7 +88,7 @@ Add Department
                                                                 <label class="mt-2">JASA PERAWAT:</label>
                                                                 <input type="number" name="jasa_perawat[]" class="form-control">
 
-                                                                <label class="mt-2">Tipe Inputan</label>
+                                                                <label class="mt-2">Tipe Inputan<span class="text-danger">*</span></label>
                                                                 <select name="tipe_inputan[]" class="form-select tipe-inputan">
                                                                     <option value="" selected hidden>Choose</option>
                                                                     <option value="Text">Text</option>
@@ -243,29 +243,29 @@ document.addEventListener('DOMContentLoaded', function () {
                             <input type="text" name="kode[]" class="form-control kode" required>
                             <input type="hidden" name="kode_hidden[]" class="kode_hidden">
 
-                            <label class="mt-2">Nama Parameter</label>
+                            <label class="mt-2">Nama Parameter <span class="text-danger">*</span></label>
                             <input type="text" name="nama_parameter[]" class="form-control" required>
 
-                            <label class="mt-2">Nama Pemeriksaan</label>
+                            <label class="mt-2">Nama Pemeriksaan <span class="text-danger">*</span></label>
                             <input type="text" name="nama_pemeriksaan[]" class="form-control" required>
 
-                            <label class="mt-2">Harga</label>
+                            <label class="mt-2">Harga <span class="text-danger">*</span></label>
                             <input type="number" name="harga[]" class="form-control" required>
 
-                            <label class="mt-2">Nilai Rujukan (L.13,3-17 P.11,7-15,7)</label>
+                            <label class="mt-2">Nilai Rujukan (L.13,3-17 P.11,7-15,7) <span class="text-danger">*</span></label>
                             <input type="text" name="nilai_rujukan[]" class="form-control" required>
 
-                            <label class="mt-2">Nilai Satuan</label>
+                            <label class="mt-2">Nilai Satuan <span class="text-danger">*</span></label>
                             <input type="text" name="nilai_satuan[]" class="form-control" required>
                         </div>
 
                         <!-- Kolom Kanan -->
                         <div class="col-md-6">
                             <label>JASA SARANA:</label>
-                            <input type="number" name="jasa_sarana[]" class="form-control" required>
+                            <input type="number" name="jasa_sarana[]" class="form-control">
 
                             <label class="mt-2">JASA PELAYANAN:</label>
-                            <input type="number" name="jasa_pelayanan[]" class="form-control" required>
+                            <input type="number" name="jasa_pelayanan[]" class="form-control">
 
                             <label class="mt-2">JASA DOKTER:</label>
                             <input type="number" name="jasa_dokter[]" class="form-control">
@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             <label class="mt-2">JASA PERAWAT:</label>
                             <input type="number" name="jasa_perawat[]" class="form-control">
 
-                            <label class="mt-2">Tipe Inputan</label>
+                            <label class="mt-2">Tipe Inputan <span class="text-danger">*</span></label>
                             <select name="tipe_inputan[]" class="form-select tipe-inputan">
                                 <option value="" hidden>Pilih tipe inputan</option>
                                 <option value="Text">Text</option>

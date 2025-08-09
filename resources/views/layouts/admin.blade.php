@@ -306,6 +306,23 @@
       });
   }
 </script>
+@if(session('swal'))
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    Swal.fire({
+        title: '{{ session('swal.title') }}',
+        text: '{{ session('swal.text') }}',
+        icon: '{{ session('swal.icon') }}',
+        confirmButtonText: 'OK',
+        customClass: {
+            confirmButton: 'btn btn-primary'
+        },
+        buttonsStyling: false
+    });
+});
+</script>
+@endif
+
 
     <!-- Vendors JS -->
 

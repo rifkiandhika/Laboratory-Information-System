@@ -58,29 +58,29 @@ Edit Department
                                                                     <input type="hidden" name="id_detail[{{ $x }}]" value="{{ $detail->id }}">
                                                                     <input type="hidden" name="kode_hidden[{{ $x }}]" value="{{ $detail->kode }}" class="form-control" >
 
-                                                                    <label class="mt-2">Nama Parameter</label>
+                                                                    <label class="mt-2">Nama Parameter <span class="text-danger">*</span></label>
                                                                     <input type="text" name="nama_parameter[{{ $x }}]" class="form-control" value="{{ $detail->nama_parameter }}" required>
 
-                                                                    <label class="mt-2">Nama Pemeriksaan</label>
+                                                                    <label class="mt-2">Nama Pemeriksaan <span class="text-danger">*</span></label>
                                                                     <input type="text" name="nama_pemeriksaan[{{ $x }}]" class="form-control" value="{{ $detail->nama_pemeriksaan }}" required>
 
-                                                                    <label class="mt-2">Harga</label>
+                                                                    <label class="mt-2">Harga <span class="text-danger">*</span></label>
                                                                     <input type="number" name="harga[{{ $x }}]" class="form-control" value="{{ $detail->harga }}" required>
 
-                                                                    <label class="mt-2">Nilai Rujukan (L.13,3-17 P.11,7-15,7)</label>
+                                                                    <label class="mt-2">Nilai Rujukan (L.13,3-17 P.11,7-15,7) <span class="text-danger">*</span></label>
                                                                     <input type="text" name="nilai_rujukan[{{ $x }}]" class="form-control" value="{{ $detail->nilai_rujukan }}" required>
 
-                                                                    <label class="mt-2">Nilai Satuan</label>
+                                                                    <label class="mt-2">Nilai Satuan <span class="text-danger">*</span></label>
                                                                     <input type="text" name="nilai_satuan[{{ $x }}]" class="form-control" value="{{ $detail->nilai_satuan }}" required>
                                                                 </div>
 
                                                                 <!-- Kolom Kanan -->
                                                                 <div class="col-md-6">
                                                                     <label>JASA SARANA:</label>
-                                                                    <input type="text" name="jasa_sarana[{{ $x }}]" class="form-control" value="{{ $detail->jasa_sarana }}" required>
+                                                                    <input type="text" name="jasa_sarana[{{ $x }}]" class="form-control" value="{{ $detail->jasa_sarana }}">
 
                                                                     <label class="mt-2">JASA PELAYANAN:</label>
-                                                                    <input type="text" name="jasa_pelayanan[{{ $x }}]" class="form-control" value="{{ $detail->jasa_pelayanan }}" required>
+                                                                    <input type="text" name="jasa_pelayanan[{{ $x }}]" class="form-control" value="{{ $detail->jasa_pelayanan }}">
 
                                                                     <label class="mt-2">JASA DOKTER:</label>
                                                                     <input type="text" name="jasa_dokter[{{ $x }}]" class="form-control" value="{{ $detail->jasa_dokter }}">
@@ -95,7 +95,7 @@ Edit Department
                                                                         $isDropdown = $detail->tipe_inputan === 'Dropdown';
                                                                     @endphp
 
-                                                                    <label class="mt-2">Tipe Inputan</label>
+                                                                    <label class="mt-2">Tipe Inputan <span class="text-danger">*</span></label>
                                                                     <select name="tipe_inputan[{{ $x }}]" class="form-select tipe-inputan" data-index="{{ $x }}">
                                                                         <option value="" hidden>Pilih tipe inputan</option>
                                                                         <option value="Text" {{ $detail->tipe_inputan == 'Text' ? 'selected' : '' }}>Text</option>
@@ -162,9 +162,25 @@ Edit Department
                                                     </td>
 
                                                             <!-- Tombol tambah -->
-                                                        <td>
-                                                            <div class="mt-3 text-center">
-                                                                <button type="button" class="btn btn-success btn-add"><i class="ti ti-plus"></i></button>
+                                                        <td class="text-center align-middle">
+                                                            <div class="d-flex flex-column gap-2">
+                                                                <!-- Button Add (hanya tampil di baris terakhir) -->
+                                                                @if($loop->last)
+                                                                    <button type="button" class="btn btn-success btn-add">
+                                                                        <i class="ti ti-plus"></i>
+                                                                    </button>
+                                                                @endif
+                                                                
+                                                                <!-- Button Delete (tampil di semua baris, kecuali jika hanya ada 1 data) -->
+                                                                @if(count($departments->detailDepartments) > 1)
+                                                                    <button type="button" class="btn btn-danger btn-delete-existing" 
+                                                                            data-detail-id="{{ $detail->id }}"
+                                                                            data-detail-name="{{ $detail->nama_parameter }}">
+                                                                        <i class="ti ti-trash"></i>
+                                                                    </button>
+                                                                    <!-- Hidden input untuk menandai data yang akan dihapus -->
+                                                                    <input type="hidden" name="delete_detail[]" value="" class="delete-marker">
+                                                                @endif
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -194,8 +210,123 @@ Edit Department
 @push('script')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    
+    // ===== HANDLER CHECKBOX =====
+    function setupCheckboxHandlers() {
+        handleCheckboxGroup('status');
+        handleCheckboxGroup('barcode'); 
+        handleCheckboxGroup('permission');
+        handleCheckboxGroup('handling');
+    }
+    
+    function handleCheckboxGroup(groupName) {
+        // Handle checkbox yang sudah ada (dari data existing)
+        document.querySelectorAll(`input[name^="${groupName}["]`).forEach(function(checkbox) {
+            if (checkbox.type === 'checkbox') {
+                const index = checkbox.name.match(/\[(\d+)\]/)[1];
+                const hiddenInput = document.querySelector(`input[name="${groupName}_hidden[${index}]"]`);
+                
+                checkbox.addEventListener('change', function() {
+                    if (hiddenInput) {
+                        hiddenInput.value = this.checked ? 'active' : 'deactive';
+                    }
+                });
+                
+                // Set initial state
+                if (hiddenInput) {
+                    hiddenInput.value = checkbox.checked ? 'active' : 'deactive';
+                }
+            }
+        });
+        
+        // Handle checkbox untuk row baru (dynamic)
+        document.querySelectorAll(`input[name="${groupName}[]"]`).forEach(function(checkbox) {
+            if (checkbox.type === 'checkbox') {
+                checkbox.addEventListener('change', function() {
+                    const hiddenInput = this.closest('td').querySelector(`input[name="${groupName}[]"][type="hidden"]`);
+                    if (hiddenInput) {
+                        hiddenInput.value = this.checked ? 'active' : 'deactive';
+                    }
+                });
+            }
+        });
+    }
 
-    // Fungsi utama untuk add/remove baris
+    // ===== HANDLER BUTTON DELETE EXISTING DATA =====
+    function setupDeleteHandlers() {
+        document.querySelectorAll('.btn-delete-existing').forEach(function(button) {
+            button.addEventListener('click', function() {
+                const detailId = this.getAttribute('data-detail-id');
+                const detailName = this.getAttribute('data-detail-name');
+                const row = this.closest('tr');
+                
+                // SweetAlert konfirmasi
+                Swal.fire({
+                    title: 'Konfirmasi Hapus',
+                    html: `Apakah Anda yakin ingin menghapus data:<br><strong>"${detailName}"</strong>?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: '<i class="ti ti-trash"></i> Ya, Hapus!',
+                    cancelButtonText: '<i class="ti ti-x"></i> Batal',
+                    customClass: {
+                        confirmButton: 'btn btn-danger mx-2',
+                        cancelButton: 'btn btn-secondary mx-2'
+                    },
+                    buttonsStyling: false,
+                    focusCancel: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Sembunyikan baris dengan animasi
+                        row.style.transition = 'all 0.3s ease';
+                        row.style.opacity = '0.5';
+                        row.style.backgroundColor = '#ffebee';
+                        
+                        setTimeout(() => {
+                            row.style.display = 'none';
+                        }, 300);
+                        
+                        // Set marker untuk dihapus di backend
+                        const deleteMarker = row.querySelector('.delete-marker');
+                        if (deleteMarker) {
+                            deleteMarker.value = detailId;
+                        }
+                        
+                        // Update visibility button delete jika hanya tersisa 1 data
+                        updateDeleteButtonVisibility();
+                        
+                        // Toast notification
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'success',
+                            text: 'Data akan dihapus setelah Anda klik Submit',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    }
+                });
+            });
+        });
+    }
+
+    // ===== UPDATE VISIBILITY BUTTON DELETE =====
+    function updateDeleteButtonVisibility() {
+        const visibleRows = document.querySelectorAll('#tableDetail tbody tr[style*="display: none"]').length;
+        const totalRows = document.querySelectorAll('#tableDetail tbody tr').length;
+        const remainingRows = totalRows - visibleRows;
+        
+        // Jika hanya tersisa 1 baris, sembunyikan semua button delete
+        if (remainingRows <= 1) {
+            document.querySelectorAll('.btn-delete-existing, .btn-remove').forEach(function(btn) {
+                btn.style.display = 'none';
+            });
+        }
+    }
+
+    // ===== HANDLER ADD/REMOVE DYNAMIC ROWS =====
     function btnFunction() {
         $(".btn-add").unbind('click').bind('click', function () {
             let row = `
@@ -240,7 +371,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             <label class="mt-2">JASA PERAWAT:</label>
                             <input type="number" name="jasa_perawat[]" class="form-control">
 
-                            <label class="mt-2">Tipe Inputan</label>
+                            <label class="mt-2">Tipe Inputan <span class="text-danger">*</span></label>
                             <select name="tipe_inputan[]" class="form-select tipe-inputan">
                                 <option value="" hidden>Pilih tipe inputan</option>
                                 <option value="Text">Text</option>
@@ -284,32 +415,37 @@ document.addEventListener('DOMContentLoaded', function () {
                         <input type="checkbox" name="handling[]" value="active" class="form-check-input align-middle">
                     </div>
                 </td>
-                <td>
-                    <button type="button" class="btn btn-success btn-add"><i class="ti ti-plus"></i></button>
-                    <button type="button" class="btn btn-danger btn-remove"><i class="ti ti-trash"></i></button>
+                <td class="text-center align-middle">
+                    <div class="d-flex flex-column gap-2">
+                        <button type="button" class="btn btn-success btn-add"><i class="ti ti-plus"></i></button>
+                        <button type="button" class="btn btn-danger btn-remove"><i class="ti ti-trash"></i></button>
+                    </div>
                 </td>
             </tr>`;
 
             $("#tableDetail > tbody:last-child").append(row);
-            let newRow = $("#tableDetail > tbody:last-child tr:last-child")[0];
+            
+            // Re-setup handlers setelah menambah row baru
             setupDropdownListeners();
+            setupCheckboxHandlers();
+            updateDeleteButtonVisibility();
             btnFunction();
         });
 
         $(".btn-remove").unbind('click').bind('click', function () {
             $(this).closest('tr').remove();
+            updateDeleteButtonVisibility();
         });
     }
 
-    // Fungsi untuk menyesuaikan tampilan dropdown dinamis
+    // ===== HANDLER DROPDOWN =====
     function setupDropdownListeners() {
         document.querySelectorAll('.tipe-inputan').forEach(function (select) {
-            select.removeEventListener('change', handleDropdownChange); // mencegah duplikat listener
+            select.removeEventListener('change', handleDropdownChange);
             select.addEventListener('change', handleDropdownChange);
         });
     }
 
-    // Fungsi yang dijalankan ketika tipe inputan berubah
     function handleDropdownChange() {
         const wrapper = this.closest('.col-md-6');
         const opsiWrapper = wrapper.querySelector('.opsi-output-wrapper');
@@ -324,12 +460,58 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Inisialisasi saat pertama kali halaman dimuat
+    // ===== HANDLER SUBMIT FORM CONFIRMATION =====
+    function setupSubmitConfirmation() {
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const deletedItems = document.querySelectorAll('.delete-marker[value!=""]');
+                
+                if (deletedItems.length > 0) {
+                    e.preventDefault();
+                    
+                    Swal.fire({
+                        title: 'Konfirmasi Simpan',
+                        html: `Anda akan menyimpan perubahan termasuk menghapus <strong>${deletedItems.length}</strong> data.<br>Apakah Anda yakin?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#28a745',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: '<i class="ti ti-device-floppy"></i> Ya, Simpan!',
+                        cancelButtonText: '<i class="ti ti-x"></i> Batal',
+                        customClass: {
+                            confirmButton: 'btn btn-success mx-2',
+                            cancelButton: 'btn btn-secondary mx-2'
+                        },
+                        buttonsStyling: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Show loading
+                            Swal.fire({
+                                title: 'Menyimpan...',
+                                text: 'Mohon tunggu sebentar',
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+                            
+                            // Submit form
+                            form.submit();
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    // ===== INISIALISASI =====
     btnFunction();
     setupDropdownListeners();
+    setupCheckboxHandlers();
+    setupDeleteHandlers(); // TAMBAHAN UNTUK HANDLE DELETE
+    setupSubmitConfirmation(); // TAMBAHAN UNTUK KONFIRMASI SUBMIT
+    updateDeleteButtonVisibility(); // TAMBAHAN UNTUK UPDATE VISIBILITY
 });
 </script>
-
-
-
 @endpush
