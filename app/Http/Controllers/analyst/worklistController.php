@@ -61,23 +61,26 @@ class worklistController extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi input
+        // DEBUGGING - Uncomment untuk debug
         // dd($request->all());
+
+        // Validasi input - DIPERBAIKI
         $request->validate([
             'no_lab' => 'required',
             'no_rm' => 'required',
             'nama' => 'required',
             'ruangan' => 'required',
             'nama_dokter' => 'required',
-            'duplo_d1.*' => 'nullable|numeric',
-            'duplo_d2.*' => 'nullable|numeric',
-            'duplo_d3.*' => 'nullable|numeric',
-            'note' => 'nullable',
+            'parameter_name.*' => 'required', // Validasi parameter_name
             'nama_pemeriksaan.*' => 'required',
-            'hasil.*' => 'required',
-            'range.*' => 'nullable',
+            'hasil.*' => 'nullable', // UBAH: dari required ke nullable untuk parameter yang kosong
+            'duplo_d1.*' => 'nullable',
+            'duplo_d2.*' => 'nullable',
+            'duplo_d3.*' => 'nullable',
+            'nilai_rujukan.*' => 'nullable',
             'satuan.*' => 'nullable',
             'department.*' => 'required',
+            'note' => 'nullable',
         ]);
 
         // Ambil data dari request
@@ -86,65 +89,136 @@ class worklistController extends Controller
         $nama = $request->input('nama');
         $ruangan = $request->input('ruangan');
         $nama_dokter = $request->input('nama_dokter');
-        $nama_pemeriksaan = $request->input('nama_pemeriksaan');
+
+        // PERBAIKAN: Ambil semua array data
+        $parameter_names = $request->input('parameter_name', []); // Ini yang di JS: parameter_name[]
+        $nama_pemeriksaan = $request->input('nama_pemeriksaan', []); // Ini grup pemeriksaan (Hematologi, Urine, dll)
         $hasils = $request->input('hasil', []);
         $d1 = $request->input('duplo_d1', []);
         $d2 = $request->input('duplo_d2', []);
         $d3 = $request->input('duplo_d3', []);
-        $notes = $request->input('note', []);
-        $ranges = $request->input('range', []);
+        $nilai_rujukan = $request->input('nilai_rujukan', []);
         $satuans = $request->input('satuan', []);
-        $departments = $request->input('department');
+        $departments = $request->input('department', []);
+        $note = $request->input('note'); // Note adalah string, bukan array
 
-        // Validasi panjang data nama_pemeriksaan dan hasil
-        if (count($nama_pemeriksaan) !== count($hasils)) {
-            return redirect()->back()->withErrors(['message' => 'Data tidak valid']);
+        // DEBUGGING LOG
+        \Log::info('=== WORKLIST STORE DEBUG ===');
+        \Log::info('Total parameter_names: ' . count($parameter_names));
+        \Log::info('Total nama_pemeriksaan: ' . count($nama_pemeriksaan));
+        \Log::info('Total hasils: ' . count($hasils));
+        \Log::info('Total departments: ' . count($departments));
+
+        // Debug detail parameter urine
+        $urineParams = [];
+        foreach ($parameter_names as $idx => $param) {
+            if (in_array($param, [
+                'Warna',
+                'Kekeruhan',
+                'Berat Jenis',
+                'PH',
+                'Leukosit',
+                'Nitrit',
+                'Protein',
+                'Glukosa',
+                'Keton',
+                'Urobilinogen',
+                'Bilirubin',
+                'Blood',
+                'Eritrosit',
+                'Leukosit_sedimen',
+                'Epithel',
+                'Silinder',
+                'Kristal',
+                'Bakteri',
+                'Jamur',
+                'Lain-lain'
+            ])) {
+                $urineParams[] = "{$idx}: {$param} = " . ($hasils[$idx] ?? 'NULL');
+            }
+        }
+        \Log::info('Urine parameters found: ' . count($urineParams));
+        \Log::info('Urine details: ' . implode(', ', $urineParams));
+
+        // Validasi panjang data
+        $expectedLength = count($parameter_names);
+        if (
+            count($nama_pemeriksaan) !== $expectedLength ||
+            count($hasils) !== $expectedLength ||
+            count($departments) !== $expectedLength
+        ) {
+
+            \Log::error('Array length mismatch:', [
+                'parameter_names' => count($parameter_names),
+                'nama_pemeriksaan' => count($nama_pemeriksaan),
+                'hasils' => count($hasils),
+                'departments' => count($departments)
+            ]);
+
+            return redirect()->back()->withErrors(['message' => 'Data tidak valid - panjang array tidak sama']);
         }
 
-        // Proses data pemeriksaan
-        foreach ($nama_pemeriksaan as $x => $pemeriksaan) {
-            $existingHasil = HasilPemeriksaan::where('no_lab', $no_lab)
-                ->where('nama_pemeriksaan', $pemeriksaan)
-                ->first();
+        $savedCount = 0;
+        $errorCount = 0;
 
-            if ($existingHasil) {
-                // Jika data sudah ada, lakukan update
-                $existingHasil->update([
-                    'hasil' => $hasils[$x],
-                    'range' => $ranges[$x] ?? $existingHasil->range,
-                    'duplo_d1' => $d1[$x] ?? $existingHasil->duplo_d1,
-                    'duplo_d2' => $d2[$x] ?? $existingHasil->duplo_d2,
-                    'duplo_d3' => $d3[$x] ?? $existingHasil->duplo_d3,
-                    'satuan' => $satuans[$x] ?? $existingHasil->satuan,
-                    'department' => $departments[$x] ?? $existingHasil->department,
+        // PERBAIKAN: Loop berdasarkan index parameter_names
+        foreach ($parameter_names as $index => $parameter_name) {
 
-                ]);
-            } else {
-                // Jika data belum ada, buat data baru
-                HasilPemeriksaan::create([
+            // Skip jika parameter kosong
+            if (empty($parameter_name)) {
+                \Log::warning("Skipping empty parameter at index {$index}");
+                continue;
+            }
+
+            try {
+                // PERBAIKAN: Cek existing berdasarkan no_lab DAN parameter_name
+                // Karena parameter_name di DB sebenarnya diisi dari nama_pemeriksaan JavaScript
+                $existingHasil = HasilPemeriksaan::where('no_lab', $no_lab)
+                    ->where('nama_pemeriksaan', $parameter_name) // Gunakan parameter_name dari JS sebagai nama_pemeriksaan
+                    ->first();
+
+                // Data yang akan disimpan/diupdate
+                $data = [
                     'no_lab' => $no_lab,
                     'no_rm' => $no_rm,
                     'nama' => $nama,
                     'ruangan' => $ruangan,
                     'nama_dokter' => $nama_dokter,
-                    'nama_pemeriksaan' => $pemeriksaan,
-                    'duplo_d1' => $d1[$x] ?? null,
-                    'duplo_d2' => $d2[$x] ?? null,
-                    'duplo_d3' => $d3[$x] ?? null,
-                    'note' => $notes[$x] ?? null,
-                    'hasil' => $hasils[$x],
-                    'range' => $ranges[$x] ?? null,
-                    'satuan' => $satuans[$x] ?? null,
-                    'department' => $departments[$x] ?? null,
-                ]);
+                    'nama_pemeriksaan' => $parameter_name, // parameter_name dari JS masuk ke nama_pemeriksaan DB
+                    'hasil' => $hasils[$index] ?? '',
+                    'duplo_d1' => $d1[$index] ?? null,
+                    'duplo_d2' => $d2[$index] ?? null,
+                    'duplo_d3' => $d3[$index] ?? null,
+                    'range' => $nilai_rujukan[$index] ?? null, // Gunakan field range yang sudah ada
+                    'satuan' => $satuans[$index] ?? null,
+                    'department' => $departments[$index] ?? null,
+                    'note' => $note,
+                ];
+
+                if ($existingHasil) {
+                    // Update existing record
+                    $existingHasil->update($data);
+                    \Log::info("Updated parameter: {$parameter_name} = {$data['hasil']}");
+                } else {
+                    // Create new record
+                    HasilPemeriksaan::create($data);
+                    \Log::info("Created parameter: {$parameter_name} = {$data['hasil']}");
+                }
+
+                $savedCount++;
+            } catch (\Exception $e) {
+                $errorCount++;
+                \Log::error("Failed to save parameter {$parameter_name}: " . $e->getMessage());
             }
         }
+
+        \Log::info("Saved: {$savedCount}, Errors: {$errorCount}");
 
         // Cari pasien dengan no_lab yang sama dan status 'Check In Spesiment'
         $pasien = pasien::where('no_lab', $no_lab)
             ->where(function ($query) {
                 $query->where('status', 'Check In Spesiment')
-                    ->orWhere('status', 'Dikembalikan'); // Jika pasien sudah dikembalikan
+                    ->orWhere('status', 'Dikembalikan');
             })
             ->first();
 
@@ -167,7 +241,12 @@ class worklistController extends Controller
         }
 
         // Menampilkan toast dan redirect
-        toast('Data berhasil di selesaikan', 'success');
+        if ($errorCount > 0) {
+            toast("Data berhasil disimpan ({$savedCount} parameter), tapi ada {$errorCount} error", 'warning');
+        } else {
+            toast("Data berhasil disimpan ({$savedCount} parameter)", 'success');
+        }
+
         return redirect()->route('worklist.index');
     }
 

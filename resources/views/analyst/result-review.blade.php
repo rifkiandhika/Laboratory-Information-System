@@ -507,6 +507,246 @@ document.addEventListener('DOMContentLoaded', function() {
         { nama: 'P-LCR', display_name: 'P-LCR', satuan: '%', normal_min: 13, normal_max: 43 }
     ];
 
+    // Tambahkan parameter Widal
+    const WidalParams = [
+        {
+            nama: 'Salmonella Typhi H',
+            display_name: 'Salmonella Typhi H',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;1/80;1/160;1/320;1/640'
+        },
+        {
+            nama: 'Salmonella Typhi O',
+            display_name: 'Salmonella Typhi O',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;1/80;1/160;1/320;1/640'
+        },
+        {
+            nama: 'Salmonella Paratyphi AO',
+            display_name: 'Salmonella Paratyphi AO',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;1/80;1/160;1/320;1/640'
+        },
+        {
+            nama: 'Salmonella Paratyphi BO',
+            display_name: 'Salmonella Paratyphi BO',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;1/80;1/160;1/320;1/640'
+        }
+    ];
+
+    // Tambahkan parameter Urine
+    const UrineParams = [
+        {
+            nama: 'Warna',
+            display_name: 'Warna',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Kuning;Kuning Pucat;Kuning Tua;Kuning kecokelatan;Orange;Merah;Coklat',
+            default: 'Kuning'
+        },
+        {
+            nama: 'Kekeruhan',
+            display_name: 'Kekeruhan',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Jernih;Agak Keruh;Keruh;Sangat keruh',
+            default: 'Jernih'
+        },
+        {
+            nama: 'Berat Jenis',
+            display_name: 'Berat Jenis',
+            satuan: '-',
+            normal_min: 1.003,
+            normal_max: 1.035,
+            tipe_inputan: 'Dropdown',
+            opsi_output: '<1.005;1.005;1.010;1.015;1.020;1.025;1.030',
+            default: '1.015'
+        },
+        {
+            nama: 'PH',
+            display_name: 'pH',
+            satuan: '-',
+            normal_min: 4.5,
+            normal_max: 8.0,
+            tipe_inputan: 'Dropdown',
+            opsi_output: '4.5;5.0;5.5;6.0;6.5;7.0;7.5;8.0;8.5;9.0',
+            default: '6.0'
+        },
+        {
+            nama: 'Leukosit',
+            display_name: 'Leukosit',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
+            default: 'Negatif'
+        },
+        {
+            nama: 'Nitrit',
+            display_name: 'Nitrit',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
+            default: 'Negatif'
+        },
+        {
+            nama: 'Protein',
+            display_name: 'Protein',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
+            default: 'Negatif'
+        },
+        {
+            nama: 'Glukosa',
+            display_name: 'Glukosa',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
+            default: 'Negatif'
+        },
+        {
+            nama: 'Keton',
+            display_name: 'Keton',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
+            default: 'Negatif'
+        },
+        {
+            nama: 'Urobilinogen',
+            display_name: 'Urobilinogen',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
+            default: 'Negatif'
+        },
+        {
+            nama: 'Bilirubin',
+            display_name: 'Bilirubin',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
+            default: 'Negatif'
+        },
+        {
+            nama: 'Blood',
+            display_name: 'Blood',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
+            default: 'Negatif'
+        },
+        {
+            nama: 'Eritrosit',
+            display_name: '- Eritrosit',
+            satuan: '',
+            normal_min: 0,
+            normal_max: 2,
+            tipe_inputan: 'Text',
+            default: 'Negatif'
+        },
+        {
+            nama: 'Leukosit_sedimen',
+            display_name: '- Leukosit',
+            satuan: '',
+            normal_min: 0,
+            normal_max: 5,
+            tipe_inputan: 'Text',
+            default: 'Negatif'
+        },
+        {
+            nama: 'Epithel',
+            display_name: '- Epithel',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            tipe_inputan: 'Text',
+            default: 'Negatif'
+        },
+        {
+            nama: 'Silinder',
+            display_name: '- Silinder',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
+            default: 'Negatif'
+        },
+        {
+            nama: 'Kristal',
+            display_name: '- Kristal',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Tidak ada;Asam urat;Kalsium oksalat;Fosfat amorf;Lainnya',
+            default: 'Negatif'
+        },
+        {
+            nama: 'Bakteri',
+            display_name: '- Bakteri',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
+            default: 'Negatif'
+        },
+        {
+            nama: 'Jamur',
+            display_name: '- Jamur',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
+            default: 'Negatif'
+        },
+        {
+            nama: 'Lain-lain',
+            display_name: '- Lain-lain',
+            satuan: '-',
+            normal_min: '',
+            normal_max: '',
+            tipe_inputan: 'Text',
+            default: ''
+        }
+    ];
+
     // Buat map dari data hasil pemeriksaan yang ada di database
     const hasilMap = {};
     if (hasil && hasil.length > 0) {
@@ -589,15 +829,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const duploStatus = checkDuploColumns();
 
-    function updateFlag(value, flagCell, parameter = null, isHematologi = false) {
+    function updateFlag(value, flagCell, parameter = null, isHematologi = false, isWidal = false, isUrine = false) {
         const nilaiHasil = parseFloat(value);
         let flagIcon = '';
+        
+        // Untuk Widal, tidak ada flag karena tidak ada nilai normal/abnormal
+        if (isWidal) {
+            return '';
+        }
         
         if (!isNaN(nilaiHasil)) {
             if (isHematologi && parameter) {
                 // range normal untuk parameter hematologi
                 const paramData = hematologiParams.find(p => p.nama === parameter);
                 if (paramData) {
+                    if (nilaiHasil < paramData.normal_min) {
+                        flagIcon = `<i class="ti ti-arrow-down text-primary"></i> Low`;
+                    } else if (nilaiHasil > paramData.normal_max) {
+                        flagIcon = `<i class="ti ti-arrow-up text-danger"></i> High`;
+                    } else {
+                        flagIcon = `<i class="ti ti-check text-success"></i> Normal`;
+                    }
+                }
+            } else if (isUrine && parameter) {
+                // range normal untuk parameter urine (hanya untuk parameter numerik)
+                const paramData = UrineParams.find(p => p.nama === parameter);
+                if (paramData && typeof paramData.normal_min === 'number' && typeof paramData.normal_max === 'number') {
                     if (nilaiHasil < paramData.normal_min) {
                         flagIcon = `<i class="ti ti-arrow-down text-primary"></i> Low`;
                     } else if (nilaiHasil > paramData.normal_max) {
@@ -689,13 +946,24 @@ document.addEventListener('DOMContentLoaded', function() {
                                                 p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('hematologi')
                                             );
                                             
+                                            // Cek apakah ada pemeriksaan widal di grup ini
+                                            const hasWidal = e.pasiens.some(p => 
+                                                p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('widal')
+                                            );
+                                            
+                                            // Cek apakah ada pemeriksaan urine di grup ini
+                                            const hasUrine = e.pasiens.some(p => 
+                                                p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('urin') ||
+                                                p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('urine')
+                                            );
+                                            
                                             if (hasHematologi) {
                                                 // Jika ada hematologi, tampilkan parameter hematologi lengkap
                                                 return hematologiParams.map((param, paramIdx) => {
                                                     // Cari data hasil untuk parameter ini
                                                     const dataValues = getDataValues(param.nama, param.nama);
                                                     const rowId = `hematologi_${idx}_${paramIdx}`;
-                                                    const flagContent = updateFlag(dataValues.hasilUtama, {innerHTML: ''}, param.nama, true);
+                                                    const flagContent = updateFlag(dataValues.hasilUtama, {innerHTML: ''}, param.nama, true, false, false);
                                                     
                                                     return `
                                                     <tr data-id="${rowId}" data-parameter="${param.nama}" class="hematologi-row">
@@ -745,8 +1013,192 @@ document.addEventListener('DOMContentLoaded', function() {
                                                     </tr>
                                                     `;
                                                 }).join('');
+                                            } else if (hasWidal) {
+                                                // Jika ada widal, tampilkan parameter widal lengkap
+                                                return WidalParams.map((param, paramIdx) => {
+                                                    // Cari data hasil untuk parameter ini
+                                                    const dataValues = getDataValues(param.nama, param.nama);
+                                                    const rowId = `widal_${idx}_${paramIdx}`;
+                                                    const flagContent = updateFlag(dataValues.hasilUtama, {innerHTML: ''}, param.nama, false, true, false);
+                                                    
+                                                    return `
+                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" class="widal-row">
+                                                        <td class="col-2">
+                                                            <strong>${param.display_name}</strong>
+                                                            <small class="text-muted d-block">Negatif</small>
+                                                            <input type="hidden" name="nama_pemeriksaan[]" value="${param.nama}" />
+                                                            <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                        </td>
+                                                        <td class="col-2">
+                                                            <select name="hasil[]" 
+                                                                class="form-select manualInput w-80 p-0" disabled>
+                                                                ${param.opsi_output.split(';').map(opt => `
+                                                                    <option value="${opt.trim()}" ${dataValues.hasilUtama === opt.trim() ? 'selected' : ''}>
+                                                                        ${opt.trim()}
+                                                                    </option>
+                                                                `).join('')}
+                                                            </select>
+                                                        </td>
+                                                        <td class="col-1">
+                                                            <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
+                                                                    data-index="${paramIdx}" disabled>
+                                                                <i class="ti ti-switch-2"></i>
+                                                            </button>
+                                                        </td>
+                                                        <td class="col-2 duplo d1-column text-center" style="display: ${duploStatus.hasD1 ? 'table-cell' : 'none'};">
+                                                            <select name="duplo_d1[]" 
+                                                                class="form-select d1 w-80 p-0" readonly>
+                                                                ${param.opsi_output.split(';').map(opt => `
+                                                                    <option value="${opt.trim()}" ${dataValues.duplo_d1 === opt.trim() ? 'selected' : ''}>
+                                                                        ${opt.trim()}
+                                                                    </option>
+                                                                `).join('')}
+                                                            </select>
+                                                        </td>
+                                                        <td class="col-2 duplo d2-column" style="display: ${duploStatus.hasD2 ? 'table-cell' : 'none'};">
+                                                            <select name="duplo_d2[]" 
+                                                                class="form-select d2 w-80 p-0" readonly>
+                                                                ${param.opsi_output.split(';').map(opt => `
+                                                                    <option value="${opt.trim()}" ${dataValues.duplo_d2 === opt.trim() ? 'selected' : ''}>
+                                                                        ${opt.trim()}
+                                                                    </option>
+                                                                `).join('')}
+                                                            </select>
+                                                        </td>
+                                                        <td class="col-2 duplo d3-column" style="display: ${duploStatus.hasD3 ? 'table-cell' : 'none'};">
+                                                            <select name="duplo_d3[]" 
+                                                                class="form-select d3 w-80 p-0" readonly>
+                                                                ${param.opsi_output.split(';').map(opt => `
+                                                                    <option value="${opt.trim()}" ${dataValues.duplo_d3 === opt.trim() ? 'selected' : ''}>
+                                                                        ${opt.trim()}
+                                                                    </option>
+                                                                `).join('')}
+                                                            </select>
+                                                        </td>
+                                                        <td class="col-3 flag-cell">
+                                                            ${flagContent}
+                                                        </td>
+                                                        <td>
+                                                            <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
+                                                                value="${dataValues.satuan || param.satuan}" readonly />
+                                                            <input type="hidden" name="range[]" class="form-control w-100 p-0" 
+                                                                value="${dataValues.range || '-'}" readonly />
+                                                            ${dataValues.satuan || param.satuan}
+                                                        </td>
+                                                    </tr>
+                                                    `;
+                                                }).join('');
+                                            } else if (hasUrine) {
+                                                // Jika ada urine, tampilkan parameter urine lengkap
+                                                return UrineParams.map((param, paramIdx) => {
+                                                    // Cari data hasil untuk parameter ini
+                                                    const dataValues = getDataValues(param.nama, param.nama);
+                                                    const rowId = `urine_${idx}_${paramIdx}`;
+                                                    const flagContent = updateFlag(dataValues.hasilUtama, {innerHTML: ''}, param.nama, false, false, true);
+                                                    
+                                                    // Tentukan range display
+                                                    let rangeDisplay = '';
+                                                    if (typeof param.normal_min === 'number' && typeof param.normal_max === 'number') {
+                                                        rangeDisplay = `${param.normal_min}-${param.normal_max}`;
+                                                    } else if (param.normal_min !== '-' && param.normal_max !== '-') {
+                                                        rangeDisplay = 'Normal';
+                                                    } else {
+                                                        rangeDisplay = '-';
+                                                    }
+                                                    
+                                                    return `
+                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" class="urine-row">
+                                                        <td class="col-2">
+                                                            <strong>${param.display_name}</strong>
+                                                            <small class="text-muted d-block">${rangeDisplay}</small>
+                                                            <input type="hidden" name="nama_pemeriksaan[]" value="${param.nama}" />
+                                                            <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                        </td>
+                                                        <td class="col-2">
+                                                            ${param.tipe_inputan === 'Text' ? `
+                                                                <input type="text" name="hasil[]" 
+                                                                    class="form-control manualInput w-80 p-0 text-center" 
+                                                                    value="${dataValues.hasilUtama || param.default || ''}" disabled />
+                                                            ` : `
+                                                                <select name="hasil[]" 
+                                                                    class="form-select manualInput w-80 p-0" disabled>
+                                                                    ${param.opsi_output.split(';').map(opt => `
+                                                                        <option value="${opt.trim()}" ${(dataValues.hasilUtama || param.default) === opt.trim() ? 'selected' : ''}>
+                                                                            ${opt.trim()}
+                                                                        </option>
+                                                                    `).join('')}
+                                                                </select>
+                                                            `}
+                                                        </td>
+                                                        <td class="col-1">
+                                                            <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
+                                                                    data-index="${paramIdx}" disabled>
+                                                                <i class="ti ti-switch-2"></i>
+                                                            </button>
+                                                        </td>
+                                                        <td class="col-2 duplo d1-column text-center" style="display: ${duploStatus.hasD1 ? 'table-cell' : 'none'};">
+                                                            ${param.tipe_inputan === 'Text' ? `
+                                                                <input type="text" name="duplo_d1[]" 
+                                                                    class="form-control d1 w-80 p-0 text-center" 
+                                                                    value="${dataValues.duplo_d1 || ''}" readonly />
+                                                            ` : `
+                                                                <select name="duplo_d1[]" 
+                                                                    class="form-select d1 w-80 p-0" readonly>
+                                                                    ${param.opsi_output.split(';').map(opt => `
+                                                                        <option value="${opt.trim()}" ${dataValues.duplo_d1 === opt.trim() ? 'selected' : ''}>
+                                                                            ${opt.trim()}
+                                                                        </option>
+                                                                    `).join('')}
+                                                                </select>
+                                                            `}
+                                                        </td>
+                                                        <td class="col-2 duplo d2-column" style="display: ${duploStatus.hasD2 ? 'table-cell' : 'none'};">
+                                                            ${param.tipe_inputan === 'Text' ? `
+                                                                <input type="text" name="duplo_d2[]" 
+                                                                    class="form-control d2 w-80 p-0 text-center" 
+                                                                    value="${dataValues.duplo_d2 || ''}" readonly />
+                                                            ` : `
+                                                                <select name="duplo_d2[]" 
+                                                                    class="form-select d2 w-80 p-0" readonly>
+                                                                    ${param.opsi_output.split(';').map(opt => `
+                                                                        <option value="${opt.trim()}" ${dataValues.duplo_d2 === opt.trim() ? 'selected' : ''}>
+                                                                            ${opt.trim()}
+                                                                        </option>
+                                                                    `).join('')}
+                                                                </select>
+                                                            `}
+                                                        </td>
+                                                        <td class="col-2 duplo d3-column" style="display: ${duploStatus.hasD3 ? 'table-cell' : 'none'};">
+                                                            ${param.tipe_inputan === 'Text' ? `
+                                                                <input type="text" name="duplo_d3[]" 
+                                                                    class="form-control d3 w-80 p-0 text-center" 
+                                                                    value="${dataValues.duplo_d3 || ''}" readonly />
+                                                            ` : `
+                                                                <select name="duplo_d3[]" 
+                                                                    class="form-select d3 w-80 p-0" readonly>
+                                                                    ${param.opsi_output.split(';').map(opt => `
+                                                                        <option value="${opt.trim()}" ${dataValues.duplo_d3 === opt.trim() ? 'selected' : ''}>
+                                                                            ${opt.trim()}
+                                                                        </option>
+                                                                    `).join('')}
+                                                                </select>
+                                                            `}
+                                                        </td>
+                                                        <td class="col-3 flag-cell">
+                                                            ${flagContent}
+                                                        </td>
+                                                        <td>
+                                                            <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
+                                                                value="${dataValues.satuan || param.satuan}" readonly />
+                                                            <input type="hidden" name="range[]" class="form-control w-100 p-0" 
+                                                                value="${dataValues.range || rangeDisplay}" readonly />
+                                                            ${dataValues.satuan || param.satuan}
+                                                        </td>
+                                                    </tr>
+                                                    `;
+                                                }).join('');
                                             } else {
-                                                // Jika bukan hematologi, tampilkan seperti biasa
+                                                // Jika bukan hematologi, widal, atau urine, tampilkan seperti biasa
                                                 return e.pasiens.map(p => {
                                                     const dataValues = getDataValues(p.data_pemeriksaan.nama_parameter, p.data_pemeriksaan.nama_pemeriksaan);
                                                     const rowId = p.data_pemeriksaan.id;
@@ -817,10 +1269,24 @@ document.addEventListener('DOMContentLoaded', function() {
         .hematologi-row:hover {
             background-color: #e9ecff;
         }
+        .widal-row {
+            background-color: #fff8e1;
+        }
+        .widal-row:hover {
+            background-color: #fff3c4;
+        }
+        .urine-row {
+            background-color: #f0f8f0;
+        }
+        .urine-row:hover {
+            background-color: #e8f5e8;
+        }
         .text-success {
             color: #28a745 !important;
         }
-        .hematologi-row small.text-muted {
+        .hematologi-row small.text-muted,
+        .widal-row small.text-muted,
+        .urine-row small.text-muted {
             font-size: 0.75rem;
             margin-top: 2px;
         }
