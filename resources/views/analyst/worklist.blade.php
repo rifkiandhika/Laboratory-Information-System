@@ -1584,9 +1584,9 @@
         });
 
         return {
-            duplo_d1: obxItems[1] ?? '',
-            duplo_d2: obxItems[2] ?? '',
-            duplo_d3: obxItems[3] ?? '',
+            duplo_d1: obxItems[0] ?? '',
+            duplo_d2: obxItems[1] ?? '',
+            duplo_d3: obxItems[2] ?? '',
             hasilUtama: obxItems[0] ?? ''
         };
     }
