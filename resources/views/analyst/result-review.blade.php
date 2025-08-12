@@ -246,7 +246,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Enter Patient's Note</h5>
+                                <h5 class="modal-title">Enter Patient's Note (Optional)</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
@@ -255,7 +255,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-primary" onclick="submitNote()">Print with Note</button>
+                                <button type="button" class="btn btn-primary" onclick="submitNote()">Print</button>
                             </div>
                         </div>
                     </div>
@@ -358,12 +358,6 @@
 });
     </script>
     
-    <!-- Button untuk setiap baris data -->
-@foreach ( $dataPasien as $x => $dpc )
-<button class="btn btn-sm btn-outline-secondary" onclick="openModal('{{ $dpc->no_lab }}')" {{ $dpc->status != 'diselesaikan' ? 'disabled' : '' }}>
-    <i title="Print Result" class="ti ti-printer"></i>
-</button>
-@endforeach
 <!-- Modal yang akan digunakan bersama -->
 <div class="modal fade" id="noteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">

@@ -268,96 +268,107 @@ class worklistController extends Controller
             'nama' => 'required',
             'ruangan' => 'required',
             'nama_dokter' => 'required',
+            'parameter_name.*' => 'required', // Sama seperti store
+            'nama_pemeriksaan.*' => 'required',
+            'hasil.*' => 'required', // Untuk checkin wajib isi hasil
             'duplo_d1.*' => 'nullable|numeric',
             'duplo_d2.*' => 'nullable|numeric',
             'duplo_d3.*' => 'nullable|numeric',
-            'note' => 'nullable',
-            'nama_pemeriksaan.*' => 'required',
-            'hasil.*' => 'required',
-            'range.*' => 'nullable',
+            'nilai_rujukan.*' => 'nullable',
             'satuan.*' => 'nullable',
             'department.*' => 'required',
+            'note' => 'nullable',
         ]);
 
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-
-            // Ambil data dari request - sama seperti function store
+            // Ambil data dari request - disamakan dengan store
             $no_lab = $request->input('no_lab');
             $no_rm = $request->input('no_rm');
             $nama = $request->input('nama');
             $ruangan = $request->input('ruangan');
             $nama_dokter = $request->input('nama_dokter');
+            $parameter_names = $request->input('parameter_name', []);
             $nama_pemeriksaan = $request->input('nama_pemeriksaan', []);
             $hasils = $request->input('hasil', []);
             $d1 = $request->input('duplo_d1', []);
             $d2 = $request->input('duplo_d2', []);
             $d3 = $request->input('duplo_d3', []);
-            $notes = $request->input('note', []);
-            $ranges = $request->input('range', []);
+            $nilai_rujukan = $request->input('nilai_rujukan', []);
             $satuans = $request->input('satuan', []);
             $departments = $request->input('department', []);
+            $note = $request->input('note');
 
-            // Validasi panjang data nama_pemeriksaan dan hasil
-            if (empty($nama_pemeriksaan) || empty($hasils) || count($nama_pemeriksaan) !== count($hasils)) {
-                return redirect()->back()->withErrors(['message' => 'Data tidak valid atau kosong']);
+            // Debug array length
+            $expectedLength = count($parameter_names);
+            if (
+                count($nama_pemeriksaan) !== $expectedLength ||
+                count($hasils) !== $expectedLength ||
+                count($departments) !== $expectedLength
+            ) {
+                return redirect()->back()->withErrors([
+                    'message' => 'Data tidak valid - panjang array tidak sama'
+                ]);
             }
 
-            // Cari data pasien
+            // Cari pasien
             $pasien = Pasien::findOrFail($id);
 
-            // Jika status Dikembalikan, hapus semua data terkait
+            // Kalau status "Dikembalikan", hapus hasil lama
             if ($pasien->status === 'Dikembalikan') {
                 HasilPemeriksaan::where('no_lab', $no_lab)->delete();
             }
 
-            // Proses data pemeriksaan - sama seperti function store
-            foreach ($nama_pemeriksaan as $x => $pemeriksaan) {
-                $existingHasil = HasilPemeriksaan::where('no_lab', $no_lab)
-                    ->where('nama_pemeriksaan', $pemeriksaan)
-                    ->first();
+            $savedCount = 0;
+            $errorCount = 0;
 
-                if ($existingHasil) {
-                    // Jika data sudah ada, lakukan update
-                    $existingHasil->update([
-                        'hasil' => $hasils[$x] ?? $existingHasil->hasil,
-                        'range' => isset($ranges[$x]) ? $ranges[$x] : $existingHasil->range,
-                        'duplo_d1' => isset($d1[$x]) ? $d1[$x] : $existingHasil->duplo_d1,
-                        'duplo_d2' => isset($d2[$x]) ? $d2[$x] : $existingHasil->duplo_d2,
-                        'duplo_d3' => isset($d3[$x]) ? $d3[$x] : $existingHasil->duplo_d3,
-                        'satuan' => isset($satuans[$x]) ? $satuans[$x] : $existingHasil->satuan,
-                        'department' => isset($departments[$x]) ? $departments[$x] : $existingHasil->department,
-                    ]);
-                } else {
-                    // Jika data belum ada, buat data baru
-                    HasilPemeriksaan::create([
+            foreach ($parameter_names as $index => $parameter_name) {
+                if (empty($parameter_name)) {
+                    continue;
+                }
+
+                try {
+                    $existingHasil = HasilPemeriksaan::where('no_lab', $no_lab)
+                        ->where('nama_pemeriksaan', $parameter_name)
+                        ->first();
+
+                    $data = [
                         'no_lab' => $no_lab,
                         'no_rm' => $no_rm,
                         'nama' => $nama,
                         'ruangan' => $ruangan,
                         'nama_dokter' => $nama_dokter,
-                        'nama_pemeriksaan' => $pemeriksaan,
-                        'duplo_d1' => isset($d1[$x]) ? $d1[$x] : null,
-                        'duplo_d2' => isset($d2[$x]) ? $d2[$x] : null,
-                        'duplo_d3' => isset($d3[$x]) ? $d3[$x] : null,
-                        'note' => isset($notes[$x]) ? $notes[$x] : null,
-                        'hasil' => $hasils[$x] ?? null,
-                        'range' => isset($ranges[$x]) ? $ranges[$x] : null,
-                        'satuan' => isset($satuans[$x]) ? $satuans[$x] : null,
-                        'department' => isset($departments[$x]) ? $departments[$x] : null,
-                    ]);
+                        'nama_pemeriksaan' => $parameter_name,
+                        'hasil' => $hasils[$index] ?? '',
+                        'duplo_d1' => $d1[$index] ?? null,
+                        'duplo_d2' => $d2[$index] ?? null,
+                        'duplo_d3' => $d3[$index] ?? null,
+                        'range' => $nilai_rujukan[$index] ?? null,
+                        'satuan' => $satuans[$index] ?? null,
+                        'department' => $departments[$index] ?? null,
+                        'note' => $note,
+                    ];
+
+                    if ($existingHasil) {
+                        $existingHasil->update($data);
+                    } else {
+                        HasilPemeriksaan::create($data);
+                    }
+
+                    $savedCount++;
+                } catch (\Exception $e) {
+                    $errorCount++;
+                    \Log::error("Failed to save parameter {$parameter_name}: " . $e->getMessage());
                 }
             }
 
             // Update status pasien
-            $newStatus = $pasien->status === 'Dikembalikan' ? 'Diverifikasi Ulang' : 'Verifikasi Dokter';
+            $newStatus = $pasien->status === 'Dikembalikan'
+                ? 'Diverifikasi Ulang'
+                : 'Verifikasi Dokter';
+            $pasien->update(['status' => $newStatus]);
 
-            $pasien->update([
-                'status' => $newStatus,
-                'updated_at' => now()
-            ]);
-
-            // Buat history baru
+            // Simpan history
             HistoryPasien::create([
                 'no_lab' => $pasien->no_lab,
                 'proses' => $newStatus,
@@ -368,9 +379,11 @@ class worklistController extends Controller
 
             DB::commit();
 
-            toast($pasien->status === 'Dikembalikan' ?
-                'Data telah diperbarui dan dikirim untuk verifikasi ulang' :
-                'Data telah dikirim untuk diverifikasi', 'success');
+            if ($errorCount > 0) {
+                toast("Data berhasil disimpan ({$savedCount} parameter), tapi ada {$errorCount} error", 'warning');
+            } else {
+                toast("Data berhasil disimpan ({$savedCount} parameter)", 'success');
+            }
 
             return redirect()->route('worklist.index');
         } catch (\Exception $e) {

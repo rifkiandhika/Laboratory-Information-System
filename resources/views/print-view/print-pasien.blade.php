@@ -1,4 +1,17 @@
-<!DOCTYPE html>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+    
+      <link rel="stylesheet" href="{{ asset('/assets/vendor/css/rtl/core.css') }}" class="template-customizer-core-css" />
+      <link rel="stylesheet" href="{{ asset('/assets/vendor/css/rtl/theme-default.css') }}" class="template-customizer-theme-css" />
+      <link rel="stylesheet" href="{{ asset('/assets/css/demo.css') }}" />
+      
+      <!-- Vendors CSS -->
+      <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/node-waves/node-waves.css') }}" />
+      <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
+      <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/typeahead-js/typeahead.css') }}" />
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <!-- atau jika menggunakan versi spesifik --><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,7 +19,8 @@
     <title>Preview Cetak Hasil</title>
     <style>
         div {
-            font-family: 'Times New Roman', Times, serif, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
+            /* font-size: 10px; */
         }
         .table-borderless th,
         .table-borderless td {
@@ -84,32 +98,193 @@
         font-style: normal;
         font-size: 16px;
     }
+
+    .address-container {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.5rem;
+    }
+    .address-label {
+        white-space: nowrap;
+    }
+    .address-value {
+        word-wrap: break-word;
+    }
+
+    .rapi-table {
+        table-layout: fixed; /* Membuat lebar kolom konsisten */
+        width: 100%; /* Sesuaikan dengan kebutuhan */
+    }
+    .rapi-table th {
+        padding: 6px 4px; /* Padding lebih kecil */
+    }
     </style>
-    {{-- <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet"> --}}
-    
-      <link rel="stylesheet" href="{{ asset('/assets/vendor/css/rtl/core.css') }}" class="template-customizer-core-css" />
-      <link rel="stylesheet" href="{{ asset('/assets/vendor/css/rtl/theme-default.css') }}" class="template-customizer-theme-css" />
-      <link rel="stylesheet" href="{{ asset('/assets/css/demo.css') }}" />
-      
-      <!-- Vendors CSS -->
-      <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/node-waves/node-waves.css') }}" />
-      <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
-      <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/typeahead-js/typeahead.css') }}" />
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-    <!-- atau jika menggunakan versi spesifik -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 </head>
 <body>
+    <script>
+        // Parameter mapping untuk semua jenis pemeriksaan dengan rujukan defaults
+        const hematologiParams = [
+            { nama: 'WBC', display_name: 'Leukosit', rujukan: 'L. 4.0-10.0 P. 4.0-10.0' },
+            { nama: 'LYM#', display_name: 'LYM#', rujukan: '1.0-4.0' },
+            { nama: 'MID#', display_name: 'MID#', rujukan: '0.2-0.8' },
+            { nama: 'GRAN#', display_name: 'GRAN#', rujukan: '2.0-7.0' },
+            { nama: 'LYM%', display_name: 'Limfosit', rujukan: '20-40' },
+            { nama: 'MID%', display_name: 'Monosit', rujukan: '3-15' },
+            { nama: 'GRAN%', display_name: 'Granulosit', rujukan: '50-70' },
+            { nama: 'RBC', display_name: 'Eritrosit', rujukan: 'L. 4.5-6.5 P. 3.0-6.0' },
+            { nama: 'HGB', display_name: 'Hemoglobin', rujukan: 'L. 13.3-17.0 P. 11.7-15.7' },
+            { nama: 'HCT', display_name: 'Hematokrit', rujukan: 'L. 40-50 P. 36-46' },
+            { nama: 'MCV', display_name: 'MCV', rujukan: '80-100' },
+            { nama: 'MCH', display_name: 'MCH', rujukan: '27-33' },
+            { nama: 'MCHC', display_name: 'MCHC', rujukan: '32-36' },
+            { nama: 'RDW-CV', display_name: 'RDW-CV', rujukan: '11.5-14.5' },
+            { nama: 'RDW-SD', display_name: 'RDW-SD', rujukan: '39-46' },
+            { nama: 'PLT', display_name: 'Trombosit', rujukan: '150-350' },
+            { nama: 'MPV', display_name: 'MPV', rujukan: '7-11' },
+            { nama: 'PDW', display_name: 'PDW', rujukan: '10-18' },
+            { nama: 'PCT', display_name: 'PCT', rujukan: '0.15-0.50' },
+            { nama: 'P-LCC', display_name: 'P-LCC', rujukan: '30-90' },
+            { nama: 'P-LCR', display_name: 'P-LCR', rujukan: '13-43' }
+        ];
+
+        const WidalParams = [
+            { nama: 'Salmonella Typhi H', display_name: 'Salmonella Typhi H', rujukan: 'Negatif' },
+            { nama: 'Salmonella Typhi O', display_name: 'Salmonella Typhi O', rujukan: 'Negatif' },
+            { nama: 'Salmonella Paratyphi AO', display_name: 'Salmonella Paratyphi AO', rujukan: 'Negatif' },
+            { nama: 'Salmonella Paratyphi BO', display_name: 'Salmonella Paratyphi BO', rujukan: 'Negatif' }
+        ];
+
+        const UrineParams = [
+            // Makroskopis
+            { nama: 'Warna', display_name: 'Warna', rujukan: 'Kuning' },
+            { nama: 'Kekeruhan', display_name: 'Kekeruhan', rujukan: 'Jernih' },
+            { nama: 'Berat Jenis', display_name: 'Berat Jenis', rujukan: '1.003-1.035' },
+            // Kimia
+            { nama: 'PH', display_name: 'pH', rujukan: '4.5-8.0' },
+            { nama: 'Leukosit', display_name: 'Leukosit', rujukan: 'Negatif' },
+            { nama: 'Nitrit', display_name: 'Nitrit', rujukan: 'Negatif' },
+            { nama: 'Protein', display_name: 'Protein', rujukan: 'Negatif' },
+            { nama: 'Glukosa', display_name: 'Glukosa', rujukan: 'Negatif' },
+            { nama: 'Keton', display_name: 'Keton', rujukan: 'Negatif' },
+            { nama: 'Urobilinogen', display_name: 'Urobilinogen', rujukan: 'Negatif' },
+            { nama: 'Bilirubin', display_name: 'Bilirubin', rujukan: 'Negatif' },
+            { nama: 'Blood', display_name: 'Blood', rujukan: 'Negatif' },
+            // Sedimen
+            { nama: 'Eritrosit', display_name: 'Eritrosit', rujukan: '0-2 /lpb' },
+            { nama: 'Leukosit_sedimen', display_name: 'Leukosit', rujukan: '0-5 /lpb' },
+            { nama: 'Epithel', display_name: 'Epithel', rujukan: 'Tidak ada - Sedikit' },
+            { nama: 'Silinder', display_name: 'Silinder', rujukan: 'Tidak ada' },
+            { nama: 'Kristal', display_name: 'Kristal', rujukan: 'Tidak ada' },
+            { nama: 'Bakteri', display_name: 'Bakteri', rujukan: 'Tidak ada' },
+            { nama: 'Jamur', display_name: 'Jamur', rujukan: 'Tidak ada' },
+            { nama: 'Lain-lain', display_name: 'Lain-lain', rujukan: '-' }
+        ];
+
+        // Gabungkan semua parameter untuk mapping yang mudah
+        const allParams = [...hematologiParams, ...WidalParams, ...UrineParams];
+        const paramMapping = {};
+        const rujukanMapping = {};
+
+        allParams.forEach(param => {
+            paramMapping[param.nama] = param.display_name;
+            rujukanMapping[param.nama] = param.rujukan;
+        });
+
+        // Fungsi untuk mendapatkan display name
+        function getDisplayName(namaParameter) {
+            return paramMapping[namaParameter] || namaParameter;
+        }
+
+        // Fungsi untuk mendapatkan rujukan default
+        function getRujukanDefault(namaParameter) {
+            return rujukanMapping[namaParameter];
+        }
+
+        // Fungsi untuk memformat hasil berdasarkan parameter khusus
+        function formatHasil(hasil, namaParameter) {
+            if (!hasil || hasil === '' || hasil === null) {
+                return hasil;
+            }
+            
+            // Konversi ke string untuk pemrosesan
+            let hasilStr = hasil.toString();
+            
+            // Format khusus untuk WBC - tambahkan satu angka 0 di belakang
+            if (namaParameter === 'WBC') {
+                // Cek apakah sudah berupa angka
+                const numericValue = parseFloat(hasilStr);
+                if (!isNaN(numericValue)) {
+                    // Jika tidak ada desimal, tambahkan .0
+                    if (!hasilStr.includes('.')) {
+                        return hasilStr + '.0';
+                    } else {
+                        // Jika sudah ada desimal, tambahkan 0 di akhir
+                        return hasilStr + '0';
+                    }
+                }
+            }
+            
+            // Format khusus untuk PLT - tambahkan tiga angka 0 di belakang (.000)
+            if (namaParameter === 'PLT') {
+                const numericValue = parseFloat(hasilStr);
+                if (!isNaN(numericValue)) {
+                    // Jika tidak ada desimal, tambahkan .000
+                    if (!hasilStr.includes('.')) {
+                        return hasilStr + '.000';
+                    } else {
+                        // Jika sudah ada desimal, tambahkan 000 di akhir
+                        return hasilStr + '000';
+                    }
+                }
+            }
+            
+            // Return hasil original jika bukan WBC atau PLT
+            return hasil;
+        }
+
+        // Fungsi untuk menentukan flag berdasarkan nilai dan parameter
+        function getFlag(hasil, namaParameter) {
+            if (!hasil || hasil === '' || hasil === null) {
+                return '';
+            }
+            
+            // Untuk parameter numerik hematologi
+            if (namaParameter && ['WBC', 'LYM#', 'MID#', 'GRAN#', 'RBC', 'HGB', 'HCT', 'MCV', 'MCH', 'MCHC', 'RDW-CV', 'RDW-SD', 'PLT', 'MPV', 'PDW', 'PCT', 'P-LCC', 'P-LCR'].includes(namaParameter)) {
+                const numericValue = parseFloat(hasil);
+                if (!isNaN(numericValue)) {
+                    // Logika flag berdasarkan rujukan (contoh sederhana)
+                    const rujukan = rujukanMapping[namaParameter];
+                    if (rujukan && rujukan.includes('-')) {
+                        // Parse rujukan untuk mendapatkan range
+                        const match = rujukan.match(/([\d\.]+)-([\d\.]+)/);
+                        if (match) {
+                            const min = parseFloat(match[1]);
+                            const max = parseFloat(match[2]);
+                            if (numericValue < min) {
+                                return '<i class="ti ti-arrow-down text-primary"></i>';
+                            } else if (numericValue > max) {
+                                return '<i class="ti ti-arrow-up text-danger"></i>';
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Untuk parameter non-numerik (Widal, Urine), biasanya tidak ada flag
+            // kecuali ada kondisi khusus yang ingin ditampilkan
+            return '';
+        }
+    </script>
+
     <div>
-        <div class="header">
-            <div class="row">
+        <div class="header text-sm">
+            <div class="row m-0">
                 <div class="col-3 col-md-2 p-0">
-                    <img class="ml-4" src="{{ asset('image/logo-rs-1.png') }}" width="150" alt="Logo">
+                    <img class="ml-4" src="{{ asset('image/logo-rs-1.png') }}" width="120" alt="Logo">
                 </div>
-                <div class="col-7 col-md-4 text-center">
-                    <h4 class="fw-bold mb-0">RUMAH SAKIT MUSLIMAT SINGOSARI</h4>
+                <div class="col-8 col-md-8 text-center">
+                    <h5 class="fw-bold mb-0">RUMAH SAKIT MUSLIMAT SINGOSARI</h5>
                     {{-- <p class="mb-0">Instalasi Laboratorium Patologi Klinik</p> --}}
                     <p class="fw-bold mb-0">Jl. Ronggolawe No.24, Pangetan, Kec. Singosari, Kab. Malang</p>
                     <p class="fw-bold">Pelayanan 24 Jam</p>
@@ -117,12 +292,13 @@
                 <hr style="border-top: 1px solid black;">
             </div>
         </div>
-        <div class="data-pasien">
+        
+        <div class="data-pasien mb-2">
             <div class="row">
-                    <div class="col-6 col-md-6">
-                        <table class="table-borderless mb-0">
+                    <div class="col-8 col-md-8" >
+                        <table style="font-size: 12px" class="table-borderless mb-0">
                             <tr>
-                                <th scope="row" class="p-0">No. RM</th>
+                                <th scope="row" class="p-0">No.RM</th>
                                 <td>
                                     <div>
                                         :  <span class="ms-2" id="norm">{{ $data_pasien->no_rm }}</span>
@@ -158,8 +334,9 @@
                             <tr>
                                 <th scope="row" class="p-0">Alamat Pasien</th>
                                 <td>
-                                    <div>
-                                        :  <span class="ms-2" id="alamat">{{ $data_pasien->alamat }}</span>
+                                    <div class="address-container">
+                                        <span class="address-label">:</span>
+                                        <span class="address-value" id="alamat">{{ $data_pasien->alamat }}</span>
                                     </div>
                                 </td>
                             </tr>
@@ -175,8 +352,8 @@
                     </div>
                     <br>
                     
-                <div class="col-6 col-md-6">
-                    <table class="table-borderless">
+                <div class="col-4 col-md-4">
+                    <table style="font-size: 12px" class="table-borderless">
                         <tr>
                             <th scope="row" class="p-0">No. Laboratorium</th>
                             <td>
@@ -221,66 +398,97 @@
                 </div>
             </div>
         </div>
-        <br>
-        <div class="hasil-pemeriksaan">
+        
+        <div class="hasil-pemeriksaan p-0">
             <div id="tabel-pemeriksaan" class="table-responsive">
-                <table class="table" id="worklistTable">
+                <table style="font-size: 12px" class="table table-sm" id="worklistTable">
                     <thead style="border-top: 1px solid black; border-bottom: 1px solid black">
-                        <tr scope="row">
-                            <th class="col-4 fw-bold">Jenis Pemeriksaan</th>
-                            <th class="col-3 ml-2 fw-bold">Hasil</th>
-                            <th class="col-2 fw-bold">Flag</th>
-                            <th class="col-2 fw-bold">Satuan</th>
-                            <th class="col-2 fw-bold">Range</th>
-                            <th class="col-2 fw-bold">Nilai Rujukan</th>
+                        <tr>
+                            <th style="width: 35%;">Jenis Pemeriksaan</th>
+                            <th style="width: 20%;">Hasil</th>
+                            <th style="width: 10%;">Flag</th>
+                            <th style="width: 15%;">Satuan</th>
+                            <th style="width: 20%;">Nilai Rujukan</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tbody>
-                            @foreach ($hasil_pemeriksaans->groupBy('department') as $department => $hasil_group)
-                                <tr>
-                                    <th colspan="8" class="bg-light">{{ strtoupper($department) }}</th>
-                                </tr>
-                                @foreach ($hasil_group as $hasil)
+                    <tbody id="hasil-tbody">
+                        @foreach ($hasil_pemeriksaans->groupBy('department') as $department => $hasil_group)
+                            <tr>
+                                <th colspan="5" class="bg-light">{{ strtoupper($department) }}</th>
+                            </tr>
+                            @foreach ($hasil_group as $hasil)
                                 @php
-                                        $rujukanDefaults = [
-                                            'WBC' => 'L. 4.0-10.0 P. 4.0-10.0',
-                                            'LYM#' => '1.0-3.0',
-                                            'MID#' => '0.2-1.0',
-                                            'GRAN#' => '2.0-7.0',
-                                            'LYM%' => '20-40',
-                                            'MID%' => '3-10',
-                                            'GRAN%' => '50-70',
-                                            'RBC' => 'L. 4.5-5.9 P. 4.1-5.1',
-                                            'HGB' => 'L. 13-17 P. 12-15',
-                                            'HCT' => 'L. 40-50 P. 36-46',
-                                            'MCV' => '80-100',
-                                            'MCH' => '27-33',
-                                            'MCHC' => '32-36',
-                                            'RDW-CV' => '11-14',
-                                            'RDW-SD' => '37-54',
-                                            'PLT' => '150-450',
-                                            'MPV' => '7.5-11.5',
-                                            'PDW' => '9.0-14.0',
-                                            'PCT' => '0.2-0.5',
-                                            'P-LCC' => '50-100',
-                                            'P-LCR' => '15-35',
-                                        ];
-                                    @endphp
-                                    @php
-                                        $jenis_kelamin = strtolower($data_pasien->jenis_kelamin); // laki-laki atau perempuan
+                                    // Skip jika nama pemeriksaan sama dengan department (untuk menghindari duplikasi)
+                                    if (strtolower($hasil->nama_pemeriksaan) === strtolower($department)) {
+                                        continue;
+                                    }
+                                    
+                                    // Rujukan defaults yang lengkap untuk semua parameter
+                                    $rujukanDefaults = [
+                                        // Hematologi
+                                        'WBC' => 'L. 4.0-10.0 P. 4.0-10.0',
+                                        'LYM#' => '1.0-4.0',
+                                        'MID#' => '0.2-0.8',
+                                        'GRAN#' => '2.0-7.0',
+                                        'LYM%' => '20-40',
+                                        'MID%' => '3-15',
+                                        'GRAN%' => '50-70',
+                                        'RBC' => 'L. 4.5-6.5 P. 3.0-6.0',
+                                        'HGB' => 'L. 13.3-17.0 P. 11.7-15.7',
+                                        'HCT' => 'L. 40-50 P. 36-46',
+                                        'MCV' => '80-100',
+                                        'MCH' => '27-33',
+                                        'MCHC' => '32-36',
+                                        'RDW-CV' => '11.5-14.5',
+                                        'RDW-SD' => '39-46',
+                                        'PLT' => '150-350',
+                                        'MPV' => '7-11',
+                                        'PDW' => '10-18',
+                                        'PCT' => '0.15-0.50',
+                                        'P-LCC' => '30-90',
+                                        'P-LCR' => '13-43',
+                                        
+                                        // Widal
+                                        'Salmonella Typhi H' => 'Negatif',
+                                        'Salmonella Typhi O' => 'Negatif',
+                                        'Salmonella Paratyphi AO' => 'Negatif',
+                                        'Salmonella Paratyphi BO' => 'Negatif',
+                                        
+                                        // Urine - Makroskopis
+                                        'Warna' => 'Kuning',
+                                        'Kekeruhan' => 'Jernih',
+                                        'Berat Jenis' => '1.003-1.035',
+                                        
+                                        // Urine - Kimia
+                                        'PH' => '4.5-8.0',
+                                        'Leukosit' => 'Negatif',
+                                        'Nitrit' => 'Negatif',
+                                        'Protein' => 'Negatif',
+                                        'Glukosa' => 'Negatif',
+                                        'Keton' => 'Negatif',
+                                        'Urobilinogen' => 'Negatif',
+                                        'Bilirubin' => 'Negatif',
+                                        'Blood' => 'Negatif',
+                                        
+                                        // Urine - Sedimen
+                                        'Eritrosit' => '0-2 /lpb',
+                                        'Leukosit_sedimen' => '0-5 /lpb',
+                                        'Epithel' => 'Tidak ada - Sedikit',
+                                        'Silinder' => 'Tidak ada',
+                                        'Kristal' => 'Tidak ada',
+                                        'Bakteri' => 'Tidak ada',
+                                        'Jamur' => 'Tidak ada',
+                                        'Lain-lain' => '-'
+                                    ];
 
-                                        // Ambil dari mapping DB dulu
-                                        $raw_rujukan = $nilai_rujukan_map[$hasil->nama_pemeriksaan] ?? null;
+                                    $jenis_kelamin = strtolower($data_pasien->jenis_kelamin);
+                                    
+                                    // Ambil rujukan dari database atau default
+                                    $raw_rujukan = $nilai_rujukan_map[$hasil->nama_pemeriksaan] ?? $rujukanDefaults[$hasil->nama_pemeriksaan] ?? null;
+                                    $nilai_rujukan = '';
 
-                                        // Kalau null, cek apakah ada default (untuk hematologi)
-                                        if (is_null($raw_rujukan) && isset($rujukanDefaults[$hasil->nama_pemeriksaan])) {
-                                            $raw_rujukan = $rujukanDefaults[$hasil->nama_pemeriksaan];
-                                        }
-
-                                         $nilai_rujukan = '';
-
-                                        // Gunakan regex untuk ambil nilai Laki-laki dan Perempuan
+                                    if ($raw_rujukan) {
+                                        // Parse rujukan yang memiliki format L. dan P. (untuk hematologi)
                                         preg_match('/L\.\s*([\d\.,\-–]+)/', $raw_rujukan, $match_l);
                                         preg_match('/P\.\s*([\d\.,\-–]+)/', $raw_rujukan, $match_p);
 
@@ -290,33 +498,38 @@
                                             $nilai_rujukan = $match_p[1];
                                         }
 
-                                        // Jika tidak pakai L./P., tampilkan langsung
+                                        // Jika tidak ada format L./P., tampilkan rujukan langsung
                                         if (empty($nilai_rujukan) && !str_contains($raw_rujukan, 'L.') && !str_contains($raw_rujukan, 'P.')) {
                                             $nilai_rujukan = $raw_rujukan;
                                         }
-                                    @endphp
-                                    <tr>
-                                        <td>{{ $hasil->nama_pemeriksaan }}</td>
-                                        <td>{{ $hasil->hasil ?? 'Tidak ada hasil' }}</td>
-                                        <td class="flag">
-                                            @if(is_numeric($hasil->hasil))
-                                                @if(floatval($hasil->hasil) < 5)
-                                                    <i class="ti ti-arrow-down text-primary"></i>
-                                                @elseif(floatval($hasil->hasil) > 10)
-                                                    <i class="ti ti-arrow-up text-danger"></i>
-                                                @endif
-                                            @endif
-                                        </td>
-                                        <td class="text-center">{{ $hasil->satuan ?? 'Tidak ada satuan' }}</td>
-                                        <td>1-10</td>
-                                        <td>{{ $nilai_rujukan ?: '-' }}</td>
-                                    </tr>
-                                @endforeach
+                                    }
+                                @endphp
+                                <tr>
+                                    <td>
+                                        <script>
+                                            document.write(getDisplayName('{{ $hasil->nama_pemeriksaan }}'));
+                                        </script>
+                                    </td>
+                                    <td>
+                                        <script>
+                                            document.write(formatHasil('{{ $hasil->hasil }}', '{{ $hasil->nama_pemeriksaan }}') || 'Tidak ada hasil');
+                                        </script>
+                                    </td>
+                                    <td class="flag">
+                                        <script>
+                                            document.write(getFlag('{{ $hasil->hasil }}', '{{ $hasil->nama_pemeriksaan }}'));
+                                        </script>
+                                    </td>
+                                    <td class="text-center">{{ $hasil->satuan ?? '-' }}</td>
+                                    <td>{{ $nilai_rujukan ?: '-' }}</td>
+                                </tr>
                             @endforeach
-                        </tbody>
+                        @endforeach
+                    </tbody>
                 </table>
             </div>
         </div>
+        
         @if(isset($note) && !empty($note))
             <p><strong>Note:</strong> {{ $note }}</p>
         @endif
@@ -337,22 +550,55 @@
                 <h6 style="padding-right: 30px !important;">{{ $data_pasien->kode_dokter }}</h6>
             </div>
         </div>
+    </div>
+
+    <script>
+        // Fungsi untuk menggunakan dalam template Laravel/Blade
+        function renderPemeriksaan(hasilPemeriksaans, dataParam) {
+            const tbody = document.getElementById('hasil-tbody');
+            if (!tbody) return;
+            
+            let html = '';
+            
+            // Group hasil by department
+            const groupedResults = {};
+            hasilPemeriksaans.forEach(hasil => {
+                const dept = hasil.department || 'LAINNYA';
+                if (!groupedResults[dept]) {
+                    groupedResults[dept] = [];
+                }
+                groupedResults[dept].push(hasil);
+            });
+            
+            // Render each department
+            Object.keys(groupedResults).forEach(department => {
+                html += `<tr><th colspan="5" class="bg-light">${department.toUpperCase()}</th></tr>`;
+                
+                groupedResults[department].forEach(hasil => {
+                    const displayName = getDisplayName(hasil.nama_pemeriksaan);
+                    const flagHtml = getFlag(hasil.hasil, hasil.nama_pemeriksaan);
+                    const rujukanDefault = getRujukanDefault(hasil.nama_pemeriksaan);
+                    
+                    html += `
+                        <tr>
+                            <td>${displayName}</td>
+                            <td>${hasil.hasil || 'Tidak ada hasil'}</td>
+                            <td class="flag">${flagHtml}</td>
+                            <td class="text-center">${hasil.satuan || '-'}</td>
+                            <td>${hasil.nilai_rujukan || rujukanDefault}</td>
+                        </tr>
+                    `;
+                });
+            });
+            
+            tbody.innerHTML = html;
+        }
         
-</div>
+        window.print();
+    </script>
     
-
+    {{-- <script type="text/javascript">
+        window.print();
+    </script> --}}
 </body>
-<script type="text/javascript">
-    window.print();
-</script>
-    <script src="{{ asset('/assets/vendor/libs/jquery/jquery.js') }}"></script>
-    {{-- <script src="{{ asset('/assets/vendor/libs/popper/popper.js') }}"></script> --}}
-    <script src="{{ asset('/assets/vendor/js/bootstrap.js') }}"></script>
-    <script src="{{ asset('/assets/vendor/libs/node-waves/node-waves.js') }}"></script>
-    <script src="{{ asset('/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
-    <script src="{{ asset('/assets/vendor/libs/hammer/hammer.js') }}"></script>
-    <script src="{{ asset('/assets/vendor/js/menu.js') }}"></script>
-    <!-- endbuild -->
-    
-
 </html>

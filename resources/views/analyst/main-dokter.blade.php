@@ -460,7 +460,7 @@
                         const shandling = res.data.spesimenthandling;
                         const hasil = res.data.hasil_pemeriksaan;
 
-                        populateModal(spesimen, scollection, shandling, history, data_pemeriksaan_pasien);
+                        populateModal(spesimen, scollection, shandling, history, data_pemeriksaan_pasien, hasil);
                         function getDokterDisplay(labData, dokterData) {
                         // Jika tidak ada data
                         if (!labData || !dokterData) {
@@ -1042,7 +1042,7 @@ window.getTableContent = getTableContent;
 
 
 
-        function populateModal(spesimen, scollection, shandling, history, data_pemeriksaan_pasien) {
+        function populateModal(spesimen, scollection, shandling, history, data_pemeriksaan_pasien, hasil) {
     const accordion = document.getElementById('sampleHistoryAccordion');
     const historyItem = history.find(h => h.proses === 'Dikembalikan oleh dokter');
     let accordionContent = '';
