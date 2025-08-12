@@ -1542,31 +1542,44 @@
                         }
 
                         // Create a comprehensive map of OBX data from obrs relationship
+                      // Build map yang lebih robust: simpan objek, gunakan ?? untuk menjaga 0, dan filter image jika perlu
                         const obxMap = {};
 
-                        // Process data from obrs->obx relationship
                         data_pasien.obrs.forEach(obr => {
-                            if (Array.isArray(obr.obx)) {
-                                obr.obx.forEach(obxItem => {
-                                    const key = (obxItem.identifier_name || '').toLowerCase().trim();
-                                    if (!obxMap[key]) obxMap[key] = [];
-                                    obxMap[key].push(obxItem.identifier_value);
-                                });
-                            }
+                        if (!Array.isArray(obr.obx)) return;
+                        obr.obx.forEach(obx => {
+                            const name = (obx.identifier_name || '').toLowerCase().trim();
+                            const value = obx.identifier_value ?? obx.observation_value ?? ''; // <-- pake ?? bukan ||
+                            // skip jika kosong
+                            if (value === '' || value === null || value === undefined) return;
+
+                            // optional: ignore large image/base64 entries supaya tidak menggeser index numeric
+                            if (typeof value === 'string' && /^\^image\^|^data:image/i.test(value)) return;
+
+                            if (!obxMap[name]) obxMap[name] = [];
+                            obxMap[name].push({
+                            value,
+                            unit: obx.identifier_unit,
+                            flags: obx.identifier_flags,
+                            id: obx.id,
+                            tanggal: obx.tanggal,
+                            raw: obx
+                            });
+                        });
                         });
 
-                        // Fallback: Also check direct obx relationship if exists
-                        if (data_pasien.obx && Array.isArray(data_pasien.obx)) {
-                            data_pasien.obx.forEach(obxItem => {
-                                const paramName = obxItem.identifier_name;
-                                if (!obxMap[paramName]) {
-                                    obxMap[paramName] = [];
-                                }
-                                if (obxItem.identifier_value || obxItem.observation_value) {
-                                    obxMap[paramName].push(obxItem.identifier_value || obxItem.observation_value);
-                                }
-                            });
-                        }
+                        // sort tiap grup berdasarkan tanggal (fallback id) supaya urutan deterministik
+                        Object.keys(obxMap).forEach(k => {
+                        obxMap[k].sort((a,b) => {
+                            const ta = a.tanggal ? new Date(a.tanggal) : null;
+                            const tb = b.tanggal ? new Date(b.tanggal) : null;
+                            if (ta && tb) {
+                            const diff = ta - tb;
+                            if (diff !== 0) return diff;
+                            }
+                            return (a.id || 0) - (b.id || 0);
+                        });
+                        });
 
                         function getObxValues(parameterName) {
                             const key = (parameterName || '').toLowerCase().trim();
@@ -1583,13 +1596,17 @@
                                 }
                             });
 
+                            // console.log('DEBUG', parameterName, obxItems); // ⬅ lihat semua nilai yang masuk
+
                             return {
-                                duplo_d1: obxItems[0] ?? '',
-                                duplo_d2: obxItems[1] ?? '',
-                                duplo_d3: obxItems[2] ?? '',
+                                duplo_d1: obxItems[1] ?? '',
+                                duplo_d2: obxItems[2] ?? '',
+                                duplo_d3: obxItems[3] ?? '',
                                 hasilUtama: obxItems[0] ?? ''
                             };
                         }
+
+
 
                         function getInitialFlagContent(value, parameter = null, isHematologi = false, isUrine = false, nilaiRujukan = null, jenisKelamin = null) {
                             const nilaiHasil = parseFloat(value);
@@ -1807,52 +1824,52 @@
                                                                 const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
                                                                 
                                                                 return `
-                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" class="hematologi-row">
-                                                            <td class="col-2">
-                                                                <strong>${param.display_name}</strong>
-                                                                <small class="text-muted d-block">${normalValues.display}</small>
-                                                                <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanHematologi}" />
-                                                                <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                                <input type="hidden" name="nilai_rujukan[]" value="${normalValues.rujukan}" />
-                                                                <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
-                                                            </td>
-                                                            <td class="col-2">
-                                                                <input type="number" name="hasil[]" 
-                                                                    class="form-control manualInput w-60 p-0 text-center" 
-                                                                    disabled value="${obxValues.hasilUtama || ''}" 
-                                                                    step="0.01" placeholder="" required />
-                                                            </td>
-                                                            <td class="col-1">
-                                                                <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
-                                                                        data-index="${paramIdx}" data-switch-index="0">
-                                                                    <i class="ti ti-switch-2"></i>
-                                                                </button>
-                                                            </td>
-                                                            <td class="col-2 duplo d1-column text-center" style="display: none;">
-                                                                <input type="number" name="duplo_d1[]" 
-                                                                    class="form-control d1 w-60 p-0 text-center" 
-                                                                    disabled value="${obxValues.duplo_d1 || ''}" step="0.01" />
-                                                            </td>
-                                                            <td class="col-2 duplo d2-column" style="display: none;">
-                                                                <input type="number" name="duplo_d2[]" 
-                                                                    class="form-control d2 w-60 p-0 text-center" 
-                                                                    disabled value="${obxValues.duplo_d2 || ''}" step="0.01" />
-                                                            </td>
-                                                            <td class="col-2 duplo d3-column" style="display: none;">
-                                                                <input type="number" name="duplo_d3[]" 
-                                                                    class="form-control d3 w-50 p-0 text-center" 
-                                                                    disabled value="${obxValues.duplo_d3 || ''}" step="0.01" />
-                                                            </td>
-                                                            <td class="col-3 flag-cell">
-                                                                ${initialFlag}
-                                                            </td>
-                                                            <td>
-                                                                <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
-                                                                    value="${param.satuan}" readonly />
-                                                                ${param.satuan}
-                                                            </td>
-                                                        </tr>
-                                                        `;
+                                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" class="hematologi-row">
+                                                                        <td class="col-2">
+                                                                            <strong>${param.display_name}</strong>
+                                                                            <small class="text-muted d-block">${normalValues.display}</small>
+                                                                            <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanHematologi}" />
+                                                                            <input type="hidden" name="parameter_name[]" value="${param.nama}" />
+                                                                            <input type="hidden" name="nilai_rujukan[]" value="${normalValues.rujukan}" />
+                                                                            <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                                        </td>
+                                                                        <td class="col-2">
+                                                                            <input type="number" name="hasil[]" 
+                                                                                class="form-control manualInput w-60 p-0 text-center" 
+                                                                                disabled value="${obxValues.hasilUtama || ''}" 
+                                                                                step="0.01" placeholder="" required />
+                                                                        </td>
+                                                                        <td class="col-1">
+                                                                            <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
+                                                                                    data-index="${paramIdx}" data-switch-index="0">
+                                                                                <i class="ti ti-switch-2"></i>
+                                                                            </button>
+                                                                        </td>
+                                                                        <td class="col-2 duplo d1-column text-center" style="display: none;">
+                                                                            <input type="number" name="duplo_d1[]" 
+                                                                                class="form-control d1 w-60 p-0 text-center" 
+                                                                                disabled value="${obxValues.duplo_d1 || ''}" step="0.01" />
+                                                                        </td>
+                                                                        <td class="col-2 duplo d2-column" style="display: none;">
+                                                                            <input type="number" name="duplo_d2[]" 
+                                                                                class="form-control d2 w-60 p-0 text-center" 
+                                                                                disabled value="${obxValues.duplo_d2 || ''}" step="0.01" />
+                                                                        </td>
+                                                                        <td class="col-2 duplo d3-column" style="display: none;">
+                                                                            <input type="number" name="duplo_d3[]" 
+                                                                                class="form-control d3 w-50 p-0 text-center" 
+                                                                                disabled value="${obxValues.duplo_d3 || ''}" step="0.01" />
+                                                                        </td>
+                                                                        <td class="col-3 flag-cell">
+                                                                            ${initialFlag}
+                                                                        </td>
+                                                                        <td>
+                                                                            <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
+                                                                                value="${param.satuan}" readonly />
+                                                                            ${param.satuan}
+                                                                        </td>
+                                                                    </tr>
+                                                                    `;
                                                             }).join('');
                                                         } else if (hasWidal) {
                                                             // Jika ada widal, tampilkan parameter widal lengkap
@@ -2390,7 +2407,7 @@
                                                 }
                                             }
                                             
-                                            console.log('Normal range calculated:', normalRange);
+                                            // console.log('Normal range calculated:', normalRange);
                                             
                                             if (normalRange) {
                                                 if (numValue < normalRange.min) {
@@ -2400,7 +2417,7 @@
                                                     // console.log('Setting flag: High');
                                                     flagCell.innerHTML = '<i class="ti ti-arrow-up text-danger"></i> High';
                                                 } else {
-                                                    console.log('Setting flag: Normal');
+                                                    // console.log('Setting flag: Normal');
                                                     flagCell.innerHTML = '<i class="ti ti-check text-success"></i> Normal';
                                                 }
                                             } else {
@@ -2468,7 +2485,7 @@
 
                                     switch (currentDuploStage) {
                                         case 0:
-                                            console.log("Menampilkan kolom D1");
+                                            // console.log("Menampilkan kolom D1");
                                             d1Columns.forEach(col => col.style.display = 'table-cell');
                                             d1Inputs.forEach(input => {
                                                 input.disabled = false;
@@ -2476,7 +2493,7 @@
                                             currentDuploStage = 1;
                                             break;
                                         case 1:
-                                            console.log("Menampilkan kolom D2");
+                                            // console.log("Menampilkan kolom D2");
                                             d2Columns.forEach(col => col.style.display = 'table-cell');
                                             d2Inputs.forEach(input => {
                                                 input.disabled = false;
@@ -2484,7 +2501,7 @@
                                             currentDuploStage = 2;
                                             break;
                                         case 2:
-                                            console.log("Menampilkan kolom D3");
+                                            // console.log("Menampilkan kolom D3");
                                             d3Columns.forEach(col => col.style.display = 'table-cell');
                                             d3Inputs.forEach(input => {
                                                 input.disabled = false;
@@ -2492,11 +2509,11 @@
                                             currentDuploStage = 3;
                                             break;
                                         default:
-                                            console.log("Semua kolom duplo sudah aktif.");
+                                            // console.log("Semua kolom duplo sudah aktif.");
                                             break;
                                     }
                                     setupFlagEventListeners();
-                                    console.log("Current duplo stage SESUDAH:", currentDuploStage);
+                                    // console.log("Current duplo stage SESUDAH:", currentDuploStage);
                                     logDuploValues();
 
                                     if (verifikasiHasilBtn) verifikasiHasilBtn.disabled = false;
@@ -2887,11 +2904,11 @@
             // console.log('=== End Processing Specimen ===\n');
         });
 
-        console.log(
-            hasil.length > 0 && hasil[0].note 
-                ? "Note ada isinya: " + hasil[0].note 
-                : "Note kosong"
-        );
+        // console.log(
+        //     hasil.length > 0 && hasil[0].note 
+        //         ? "Note ada isinya: " + hasil[0].note 
+        //         : "Note kosong"
+        // );
 
             if (historyItem && historyItem.note) {
                 accordionContent += `
