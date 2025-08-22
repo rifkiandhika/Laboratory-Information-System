@@ -18,8 +18,11 @@
     <title>Login</title>
 
     <!-- Favicon -->
-    
-    <link rel="icon" href="{{ asset('image/icon.png') }}">
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{{ asset('image/icon.png') }}"
+    />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com/" />
