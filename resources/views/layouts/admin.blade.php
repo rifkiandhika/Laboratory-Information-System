@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title')</title>
+    <link rel="icon" href="{{ asset('image/icon.png') }}">
 
 
     <!-- Fonts -->
@@ -71,7 +72,7 @@
             <div class="app-brand demo ">
               <a href="index-2.html" class="app-brand-link">
                 <span class="app-brand-logo demo">
-          <img src="{{ asset('image/logo-rs.png') }}" width="60px"  alt="">
+          <img src="{{ asset('image/erecord.png') }}" width="60px"  alt="">
           </span>
                 <span class="app-brand-text demo menu-text fw-bold">LISM</span>
               </a>
