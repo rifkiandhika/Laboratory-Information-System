@@ -27,7 +27,7 @@
                                         <label for="staticEmail" class="col-sm-4 col-form-label fw-bold">No LAB :</label>
                                         <div class="col-lg">
                                             <input type="text" readonly class="form-control-plaintext fw-bold"
-                                                id="no-lab" name="nolab" value="{{ $no_lab }}">
+                                                id="no-lab" name="no_lab" value="{{ $no_lab }}">
                                         </div>
                                     </div>
                                 </div>
@@ -147,6 +147,34 @@
                                 <hr>
                                 <div class="row">
                                     <div class="col-md-8">
+                                        <h5>Pilih MCU Package</h5>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <select id="mcuSelect" name="mcu_package_id" class="form-select">
+                                            <option value="" selected hidden>-- Pilih Paket MCU --</option>
+                                            @foreach($mcuPackages as $mcu)
+                                                <option value="{{ $mcu->id }}"
+                                                        data-harga-normal="{{ $mcu->harga_normal }}"
+                                                        data-harga-final="{{ $mcu->harga_final }}"
+                                                        data-diskon="{{ $mcu->diskon }}"
+                                                        data-pemeriksaan='@json($mcu->detailDepartments->pluck("id")->toArray())'>
+                                                    {{ $mcu->nama_paket }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6" id="mcuHarga" style="display:none;">
+                                        <span>Harga: 
+                                            <del class="text-danger" id="mcuHargaNormal"></del> 
+                                            <b class="text-success" id="mcuHargaFinal"></b>
+                                        </span>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-8">
                                         <h5>Choose Inspection</h5>
                                     </div>
                                     <div class="col-md-4">
@@ -210,49 +238,6 @@
 </section>
 
 @endsection
-{{-- <script>
-    $(document).ready(function() {
-        $('#diagnosa').select2({
-            placeholder: 'Pilih Diagnosa',
-            ajax: {
-                url: '{{ route('geticd10') }}',
-                dataType: 'json',
-                delay: 250,
-                processResults: function (data) {
-                    return {
-                    results:  $.map(data, function (item) {
-                        return {
-                        text: item.code + ' - ' + item.name_id,
-                        id: item.code
-                        }
-                    })
-                    };
-                },
-                cache: true
-            }
-        });
-    });
-</script> --}}
-
-
-    <!-- Tambah form lain -->
-    {{-- <script type="text/javascript">
-$(document).ready(function(){
-
-    var html = '<div class="form-group col-12 col-md-12 row mt-2" id="tambah-field-lain"><input type="text" class="form-control col-md-11" value="" id="" name="pemeriksaan-lain-lain[]" placeholder="Ketik Tambahan"><div class="col-md-1"><input type="button" class="btn btn-danger" value="-" id="remove"></div>';
-
-    var x = 1;
-
-    $("#add-lain").click(function(){
-        $("#child-pemeriksaan-lain").append(html);
-    });
-
-    $("#child-pemeriksaan-lain").on('click','#remove',function(){
-        $(this).closest('#tambah-field-lain').remove();
-    });
-
-});
-</script> --}}
     <!-- End Tambah form lain -->
     {{-- <script>
         $(document).ready(function() {
@@ -272,6 +257,64 @@ $(document).ready(function(){
 
 
 @push('script')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const mcuSelect = document.getElementById('mcuSelect');
+    const noLabInput = document.getElementById('no-lab');
+    const mcuHargaDiv = document.getElementById('mcuHarga');
+    const hargaNormalEl = document.getElementById('mcuHargaNormal');
+    const hargaFinalEl = document.getElementById('mcuHargaFinal');
+    const hargaPemeriksaanEl = document.getElementById('harga-pemeriksaan');
+
+    if (mcuSelect) {
+        mcuSelect.addEventListener('change', function () {
+            if (this.value) {
+                // Kalau pilih paket MCU
+                noLabInput.value = noLabInput.value.replace(/^LAB/, 'MCU');
+            } else {
+                // Kalau batal pilih paket MCU, balikin ke LAB
+                noLabInput.value = noLabInput.value.replace(/^MCU/, 'LAB');
+            }
+            
+            let selected = this.options[this.selectedIndex];
+
+            if (!selected.value) {
+                // Reset jika tidak pilih paket
+                mcuHargaDiv.style.display = 'none';
+                hargaPemeriksaanEl.value = "0";
+                return;
+            }
+
+            // Ambil data paket
+            let hargaNormal = parseInt(selected.getAttribute('data-harga-normal'));
+            let hargaFinal = parseInt(selected.getAttribute('data-harga-final'));
+            let diskon = selected.getAttribute('data-diskon');
+            let pemeriksaanIds = JSON.parse(selected.getAttribute('data-pemeriksaan'));
+
+            // Format ke Rp
+            const formatRupiah = (num) => "Rp." + num.toLocaleString('id-ID');
+
+            // Tampilkan harga
+            mcuHargaDiv.style.display = 'block';
+            hargaNormalEl.textContent = formatRupiah(hargaNormal);
+            hargaFinalEl.textContent = formatRupiah(hargaFinal) + ` (-${diskon}%)`;
+
+            // Set harga pemeriksaan ke harga final
+            hargaPemeriksaanEl.value = hargaFinal.toLocaleString('id-ID');
+
+            // Reset semua checkbox pemeriksaan
+            document.querySelectorAll('.child-pemeriksaan').forEach(cb => cb.checked = false);
+
+            // Centang pemeriksaan sesuai paket MCU
+            pemeriksaanIds.forEach(id => {
+                let cb = document.querySelector(`.child-pemeriksaan[value="${id}"]`);
+                if (cb) cb.checked = true;
+            });
+        });
+    }
+
+});
+</script>
 <script>
     // Menambahkan event listener saat dokumen sudah siap
 document.addEventListener('DOMContentLoaded', function() {

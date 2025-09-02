@@ -176,8 +176,8 @@ Dashboard|Spesiment
                             </div> --}}
                         </div>
                         <div class="card-body card-datatable">
-                            <div class="table-responsive" style="width: 100%;">
-                                <table class="table table-striped w-100 d-block d-md-table" id="myTable">
+                            <div>
+                                <table class="table table-striped table-responsive w-100 d-block d-md-table" id="myTable">
                                     @php
                                         $no=1;
                                     @endphp
@@ -218,38 +218,61 @@ Dashboard|Spesiment
                                                         <span class="badge bg-success text-white">Approved of analyst</span>
                                                     @endif
                                                 </td>
-                                                <td>
-                                                    <button title="Check Collection" class="btn btn-outline-secondary btn-preview" data-id={{ $data1->id }} data-bs-target="#modalSpesimen"
-                                                        data-bs-toggle="modal" ><i class="ti ti-vaccine"></i></button>
-
-                                                        <form id="spesimentBack-{{ $data1->id }}" action="{{ route('analyst.back', $data1->id) }}" method="POST" style="display: none;">
-                                                            @csrf
-                                                        </form>
-
-                                                        <button title="Kembalikan Ke Loket" class="btn btn-outline-secondary" onclick="confirmBack({{ $data1->id }})">
-                                                            <i class="ti ti-arrow-back-up"></i>
-                                                        </button>
-
-                                                
-                                                        <button class="btn btn-secondary barcodeBtn"
-                                                            onclick="showBarcodeModal('{{ $data1->id }}', '{{ $data1->no_lab }}')"
-                                                            title="Tampilkan Barcode">
-                                                            <i class="ti ti-barcode"></i>
-                                                        </button>   
-
-                                                        <form id="delete-form-{{ $data1->id }}"
-                                                            action="{{ route('analyst.destroy', $data1->no_lab) }}" method="POST"
-                                                            style="display: none;">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                        </form>
-                                                        
-                                                        <button class="btn btn-danger"
-                                                            onclick="confirmDelete({{ $data1->id }})"><i
-                                                            class="ti ti-trash"></i>
-                                                        </button>
-    
-                                                  </td>
+                                                <td class="text-center">
+                                                    <div class="dropdown">
+                                                        <a href="#" class="text-secondary" id="aksiDropdown{{ $data1->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="ti ti-dots-vertical fs-5"></i>
+                                                        </a>
+                                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="aksiDropdown{{ $data1->id }}">
+                                                            
+                                                            <!-- Check Collection -->
+                                                            <li>
+                                                                <button title="Check Collection" 
+                                                                        class="dropdown-item btn-preview" 
+                                                                        data-id="{{ $data1->id }}" 
+                                                                        data-bs-target="#modalSpesimen"
+                                                                        data-bs-toggle="modal">
+                                                                    <i class="ti ti-vaccine me-2"></i> Check Collection
+                                                                </button>
+                                                            </li>
+                                                            
+                                                            <!-- Kembalikan ke Loket -->
+                                                            <li>
+                                                                <form id="spesimentBack-{{ $data1->id }}" action="{{ route('analyst.back', $data1->id) }}" method="POST" style="display: none;">
+                                                                    @csrf
+                                                                </form>
+                                                                <button title="Kembalikan Ke Loket" 
+                                                                        class="dropdown-item" 
+                                                                        onclick="confirmBack({{ $data1->id }})">
+                                                                    <i class="ti ti-arrow-back-up me-2"></i> Back to Locket
+                                                                </button>
+                                                            </li>
+                                                            
+                                                            <!-- Barcode -->
+                                                            <li>
+                                                                <button class="dropdown-item barcodeBtn"
+                                                                        onclick="showBarcodeModal('{{ $data1->id }}', '{{ $data1->no_lab }}')"
+                                                                        title="Tampilkan Barcode">
+                                                                    <i class="ti ti-barcode me-2"></i> Barcode
+                                                                </button>
+                                                            </li>
+                                                            
+                                                            <!-- Hapus -->
+                                                            <li>
+                                                                <form id="delete-form-{{ $data1->id }}" 
+                                                                    action="{{ route('analyst.destroy', $data1->no_lab) }}" 
+                                                                    method="POST" style="display: none;">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                </form>
+                                                                <button class="dropdown-item text-danger"
+                                                                        onclick="confirmDelete({{ $data1->id }})">
+                                                                    <i class="ti ti-trash me-2"></i> Delete
+                                                                </button>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -810,89 +833,89 @@ Dashboard|Spesiment
                 });
 
                 // Loop melalui spesimen yang ada di res.data.spesiment
-                res.data.spesiment.forEach((e, i) => {
-                    
-                    // Khusus untuk tabung EDTA, cek permission
-                    if (e.tabung === 'CLOTH-ACTIVATOR' || e.tabung === 'K3-EDTA' || e.tabung === 'CLOTH-ACT') {
-                        // Skip jika tidak ada permission active untuk EDTA
-                        if (!hasActiveEDTA) {
-                            return;
-                        }
-                    }
-                    
-                    // Untuk tabung CLOT-ACT, tambahkan pengecekan khusus jika diperlukan
-                    if (e.tabung === 'CLOT-ACT' || e.tabung === 'CLOT-') {
-                        // Cek apakah ada pemeriksaan yang memerlukan CLOT-ACT
-                        const needsCLOTACT = data_pemeriksaan_pasien.some(dept => 
-                            dept.pasiens.some(p => p.spesiment === 'CLOT-ACT' && p.data_pemeriksaan?.permission === 'active')
-                        );
-                        
-                        if (!needsCLOTACT) {
-                            return;
-                        }
-                    }
-                    
+              res.data.spesiment.forEach((e, i) => {
+    // hanya tampilkan jika spesimen = Spesiment Collection
+    if (e.spesiment !== 'Spesiment Collection') {
+        return;
+    }
 
-                    let details = '';
-                    
-                    if (e.details && e.details.length > 0) {
-                        details = `<div class="detail-container col-12 col-md-6">`;
-                        e.details.forEach(detail => {
-                            const imageUrl = `/gambar/${detail.gambar}`;
-                            const isChecked = (e.tabung === 'K3-EDTA' && detail.nama_parameter === 'Normal') ||
-                                            (e.tabung === 'CLOTH-ACT' && detail.nama_parameter === 'Normal') ||
-                                            (e.tabung === 'CLOTH-ACTIVATOR' && detail.nama_parameter === 'Normal') ? 'checked' : '';
+    // bikin id unik dengan gabungan kode + tabung
+    const uniqueId = `${e.kode}`;
+    const kodeInput = `<input type="hidden" name="kode[${uniqueId}]" value="${e.kode}">`;
 
-                            details +=  
-                            `<div class="detail-item">
-                                <div class="detail-text">${detail.nama_parameter}</div>
-                                <div class="detail-image-container">
-                                    <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
-                                </div>
-                                <div class="detail-radio-container">
-                                    ${e.tabung === 'K3-EDTA' ? `<input type="radio" name="kapasitas[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''}
-                                    ${e.tabung === 'CLOTH-ACT' ? `<input type="radio" name="clotact[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''} 
-                                    ${e.tabung === 'CLOTH-ACTIVATOR' ? `<input type="radio" name="serumh[]" value="${detail.id}" class="detail.radio" ${isChecked}/>` : ''} 
-                                </div>
-                            </div>`;
-                        });
-                        details += `</div>`;
-                    }
+    // Khusus untuk tabung EDTA atau CLOTH-ACTIVATOR, cek permission
+    if (e.tabung === 'CLOTH-ACTIVATOR' || e.tabung === 'K3-EDTA') {
+        if (!hasActiveEDTA) {
+            return;
+        }
+    }
 
-                    let title = '';
-                    let subtext = '';
-                    if (e.tabung === 'K3-EDTA') {
-                        title = '<h5 class="title">Spesiment Collection</h5> <hr>';
-                    }
+    let details = '';
+    if (e.details && e.details.length > 0) {
+        details = `<div class="detail-container col-12 col-md-6">`;
+        e.details.forEach((detail, idx) => {
+            const imageUrl = `/gambar/${detail.gambar}`;
+            // Default ke "Normal"
+            const isChecked = detail.nama_parameter === 'Normal' ? 'checked' : '';
 
-                    let note = '';
-                    if (e.tabung === 'K3-EDTA' || e.tabung === 'CLOTH-ACTIVATOR' || e.tabung === 'CLOTH-ACT') {
-                        note = '<p class="mb-0"><strong>Note</strong></p>';
-                    }
+            // radio id unik
+            const radioId = `${uniqueId}_${detail.id}`;
 
-                    detailContent += `${title}
-                        <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="heading${e.tabung}">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">
-                                    Tabung ${e.tabung}
-                                    </button>
-                                </h2>
-                                <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}" data-bs-parent="#accordion${e.tabung}">
-                                    <div class="accordion-body">
-                                        ${subtext}
-                                        <div class="container">
-                                            ${details}
-                                        </div>
-                                        ${note}
-                                        ${e.tabung === 'K3-EDTA' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Tulis catatan disini"></textarea>` : ''}
-                                        ${e.tabung === 'CLOTH-ACTIVATOR' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Tulis catatan disini"></textarea>` : ''}
-                                        ${e.tabung === 'CLOTH-ACT' ? `<textarea class="form-control" name="note[]" row="3" placeholder="Tulis catatan disini"></textarea>` : ''}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`;
-                });
+            details +=  
+            `<div class="detail-item">
+                <div class="detail-text">${detail.nama_parameter}</div>
+                <div class="detail-image-container">
+                    <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
+                </div>
+                <div class="detail-radio-container">
+                    ${e.tabung === 'K3-EDTA' 
+                        ? `<input type="radio" id="kapasitas_${radioId}" name="kapasitas[${uniqueId}]" value="${detail.id}" class="detail-radio" ${isChecked}/>
+                           <label for="kapasitas_${radioId}"></label>` 
+                        : ''}
+                    ${e.tabung === 'CLOTH-ACTIVATOR' 
+                        ? `<input type="radio" id="serumh_${radioId}" name="serumh[${uniqueId}]" value="${detail.id}" class="detail-radio" ${isChecked}/>
+                           <label for="serumh_${radioId}"></label>` 
+                        : ''} 
+                    ${kodeInput}
+                </div>
+            </div>`;
+        });
+        details += `</div>`;
+    }
+
+    let title = '';
+    if (e.tabung === 'K3-EDTA') {
+        title = '<h5 class="title">Spesiment Collection</h5> <hr>';
+    }
+
+    let note = '';
+    if (['K3-EDTA','CLOTH-ACTIVATOR'].includes(e.tabung)) {
+        note = '<p class="mb-0"><strong>Note</strong></p>';
+    }
+
+    detailContent += `${title}
+        <div class="accordion accordion-custom-button mt-4" id="accordion${uniqueId}">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading${uniqueId}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                        data-bs-target="#collapse${uniqueId}" aria-expanded="false" aria-controls="collapse${uniqueId}">
+                        Tabung ${e.tabung}
+                    </button>
+                </h2>
+                <div id="collapse${uniqueId}" class="accordion-collapse collapse" aria-labelledby="heading${uniqueId}" data-bs-parent="#accordion${uniqueId}">
+                    <div class="accordion-body">
+                        <div class="container">
+                            ${details}
+                        </div>
+                        ${note}
+                        ${['K3-EDTA','CLOTH-ACTIVATOR'].includes(e.tabung) ? `<textarea class="form-control" name="note[]" rows="3" placeholder="Tulis catatan disini"></textarea>` : ''}
+                    </div>
+                </div>
+            </div>
+        </div>`;
+});
+
+
 
 
                     // Masukkan detail spesimen ke dalam modal

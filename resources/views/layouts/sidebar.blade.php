@@ -75,7 +75,7 @@
             </a>
           </li>
           {{-- Setting --}}
-          <li class="menu-item {{ Request::is('dokter', 'poli', 'department', 'pemeriksaan', 'spesiments', 'detailspesiments') ? 'open active' : '' }}">
+          <li class="menu-item {{ Request::is('dokter', 'poli', 'department', 'pemeriksaan', 'spesiments', 'detailspesiments', 'mcu') ? 'open active' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
               <i class="menu-icon tf-icons ti ti-settings"></i>
               <div data-i18n="Setting">Setting</div>
@@ -89,6 +89,11 @@
               <li class="menu-item {{ Request::is('spesiments') ? 'active' : '' }}">
                 <a href="{{ route('spesiments.index') }}" class="menu-link">
                   <div data-i18n="Spesiment">Spesiment</div>
+                </a>
+              </li>
+              <li class="menu-item {{ Request::is('mcu') ? 'active' : '' }}">
+                <a href="{{ route('mcu.index') }}" class="menu-link">
+                  <div data-i18n="MCU">MCU</div>
                 </a>
               </li>
               <li class="menu-item {{ Request::is('dokter') ? 'active' : '' }}">

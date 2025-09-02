@@ -34,4 +34,21 @@ class Department extends Model
             $department->pemeriksaan()->delete();
         });
     }
+
+    public function qualityControls()
+    {
+        return $this->hasMany(Qc::class, 'department_id');
+    }
+
+    // Scope untuk active department
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
+
+    // Method untuk check apakah department hematologi
+    public function isHematology()
+    {
+        return stripos($this->nama_department, 'hematologi') !== false;
+    }
 }

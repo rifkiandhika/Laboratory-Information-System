@@ -62,7 +62,6 @@ class resultController extends Controller
 
         $hasil_pemeriksaans = HasilPemeriksaan::where('no_lab', $no_lab)->get();
 
-        // 🔥 Buat mapping nama_pemeriksaan => nilai_rujukan
         $nilai_rujukan_map = [];
 
         foreach ($data_pasien->dpp as $dpp) {
@@ -76,6 +75,24 @@ class resultController extends Controller
 
         return view('print-view.print-pasien', compact('data_pasien', 'note', 'hasil_pemeriksaans', 'nilai_rujukan_map'));
     }
+
+    public function simpanKesimpulanSaran(Request $request)
+    {
+        $request->validate([
+            'no_lab' => 'required',
+            'kesimpulan' => 'nullable|string',
+            'saran' => 'nullable|string',
+        ]);
+
+        $hasil = HasilPemeriksaan::where('no_lab', $request->no_lab)->firstOrFail();
+        $hasil->kesimpulan = $request->kesimpulan;
+        $hasil->saran = $request->saran;
+        $hasil->save();
+
+        toast('Data Saved', 'success');
+        return redirect()->route('result.index');
+    }
+
 
 
     /**

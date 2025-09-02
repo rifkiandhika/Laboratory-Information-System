@@ -108,6 +108,31 @@
     font-weight: 600;
     margin-top: 10px;
  }
+#loadingDots {
+  display: none; /* default hidden */
+  display: flex; /* aktif hanya saat JS set ke flex */
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.dots {
+  display: flex;
+  gap: 6px;
+}
+.dots span {
+  width: 10px;
+  height: 10px;
+  background: #0d6efd;
+  border-radius: 50%;
+  display: inline-block;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+.dots span:nth-child(1) { animation-delay: -0.32s; }
+.dots span:nth-child(2) { animation-delay: -0.16s; }
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
   </style>
   
 <div class="content" id="scroll-content">
@@ -182,59 +207,72 @@
                                     @endif
                                 </td>
                                 <td>
-                                    {{-- <button class="btn btn-info btn-preview" data-id={{ $dpc->id }} data-bs-target="#modalSpesimen"
-                                        data-bs-toggle="modal" ><i class="ti ti-eye"></i></button>
-                                    <button class="btn btn-warning"><i class="ti ti-barcode"></i></button>
-                                    <button class="btn btn-success btn-edit" data-id={{ $dpc->id }} data-bs-target="#modalEdit" data-bs-toggle="modal"><i class="ti ti-edit"></i></button>
-                                    
-                                    <form id="delete-form-{{ $dpc->id }}"
-                                        action="{{ route('spesiment.destroy', $dpc->no_lab) }}" method="POST"
-                                        style="display: none;">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                    
-                                    <button class="btn btn-danger"
-                                        onclick="confirmDelete({{ $dpc->id }})"><i
-                                        class="ti ti-trash"></i>
-                                    </button> --}}
-                                    <!-- Tombol Edit -->
-                                    <a style="cursor: pointer" data-id="{{ $dpc->no_lab }}" class="btn btn-sm btn-outline-secondary editBtn">
-                                        <i title="Edit" class="ti ti-pencil"></i>
-                                    </a>
+                                    <div class="dropdown">
+                                        <a href="#" class="text-secondary" id="aksiDropdown{{ $dpc->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="ti ti-dots-vertical fs-5"></i>
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="aksiDropdown{{ $dpc->id }}">
+                                            <li>
+                                                <button type="button" 
+                                                        class="dropdown-item editBtn" 
+                                                        data-id="{{ $dpc->no_lab }}">
+                                                    <i class="ti ti-pencil me-2"></i> Edit
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button type="button" 
+                                                        class="dropdown-item preview" 
+                                                        data-id="{{ $dpc->id }}" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#sampleHistoryModal">
+                                                    <i class="ti ti-clock me-2"></i> Sample History
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button type="button" 
+                                                        class="dropdown-item btn-show-result"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#resultReviewModal"
+                                                        data-id="{{ $dpc->id }}">
+                                                    <i class="ti ti-report-analytics me-2"></i> Check Hasil
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <form id="kirimresult-{{ $dpc->id }}" 
+                                                    action="result/done/{{ $dpc->id }}" 
+                                                    method="POST" 
+                                                    style="display: none;">
+                                                    @csrf
+                                                </form>
+                                                <button type="button" 
+                                                        class="dropdown-item" 
+                                                        onclick="confirmResult({{ $dpc->id }})" 
+                                                        {{ $dpc->status == 'diselesaikan' ? 'disabled' : '' }}>
+                                                    <i class="ti ti-checklist me-2"></i> Selesaikan
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button type="button" 
+                                                        class="dropdown-item" 
+                                                        onclick="openModal('{{ $dpc->no_lab }}')" 
+                                                        {{ $dpc->status != 'diselesaikan' ? 'disabled' : '' }}>
+                                                    <i class="ti ti-printer me-2"></i> Print Result
+                                                </button>
+                                            </li>
+                                           @if(in_array(auth()->user()->role, ['admin','dokter']) && Str::startsWith($dpc->no_lab, 'MCU'))
+                                                <li>
+                                                    <button type="button" 
+                                                            class="dropdown-item btn-kesimpulan-saran"
+                                                            data-id="{{ $dpc->no_lab }}"
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#kesimpulanSaranModal">
+                                                        <i class="ti ti-notes me-2"></i> Kesimpulan & Saran
+                                                    </button>
+                                                </li>
+                                            @endif
 
-                                    <!-- Tombol Sample History -->
-                                    <button href="#" id="sampleHistoryBtn-{{ $dpc->id }}" class="btn btn-sm btn-outline-secondary mr-2 preview" data-id="{{ $dpc->id }}" data-bs-toggle="modal" data-bs-target="#sampleHistoryModal">
-                                        <i title="Sample History" class="ti ti-clock"></i>
-                                    </button>
-
-                                    {{-- Cek Hasil --}}
-                                    <button type="button"
-                                            class="btn btn-outline-secondary btn-sm btn-show-result"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#resultReviewModal"
-                                            data-id="{{ $dpc->id }}">
-                                        <i title="Check Hasil" class="ti ti-report-analytics"></i>
-                                    </button>
-
-                                    
-                                    <!-- Tombol Selesaikan -->
-                                    <form id="kirimresult-{{ $dpc->id }}" action="result/done/{{ $dpc->id }}" method="POST" style="display: none;">
-                                        @csrf
-                                    </form>
-                                    <!-- Tombol Selesaikan -->
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="confirmResult({{ $dpc->id }})" {{ $dpc->status == 'diselesaikan' ? 'disabled' : '' }} id="selesaikanBtn-{{ $dpc->id }}">
-                                        <i title="Selesaikan" class="ti ti-checklist"></i>
-                                    </button>
-
-                                    <!-- Tombol Print -->
-                                    <button class="btn btn-sm btn-outline-secondary" id="printBtn-{{ $dpc->id }}" onclick="openModal('{{ $dpc->no_lab }}')" {{ $dpc->status != 'diselesaikan' ? 'disabled' : '' }}>
-                                        <i title="Print Result" class="ti ti-printer"></i>
-                                    </button>
-
-                                        {{-- <button class="btn btn-sm btn-outline-primary" data-id={{ $dpc->no_lab }} data-bs-toggle="modal"data-bs-target="#printResult">Print Result</button> --}}
-
-                                                
+                                        </ul>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
@@ -299,16 +337,79 @@
                         </div>
                     </div>
                 </div>
+                {{-- View Print --}}
+                <!-- Modal Preview & Print -->
+                <div class="modal fade" id="printModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Preview & Print</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        
+                        <!-- Hasil print dimasukkan di sini -->
+                        <div class="modal-body" id="printContent"></div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                            <button type="button" class="btn btn-primary" onclick="printDiv()">Print</button>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                {{-- Modal Kesimpulan dan saran --}}
+                <div class="modal fade" id="kesimpulanSaranModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                        <form id="kesimpulanSaranForm" method="POST" action="{{ route('hasil_pemeriksaans.simpanKesimpulanSaran') }}">
+                            @csrf
+                            <input type="hidden" name="no_lab" id="modalNoLab">
+
+                            <div class="modal-header">
+                            <h5 class="modal-title">Kesimpulan & Saran</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="kesimpulan" class="form-label">Kesimpulan</label>
+                                <textarea name="kesimpulan" id="kesimpulan" rows="3" class="form-control"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="saran" class="form-label">Saran</label>
+                                <textarea name="saran" id="saran" rows="3" class="form-control"></textarea>
+                            </div>
+                            </div>
+
+                            <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                    </div>
               </div>
           </div>
       </div>
       </div>
     </div>
 
+    <!-- Dot Loading -->
+    <div id="loadingDots" 
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(255,255,255,0.7); z-index:2000; 
+            justify-content:center; align-items:center; flex-direction:column;">
+        <div class="dots">
+            <span></span><span></span><span></span>
+        </div>
+        <p style="margin-top:10px; font-weight:500;">Memuat data...</p>
+    </div>
+
+
   </div>
 @endsection
 @push('script')
-    <script>
+<script>
       document.querySelectorAll('.editBtn, .preview, [id^="selesaikanBtn-"], [id^="printBtn-"], [id^="sampleHistoryBtn-"]').forEach(function(button) {
     // Ambil ID penuh dari button
     const buttonId = button.id || button.getAttribute('data-id');
@@ -379,16 +480,47 @@
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.btn-kesimpulan-saran').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const noLab = this.getAttribute('data-id');
+            document.getElementById('modalNoLab').value = noLab;
+        });
+    });
+});
+</script>
+
+
+<script>
     let noteModal = null;
 
     function openModal(noLab) {
-        if (!noteModal) {
-            noteModal = new bootstrap.Modal(document.getElementById('noteModal'));
-        }
-        document.getElementById('currentNoLab').value = noLab;
-        document.getElementById('patientNote').value = '';
-        noteModal.show();
+        // tampilkan loading dots
+        document.getElementById('loadingDots').style.display = 'flex';
+
+        fetch(`/analyst/print/pasien/${noLab}`)
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('printContent').innerHTML = html;
+
+                // sembunyikan loading dots
+                document.getElementById('loadingDots').style.display = 'none';
+
+                // buka modal
+                const modal = new bootstrap.Modal(document.getElementById('printModal'));
+                modal.show();
+            })
+            .catch(err => {
+                document.getElementById('loadingDots').style.display = 'none';
+                alert("Gagal mengambil data cetak: " + err);
+            });
     }
+
+    // Hapus isi printContent setiap kali modal ditutup
+    document.getElementById('printModal').addEventListener('hidden.bs.modal', function () {
+        document.getElementById('printContent').innerHTML = '';
+    });
+
 
     function submitNote() {
         const note = document.getElementById('patientNote').value;
@@ -400,6 +532,32 @@
         
         window.open(printUrl, '_blank');
         noteModal.hide();
+    }
+
+    function printDiv() {
+        const printContent = document.getElementById('printContent').innerHTML;
+
+        const printWindow = window.open('', '', 'width=900,height=650');
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>Print Preview</title>
+                <link rel="stylesheet" href="{{ asset('/assets/vendor/css/rtl/core.css') }}">
+                <link rel="stylesheet" href="{{ asset('/assets/vendor/css/rtl/theme-default.css') }}">
+                <link rel="stylesheet" href="{{ asset('/assets/css/demo.css') }}">
+            </head>
+            <body>
+                ${printContent}
+                <script>
+                    window.onload = function() {
+                        window.print();
+                        window.onafterprint = function() { window.close(); }
+                    }
+                <\/script>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
     }
 </script>
 
@@ -440,11 +598,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         const data_pasien = res.data;
                         const data_pemeriksaan_pasien = res.data.dpp;
                         const hasil_pemeriksaan = res.data.hasil_pemeriksaan || [];
+                        const history = res.data.history;
                         
                         // Generate content untuk modal
-                        const resultContent = getResultTableContent(data_pemeriksaan_pasien, data_pasien, hasil_pemeriksaan);
+                        const resultContent = getResultTableContent(data_pemeriksaan_pasien, data_pasien, hasil_pemeriksaan, history);
                         modalContent.innerHTML = resultContent;
-                        
+
+                                              
                         // Initialize duplo column visibility setelah content dimuat
                         setTimeout(() => {
                             checkAndShowDuploColumns();
@@ -476,7 +636,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Fungsi untuk generate content hasil pemeriksaan dalam modal
-    function getResultTableContent(data_pemeriksaan_pasien, data_pasien, hasil) {
+    function getResultTableContent(data_pemeriksaan_pasien, data_pasien, hasil, history) {
     const hematologiParams = [
         { nama: 'WBC', display_name: 'Leukosit', satuan: '10³/µL', normal_min: 4.0, normal_max: 10.0 },
         { nama: 'LYM#', display_name: 'LYM#', satuan: '10³/µL', normal_min: 1.0, normal_max: 4.0 },
@@ -1255,6 +1415,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 `).join('')}
             </div>
         </div>
+         ${noteValue ? `
+        <div class="col-lg-12">
+            <label class="fw-bold mt-2">Note</label>
+            <textarea class="form-control" rows="3" disabled>${noteValue}</textarea>
+        </div>
+    ` : ''}
+        
     
     <style>
         .hematologi-row {
@@ -1334,7 +1501,7 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 // Export fungsi jika diperlukan
-window.getTableContent = getTableContent;
+window.getResultTableContent = getResultTableContent;
     
     // Fungsi untuk mengecek dan menampilkan kolom duplo - ALWAYS SHOW VERSION
     function checkAndShowDuploColumns() {

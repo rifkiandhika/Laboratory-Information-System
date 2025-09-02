@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('no_lab');
             $table->string('tabung');
             $table->string('serum');
+            $table->string('kode');
             $table->string('status');
             $table->string('note')->nullable();
             $table->dateTime('tanggal');

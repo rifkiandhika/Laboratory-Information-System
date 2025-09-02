@@ -8,6 +8,7 @@ use App\Http\Controllers\analyst\spesimentHendlingController;
 use App\Http\Controllers\analyst\worklistController;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\department\DepartmentController;
+use App\Http\Controllers\mcu\McuPackageController;
 
 /*
 |--------------------------------------------------------------------------

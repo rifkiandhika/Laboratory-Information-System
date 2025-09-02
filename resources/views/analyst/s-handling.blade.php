@@ -57,9 +57,15 @@
         .detail-radio {
             margin-top: 5px;
         }
+        .dropdown-menu {
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+
 </style>
 
-<div class="content" id="scroll-content">
+<div>
     <div class="container-fluid">
         <!-- Page Heading -->
         <div class="d-sm-flex  mt-3">
@@ -171,8 +177,8 @@
                             </div>
                         </form> --}}
                         
-                            <div class="table-responsive">
-                                <table class="table table-striped table-bordered" id="myTable">
+                            <div>
+                                <table class="table table-striped table-bordered table-responsive" id="myTable">
                                     <thead>
                                         <tr>
                                             <th class="sorting_disabled"><input style="font-size: 20px; cursor: pointer; clear:" type="checkbox" name="check" id="select_all_ids" class="form-check-input"></th>
@@ -220,50 +226,87 @@
                                                 <span class="badge bg-success text-white">Approved</span>
                                                 @endif
                                             </td>
-                                            <td class="col-4">
-                                                <button title="Preview" class="btn btn-outline-secondary btn-preview" data-id="{{ $dpc->id }}" data-bs-target="#modalSpesimen" data-bs-toggle="modal">
-                                                    <i class="ti ti-test-pipe-2"></i>
-                                                </button>
-                                                
-                                                <button class="btn btn-secondary barcodeBtn btn-barcode"
-                                                    onclick="showBarcodeModal('{{ $dpc->id }}', '{{ $dpc->no_lab }}')"
-                                                    title="Tampilkan Barcode">
-                                                    <i class="ti ti-barcode"></i>
-                                                </button> 
-                                                
-                                                <button title="Edit" class="btn btn-outline-secondary btn-edit" data-id="{{ $dpc->id }}" data-bs-target="#modalEdit" data-bs-toggle="modal">
-                                                    <i class="ti ti-edit"></i>
-                                                </button>
-                                                
-                                                <form id="backdashboard-{{ $dpc->id }}" action="{{ route('spesiment.backdashboard', $dpc->id) }}" method="POST" style="display: none;">
-                                                    @csrf
-                                                </form>
-                                                <button title="Kembalikan Ke Dashboard" class="btn btn-outline-secondary" onclick="confirmBackdashboard({{ $dpc->id }})">
-                                                    <i class="ti ti-arrow-back-up"></i>
-                                                </button>
-                                                
-                                                <form id="spesimentBack-{{ $dpc->id }}" action="{{ route('spesiment.back', $dpc->id) }}" method="POST" style="display: none;">
-                                                    @csrf
-                                                </form>
-                                                <button title="Kembalikan Ke Loket" class="btn btn-outline-secondary" onclick="confirmBack({{ $dpc->id }})">
-                                                    <i class="ti ti-arrow-back-up"></i>
-                                                </button>
-                                                
-                                                {{-- <form action="" method="post">
-                                                </form> --}}
+                                            <td>
+                                                <div class="dropdown position-static">
+                                                    <!-- Tombol titik tiga -->
+                                                    <a href="#" 
+                                                    class="text-secondary" 
+                                                    id="aksiDropdown{{ $dpc->id }}" 
+                                                    data-bs-toggle="dropdown" 
+                                                    data-bs-display="static" 
+                                                    aria-expanded="false">
+                                                        <i class="ti ti-dots-vertical fs-5"></i>
+                                                    </a>
 
-                                                <form id="delete-form-{{ $dpc->id }}"
-                                                    action="{{ route('spesiment.destroy', $dpc->no_lab) }}" method="POST"
-                                                    style="display: none;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
-                                                
-                                                <button title="Hapus" class="btn btn-danger"
-                                                    onclick="confirmDelete({{ $dpc->id }})"><i
-                                                    class="ti ti-trash"></i>
-                                                </button>
+                                                    <!-- Menu dropdown tanpa ul li -->
+                                                    <div class="dropdown-menu dropdown-menu-end  shadow" aria-labelledby="aksiDropdown{{ $dpc->id }}">
+                                                        
+                                                        <!-- Preview -->
+                                                        <button class="dropdown-item btn-preview"
+                                                                data-id="{{ $dpc->id }}"
+                                                                data-bs-target="#modalSpesimen"
+                                                                data-bs-toggle="modal">
+                                                            <i class="ti ti-test-pipe-2 me-2"></i> Preview
+                                                        </button>
 
+                                                        <!-- Barcode -->
+                                                        <button class="dropdown-item barcodeBtn btn-barcode"
+                                                                onclick="showBarcodeModal('{{ $dpc->id }}', '{{ $dpc->no_lab }}')">
+                                                            <i class="ti ti-barcode me-2"></i> Barcode
+                                                        </button>
+
+                                                        <!-- Edit -->
+                                                        <button class="dropdown-item btn-edit"
+                                                                data-id="{{ $dpc->id }}"
+                                                                data-bs-target="#modalEdit"
+                                                                data-bs-toggle="modal">
+                                                            <i class="ti ti-edit me-2"></i> Edit
+                                                        </button>
+
+                                                        <!-- Divider -->
+                                                        <div class="dropdown-divider"></div>
+
+                                                        <!-- Back to Dashboard -->
+                                                        <form id="backdashboard-{{ $dpc->id }}" 
+                                                            action="{{ route('spesiment.backdashboard', $dpc->id) }}" 
+                                                            method="POST" 
+                                                            style="display: none;">
+                                                            @csrf
+                                                        </form>
+                                                        <button class="dropdown-item"
+                                                                onclick="confirmBackdashboard({{ $dpc->id }})">
+                                                            <i class="ti ti-arrow-back-up me-2"></i> Back to Dashboard
+                                                        </button>
+
+                                                        <!-- Back to Locket -->
+                                                        <form id="spesimentBack-{{ $dpc->id }}" 
+                                                            action="{{ route('spesiment.back', $dpc->id) }}" 
+                                                            method="POST" 
+                                                            style="display: none;">
+                                                            @csrf
+                                                        </form>
+                                                        <button class="dropdown-item"
+                                                                onclick="confirmBack({{ $dpc->id }})">
+                                                            <i class="ti ti-arrow-back-up me-2"></i> Back to Locket
+                                                        </button>
+
+                                                        <!-- Divider -->
+                                                        <div class="dropdown-divider"></div>
+
+                                                        <!-- Delete -->
+                                                        <form id="delete-form-{{ $dpc->id }}" 
+                                                            action="{{ route('spesiment.destroy', $dpc->no_lab) }}" 
+                                                            method="POST" 
+                                                            style="display: none;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                        </form>
+                                                        <button class="dropdown-item text-danger"
+                                                                onclick="confirmDelete({{ $dpc->id }})">
+                                                            <i class="ti ti-trash me-2"></i> Delete
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </td>
                                         </tr>
                                         @endforeach
@@ -776,7 +819,7 @@
 </script>
 
 <script>
-   $(function () {
+  $(function () {
     let detailSpesiment = document.getElementById('detailSpesiment');
 
     $('.btn-preview').on('click', function () {
@@ -787,59 +830,53 @@
             return response.json();
         }).then(res => {
             if (res.status === 'success') {
-                let data_pasien = res.data;
                 let scollection = res.data.spesimentcollection;
-                let spesimen = res.data.spesiment; // spesimen array
+                let spesimen = res.data.spesiment;
                 let data_pemeriksaan_pasien = res.data.dpp;
 
                 let detailContent = '';
                 detailContent += `<h5 class="title mt-3">Inspection Details</h5><hr><div class="row">`;
 
-            data_pemeriksaan_pasien.forEach(e => {
-                detailContent += `
-                    <input type="hidden" name="no_lab" value="${e.no_lab}">
-                    <div class="col-12 col-md-6" id="${e.id_departement}">
-                        <h6>${e.data_departement.nama_department}</h6>
-                        <ol>
-                `;
-                e.pasiens.forEach(p => {
-                    detailContent += `<li>${p.data_pemeriksaan.nama_pemeriksaan}</li>`;
-                });
-
-                detailContent += `</ol><hr></div>`;
-            });
-
-            detailContent += `</div>`;
-
-                // Tentukan tabung yang masuk ke Spesiment Collection dan Handlings
-                const collectionTabs = ['K3-EDTA', 'CLOTH-ACTIVATOR', 'CLOTH-ACT'];
-                const handlingTabs = ['CLOT-ACT']; // misalnya tabung lain untuk handling
-
-                // Render Spesiment Collection dulu: paksa urutan CLOTH-ACT di atas
-                let hasCollectionHeader = false;
-                collectionTabs.forEach(tabungName => {
-                    spesimen
-                        .filter(e => e.tabung === tabungName)
-                        .forEach(e => {
-                            if (!hasCollectionHeader) {
-                                detailContent += `<h5 class="title mt-3">Spesiment Collection</h5><hr>`;
-                                hasCollectionHeader = true;
-                            }
-                            detailContent += generateAccordionHTML(e, scollection);
-                        });
-                });
-
-                // Render sisanya (Handlings) jika ada
-                let hasHandlingHeader = false;
-                spesimen
-                    .filter(e => !collectionTabs.includes(e.tabung))
-                    .forEach(e => {
-                        if (!hasHandlingHeader) {
-                            detailContent += `<h5 class="title mt-3">Spesiment Handlings</h5><hr>`;
-                            hasHandlingHeader = true;
-                        }
-                        detailContent += generateAccordionHTML(e, scollection);
+                // render pemeriksaan pasien
+                data_pemeriksaan_pasien.forEach(e => {
+                    detailContent += `
+                        <input type="hidden" name="no_lab" value="${e.no_lab}">
+                        <div class="col-12 col-md-6" id="${e.id_departement}">
+                            <h6>${e.data_departement.nama_department}</h6>
+                            <ol>
+                    `;
+                    e.pasiens.forEach(p => {
+                        detailContent += `<li>${p.data_pemeriksaan.nama_pemeriksaan}</li>`;
                     });
+                    detailContent += `</ol><hr></div>`;
+                });
+
+                detailContent += `</div>`;
+
+                // daftar tabung Collection
+                const collectionTabs = ['K3-EDTA', 'CLOTH-ACTIVATOR', 'CLOTH-ACT'];
+
+                // ------------ Spesiment Collection ------------
+                let collectionSpecimens = spesimen.filter(e => e.spesiment === "Spesiment Collection");
+                if (collectionSpecimens.length > 0) {
+                    detailContent += `<h5 class="title mt-3">Spesiment Collection</h5><hr>`;
+                    detailContent += `<div class="accordion" id="accordionCollection">`;
+                    collectionSpecimens.forEach(e => {
+                        detailContent += generateAccordionHTML(e, scollection, "collection");
+                    });
+                    detailContent += `</div>`;
+                }
+
+                // ------------ Spesiment Handlings ------------
+                let handlingSpecimens = spesimen.filter(e => e.spesiment === "Spesiment Handlings");
+                if (handlingSpecimens.length > 0) {
+                    detailContent += `<h5 class="title mt-3">Spesiment Handlings</h5><hr>`;
+                    detailContent += `<div class="accordion" id="accordionHandling">`;
+                    handlingSpecimens.forEach(e => {
+                        detailContent += generateAccordionHTML(e, scollection, "handling");
+                    });
+                    detailContent += `</div>`;
+                }
 
                 detailSpesiment.innerHTML = detailContent;
             }
@@ -847,14 +884,19 @@
     });
 });
 
-// fungsi yang menghasilkan HTML accordion untuk setiap tabung
-function generateAccordionHTML(e, scollection) {
+// fungsi generate accordion
+function generateAccordionHTML(e, scollection, type) {
     let details = '';
     let hasCollectionData = false;
     let noteText = '';
     let kapasitas, serumh, clotact;
 
-    const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key && item.tabung === e.tabung);
+    const collectionItem = scollection.find(item =>
+        item.no_lab === e.laravel_through_key &&
+        item.tabung === e.tabung &&
+        item.kode === e.kode
+    );
+
     if (collectionItem) {
         hasCollectionData = true;
         noteText = collectionItem.note || '';
@@ -862,6 +904,8 @@ function generateAccordionHTML(e, scollection) {
         serumh = collectionItem.serumh;
         clotact = collectionItem.clotact;
     }
+
+    const uniqId = `${e.tabung}-${e.kode}`.replace(/\s+/g, '');
 
     if (e.details && e.details.length > 0) {
         details = `<div class="detail-container col-12 col-md-6">`;
@@ -873,13 +917,13 @@ function generateAccordionHTML(e, scollection) {
             if (hasCollectionData) {
                 if (e.tabung === 'K3-EDTA') {
                     isChecked = kapasitas == detail.id ? 'checked' : '';
-                    isDisabled = kapasitas == detail.id ? '' : 'disabled';
+                    isDisabled = 'disabled';
                 } else if (e.tabung === 'CLOTH-ACTIVATOR') {
                     isChecked = serumh == detail.id ? 'checked' : '';
-                    isDisabled = serumh == detail.id ? '' : 'disabled';
+                    isDisabled = 'disabled';
                 } else if (e.tabung === 'CLOTH-ACT') {
                     isChecked = clotact == detail.id ? 'checked' : '';
-                    isDisabled = clotact == detail.id ? '' : 'disabled';
+                    isDisabled = 'disabled';
                 }
             } else {
                 if (detail.nama_parameter.toLowerCase().includes('normal')) {
@@ -888,6 +932,10 @@ function generateAccordionHTML(e, scollection) {
                 isDisabled = '';
             }
 
+            // Handling → serum[kode]
+            // Collection → hanya tampil readonly
+            const radioName = (type === "handling") ? `serum[${e.kode}]` : `${e.tabung}_${e.kode}`;
+
             details += `
             <div class="detail-item">
                 <div class="detail-text">${detail.nama_parameter}</div>
@@ -895,39 +943,43 @@ function generateAccordionHTML(e, scollection) {
                     <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>
                 </div>
                 <div class="detail-radio-container">
-                    ${e.tabung === 'K3-EDTA' ? `<input type="radio" name="kapasitas[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}
-                    ${e.tabung === 'CLOTH-ACTIVATOR' ? `<input type="radio" name="serumh[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}
-                    ${e.tabung === 'CLOTH-ACT' ? `<input type="radio" name="clotact[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}
-                    ${e.tabung === 'CLOT-ACT' ? `<input type="radio" name="serum[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}
-                    ${e.tabung === 'CLOT-' ? `<input type="radio" name="serumc[]" value="${detail.id}" class="detail.radio" ${isChecked} ${isDisabled}/>` : ''}
+                    <input type="radio" name="${radioName}" value="${detail.id}" ${isChecked} ${isDisabled}/>
                 </div>
             </div>`;
         });
         details += `</div>`;
     }
 
-    let note = (e.tabung === 'CLOTH-ACT' || e.tabung === 'CLOT-ACT') ?
-        '<p class="mb-0"><strong>Note</strong></p>' : '';
+    // note + kode
+    let noteHTML = '';
+    if (type === "handling") {
+        noteHTML = `
+            <input type="hidden" name="kode[]" value="${e.kode}">
+            <p class="mb-0"><strong>Note</strong></p>
+            <textarea class="form-control" name="note[${e.kode}]" rows="3">${noteText}</textarea>
+        `;
+    } else {
+        noteHTML = `
+            <p class="mb-0"><strong>Note</strong></p>
+            <textarea class="form-control" rows="3" disabled>${noteText || '-'}</textarea>
+        `;
+    }
 
     return `
-    <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="heading${e.tabung}">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}">
-                    Tabung ${e.tabung}
-                </button>
-            </h2>
-            <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}">
-                <div class="accordion-body">
-                    <div class="container">${details}</div>
-                    ${note}
-                    <textarea class="form-control" name="note[]" row="3" placeholder="${noteText || 'null'}" ${hasCollectionData ? 'disabled' : ''}></textarea>
-                </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="heading${uniqId}">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${uniqId}">
+                Tabung ${e.tabung} (${e.kode})
+            </button>
+        </h2>
+        <div id="collapse${uniqId}" class="accordion-collapse collapse" aria-labelledby="heading${uniqId}">
+            <div class="accordion-body">
+                <div class="container">${details}</div>
+                ${noteHTML}
             </div>
         </div>
     </div>`;
 }
-
 </script>
 
 

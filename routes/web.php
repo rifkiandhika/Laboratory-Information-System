@@ -8,7 +8,9 @@ use App\Http\Controllers\loket\pasienController;
 use App\Http\Controllers\analyst\analystDasboard;
 use App\Http\Controllers\analyst\DqcController;
 use App\Http\Controllers\analyst\DSpesimentController;
+use App\Http\Controllers\analyst\LotController;
 use App\Http\Controllers\analyst\QcController;
+use App\Http\Controllers\analyst\QcHistoryController;
 use App\Http\Controllers\analyst\resultController;
 use App\Http\Controllers\analyst\SpesimentController;
 use App\Http\Controllers\analyst\worklistController;
@@ -18,6 +20,8 @@ use App\Http\Controllers\analyst\vDokterController;
 use App\Http\Controllers\department\DepartmentController;
 use App\Http\Controllers\DokterController;
 use App\Http\Controllers\loket\DataPasienController;
+use App\Http\Controllers\mcu\McuPackageController as McuMcuPackageController;
+use App\Http\Controllers\McuPackageController;
 use App\Http\Controllers\pemeriksaan\PemeriksaanController;
 use App\Http\Controllers\poli\PoliController;
 use App\Http\Controllers\report\ReportController;
@@ -68,6 +72,8 @@ route::middleware('auth', 'role:admin')->group(function () {
     Route::resource('role', RoleController::class);
     Route::resource('permission', PermissionController::class);
     Route::resource('spesiments', SpesimentController::class);
+    Route::resource('mcu', McuMcuPackageController::class);
+    Route::get('/package-details/{id}', [McuMcuPackageController::class, 'getPackageDetails'])->name('package-details');
 });
 
 // route::group(['prefix' => 'demo', 'middleware' => ['auth']], function () {
@@ -186,6 +192,9 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth', 'role:analyst,admi
     Route::post('result/done/{id}', [resultController::class, 'updateStatus'])->name('update.status');
     Route::get('report', [resultController::class, 'report'])->name('result.report');
     Route::post('report/data', [resultController::class, 'getReportData'])->name('result.data');
+    Route::post('/hasil-pemeriksaans/kesimpulan-saran', [resultController::class, 'simpanKesimpulanSaran'])
+        ->name('hasil_pemeriksaans.simpanKesimpulanSaran');
+
 
     // Route::get('/print', [resultController::class, 'print']);
     // Route::get('/analyst/result/{result}', [ResultController::class, 'show'])->name('result.show');
@@ -193,7 +202,34 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth', 'role:analyst,admi
     Route::resource('Qc', QcController::class);
     // Route::get('/get-qc-data', [QcController::class, 'getQcData'])->name('get-qc-data');
     Route::resource('Dqc', DqcController::class);
+    Route::get('/qc/lot/create', [QcController::class, 'create'])->name('qc.lot.create');
+    Route::post('/Qc/store-lot', [QcController::class, 'storeLot']);
+    Route::post('/store-complete-qc', [LotController::class, 'storeComplete'])->name('analyst.lots.store-complete');
+    Route::put('/update-complete-qc/{id}', [LotController::class, 'updateComplete'])->name('analyst.lots.update-complete');
+    Route::get('/get-lots-by-department/{departmentId}', [LotController::class, 'getLotsByDepartment'])->name('analyst.lots.by-department');
+    Route::get('/get-lot-detail/{id}', [LotController::class, 'getLotDetail'])->name('analyst.lots.detail');
+    Route::delete('/delete-lot/{id}', [LotController::class, 'deleteLot'])->name('analyst.lots.delete');
+    Route::get('/get-all-lots', [LotController::class, 'getAllLots'])->name('analyst.lots.all');
+    Route::get('/export-lot/{id}/{format?}', [LotController::class, 'exportLot'])->name('analyst.lots.export');
 
+
+
+    Route::get('api/get-qc-levels', [QcController::class, 'getQcLevels']);
+    Route::get('api/get-qc-by-level/{level}', [QcController::class, 'getQcByLevel']);
+    Route::get('api/get-qc-details/{qcId}', [QcController::class, 'getQcDetails']);
+    Route::post('/api/save-qc-results', [QcController::class, 'saveQcResults']);
+    Route::get('api/get-chart-data/{qcId}/{parameter}', [QcController::class, 'getChartData']);
+    Route::get('api/get-control-limits/{qcId}/{parameter}', [QcController::class, 'getControlLimits']);
+    Route::get('api/get-qc-history', [QcController::class, 'getQcHistory']);
+    Route::get('api/export-qc-data', [QcController::class, 'exportQcData']);
+
+    Route::resource('qh', QcHistoryController::class);
+    Route::get('api/get-departments', [QcHistoryController::class, 'getDepartments']);
+    Route::get('api/get-department/{id}', [QcHistoryController::class, 'getDepartment']);
+    Route::get('api/get-qc-history/{lotId}', [QcHistoryController::class, 'getQcHistory']);
+    Route::get('api/get-chart-data-history/{qcId}/{parameter}', [QcHistoryController::class, 'getChartDataHistory']);
+    Route::get('api/get-available-dates/{lotId}', [QcHistoryController::class, 'getAvailableDates']);
+    Route::get('api/get-history-statistics/{lotId}/{parameter}', [QcHistoryController::class, 'getHistoryStatistics']);
 
     // Route::get('/quality-control', function () {
     //     return view('analyst.quality-control');

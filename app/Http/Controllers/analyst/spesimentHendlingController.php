@@ -67,75 +67,74 @@ class spesimentHendlingController extends Controller
      */
     public function store(Request $request)
     {
-        // Debugging request
-        // dd($request);
-
-        // dd($request);
+        // dd($request->all());
         $request->validate([
             'no_lab' => 'required',
-            'serum' => 'required|array',
-            'serumc' => 'required|array'
+            'serum' => 'nullable|array',
+            'serumc' => 'nullable|array',
+            'kode' => 'nullable|array',
+            'note' => 'nullable|array',
         ]);
 
-        // Ambil input dari request
-        $no_lab = $request->input('no_lab');
-        $serum = $request->input('serum');
-        $serumc = $request->input('serumc');
-        $notes = $request->input('note', []);
+        $no_lab   = $request->input('no_lab');
+        $serum    = $request->input('serum', []);    // untuk tabung CLOT-ACT
+        $serumc   = $request->input('serumc', []);   // untuk tabung CLOT
+        $kode     = $request->input('kode', []);
+        $notes    = $request->input('note', []);
 
-        // Menghapus data lama sebelum memasukkan data baru
-        spesimentHandling::where('no_lab', $no_lab)->delete();  // Hapus semua data spesimen yang terkait dengan no_lab
-        // historyPasien::where('no_lab', $no_lab)->delete(); // Hapus history pasien terkait no_lab
+        // Hapus data lama
+        spesimentHandling::where('no_lab', $no_lab)->delete();
 
-        // Jika ada kapasitas, simpan data baru untuk tabung EDTA
-        if (!empty($serum)) {
-            foreach ($serum as $x => $serum) {
-                spesimentHandling::create([
-                    'no_lab' => $no_lab,
-                    'tabung' => 'CLOT-ACT',
-                    'serum' => $serum,
-                    'status' => 'Acc Handling',
-                    'note' => $notes[$x] ?? null,
-                    'tanggal' => now(),
-                ]);
+        // Insert untuk CLOT-ACT
+        foreach ($serum as $kodeKey => $ser) {
+            spesimentHandling::create([
+                'no_lab'  => $no_lab,
+                'kode'    => $kodeKey,   // langsung dari key array "SH-001", "SH-002"
+                'tabung'  => 'CLOTH-ACTIVATOR',
+                'serum'   => $ser,
+                'status'  => 'Acc Handling',
+                'note'    => $notes[$kodeKey] ?? null,
+                'tanggal' => now(),
+            ]);
 
-                historyPasien::create([
-                    'no_lab' => $no_lab,
-                    'proses' => 'Acc Handling',
-                    'tempat' => 'Laboratorium',
-                    'waktu_proses' => now(),
-                ]);
-            }
-        }
-        if (!empty($serumc)) {
-            foreach ($serumc as $x => $serc) {
-                spesimentHandling::create([
-                    'no_lab' => $no_lab,
-                    'tabung' => 'CLOT',
-                    'serum' => $serc,
-                    'status' => 'Acc Handling',
-                    'note' => $notes[$x] ?? null,
-                    'tanggal' => now(),
-                ]);
-
-                historyPasien::create([
-                    'no_lab' => $no_lab,
-                    'proses' => 'Acc Handling',
-                    'tempat' => 'Laboratorium',
-                    'waktu_proses' => now(),
-                ]);
-            }
+            historyPasien::create([
+                'no_lab'       => $no_lab,
+                'proses'       => 'Acc Handling',
+                'tempat'       => 'Laboratorium',
+                'waktu_proses' => now(),
+            ]);
         }
 
-        // Update status pasien menjadi 'Acc Collection'
+
+        // Insert untuk CLOT
+        foreach ($serumc as $i => $serc) {
+            spesimentHandling::create([
+                'no_lab'  => $no_lab,
+                'kode'    => $kode[$i] ?? null,
+                'tabung'  => 'CLOTH-ACTIVATOR',
+                'serum'   => $serc,
+                'status'  => 'Acc Handling',
+                'note'    => $notes[$i] ?? null,
+                'tanggal' => now(),
+            ]);
+
+            historyPasien::create([
+                'no_lab'       => $no_lab,
+                'proses'       => 'Acc Handling',
+                'tempat'       => 'Laboratorium',
+                'waktu_proses' => now(),
+            ]);
+        }
+
+        // Update status pasien
         pasien::where('no_lab', $no_lab)->update([
             'status' => 'Acc Handling',
         ]);
 
-        // Success toast notification
         toast('Berhasil Approve Spesiment', 'success');
         return redirect()->route('spesiment.index');
     }
+
 
 
     /**

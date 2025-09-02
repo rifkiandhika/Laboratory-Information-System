@@ -4,6 +4,7 @@ namespace App\Http\Controllers\analyst;
 
 use App\Http\Controllers\Controller;
 use App\Models\Department;
+use App\Models\Qc;
 use App\Models\quality_control;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,7 @@ class DqcController extends Controller
     {
 
         $department = Department::all();
-        $qcs = quality_control::with('department')->get();
+        $qcs = Qc::with('department')->get();
 
         return view('analyst.daftar-qc', compact('department', 'qcs'));
     }

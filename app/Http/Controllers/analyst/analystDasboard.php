@@ -60,10 +60,11 @@ class analystDasboard extends Controller
         // dd($request->all());
         $request->validate([
             'no_lab' => 'required',
-            'kapasitas' => 'required_without:serumh|array',
-            'serumh' => 'required_without:kapasitas|array',
-            'clotact' => 'required_without:clotact|array',
+            'kapasitas' => 'nullable|array',
+            'serumh' => 'nullable|array',
+            'clotact' => 'nullable|array',
             'note' => 'nullable|array',
+            'kode' => 'nullable|array',
         ]);
 
         // Ambil input dari request
@@ -73,6 +74,8 @@ class analystDasboard extends Controller
         $clotact = $request->input('clotact', []);
         $notes = $request->input('note', []);
         $status = $request->input('status', 'Acc Collection');
+        $kode = $request->input('kode', []);
+
 
         // Hapus data lama sebelum memasukkan data baru
         spesimentCollection::where('no_lab', $no_lab)->delete();
@@ -82,6 +85,7 @@ class analystDasboard extends Controller
         foreach ($kapasitas as $i => $kap) {
             spesimentCollection::create([
                 'no_lab' => $no_lab,
+                'kode' => $kode[$i] ?? null,
                 'tabung' => 'K3-EDTA',
                 'kapasitas' => $kap,
                 'status' => 'Acc',
@@ -101,6 +105,7 @@ class analystDasboard extends Controller
         foreach ($serumh as $j => $ser) {
             spesimentCollection::create([
                 'no_lab' => $no_lab,
+                'kode' => $kode[$j] ?? null,
                 'tabung' => 'CLOTH-ACTIVATOR',
                 'serumh' => $ser, // gunakan field 'kapasitas' jika 'serumh' tidak ada di database
                 'status' => 'Acc',
@@ -116,23 +121,23 @@ class analystDasboard extends Controller
             ]);
         }
         // Simpan data baru untuk clotact (tabung IMUNOLOGY)
-        foreach ($clotact as $c => $clot) {
-            spesimentCollection::create([
-                'no_lab' => $no_lab,
-                'tabung' => 'CLOTH-ACT',
-                'clotact' => $clot, // gunakan field 'kapasitas' jika 'serumh' tidak ada di database
-                'status' => 'Acc',
-                'note' => $notes[$c] ?? null,
-                'tanggal' => now(),
-            ]);
+        // foreach ($clotact as $c => $clot) {
+        //     spesimentCollection::create([
+        //         'no_lab' => $no_lab,
+        //         'tabung' => 'CLOTH-ACT',
+        //         'clotact' => $clot, // gunakan field 'kapasitas' jika 'serumh' tidak ada di database
+        //         'status' => 'Acc',
+        //         'note' => $notes[$c] ?? null,
+        //         'tanggal' => now(),
+        //     ]);
 
-            historyPasien::create([
-                'no_lab' => $no_lab,
-                'proses' => 'Acc Collection',
-                'tempat' => 'Laboratorium',
-                'waktu_proses' => now(),
-            ]);
-        }
+        //     historyPasien::create([
+        //         'no_lab' => $no_lab,
+        //         'proses' => 'Acc Collection',
+        //         'tempat' => 'Laboratorium',
+        //         'waktu_proses' => now(),
+        //     ]);
+        // }
 
         // Update status pasien
         $pasien = pasien::where('no_lab', $no_lab)->first();

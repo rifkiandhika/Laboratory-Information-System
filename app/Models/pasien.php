@@ -82,4 +82,9 @@ class pasien extends Model
     {
         return Carbon::parse($this->attributes['lahir'])->age;
     }
+
+    public function mcuPackage()
+    {
+        return $this->belongsTo(McuPackage::class, 'mcu_package_id');
+    }
 }

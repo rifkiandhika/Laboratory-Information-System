@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('tabung');
             $table->string('kapasitas');
             $table->string('serumh');
+            $table->string('kode');
             $table->string('status');
             $table->string('note')->nullable();
             $table->dateTime('tanggal');

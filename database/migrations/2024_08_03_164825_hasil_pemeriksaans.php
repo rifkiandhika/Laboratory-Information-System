@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('nama_pemeriksaan');
             $table->string('hasil');
             $table->string('note')->nullable();
+            $table->string('kesimpulan')->nullable();
+            $table->string('saran')->nullable();
             $table->string('duplo_d1')->nullable();
             $table->string('duplo_d2')->nullable();
             $table->string('duplo_d3')->nullable();

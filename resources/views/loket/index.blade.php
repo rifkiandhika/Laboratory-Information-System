@@ -143,8 +143,8 @@
                             
                         <a href="#" id="konfirmasiallselecteddata" type="button" class="btn btn-outline-info" >Check In</a>
                         </div>
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordered " id="myTable">
+                        <div>
+                            <table class="table table-striped table-bordered table-responsive" id="myTable">
                                 <thead>
                                     <tr>
                                         <th class="sorting_disabled"><input style="font-size: 20px; cursor: pointer;clear:" type="checkbox" name="" id="select_all_ids" class="form-check-input" ></th>
@@ -188,41 +188,47 @@
                                                     <span class="badge bg-danger text-white">Waiting...</span>
                                                 @endif
                                             </td>
-                                            <td class="col-md-3">
-                                                <button type="button" data-bs-target="#modalPreviewPasien"
-                                                    data-bs-toggle="modal" class="btn btn-secondary btn-edit text-white btn-update"
-                                                    title="Edit"
-                                                    data-id="{{ $dc->id }}"><i class='ti ti-edit'></i>
-                                                </button>
-                                                                                                    
-                                                <button type="button" data-bs-target="#modalPembayaran"
-                                                    data-bs-toggle="modal" class="btn btn-secondary btn-payment text-white"
-                                                    title="Pembayaran" data-payment="{{ $dc->id }}">
-                                                    <i class='ti ti-cash-banknote'></i>
-                                                </button>
-
-                                                <button class="btn btn-secondary disabled"
-                                                        data-id="{{ $dc->id }}"
-                                                        onclick="showBarcodeModal('{{ $dc->no_lab }}')"
-                                                        title="Tampilkan Barcode">
-                                                    <i class="ti ti-barcode"></i>
-                                                </button>
-
-                                                <form id="delete-form-{{ $dc->id }}"
-                                                    action="{{ route('pasien.destroy', $dc->no_lab) }}" method="POST"
-                                                    style="display: none;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
-                                                
-                                                <button class="btn btn-danger"
-                                                    title="Hapus Data"
-                                                    onclick="confirmDelete({{ $dc->id }})"><i
-                                                    class="ti ti-trash"></i>
-                                                </button>
-
-                                            
-                                                </td>
+                                            <td class="col-md-1">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-secondary" id="aksiDropdown{{ $dc->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="ti ti-dots-vertical fs-5"></i>
+                                                    </a>
+                                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="aksiDropdown{{ $dc->id }}">
+                                                        <li>
+                                                            <button type="button" data-bs-target="#modalPreviewPasien"
+                                                                data-bs-toggle="modal" class="dropdown-item btn-edit btn-update"
+                                                                data-id="{{ $dc->id }}">
+                                                                <i class="ti ti-edit me-2"></i> Edit
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button type="button" data-bs-target="#modalPembayaran"
+                                                                data-bs-toggle="modal" class="dropdown-item btn-payment"
+                                                                data-payment="{{ $dc->id }}">
+                                                                <i class="ti ti-cash-banknote me-2"></i> Payment
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button class="dropdown-item disabled"
+                                                                    onclick="showBarcodeModal('{{ $dc->no_lab }}')">
+                                                                <i class="ti ti-barcode me-2"></i> Barcode
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <form id="delete-form-{{ $dc->id }}"
+                                                                action="{{ route('pasien.destroy', $dc->no_lab) }}" method="POST"
+                                                                style="display: none;">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                            </form>
+                                                            <button class="dropdown-item text-danger"
+                                                                onclick="confirmDelete({{ $dc->id }})">
+                                                                <i class="ti ti-trash me-2"></i> Delete
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
                                         </tr>
                                         @php
                                             $counter++; // Tambah counter setelah setiap iterasi
@@ -528,7 +534,7 @@
                     <h5 class="modal-title">Preview Patient</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body" id="pembayaran-pasien" style="max-height: 700px;">
+                <div class="modal-body" id="pembayaran-pasien">
                     <form id="paymentForm" action="{{ route('pasien.kirimlab') }}" method="POST">
                         @csrf
                         <div class="row">
@@ -856,170 +862,222 @@
 
 <script>
     $(function() {
-        let detailPembayaran = document.getElementById('detailPembayaran');
-        $('.btn-payment').on('click', function() {
-            const id = this.getAttribute('data-payment');
+    let detailPembayaran = document.getElementById('detailPembayaran');
+    $('.btn-payment').on('click', function() {
+        const id = this.getAttribute('data-payment');
 
-            fetch(`/api/get-data-pasien/${id}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("HTTP error" + response.status);
-                }
-                return response.json();
-            }).then(res => {
-                if (res.status === 'success') {
-                    let data_pasien = res.data;
-                    let data_pemeriksaan_pasien = res.data.dpp;
-                    // let data_harga = res.data.pasiens;
+        fetch(`/api/get-data-pasien/${id}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("HTTP error" + response.status);
+            }
+            return response.json();
+        }).then(res => {
+            if (res.status === 'success') {
+                let data_pasien = res.data;
+                let data_pemeriksaan_pasien = res.data.dpp;
+                
+                // Dapatkan no_lab pasien yang sedang diproses
+                let currentNoLab = data_pasien.no_lab;
+                
+                let detailContent = '<div class="row">';
+                let totalHarga = 0;
+                let departmentIds = new Set();
+                
+                // Cek apakah ini paket MCU berdasarkan no_lab
+                let isMCUPackage = currentNoLab && currentNoLab.includes('MCU');
+                let packagePrice = 0; // Harga paket dari database
+                let originalPackagePrice = 0; // Harga total individual
 
-                    let detailContent = '<div class="row">';
-                    let totalHarga = 0;
-                    let departmentIds = new Set();
+                // Reset semua nilai sebelumnya
+                totalHarga = 0;
+                packagePrice = 0;
+                originalPackagePrice = 0;
 
-                    // Memfilter data dengan status "baru" dari `pasiens`
-                    data_pemeriksaan_pasien.forEach((e) => {
-                        let filteredPasiens = e.pasiens.filter(pemeriksaan => pemeriksaan.status === 'baru');
+                // Memfilter data dengan status "baru" dan no_lab yang sesuai
+                data_pemeriksaan_pasien.forEach((e) => {
+                    // Pastikan hanya data dengan no_lab yang sesuai yang diproses
+                    if (e.no_lab !== currentNoLab) return;
+                    
+                    // Untuk paket MCU, ambil harga paket dari database
+                    if (isMCUPackage) {
+                        packagePrice = e.harga; // Ambil harga paket terbaru
+                    }
+                    
+                    // Cek apakah ada pasiens dengan status "baru" di dalam array e.pasiens
+                    let filteredPasiens = e.pasiens.filter(pemeriksaan => 
+                        pemeriksaan.status === 'baru' && pemeriksaan.no_lab === currentNoLab
+                    );
 
-                        if (filteredPasiens.length > 0) {
-                            let departmentName = e.data_departement.nama_department;
+                    if (filteredPasiens.length > 0) {
+                        let departmentName = e.data_departement.nama_department;
 
-                            if (!departmentIds.has(e.id_departement)) {
-                                departmentIds.add(e.id_departement);
-                                detailContent += `<div class="col-12 col-md-6" id="${e.id_departement}">
-                                                    <h6>${departmentName}</h6>
-                                                    <ol>`;
-                            }
-
-                            filteredPasiens.forEach((pemeriksaan) => {
-                                detailContent += `<li>${pemeriksaan.data_pemeriksaan.nama_pemeriksaan} - Rp ${pemeriksaan.data_pemeriksaan.harga}</li>`;
-                                totalHarga += Number(pemeriksaan.data_pemeriksaan.harga);
-                            });
-                            console.log(totalHarga);
-
-                            detailContent += `</ol><hr></div>`;
+                        if (!departmentIds.has(e.id_departement)) {
+                            departmentIds.add(e.id_departement);
+                            detailContent += `<div class="col-12 col-md-6" id="${e.id_departement}">
+                                                <h6>${departmentName}</h6>
+                                                <ol>`;
                         }
-                    });
 
-                    detailContent += '</div>';
-                    let pembayaranContent = `
-                        <h5>Payment Details</h5>
-                        <hr>
-                        <div class="row mb-3">
-                            <div class="col-12 col-md-6">
-                                <label>Payment Method</label>
-                                <input class="form-control " type="text" name="no_lab" value="${data_pasien.no_lab}" readonly hidden>
-                                <input class="form-control bg-secondary-subtle" type="text" name="metode_pembayaran" value="${data_pasien.jenis_pelayanan}" readonly>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label>Total Payment</label>
-                                <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran_asli" name="total_pembayaran_asli" value="${totalHarga}" readonly>
-                            </div>
-                            ${data_pasien.jenis_pelayanan === 'bpjs' ? `
-                                <div class="col-12 col-md-6">
-                                    <label>No Bpjs</label>
-                                    <input class="form-control" id="no_pasien" name="no_pasien" type="number"  required />
-                                </div>
-                            ` : ''}
-                            ${data_pasien.jenis_pelayanan === 'asuransi' ? `
-                                <div class="col-12 col-md-6">
-                                    <label>No Asuransi</label>
-                                    <input class="form-control" id="no_pasien" name="no_pasien" type="number" required />
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <label>Penjamin</label>
-                                    <input class="form-control" id="penjamin" name="penjamin" type="text" required />
-                                </div>
-                            ` : ''}
-                            <div class="col-12 col-md-6">
-                                <label>Officer</label>
-                                <input class="form-control" type="text" name="petugas" required>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label>Disc</label>
-                                <input class="form-control " id="diskon" name="diskon" type="number" placeholder="Enter discount if any" value="" min="0">
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label>Payment Amount</label>
-                                <input class="form-control " id="jumlah_bayar" name="jumlah_bayar" type="number" value="">
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label>Total Payment Disc</label>
-                                <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran" name="total_pembayaran" value="${totalHarga}" readonly>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label>Change Money</label>
-                                <input class="form-control bg-secondary-subtle" value="" id="kembalian" name="kembalian" readonly>
-                            </div>
+                        filteredPasiens.forEach((pemeriksaan) => {
+                            // Tampilkan harga asli pemeriksaan (tidak berubah)
+                            let hargaAsli = pemeriksaan.data_pemeriksaan.harga;
+                            detailContent += `<li>${pemeriksaan.data_pemeriksaan.nama_pemeriksaan} - Rp ${hargaAsli.toLocaleString('id-ID')}</li>`;
+                            
+                            // Hitung total harga individual untuk perbandingan
+                            originalPackagePrice += Number(pemeriksaan.data_pemeriksaan.harga);
+                        });
+                        
+                        detailContent += `</ol><hr></div>`;
+                    }
+                });
+
+                // Tentukan total harga berdasarkan jenis
+                if (isMCUPackage) {
+                    totalHarga = packagePrice;
+                } else {
+                    totalHarga = originalPackagePrice;
+                }
+
+                console.log('Current No Lab:', currentNoLab);
+                console.log('Total Harga:', totalHarga);
+                console.log('Is Package:', isMCUPackage);
+                console.log('Package Price from DB:', packagePrice);
+                console.log('Original Individual Price:', originalPackagePrice);
+
+                detailContent += '</div>';
+                let pembayaranContent = `
+                    <h5>Payment Details</h5>
+                    <hr>
+                    ${isMCUPackage && originalPackagePrice > packagePrice ? `
+                        <div class="alert alert-info">
+                            <strong>Paket ${currentNoLab.includes('MCU') ? 'MCU' : 'Khusus'} - Diskon Khusus!</strong><br>
+                            Total Harga Individual: Rp ${originalPackagePrice.toLocaleString('id-ID')}<br>
+                            Harga Paket: Rp ${packagePrice.toLocaleString('id-ID')}<br>
+                            <span class="text-success"><strong>Hemat: Rp ${(originalPackagePrice - packagePrice).toLocaleString('id-ID')}</strong></span>
                         </div>
-                    `;
-                    detailContent += pembayaranContent;
+                    ` : ''}
+                    <div class="row mb-3">
+                        <div class="col-12 col-md-6">
+                            <label>Payment Method</label>
+                            <input class="form-control " type="text" name="no_lab" value="${currentNoLab}" readonly hidden>
+                            <input class="form-control bg-secondary-subtle" type="text" name="metode_pembayaran" value="${data_pasien.jenis_pelayanan}" readonly>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label>Total Payment</label>
+                            <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran_asli" name="total_pembayaran_asli" value="${totalHarga}" readonly>
+                        </div>
+                        ${data_pasien.jenis_pelayanan === 'bpjs' ? `
+                            <div class="col-12 col-md-6">
+                                <label>No Bpjs</label>
+                                <input class="form-control" id="no_pasien" name="no_pasien" type="number"  required />
+                            </div>
+                        ` : ''}
+                        ${data_pasien.jenis_pelayanan === 'asuransi' ? `
+                            <div class="col-12 col-md-6">
+                                <label>No Asuransi</label>
+                                <input class="form-control" id="no_pasien" name="no_pasien" type="number" required />
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label>Penjamin</label>
+                                <input class="form-control" id="penjamin" name="penjamin" type="text" required />
+                            </div>
+                        ` : ''}
+                        <div class="col-12 col-md-6">
+                            <label>Officer</label>
+                            <input class="form-control" type="text" name="petugas" required>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label>Disc</label>
+                            <input class="form-control " id="diskon" name="diskon" type="number" placeholder="Enter discount if any" value="0" min="0">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label>Payment Amount</label>
+                            <input class="form-control " id="jumlah_bayar" name="jumlah_bayar" type="number" value="0" min="0">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label>Total Payment Disc</label>
+                            <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran" name="total_pembayaran" value="${totalHarga}" readonly>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label>Change Money</label>
+                            <input class="form-control bg-secondary-subtle" value="0" id="kembalian" name="kembalian" readonly>
+                        </div>
+                    </div>
+                `;
+                detailContent += pembayaranContent;
 
-                    detailPembayaran.innerHTML = detailContent;
+                detailPembayaran.innerHTML = detailContent;
 
-                    function hitungTotalPembayaran() {
-                        let totalPembayaranAsli = parseFloat(document.getElementById('total_pembayaran_asli').value);
-                        let diskon = parseFloat(document.getElementById('diskon').value) || 0;
-                        let totalSetelahDiskon = totalPembayaranAsli - diskon;
-                        if (totalSetelahDiskon < 0) {
-                            totalSetelahDiskon = 0;
-                        }
-                        document.getElementById('total_pembayaran').value = totalSetelahDiskon;
+                // Fungsi untuk menghitung total pembayaran setelah diskon
+                function hitungTotalPembayaran() {
+                    let totalPembayaranAsli = parseFloat(document.getElementById('total_pembayaran_asli').value) || 0;
+                    let diskon = parseFloat(document.getElementById('diskon').value) || 0;
+                    let totalSetelahDiskon = totalPembayaranAsli - diskon;
+                    
+                    if (totalSetelahDiskon < 0) {
+                        totalSetelahDiskon = 0;
                     }
+                    
+                    document.getElementById('total_pembayaran').value = totalSetelahDiskon;
+                    hitungKembalian(); // Panggil hitungKembalian setelah mengupdate total
+                }
 
-                    function hitungKembalian() {
-                        let totalPembayaran = parseFloat(document.getElementById('total_pembayaran').value);
-                        let jumlahBayar = parseFloat(document.getElementById('jumlah_bayar').value) || 0;
-                        let kembalian = jumlahBayar - totalPembayaran;
-                        document.getElementById('kembalian').value = kembalian >= 0 ? kembalian : 0;
+                // Fungsi untuk menghitung uang kembalian
+                function hitungKembalian() {
+                    let totalPembayaran = parseFloat(document.getElementById('total_pembayaran').value) || 0;
+                    let jumlahBayar = parseFloat(document.getElementById('jumlah_bayar').value) || 0;
+                    let kembalian = jumlahBayar - totalPembayaran;
+                    
+                    document.getElementById('kembalian').value = kembalian >= 0 ? kembalian : 0;
 
-                        let submitButton = document.getElementById('submit-button');
-                        if (jumlahBayar >= totalPembayaran) {
-                            submitButton.disabled = false;
-                        } else {
-                            submitButton.disabled = true;
-                        }
-                    }
-
-                    document.getElementById('jumlah_bayar').addEventListener('input', function() {
-                        hitungTotalPembayaran();
-                        hitungKembalian();
-                    });
-
-                    document.getElementById('diskon').addEventListener('input', function() {
-                        hitungTotalPembayaran();
-                        hitungKembalian();
-                    });
-                    document.getElementById('submit-button').disabled = true;
-
-                    if (data_pasien.status === 'Telah Dibayar') {
-                        document.querySelector('.btn-payment').disabled = true;
-                    }
-
-                    // Jika status pasien 'Dikembalikan Analyst', ambil data no_pasien dari API
-                    if (data_pasien.status === 'Dikembalikan Analyst') {
-                        fetch(`/api/get-data-pasien/${id}`).then(response => response.json())
-                        .then(data => {
-                            let pembayaranArray = data.data.pembayaran;
-
-                            // Pastikan pembayaranArray adalah array dan memiliki elemen
-                            if (Array.isArray(pembayaranArray) && pembayaranArray.length > 0) {
-                                let pembayaran = pembayaranArray[0]; // Ambil elemen pertama dari array
-                                let no_pasien = pembayaran.no_pasien; // Ambil no_pasien dari objek
-                                let nopasienInput = document.getElementById('no_pasien');
-
-                                if (data_pasien.jenis_pelayanan === 'bpjs' || data_pasien.jenis_pelayanan === 'asuransi') {
-                                    nopasienInput.value = no_pasien;
-                                    nopasienInput.disabled = true;
-                                }
-                            } else {
-                                console.error('Pembayaran is an empty array or not an array');
-                            }
-                        }).catch(error => console.error('Error fetching no_pasien:', error));
+                    let submitButton = document.getElementById('submit-button');
+                    if (jumlahBayar >= totalPembayaran && totalPembayaran > 0) {
+                        submitButton.disabled = false;
+                    } else {
+                        submitButton.disabled = true;
                     }
                 }
-            });
+
+                // Event listener untuk input jumlah bayar dan diskon
+                document.getElementById('jumlah_bayar').addEventListener('input', hitungKembalian);
+                document.getElementById('diskon').addEventListener('input', hitungTotalPembayaran);
+
+                // Nonaktifkan tombol submit awal
+                document.getElementById('submit-button').disabled = true;
+
+                if (data_pasien.status === 'Telah Dibayar') {
+                    document.querySelector('.btn-payment').disabled = true;
+                }
+
+                // Jika status pasien 'Dikembalikan Analyst', ambil data no_pasien dari API
+                if (data_pasien.status === 'Dikembalikan Analyst') {
+                    fetch(`/api/get-data-pasien/${id}`).then(response => response.json())
+                    .then(data => {
+                        let pembayaranArray = data.data.pembayaran;
+
+                        // Pastikan pembayaranArray adalah array dan memiliki elemen
+                        if (Array.isArray(pembayaranArray) && pembayaranArray.length > 0) {
+                            let pembayaran = pembayaranArray[0]; // Ambil elemen pertama dari array
+                            let no_pasien = pembayaran.no_pasien; // Ambil no_pasien dari objek
+                            let nopasienInput = document.getElementById('no_pasien');
+
+                            if (data_pasien.jenis_pelayanan === 'bpjs' || data_pasien.jenis_pelayanan === 'asuransi') {
+                                nopasienInput.value = no_pasien;
+                                nopasienInput.disabled = true;
+                            }
+                        } else {
+                            console.error('Pembayaran is an empty array or not an array');
+                        }
+                    }).catch(error => console.error('Error fetching no_pasien:', error));
+                }
+            }
+        }).catch(error => {
+            console.error('Error fetching patient data:', error);
+            alert('Terjadi kesalahan saat mengambil data pasien. Silakan coba lagi.');
         });
     });
+});
 
 </script>
     

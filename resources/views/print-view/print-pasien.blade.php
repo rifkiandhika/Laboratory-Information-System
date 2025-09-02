@@ -115,9 +115,6 @@
         table-layout: fixed; /* Membuat lebar kolom konsisten */
         width: 100%; /* Sesuaikan dengan kebutuhan */
     }
-    .rapi-table th {
-        padding: 6px 4px; /* Padding lebih kecil */
-    }
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 </head>
@@ -281,7 +278,7 @@
         <div class="header text-sm">
             <div class="row m-0">
                 <div class="col-3 col-md-2 p-0">
-                    <img class="ml-4" src="{{ asset('image/logo-rs-1.png') }}" width="120" alt="Logo">
+                    <img class="ml-4" src="{{ asset('image/logo.png') }}" width="120" alt="Logo">
                 </div>
                 <div class="col-8 col-md-8 text-center">
                     <h5 class="fw-bold mb-0">RUMAH SAKIT MUSLIMAT SINGOSARI</h5>
@@ -404,11 +401,11 @@
                 <table style="font-size: 12px" class="table table-sm" id="worklistTable">
                     <thead style="border-top: 1px solid black; border-bottom: 1px solid black">
                         <tr>
-                            <th style="width: 35%;">Jenis Pemeriksaan</th>
-                            <th style="width: 20%;">Hasil</th>
-                            <th style="width: 10%;">Flag</th>
-                            <th style="width: 15%;">Satuan</th>
-                            <th style="width: 20%;">Nilai Rujukan</th>
+                            <th style="width: 35%; padding: 5px">Jenis Pemeriksaan</th>
+                            <th style="width: 20%; padding: 5px">Hasil</th>
+                            <th style="width: 10%; padding: 5px">Flag</th>
+                            <th style="width: 15%; padding: 5px">Satuan</th>
+                            <th style="width: 20%; padding: 5px">Nilai Rujukan</th>
                         </tr>
                     </thead>
                     <tbody id="hasil-tbody">
@@ -505,24 +502,34 @@
                                     }
                                 @endphp
                                 <tr>
-                                    <td>
-                                        <script>
-                                            document.write(getDisplayName('{{ $hasil->nama_pemeriksaan }}'));
-                                        </script>
-                                    </td>
-                                    <td>
-                                        <script>
-                                            document.write(formatHasil('{{ $hasil->hasil }}', '{{ $hasil->nama_pemeriksaan }}') || 'Tidak ada hasil');
-                                        </script>
-                                    </td>
-                                    <td class="flag">
-                                        <script>
-                                            document.write(getFlag('{{ $hasil->hasil }}', '{{ $hasil->nama_pemeriksaan }}'));
-                                        </script>
-                                    </td>
-                                    <td class="text-center">{{ $hasil->satuan ?? '-' }}</td>
-                                    <td>{{ $nilai_rujukan ?: '-' }}</td>
-                                </tr>
+                                <td>{{ $hasil->nama_pemeriksaan }}</td>
+                                <td>{{ $hasil->hasil ?? 'Tidak ada hasil' }}</td>
+                                <td class="flag">
+                                    @php
+                                        $flag = '';
+                                        $hasilVal = $hasil->hasil;
+
+                                        if (is_numeric($hasilVal)) {
+                                            // Ambil nilai rujukan (dari map atau default)
+                                            $raw_rujukan = $nilai_rujukan_map[$hasil->nama_pemeriksaan] ?? $rujukanDefaults[$hasil->nama_pemeriksaan] ?? null;
+
+                                            if ($raw_rujukan && preg_match('/([\d\.]+)-([\d\.]+)/', $raw_rujukan, $match)) {
+                                                $min = (float) $match[1];
+                                                $max = (float) $match[2];
+
+                                                if ($hasilVal < $min) {
+                                                    $flag = '<i class="ti ti-arrow-down text-primary"></i>';
+                                                } elseif ($hasilVal > $max) {
+                                                    $flag = '<i class="ti ti-arrow-up text-danger"></i>';
+                                                }
+                                            }
+                                        }
+                                    @endphp
+                                    {!! $flag !!}
+                                </td>
+                                <td class="text-center">{{ $hasil->satuan ?? '-' }}</td>
+                                <td>{{ $nilai_rujukan ?: '-' }}</td>
+                            </tr>
                             @endforeach
                         @endforeach
                     </tbody>
@@ -530,9 +537,22 @@
             </div>
         </div>
         
-        @if(isset($note) && !empty($note))
-            <p><strong>Note:</strong> {{ $note }}</p>
+        @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->note)
+            <div style="margin-top: 15px; font-size: 15px;">
+                <strong>Note :</strong> {{ $hasil_pemeriksaans->first()->note }}
+            </div>
         @endif
+        @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->kesimpulan)
+            <div style="margin-top: 15px; font-size: 15px;">
+                <strong>Kesimpulan :</strong> {{ $hasil_pemeriksaans->first()->kesimpulan }}
+            </div>
+        @endif
+        @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->saran)
+            <div style="margin-top: 15px; font-size: 15px;">
+                <strong>Saran :</strong> {{ $hasil_pemeriksaans->first()->saran }}
+            </div>
+        @endif
+        <br>
         <div class="footer-container d-flex justify-content-between">
             <!-- Bagian Kiri untuk Nama User -->
             <div class="user-info">

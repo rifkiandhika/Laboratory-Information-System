@@ -23,10 +23,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\DetailDepartment;
 use App\Models\dokter;
+use App\Models\McuPackage;
 use App\Models\Pemeriksaan;
 use App\Models\Report;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class pasienController extends Controller
 {
@@ -52,82 +55,93 @@ class pasienController extends Controller
      */
     public function create()
     {
+        $data['departments']  = Department::with('pemeriksaan')->get();
+        $data['dokters']      = Dokter::with('polis')->get();
+        $data['mcuPackages']  = McuPackage::with('detailDepartments')->get();
 
-        $data['departments'] = Department::with('pemeriksaan')->get();
-        $data['dokters'] = dokter::with('polis')->get();
-
+        // ✅ Generate nomor lab unik
         $tanggal = date('dmy');
-        $urutan = pasien::where('no_lab', 'like', 'LAB' . $tanggal . '%')->count() + 1;
+        do {
+            // 4 digit angka random
+            $random = str_pad(rand(0, 999), 3, '0', STR_PAD_LEFT);
 
-        $urutan = sprintf("%03d", $urutan);
-        $data['no_lab'] = 'LAB' . $tanggal . $urutan;
+            $noLab = 'LAB' . $tanggal . $random;
+        } while (Pasien::where('no_lab', $noLab)->exists());
+
+        $data['no_lab'] = $noLab;
 
         return view('loket.tambah-pasien', $data);
     }
+
+
+
+
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        // dd($request->all());
-        if ($request->cito) {
-            $cito = 1;
-        } else {
-            $cito = 0;
-        }
+        // flag cito
+        $cito = $request->cito ? 1 : 0;
 
-        // Memproses harga pemeriksaan
-        $harga = (int)str_replace('.', '', $request->hargapemeriksaan);
+        // proses harga
+        $harga = (int) str_replace('.', '', $request->hargapemeriksaan);
 
-        // Menentukan dokter internal atau eksternal
+        // dokter internal / eksternal
         $dokter = null;
-
         if ($request->dokter_internal) {
-            // Jika dokter internal dipilih, simpan kode dokter internal
             $dokter = $request->dokter_internal;
         } elseif ($request->dokter_external) {
-            // Jika dokter eksternal dipilih, simpan nama dokter eksternal
             $dokter = $request->dokter_external;
         }
 
-        // Menyimpan data pasien
-        pasien::create([
-            'no_lab' => $request->nolab,
-            'no_rm' => $request->norm,
-            'cito' => $cito,
-            'nik' => $request->nik,
+        // ✅ Ambil no_lab dari form
+        $noLab = $request->no_lab;
+
+        // ✅ Validasi jika no_lab sudah dipakai (misalnya race condition)
+        if (Pasien::where('no_lab', $noLab)->exists()) {
+            return back()->withErrors([
+                'no_lab' => 'Nomor LAB sudah dipakai, silakan refresh halaman untuk mendapatkan nomor baru.'
+            ])->withInput();
+        }
+
+        // Simpan data pasien
+        Pasien::create([
+            'no_lab'         => $noLab,
+            'no_rm'          => $request->norm,
+            'cito'           => $cito,
+            'nik'            => $request->nik,
             'jenis_pelayanan' => $request->jenispelayanan,
-            'nama' => $request->nama,
-            'lahir' => $request->tanggallahir,
-            'jenis_kelamin' => $request->jeniskelamin,
-            'no_telp' => $request->notelepon,
-            'kode_dokter' => $dokter,  // Simpan kode dokter internal atau nama dokter eksternal
-            'asal_ruangan' => $request->asal_ruangan,
-            'diagnosa' => $request->diagnosa,
-            'tanggal_masuk' => now(),
-            'alamat' => $request->alamat,
-            'tanggal' => Carbon::today(),
+            'nama'           => $request->nama,
+            'lahir'          => $request->tanggallahir,
+            'jenis_kelamin'  => $request->jeniskelamin,
+            'no_telp'        => $request->notelepon,
+            'kode_dokter'    => $dokter,
+            'asal_ruangan'   => $request->asal_ruangan,
+            'diagnosa'       => $request->diagnosa,
+            'tanggal_masuk'  => now(),
+            'alamat'         => $request->alamat,
+            'tanggal'        => Carbon::today(),
         ]);
 
-        // Menyimpan pemeriksaan
-        $no = 0;
+        // Simpan pemeriksaan pasien
         foreach ($request->pemeriksaan as $pemeriksaan) {
             $data = DetailDepartment::find($pemeriksaan);
+
             pemeriksaan_pasien::create([
-                'no_lab' => $request->nolab,
-                'id_parameter' => $pemeriksaan,
+                'no_lab'        => $noLab,
+                'id_parameter'  => $pemeriksaan,
                 'id_departement' => $data->department_id,
                 'nama_parameter' => $data->nama_parameter,
-                'harga' => $harga,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'harga'         => $harga,
+                'created_at'    => now(),
+                'updated_at'    => now(),
             ]);
-            $no++;
 
             // Simpan atau update ke report
             $existingReport = Report::where('department', $data->department_id)
-                ->where('nolab', $request->nolab)
+                ->where('nolab', $noLab)
                 ->where('payment_method', $request->jenispelayanan)
                 ->where('id_parameter', $pemeriksaan)
                 ->where('nama_parameter', $data->nama_parameter)
@@ -138,31 +152,31 @@ class pasienController extends Controller
                 $existingReport->increment('quantity');
             } else {
                 Report::create([
-                    'nolab'   => $request->nolab,
-                    'department'   => $data->department_id,
-                    'payment_method'  => $request->jenispelayanan,
-                    'id_parameter'    => $pemeriksaan,
-                    'nama_parameter'  => $data->nama_parameter,
-                    'quantity'        => 1,
-                    'tanggal'         => now(),
+                    'nolab'          => $noLab,
+                    'department'     => $data->department_id,
+                    'payment_method' => $request->jenispelayanan,
+                    'id_parameter'   => $pemeriksaan,
+                    'nama_parameter' => $data->nama_parameter,
+                    'quantity'       => 1,
+                    'tanggal'        => now(),
                 ]);
             }
         }
 
-
-
-        // Menyimpan riwayat pasien
-        historyPasien::create([
-            'no_lab' => $request->nolab,
-            'proses' => 'Order',
-            'tempat' => 'Loket',
+        // Simpan riwayat pasien
+        HistoryPasien::create([
+            'no_lab'      => $noLab,
+            'proses'      => 'Order',
+            'tempat'      => 'Loket',
             'waktu_proses' => now(),
-            'note' => $request->note ?? ''
+            'note'        => $request->note ?? ''
         ]);
 
         toast('Berhasil Menambah data pasien', 'success');
         return redirect()->route('pasien.index');
     }
+
+
 
 
     /**
@@ -352,6 +366,7 @@ class pasienController extends Controller
                 'spesimentcollection',
                 'spesimenthandling.details',
                 'hasil_pemeriksaan',
+                'mcuPackage',
                 // 'obx'
             ])->first();
 
@@ -434,19 +449,18 @@ class pasienController extends Controller
 
         foreach ($pasiens as $pasien) {
             $has_permission_active = false;
-            $has_handling_active = false;
-            $has_full_active = false;
+            $has_handling_active   = false;
+            $has_full_active       = false;
 
             foreach ($pasien->data_pemeriksaan_pasien as $pemeriksaan) {
                 $detail = $pemeriksaan->data_pemeriksaan;
                 if (!$detail) continue;
 
-                $permission = $detail->permission === 'active';
-                $handling = $detail->handling === 'active';
+                $permission = strtolower(trim((string) $detail->permission)) === 'active';
+                $handling   = strtolower(trim((string) $detail->handling)) === 'active';
 
                 if ($permission && $handling) {
                     $has_full_active = true;
-                    break; // status pasti Telah Dikirim ke Lab → tidak perlu lanjut
                 }
 
                 if ($handling) {
@@ -467,20 +481,26 @@ class pasienController extends Controller
                 $status = 'Acc Collection';
                 $proses = 'Spesimen Diterima';
                 $tempat = 'Spesiment Handling';
+            } elseif ($has_permission_active) {
+                $status = 'Telah Dikirim ke Lab';
+                $proses = 'Dikirim ke dashboard';
+                $tempat = 'Laboratorium';
             } else {
                 $status = 'Check In Spesiment';
-                $proses = 'Check In ke Spesiment';
+                $proses = 'Check in Spesiment';
                 $tempat = 'Worklist';
             }
 
+            // Update status pasien
             $pasien->update(['status' => $status]);
 
+            // Simpan history
             historyPasien::create([
-                'no_lab' => $pasien->no_lab,
-                'proses' => $proses,
-                'tempat' => $tempat,
+                'no_lab'      => $pasien->no_lab,
+                'proses'      => $proses,
+                'tempat'      => $tempat,
                 'waktu_proses' => now(),
-                'created_at' => now(),
+                'created_at'  => now(),
             ]);
         }
 

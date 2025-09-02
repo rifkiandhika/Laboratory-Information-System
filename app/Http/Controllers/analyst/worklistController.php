@@ -232,6 +232,7 @@ class worklistController extends Controller
                 'no_lab' => $pasien->no_lab,
                 'proses' => 'Diverifikasi Analyst',
                 'tempat' => 'Laboratorium',
+                'note' => $note,
                 'waktu_proses' => now(),
                 'created_at' => now(),
             ]);
