@@ -57,7 +57,9 @@ class pasienController extends Controller
     {
         $data['departments']  = Department::with('pemeriksaan')->get();
         $data['dokters']      = Dokter::with('polis')->get();
-        $data['mcuPackages']  = McuPackage::with('detailDepartments')->get();
+        $data['mcuPackages']  = McuPackage::with('detailDepartments')
+            ->where('status', 'active')
+            ->get();
 
         // ✅ Generate nomor lab unik
         $tanggal = date('dmy');
