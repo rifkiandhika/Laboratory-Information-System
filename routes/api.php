@@ -47,3 +47,5 @@ Route::post('/kunjunganpemeriksaanhasil', [ApiController::class, 'kunjunganPemer
 Route::get('/departments', [DepartmentController::class, 'data']);
 
 route::get('/collection/post', [spesimentHendlingController::class, 'postCollection']);
+
+Route::get('/qc/{id}', [QcController::class, 'getDetailQc']);

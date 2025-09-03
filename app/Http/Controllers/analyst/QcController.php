@@ -5,6 +5,8 @@ namespace App\Http\Controllers\analyst;
 use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\DetailLot;
+use App\Models\obr;
+use App\Models\obx;
 use App\Models\pasien;
 use App\Models\Qc;
 use App\Models\QcResult;
@@ -372,6 +374,49 @@ class QcController extends Controller
             ], 500);
         }
     }
+
+    public function getDetailQc(Request $request, $qcId)
+    {
+        try {
+            // Ambil QC beserta department
+            $qc = Qc::with('department')->findOrFail($qcId);
+
+            // Cari order di obrs yang cocok dengan name_control
+            $order = obr::where('order_number', $qc->name_control)->first();
+
+            if (!$order) {
+                return response()->json([
+                    'status' => 'fail',
+                    'msg' => 'Order number tidak ditemukan untuk QC ini',
+                    'data' => null
+                ]);
+            }
+
+            // Ambil semua obx berdasarkan message_control_id
+            $obxes = obx::where('message_control_id', $order->message_control_id)->get();
+
+            // Susun response
+            $response = [
+                'qc' => $qc,
+                'order' => $order,
+                'results' => $obxes
+            ];
+
+            return response()->json([
+                'status' => 'success',
+                'msg' => 'Data QC ditemukan',
+                'data' => $response
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'fail',
+                'msg' => 'Failed to fetch QC Data',
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+
 
     // API untuk menyimpan hasil QC
     // public function saveQcResult(Request $request)

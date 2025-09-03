@@ -685,6 +685,54 @@ function setDefaultDate() {
     }
 }
 
+document.getElementById("testDate").addEventListener("change", function() {
+    if (currentQcData && currentQcData.id) {
+        loadQCDetails(currentQcData.id);
+    }
+});
+
+
+function mapApiResultsToHematology(apiResults) {
+    const mappedResults = [];
+
+    hematologiParams.forEach(param => {
+        const match = apiResults.find(r => r.identifier_name === param.nama);
+        if (match) {
+            // Ambil min/max dari identifier_range kalau ada (contoh "4.5-5.9")
+            let min = null, max = null;
+            if (match.identifier_range && match.identifier_range.includes("-")) {
+                const [low, high] = match.identifier_range.split("-").map(v => parseFloat(v));
+                min = low;
+                max = high;
+            }
+
+            mappedResults.push({
+                parameter: param.nama,
+                result: match.identifier_value,
+                unit: match.identifier_unit || param.satuan,
+                range: match.identifier_range,
+                flag: match.identifier_flags,
+                normal_min_l: min,
+                normal_max_l: max
+            });
+        } else {
+            mappedResults.push({
+                parameter: param.nama,
+                result: null,
+                unit: param.satuan,
+                range: null,
+                flag: null,
+                normal_min_l: null,
+                normal_max_l: null
+            });
+        }
+    });
+
+    return mappedResults;
+}
+
+
+
 function setupEventListeners() {
     const lotFilter = document.getElementById('lotFilter');
     lotFilter.onchange = null;
@@ -758,36 +806,54 @@ async function loadQCData() {
     }
 }
 
+// Ambil data QC detail dari API /api/qc/{id}
 async function loadQCDetails(qcId) {
     if (!qcId) {
         clearQCData();
         return;
     }
-    
+
     try {
         isLoading = true;
         const tbody = document.getElementById('parametersBody');
         tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Loading...</td></tr>';
-        
-        const response = await fetch(`/analyst/api/get-qc-details/${qcId}`);
+
+        const response = await fetch(`/api/qc/${qcId}`);
         const data = await response.json();
-        
-        if (data.success) {
-            currentQcData = data.qc;
-            // Untuk hematologi, gunakan parameter hematologi
-            // Untuk non-hematologi, gunakan parameter yang sudah dimuat
-            if (!isHematology) {
-                currentParameters = data.parameters || currentParameters;
+
+        if (data.status === "success" && data.data) {
+            const qc = data.data.qc;
+            const results = data.data.results || [];
+            currentQcData = qc;
+
+            // 🔹 Ambil test date dari input (yyyy-mm-dd)
+            const testDateInput = document.getElementById("testDate").value;
+            const selectedDate = testDateInput ? testDateInput : null;
+
+            // 🔹 Filter berdasarkan tanggal (tanpa timezone shifting)
+            let filteredResults = results;
+            if (selectedDate) {
+                filteredResults = results.filter(r => {
+                    if (!r.tanggal) return false;
+                    const resultDate = r.tanggal.substring(0, 10); // YYYY-MM-DD
+                    return resultDate === selectedDate;
+                });
             }
-            currentResults = data.results || [];
+
+            if (isHematology) {
+                currentResults = mapApiResultsToHematology(filteredResults);
+                currentParameters = hematologiParams.map(p => ({ parameter: p.nama }));
+            } else {
+                currentResults = filteredResults || [];
+                currentParameters = filteredResults.map(r => ({ parameter: r.identifier_name }));
+            }
+
             displayQCInfo();
             displayParameters();
             updateParameterSelector();
-            
-            // Tampilkan elemen setelah data dimuat
             showElements();
         } else {
-            console.error('Failed to load QC details:', data.message);
+            console.error('Failed to load QC details:', data.msg);
             clearQCData();
         }
     } catch (error) {
@@ -797,6 +863,8 @@ async function loadQCDetails(qcId) {
         isLoading = false;
     }
 }
+
+
 
 function clearQCData() {
     document.getElementById('parametersBody').innerHTML = `
