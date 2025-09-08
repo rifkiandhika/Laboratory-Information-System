@@ -30,7 +30,7 @@
                         </div>
 
                         <!-- Department -->
-                        <div class="col-12 col-md-6 col-lg-2">
+                        <div class="col-12 col-md-6 col-lg-2 pt-1">
                            <label for="department"><b>Department</b><strong class="text-danger"> *</strong></label>
                             <select id="department" class="form-control select2" multiple>
                                 <option value="All">All</option>
@@ -42,7 +42,7 @@
 
                         <!-- MCU -->
                         <div class="col-12 col-md-6 col-lg-2">
-                            <label for="mcu" class="form-label"><b>MCU</b></label>
+                            <label for="mcu" class="form-label"><b>MCU</b><span class="text-danger"> *</span></label>
                             <select id="mcu" name="mcu" class="form-control select2" multiple>
                                 <option value="All">All</option>
                                 <option value="1">MCU</option>
@@ -65,7 +65,7 @@
 
                         <!-- Dokter -->
                         <div class="col-12 col-md-6 col-lg-2">
-                            <label for="dokter" class="form-label">Dokter</label>
+                            <label for="dokter" class="form-label"><b>Dokter</b> <span class="text-danger"> *</span></label>
                             <select id="dokter" name="dokter" class="form-control select2" multiple>
                                 <option value="All">All</option>
                                 @foreach($dokters as $dokter)
