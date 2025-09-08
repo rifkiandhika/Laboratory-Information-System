@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class QcResult extends Model
 {
@@ -110,5 +111,23 @@ class QcResult extends Model
             default:
                 return '-';
         }
+    }
+
+    public function getTestDateAttribute($value)
+    {
+        if (!$value) return null;
+
+        // Return format YYYY-MM-DD saja, tanpa waktu
+        return Carbon::parse($value)->format('Y-m-d');
+    }
+
+    // Atau jika ingin tetap full datetime tapi dengan timezone lokal
+    public function getTestDateFormattedAttribute()
+    {
+        if (!$this->test_date) return null;
+
+        return Carbon::parse($this->attributes['test_date'])
+            ->setTimezone(config('app.timezone', 'Asia/Jakarta'))
+            ->format('Y-m-d H:i:s');
     }
 }

@@ -48,4 +48,5 @@ Route::get('/departments', [DepartmentController::class, 'data']);
 
 route::get('/collection/post', [spesimentHendlingController::class, 'postCollection']);
 
-Route::get('/qc/{id}', [QcController::class, 'getDetailQc']);
+Route::get('/qc/{id}', [QcController::class, 'getQcUnified']);
+Route::get('/get-parameters/{qcId}', [QcController::class, 'getParameters']);

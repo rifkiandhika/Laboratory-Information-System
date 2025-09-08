@@ -416,6 +416,91 @@ class QcController extends Controller
         }
     }
 
+    public function getQcUnified($qcId)
+    {
+        try {
+            // Ambil QC beserta department
+            $qc = Qc::with('department')->findOrFail($qcId);
+
+            // Cek apakah ada order dari alat (pakai obrs)
+            $order = obr::where('order_number', $qc->name_control)->first();
+
+            if ($order) {
+                // 🔹 Data dari alat (obx)
+                $obxes = obx::where('message_control_id', $order->message_control_id)->get();
+
+                return response()->json([
+                    'status' => 'success',
+                    'msg'    => 'Data QC dari alat ditemukan',
+                    'data'   => [
+                        'qc'      => $qc,
+                        'order'   => $order,
+                        'results' => $obxes,
+                        'source'  => 'alat'
+                    ]
+                ]);
+            } else {
+                // 🔹 Data manual
+                $parameters = DetailLot::where('quality_control_id', $qcId)
+                    ->select('parameter', 'mean', 'range', 'bts_atas', 'bts_bawah', 'standart')
+                    ->get();
+
+                $results = QcResult::where('qc_id', $qcId)
+                    ->select('parameter', 'result', 'test_date', 'flag')
+                    ->orderBy('test_date', 'desc')
+                    ->get()
+                    ->map(function ($result) {
+                        // Konversi ke format tanggal saja tanpa timezone
+                        if ($result->test_date) {
+                            $result->test_date_original = $result->test_date;
+                            // Ambil tanggal saja, abaikan waktu dan timezone
+                            $result->test_date = \Carbon\Carbon::parse($result->test_date)->format('Y-m-d');
+                        }
+                        return $result;
+                    });
+
+                return response()->json([
+                    'status'     => 'success',
+                    'msg'        => 'Data QC manual ditemukan',
+                    'data'       => [
+                        'qc'         => $qc,
+                        'parameters' => $parameters,
+                        'results'    => $results,
+                        'source'     => 'manual'
+                    ]
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'fail',
+                'msg'    => 'Failed to fetch QC Data',
+                'error'  => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function getParameters($qcId)
+    {
+        try {
+            $parameters = DetailLot::where('quality_control_id', $qcId)
+                ->select('parameter', 'mean', 'range', 'bts_atas', 'bts_bawah', 'standart')
+                ->get();
+
+            return response()->json([
+                'status' => 'success',
+                'data'   => $parameters
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'fail',
+                'msg'    => 'Gagal mengambil parameter',
+                'error'  => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+
 
 
     // API untuk menyimpan hasil QC
@@ -573,12 +658,12 @@ class QcController extends Controller
     {
         try {
             // Debug: Log the incoming parameters
-            \Log::info("Getting control limits for QC ID: {$qcId}, Parameter: {$parameter}");
+            Log::info("Getting control limits for QC ID: {$qcId}, Parameter: {$parameter}");
 
             // First, check if the QC record exists
             $qc = Qc::find($qcId);
             if (!$qc) {
-                \Log::error("QC record not found for ID: {$qcId}");
+                Log::error("QC record not found for ID: {$qcId}");
                 return response()->json(['success' => false, 'message' => 'QC record not found']);
             }
 
@@ -588,7 +673,7 @@ class QcController extends Controller
                 ->where('parameter', $parameter)
                 ->first();
 
-            \Log::info("Control limit query result:", ['result' => $controlLimit]);
+            Log::info("Control limit query result:", ['result' => $controlLimit]);
 
             if ($controlLimit) {
                 // Check if all required fields exist and are not null
@@ -600,7 +685,7 @@ class QcController extends Controller
                     'bts_bawah' => $controlLimit->bts_bawah ?? ($controlLimit->mean ?? 0) - (($controlLimit->range ?? 1) * 3)
                 ];
 
-                \Log::info("Processed limits:", $limits);
+                Log::info("Processed limits:", $limits);
 
                 return response()->json([
                     'success' => true,
@@ -609,7 +694,7 @@ class QcController extends Controller
             }
 
             // If no control limits found, return default values based on data
-            \Log::warning("No control limits found, generating defaults");
+            Log::warning("No control limits found, generating defaults");
 
             // Try to calculate from existing test results
             $testResults = DB::table('test_results')
@@ -637,7 +722,7 @@ class QcController extends Controller
                         'bts_bawah' => $mean - ($std * 3)
                     ];
 
-                    \Log::info("Calculated limits from data:", $limits);
+                    Log::info("Calculated limits from data:", $limits);
 
                     return response()->json([
                         'success' => true,
@@ -655,14 +740,14 @@ class QcController extends Controller
                 'bts_bawah' => 2.0
             ];
 
-            \Log::info("Using default limits:", $defaultLimits);
+            Log::info("Using default limits:", $defaultLimits);
 
             return response()->json([
                 'success' => true,
                 'limits' => $defaultLimits
             ]);
         } catch (Exception $e) {
-            \Log::error("Error in getControlLimits: " . $e->getMessage());
+            Log::error("Error in getControlLimits: " . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),

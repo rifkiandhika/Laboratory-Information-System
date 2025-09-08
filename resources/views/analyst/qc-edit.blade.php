@@ -442,7 +442,7 @@ function initDepartment() {
 // Memuat parameter dari server untuk department non-hematologi
 async function loadParametersFromServer(departmentId) {
     try {
-        const response = await fetch(`/analyst/api/get-parameters/${departmentId}`);
+        const response = await fetch(`/api/get-parameters/${departmentId}`);
         const data = await response.json();
         
         if (data.success && data.parameters && data.parameters.length > 0) {
@@ -824,29 +824,75 @@ async function loadQCDetails(qcId) {
         if (data.status === "success" && data.data) {
             const qc = data.data.qc;
             const results = data.data.results || [];
+            const source = data.data.source;
             currentQcData = qc;
 
             // 🔹 Ambil test date dari input (yyyy-mm-dd)
             const testDateInput = document.getElementById("testDate").value;
             const selectedDate = testDateInput ? testDateInput : null;
 
-            // 🔹 Filter berdasarkan tanggal (tanpa timezone shifting)
+            // 🔹 Filter berdasarkan tanggal
             let filteredResults = results;
-            if (selectedDate) {
+            if (selectedDate && source !== 'alat') {
+                // Untuk data manual, gunakan test_date
+                filteredResults = results.filter(r => {
+                    if (!r.test_date) return false;
+                    
+                    // Handle berbagai format tanggal
+                    let resultDate;
+                    if (r.test_date.includes(' ')) {
+                        // Format: YYYY-MM-DD HH:mm:ss
+                        resultDate = r.test_date.split(' ')[0];
+                    } else if (r.test_date.includes('T')) {
+                        // Format: YYYY-MM-DDTHH:mm:ss
+                        resultDate = r.test_date.split('T')[0];
+                    } else {
+                        // Format: YYYY-MM-DD
+                        resultDate = r.test_date;
+                    }
+                    
+                    console.log(`Comparing: ${resultDate} === ${selectedDate}`);
+                    return resultDate === selectedDate;
+                });
+            } else if (selectedDate && source === 'alat') {
+                // Untuk data dari alat, gunakan tanggal
                 filteredResults = results.filter(r => {
                     if (!r.tanggal) return false;
-                    const resultDate = r.tanggal.substring(0, 10); // YYYY-MM-DD
+                    const resultDate = r.tanggal.substring(0, 10);
                     return resultDate === selectedDate;
                 });
             }
+
+            console.log('Source:', source);
+            console.log('All results:', results);
+            console.log('Filtered results:', filteredResults);
 
             if (isHematology) {
                 currentResults = mapApiResultsToHematology(filteredResults);
                 currentParameters = hematologiParams.map(p => ({ parameter: p.nama }));
             } else {
-                currentResults = filteredResults || [];
-                currentParameters = filteredResults.map(r => ({ parameter: r.identifier_name }));
+                // 🔹 Untuk data manual
+                if (source === 'manual') {
+                    currentResults = filteredResults || [];
+                    
+                    // Ambil parameter dari DetailLot
+                    if (data.data.parameters && data.data.parameters.length > 0) {
+                        currentParameters = data.data.parameters.map(p => ({ parameter: p.parameter }));
+                    } else {
+                        // Fallback: ambil parameter unik dari results
+                        const uniqueParams = [...new Set(filteredResults.map(r => r.parameter))];
+                        currentParameters = uniqueParams.map(param => ({ parameter: param }));
+                    }
+                } else {
+                    // 🔹 Untuk data dari alat
+                    currentResults = filteredResults || [];
+                    const uniqueParams = [...new Set(filteredResults.map(r => r.identifier_name))];
+                    currentParameters = uniqueParams.map(param => ({ parameter: param }));
+                }
             }
+
+            console.log('Current Parameters:', currentParameters);
+            console.log('Current Results:', currentResults);
 
             displayQCInfo();
             displayParameters();
@@ -1061,13 +1107,13 @@ function initChart() {
                 tooltip: {
                     callbacks: {
                         title: (ctx) => 'Date: ' + (ctx[0] ? ctx[0].label : ''),
-                        // Tampilkan nilai asli data dalam tooltip, bukan nilai chart position
                         label: function(ctx) {
-                            // Ambil nilai asli dari data original
-                            if (qcChart && qcChart.originalData && qcChart.originalData[ctx.dataIndex] !== null) {
-                                return 'Value: ' + Number(qcChart.originalData[ctx.dataIndex]).toFixed(2);
+                            // Tampilkan nilai asli dari originalData
+                            if (qcChart && qcChart.originalData && qcChart.originalData[ctx.dataIndex] !== null && qcChart.originalData[ctx.dataIndex] !== undefined) {
+                                const originalValue = qcChart.originalData[ctx.dataIndex];
+                                return 'Value: ' + Number(originalValue).toFixed(2);
                             }
-                            return 'Value: ' + (ctx.parsed && ctx.parsed.y !== undefined ? Number(ctx.parsed.y).toFixed(2) : '');
+                            return 'Value: N/A';
                         }
                     }
                 }
@@ -1090,23 +1136,21 @@ function initChart() {
                 y: {
                     type: 'linear',
                     position: 'left',
-                    // Set rentang tetap berdasarkan posisi SD
-                    min: -1,  // batas bawah (-3SD)
-                    max: 11,  // batas atas (+3SD)
+                    min: -1,
+                    max: 11,
                     grid: { 
                         color: 'rgba(0,0,0,0.08)', 
                         drawBorder: false,
                         lineWidth: 0.5
                     },
                     ticks: {
-                        // Definisi posisi statis untuk setiap label SD
                         stepSize: 2,
                         callback: function(value) {
                             const labels = {
                                 11: '+3SD',
                                 9: '+2SD', 
                                 7: '+1SD',
-                                5: 'Normal',
+                                5: 'Normal', // Changed from 'Normal' to 'Mean'
                                 3: '-1SD',
                                 1: '-2SD',
                                 '-1': '-3SD'
@@ -1132,22 +1176,20 @@ function initChart() {
                         font: {
                             size: 10
                         },
-                        // Tampilkan nilai numerik yang sesuai dengan control limits
                         callback: function(value) {
-                            // Nilai ini akan diupdate secara dinamis berdasarkan control limits
                             if (qcChart && qcChart.controlLimits) {
                                 const L = qcChart.controlLimits;
                                 const mapping = {
                                     11: L.plus3sd,
                                     9: L.plus2sd,
                                     7: L.plus1sd,
-                                    5: L.standard,
+                                    5: L.mean, // Changed from L.standard to L.mean
                                     3: L.minus1sd,
                                     1: L.minus2sd,
                                     '-1': L.minus3sd
                                 };
                                 const numValue = mapping[value];
-                                return (numValue !== undefined && numValue !== null) ? numValue.toFixed(1) : '';
+                                return (numValue !== undefined && numValue !== null && isFinite(numValue)) ? numValue.toFixed(2) : '';
                             }
                             return '';
                         }
@@ -1163,27 +1205,23 @@ function initChart() {
                 const ctx = chart.ctx;
                 const area = chart.chartArea;
                 const yScale = chart.scales.y;
-                const L = chart.controlLimits;
 
                 ctx.save();
 
-                // Definisi posisi statis untuk setiap garis SD
                 const staticPositions = {
                     '+3SD': { yPos: 11, color: '#dc2626', width: 2, dash: [] },
                     '+2SD': { yPos: 9, color: '#ea580c', width: 1, dash: [6,3] },
                     '+1SD': { yPos: 7, color: '#16a34a', width: 1, dash: [4,2] },
-                    'Normal': { yPos: 5, color: '#16a34a', width: 2, dash: [] },
+                    'Normal': { yPos: 5, color: '#16a34a', width: 2, dash: [] }, // Display as 'Normal'
                     '-1SD': { yPos: 3, color: '#16a34a', width: 1, dash: [4,2] },
                     '-2SD': { yPos: 1, color: '#ea580c', width: 1, dash: [6,3] },
                     '-3SD': { yPos: -1, color: '#dc2626', width: 2, dash: [] }
                 };
 
-                // Gambar setiap garis pada posisi yang tetap
                 Object.entries(staticPositions).forEach(([label, config]) => {
                     const y = yScale.getPixelForValue(config.yPos);
                     
                     if (y >= area.top && y <= area.bottom) {
-                        // Gambar garis horizontal
                         ctx.strokeStyle = config.color;
                         ctx.lineWidth = config.width;
                         ctx.setLineDash(config.dash);
@@ -1206,6 +1244,7 @@ async function loadChartData() {
         if (qcChart) {
             qcChart.data.labels = [];
             qcChart.data.datasets[0].data = [];
+            qcChart.originalData = [];
             qcChart.controlLimits = null;
             qcChart.update();
         }
@@ -1213,13 +1252,28 @@ async function loadChartData() {
     }
 
     try {
+        console.log(`Loading chart data for parameter: ${selectedParameter}, QC ID: ${currentQcData.id}`);
+        
         const response = await fetch(`/analyst/api/get-chart-data/${currentQcData.id}/${selectedParameter}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('Chart data response:', data);
 
-        if (!data.success || !qcChart) return;
+        if (!data.success || !qcChart) {
+            console.warn('Chart data not successful or qcChart not initialized');
+            return;
+        }
 
         const controlResponse = await fetch(`/analyst/api/get-control-limits/${currentQcData.id}/${selectedParameter}`);
+        if (!controlResponse.ok) {
+            throw new Error(`Control limits HTTP error! status: ${controlResponse.status}`);
+        }
+        
         const controlData = await controlResponse.json();
+        console.log('Control limits response:', controlData);
 
         const labels = data.labels || [];
         const values = (data.values || []).map(v => {
@@ -1228,10 +1282,20 @@ async function loadChartData() {
             return isNaN(num) ? null : num;
         });
 
+        console.log('Processed values:', values);
+        console.log('Labels:', labels);
+
+        // Validasi data
+        if (labels.length === 0 && values.length === 0) {
+            console.warn('No data available for this parameter');
+            // Clear chart but don't return, still try to set up control limits
+        }
+
         let controlLimits = null;
 
         if (controlData.success && controlData.limits) {
             const limits = controlData.limits;
+            console.log('Raw control limits:', limits);
             
             const mean = parseFloat(limits.mean);
             const rangeRaw = parseFloat(limits.range);
@@ -1239,31 +1303,38 @@ async function loadChartData() {
             const btsAtas = parseFloat(limits.bts_atas);
             const btsBawah = parseFloat(limits.bts_bawah);
 
-            let center = standard;
+            // Use mean as the center point (changed from standard)
+            let center = mean;
             if (!isFinite(center)) {
-                center = mean;
+                center = standard; // Fallback to standard if mean is not available
             }
             if (!isFinite(center)) {
-                console.warn('No valid center point found');
-                return;
+                // Calculate from data if both mean and standard are not available
+                const validValues = values.filter(v => v !== null && isFinite(v));
+                if (validValues.length > 0) {
+                    center = validValues.reduce((a, b) => a + b, 0) / validValues.length;
+                } else {
+                    console.warn('No valid center point found, using 0');
+                    center = 0;
+                }
             }
 
             let sdRange = rangeRaw;
             if (!isFinite(sdRange) || sdRange <= 0) {
                 const validValues = values.filter(v => v !== null && isFinite(v));
                 if (validValues.length > 1) {
-                    const meanVal = validValues.reduce((a, b) => a + b, 0) / validValues.length;
-                    const variance = validValues.reduce((sum, val) => sum + Math.pow(val - meanVal, 2), 0) / (validValues.length - 1);
+                    const variance = validValues.reduce((sum, val) => sum + Math.pow(val - center, 2), 0) / (validValues.length - 1);
                     sdRange = Math.sqrt(variance);
+                    console.log('Calculated SD from data:', sdRange);
                 } else {
-                    sdRange = 1;
+                    sdRange = 1; // Default fallback
+                    console.warn('Using default SD range of 1');
                 }
             }
 
-            // Hitung control limits berdasarkan data sebenarnya
             controlLimits = {
-                mean: isFinite(mean) ? mean : center,
-                standard: center,
+                mean: center, // Use mean as the center
+                standard: isFinite(standard) ? standard : center,
                 range: sdRange,
                 bts_atas: isFinite(btsAtas) ? btsAtas : null,
                 bts_bawah: isFinite(btsBawah) ? btsBawah : null,
@@ -1275,42 +1346,62 @@ async function loadChartData() {
                 minus3sd: center - (sdRange * 3)
             };
 
-            console.log('Control limits calculated:', controlLimits);
+            console.log('Final control limits:', controlLimits);
+        } else {
+            console.warn('No control limits data available');
         }
 
-        // Konversi nilai data ke posisi SD chart (rentang -1 sampai 11)
-        let mappedValues = values;
-        if (controlLimits) {
+        // Convert values to chart positions
+        let mappedValues = [];
+        if (controlLimits && values.length > 0) {
             mappedValues = values.map(value => {
-                if (value === null || !isFinite(value)) return null;
+                if (value === null || value === undefined || !isFinite(value)) return null;
                 
-                // Hitung posisi relatif terhadap control limits
-                const center = controlLimits.standard;
+                const center = controlLimits.mean; // Use mean as center
                 const sdRange = controlLimits.range;
                 
-                // Konversi nilai sebenarnya ke posisi SD
+                if (sdRange === 0) {
+                    return 5; // Return center position if no variation
+                }
+                
+                // Calculate SD position
                 const sdPosition = (value - center) / sdRange;
                 
-                // Map ke rentang chart (-1 sampai 11)
-                // -3SD = -1, Normal = 5, +3SD = 11
+                // Map to chart range (-1 to 11), where 5 is the mean
                 const chartPosition = 5 + (sdPosition * 2);
                 
-                console.log(`Value ${value} -> SD position ${sdPosition.toFixed(2)} -> Chart position ${chartPosition.toFixed(2)}`);
+                console.log(`Value ${value} -> SD pos ${sdPosition.toFixed(2)} -> Chart pos ${chartPosition.toFixed(2)}`);
                 
                 return chartPosition;
             });
+        } else if (values.length > 0) {
+            // If no control limits, map values directly but this shouldn't happen in normal cases
+            console.warn('No control limits available, cannot map values properly');
+            mappedValues = values.map(() => 5); // Put all at center
         }
 
-        // Simpan data asli untuk tooltip
+        console.log('Mapped values:', mappedValues);
+
+        // Update chart
         qcChart.originalData = values;
         qcChart.data.labels = labels;
         qcChart.data.datasets[0].data = mappedValues;
         qcChart.controlLimits = controlLimits;
 
         qcChart.update('none');
+        console.log('Chart updated successfully');
 
     } catch (err) {
         console.error('Error loadChartData:', err);
+        
+        // Clear chart on error
+        if (qcChart) {
+            qcChart.data.labels = [];
+            qcChart.data.datasets[0].data = [];
+            qcChart.originalData = [];
+            qcChart.controlLimits = null;
+            qcChart.update();
+        }
     }
 }
 
@@ -1329,6 +1420,7 @@ function changeParameter() {
     
     if (selectedParameter && currentQcData) {
         document.getElementById('chartInfo').textContent = `Trend data untuk ${displayName} - LOT: ${currentQcData.no_lot}`;
+        console.log(`Parameter changed to: ${selectedParameter}`);
     } else {
         document.getElementById('chartInfo').textContent = 'Select a parameter to view trend data';
     }
@@ -1345,7 +1437,25 @@ function updateParameterSelector() {
             const displayName = getDisplayName(param.parameter);
             selector.innerHTML += `<option value="${param.parameter}">${displayName}</option>`;
         });
+        console.log('Parameter selector updated with', currentParameters.length, 'parameters');
+    } else {
+        console.warn('No parameters available for selector');
     }
+}
+
+// Helper function to debug chart state
+function debugChart() {
+    console.log('=== CHART DEBUG INFO ===');
+    console.log('qcChart exists:', !!qcChart);
+    console.log('selectedParameter:', selectedParameter);
+    console.log('currentQcData:', currentQcData);
+    console.log('currentParameters:', currentParameters);
+    if (qcChart) {
+        console.log('Chart data:', qcChart.data);
+        console.log('Original data:', qcChart.originalData);
+        console.log('Control limits:', qcChart.controlLimits);
+    }
+    console.log('========================');
 }
 
 

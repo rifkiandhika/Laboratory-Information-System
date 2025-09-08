@@ -187,6 +187,10 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth', 'role:analyst,admi
     Route::post('/dokter/send/{id}', [vDokterController::class, 'sentToReview'])->name('dokter.send');
     // Route Result Review
     Route::resource('result', resultController::class);
+    Route::get('/departments/list', [resultController::class, 'getDepartments'])->name('departments.list');
+    Route::get('/doctors/list', [resultController::class, 'getDoctors'])->name('doctors.list');
+    Route::post('/result/data', [resultController::class, 'getReportData'])->name('result.data');
+
 
     Route::get('print/pasien/{no_lab}', [resultController::class, 'print'])->name('print.pasien');
     Route::post('result/done/{id}', [resultController::class, 'updateStatus'])->name('update.status');

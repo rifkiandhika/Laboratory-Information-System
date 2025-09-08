@@ -22,6 +22,11 @@ class McuPackage extends Model
         return $this->hasMany(McuPackageDetail::class);
     }
 
+    public function mcuDetails()
+    {
+        return $this->hasMany(McuPackageDetail::class, 'mcu_package_id');
+    }
+
     // Relationship dengan detail departments melalui pivot
     public function detailDepartments()
     {

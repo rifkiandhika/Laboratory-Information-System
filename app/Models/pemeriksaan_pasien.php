@@ -12,7 +12,7 @@ class pemeriksaan_pasien extends Model
 
     protected $table = 'pemeriksaan_pasiens';
     protected $guarded = ['id'];
-    protected $fillable = ['no_lab', 'pemeriksaan', 'harga', 'id_parameter', 'id_departement', 'nama_parameter'];
+    protected $fillable = ['no_lab', 'pemeriksaan', 'harga', 'id_parameter', 'id_departement', 'nama_parameter', 'mcu_package_id'];
 
     public function pemeriksaan()
     {

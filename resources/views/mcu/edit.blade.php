@@ -119,6 +119,33 @@
                                         </div>
                                     </div>
                                 </div>
+                                <hr>
+                                <h6 class="font-weight-bold text-primary">Biaya Jasa</h6>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>Jasa Sarana:</label>
+                                        <input type="number" name="jasa_sarana" value="{{ old('jasa_sarana', $mcuPackage->jasa_sarana) }}" class="form-control" onchange="calculatePrice()">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Jasa Pelayanan:</label>
+                                        <input type="number" name="jasa_pelayanan" value="{{ old('jasa_pelayanan', $mcuPackage->jasa_pelayanan) }}" class="form-control" onchange="calculatePrice()">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Jasa Dokter:</label>
+                                        <input type="number" name="jasa_dokter" value="{{ old('jasa_dokter', $mcuPackage->jasa_dokter) }}" class="form-control" onchange="calculatePrice()">
+                                    </div>
+                                </div>
+
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label>Jasa Bidan:</label>
+                                        <input type="number" name="jasa_bidan" value="{{ old('jasa_bidan', $mcuPackage->jasa_bidan) }}" class="form-control" onchange="calculatePrice()">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>Jasa Perawat:</label>
+                                        <input type="number" name="jasa_perawat" value="{{ old('jasa_perawat', $mcuPackage->jasa_perawat) }}" class="form-control" onchange="calculatePrice()">
+                                    </div>
+                                </div>
                             </div>
                             
                             <div class="card-footer">

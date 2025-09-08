@@ -91,17 +91,12 @@ class pasienController extends Controller
         $harga = (int) str_replace('.', '', $request->hargapemeriksaan);
 
         // dokter internal / eksternal
-        $dokter = null;
-        if ($request->dokter_internal) {
-            $dokter = $request->dokter_internal;
-        } elseif ($request->dokter_external) {
-            $dokter = $request->dokter_external;
-        }
+        $dokter = $request->dokter_internal ?: $request->dokter_external;
 
-        // ✅ Ambil no_lab dari form
+        // Ambil no_lab dari form
         $noLab = $request->no_lab;
 
-        // ✅ Validasi jika no_lab sudah dipakai (misalnya race condition)
+        // Validasi jika no_lab sudah dipakai
         if (Pasien::where('no_lab', $noLab)->exists()) {
             return back()->withErrors([
                 'no_lab' => 'Nomor LAB sudah dipakai, silakan refresh halaman untuk mendapatkan nomor baru.'
@@ -110,21 +105,21 @@ class pasienController extends Controller
 
         // Simpan data pasien
         Pasien::create([
-            'no_lab'         => $noLab,
-            'no_rm'          => $request->norm,
-            'cito'           => $cito,
-            'nik'            => $request->nik,
+            'no_lab'          => $noLab,
+            'no_rm'           => $request->norm,
+            'cito'            => $cito,
+            'nik'             => $request->nik,
             'jenis_pelayanan' => $request->jenispelayanan,
-            'nama'           => $request->nama,
-            'lahir'          => $request->tanggallahir,
-            'jenis_kelamin'  => $request->jeniskelamin,
-            'no_telp'        => $request->notelepon,
-            'kode_dokter'    => $dokter,
-            'asal_ruangan'   => $request->asal_ruangan,
-            'diagnosa'       => $request->diagnosa,
-            'tanggal_masuk'  => now(),
-            'alamat'         => $request->alamat,
-            'tanggal'        => Carbon::today(),
+            'nama'            => $request->nama,
+            'lahir'           => $request->tanggallahir,
+            'jenis_kelamin'   => $request->jeniskelamin,
+            'no_telp'         => $request->notelepon,
+            'kode_dokter'     => $dokter,
+            'asal_ruangan'    => $request->asal_ruangan,
+            'diagnosa'        => $request->diagnosa,
+            'tanggal_masuk'   => now(),
+            'alamat'          => $request->alamat,
+            'tanggal'         => Carbon::today(),
         ]);
 
         // Simpan pemeriksaan pasien
@@ -132,13 +127,14 @@ class pasienController extends Controller
             $data = DetailDepartment::find($pemeriksaan);
 
             pemeriksaan_pasien::create([
-                'no_lab'        => $noLab,
-                'id_parameter'  => $pemeriksaan,
-                'id_departement' => $data->department_id,
-                'nama_parameter' => $data->nama_parameter,
-                'harga'         => $harga,
-                'created_at'    => now(),
-                'updated_at'    => now(),
+                'no_lab'          => $noLab,
+                'id_parameter'    => $pemeriksaan,
+                'id_departement'  => $data->department_id,
+                'nama_parameter'  => $data->nama_parameter,
+                'harga'           => $harga,
+                'mcu_package_id'  => $request->mcu_package_id, // 👈 tambahkan ini
+                'created_at'      => now(),
+                'updated_at'      => now(),
             ]);
 
             // Simpan atau update ke report
@@ -152,6 +148,10 @@ class pasienController extends Controller
 
             if ($existingReport) {
                 $existingReport->increment('quantity');
+                $existingReport->update([
+                    'nama_dokter'   => $dokter,
+                    'mcu_package_id' => $request->mcu_package_id, // 👈 update kalau sudah ada
+                ]);
             } else {
                 Report::create([
                     'nolab'          => $noLab,
@@ -159,6 +159,8 @@ class pasienController extends Controller
                     'payment_method' => $request->jenispelayanan,
                     'id_parameter'   => $pemeriksaan,
                     'nama_parameter' => $data->nama_parameter,
+                    'nama_dokter'    => $dokter,
+                    'mcu_package_id' => $request->mcu_package_id, // 👈 simpan saat create
                     'quantity'       => 1,
                     'tanggal'        => now(),
                 ]);
@@ -167,16 +169,17 @@ class pasienController extends Controller
 
         // Simpan riwayat pasien
         HistoryPasien::create([
-            'no_lab'      => $noLab,
-            'proses'      => 'Order',
-            'tempat'      => 'Loket',
+            'no_lab'       => $noLab,
+            'proses'       => 'Order',
+            'tempat'       => 'Loket',
             'waktu_proses' => now(),
-            'note'        => $request->note ?? ''
+            'note'         => $request->note ?? ''
         ]);
 
         toast('Berhasil Menambah data pasien', 'success');
         return redirect()->route('pasien.index');
     }
+
 
 
 

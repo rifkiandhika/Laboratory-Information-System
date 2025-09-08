@@ -19,6 +19,11 @@ return new class extends Migration
             $table->decimal('diskon', 5, 2)->default(0); // dalam persen
             $table->decimal('harga_final', 15, 2);
             $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->decimal('jasa_sarana', 12, 2)->default(0);
+            $table->decimal('jasa_pelayanan', 12, 2)->default(0);
+            $table->decimal('jasa_dokter', 12, 2)->default(0);
+            $table->decimal('jasa_bidan', 12, 2)->default(0);
+            $table->decimal('jasa_perawat', 12, 2)->default(0);
             $table->timestamps();
         });
     }

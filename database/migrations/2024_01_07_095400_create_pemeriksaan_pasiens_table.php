@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('no_lab');
             $table->text('id_parameter');
+            $table->unsignedBigInteger('mcu_package_id');
             $table->text('id_departement')->nullable();
             $table->text('nama_parameter')->nullable();
             $table->integer('harga');

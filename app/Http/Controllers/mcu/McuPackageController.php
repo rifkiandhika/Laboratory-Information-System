@@ -33,8 +33,14 @@ class McuPackageController extends Controller
             'diskon' => 'required|numeric|min:0|max:100',
             'pemeriksaan' => 'required|array|min:1',
             'pemeriksaan.*' => 'exists:detail_departments,id',
-            'status' => 'required|in:active,inactive'
+            'status' => 'required|in:active,inactive',
+            'jasa_sarana' => 'nullable|numeric|min:0',
+            'jasa_pelayanan' => 'nullable|numeric|min:0',
+            'jasa_dokter' => 'nullable|numeric|min:0',
+            'jasa_bidan' => 'nullable|numeric|min:0',
+            'jasa_perawat' => 'nullable|numeric|min:0',
         ]);
+
 
         DB::beginTransaction();
 
@@ -55,8 +61,14 @@ class McuPackageController extends Controller
                 'harga_normal' => $hargaNormal,
                 'diskon' => $diskon,
                 'harga_final' => $hargaFinal,
-                'status' => $request->status
+                'status' => $request->status,
+                'jasa_sarana' => $request->jasa_sarana,
+                'jasa_pelayanan' => $request->jasa_pelayanan,
+                'jasa_dokter' => $request->jasa_dokter,
+                'jasa_bidan' => $request->jasa_bidan,
+                'jasa_perawat' => $request->jasa_perawat,
             ]);
+
 
             // Simpan detail pemeriksaan
             foreach ($request->pemeriksaan as $pemeriksaanId) {
@@ -91,13 +103,19 @@ class McuPackageController extends Controller
 
     public function update(Request $request, $id)
     {
+        // dd($request->all());
         $request->validate([
             'nama_paket' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'diskon' => 'required|numeric|min:0|max:100',
             'pemeriksaan' => 'required|array|min:1',
             'pemeriksaan.*' => 'exists:detail_departments,id',
-            'status' => 'required|in:active,inactive'
+            'status' => 'required|in:active,inactive',
+            'jasa_sarana' => 'nullable|numeric|min:0',
+            'jasa_pelayanan' => 'nullable|numeric|min:0',
+            'jasa_dokter' => 'nullable|numeric|min:0',
+            'jasa_bidan' => 'nullable|numeric|min:0',
+            'jasa_perawat' => 'nullable|numeric|min:0',
         ]);
         DB::beginTransaction();
 
@@ -118,7 +136,12 @@ class McuPackageController extends Controller
                 'harga_normal' => $hargaNormal,
                 'diskon' => $diskon,
                 'harga_final' => $hargaFinal,
-                'status' => $request->status
+                'status' => $request->status,
+                'jasa_sarana' => $request->jasa_sarana,
+                'jasa_pelayanan' => $request->jasa_pelayanan,
+                'jasa_dokter' => $request->jasa_dokter,
+                'jasa_bidan' => $request->jasa_bidan,
+                'jasa_perawat' => $request->jasa_perawat,
             ]);
 
             // Hapus detail lama dan buat yang baru
@@ -144,6 +167,33 @@ class McuPackageController extends Controller
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
+    // Hitung ulang harga
+    // $selectedPemeriksaan = DetailDepartment::whereIn('id', $request->pemeriksaan)->get();
+    // $hargaNormal = $selectedPemeriksaan->sum('harga');
+
+    // // Tambahkan jasa
+    // $jasaTotal = $request->jasa_sarana + $request->jasa_pelayanan + $request->jasa_dokter + $request->jasa_bidan + $request->jasa_perawat;
+    // $hargaNormal += $jasaTotal;
+
+    // $diskon = $request->diskon;
+    // $hargaDiskon = ($diskon / 100) * $hargaNormal;
+    // $hargaFinal = $hargaNormal - $hargaDiskon;
+
+    // // Update MCU Package
+    // $mcuPackage->update([
+    //     'nama_paket' => $request->nama_paket,
+    //     'deskripsi' => $request->deskripsi,
+    //     'harga_normal' => $hargaNormal,
+    //     'diskon' => $diskon,
+    //     'harga_final' => $hargaFinal,
+    //     'status' => $request->status,
+    //     'jasa_sarana' => $request->jasa_sarana,
+    //     'jasa_pelayanan' => $request->jasa_pelayanan,
+    //     'jasa_dokter' => $request->jasa_dokter,
+    //     'jasa_bidan' => $request->jasa_bidan,
+    //     'jasa_perawat' => $request->jasa_perawat,
+    // ]);
 
     public function destroy($id)
     {

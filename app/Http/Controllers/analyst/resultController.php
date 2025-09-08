@@ -4,6 +4,7 @@ namespace App\Http\Controllers\analyst;
 
 use App\Http\Controllers\Controller;
 use App\Models\Department;
+use App\Models\dokter;
 use App\Models\HasilPemeriksaan;
 use App\Models\historyPasien;
 use App\Models\pasien;
@@ -143,7 +144,9 @@ class resultController extends Controller
 
     public function report()
     {
-        return view('print-view.report');
+        $departments = Department::all();
+        $dokters = dokter::all();
+        return view('print-view.report', compact('departments', 'dokters'));
     }
 
     public function getReportData(Request $request)
@@ -158,14 +161,15 @@ class resultController extends Controller
             $tanggalAkhir = $request->input('tanggal_akhir') . ' 23:59:59';
             $departments = $request->input('department', []);
             $paymentMethods = array_map('strtolower', $request->input('payment_method', []));
+            $mcuFilter = $request->input('mcu', []);
+            $dokters = $request->input('dokter', []);
 
             $query = Report::with([
                 'detailDepartment',
-                'departments' => function ($q) {
-                    $q->select('id', 'nama_department');
-                }
-            ])
-                ->whereBetween('tanggal', [$tanggalAwal, $tanggalAkhir]);
+                'departments:id,nama_department',
+                'mcuPackage',
+                'mcuPackage.mcuDetails.detailDepartment'
+            ])->whereBetween('tanggal', [$tanggalAwal, $tanggalAkhir]);
 
             if (!empty($departments) && !in_array('All', $departments)) {
                 $query->whereIn('department', $departments);
@@ -175,30 +179,208 @@ class resultController extends Controller
                 $query->whereIn(DB::raw('LOWER(payment_method)'), $paymentMethods);
             }
 
+            if (!empty($dokters) && !in_array('All', $dokters)) {
+                $query->whereIn('nama_dokter', $dokters);
+            }
+
+            if (!empty($mcuFilter) && !in_array('All', $mcuFilter)) {
+                if (in_array('1', $mcuFilter) && in_array('0', $mcuFilter)) {
+                    // Semua
+                } elseif (in_array('1', $mcuFilter)) {
+                    $query->whereNotNull('mcu_package_id');
+                } elseif (in_array('0', $mcuFilter)) {
+                    $query->whereNull('mcu_package_id');
+                }
+            }
+
             $results = $query->get();
 
-            // Proses pivot data
             $pivoted = [];
+            $mcuParameters = [];
+            $processedMcuLabs = []; // ✅ untuk menghindari duplikasi paket per pasien
 
             foreach ($results as $item) {
                 $deptId = $item->departments->id ?? $item->department;
                 $deptName = $item->departments->nama_department ?? 'Unknown';
+                $namaDokter = $item->nama_dokter ?? '-';
 
-                // Ganti nama_parameter 'All' menjadi 'Hematologi' jika department = 1
-                $paramName = ($deptId == 1 && strtolower($item->nama_parameter) === 'all')
-                    ? 'Hematologi'
-                    : $item->nama_parameter;
+                // --- ✅ MCU Package ---
+                if ($item->mcu_package_id && $item->mcuPackage) {
+                    $packageName = $item->mcuPackage->nama_paket;
+                    $packageId = $item->mcu_package_id;
+                    $packageKey = 'MCU_PACKAGE_' . $packageId . '||' . $namaDokter;
 
-                $harga = $item->detailDepartment->harga ?? 0;
-                $key = $deptId . '||' . $paramName;
+                    // ✅ pastikan hanya dihitung 1x per pasien (berdasarkan no_lab)
+                    $uniquePatientKey = $packageKey . '||' . $item->no_lab;
+                    if (in_array($uniquePatientKey, $processedMcuLabs)) {
+                        continue;
+                    }
+                    $processedMcuLabs[] = $uniquePatientKey;
 
-                if (!isset($pivoted[$key])) {
-                    $pivoted[$key] = [
-                        'test_name' => $paramName,
-                        'department' => $deptName,
-                        'department_id' => $deptId,
-                        'is_department_header' => false,
+                    if (!isset($pivoted[$packageKey])) {
+                        $pivoted[$packageKey] = [
+                            'test_name' => $packageName,
+                            'department' => 'MCU',
+                            'department_id' => 999,
+                            'mcu_package_id' => $packageId,
+                            'package_name' => $packageName,
+                            'dokter' => $namaDokter,
+                            'jasa_dokter' => $item->mcuPackage->jasa_dokter ?? 0,
+                            'is_department_header' => false,
+                            'is_subheader' => false,
+                            'is_mcu_package' => true,
+                            'is_mcu_parameter' => false,
+                            'bpjs_qty' => 0,
+                            'bpjs_price' => 0,
+                            'bpjs_total' => 0,
+                            'asuransi_qty' => 0,
+                            'asuransi_price' => 0,
+                            'asuransi_total' => 0,
+                            'umum_qty' => 0,
+                            'umum_price' => 0,
+                            'umum_total' => 0,
+                        ];
+                    }
+
+                    $hargaPackage = $item->mcuPackage->harga_final ?? 0;
+
+                    // ✅ qty dihitung per pasien, bukan per parameter
+                    switch (strtolower($item->payment_method)) {
+                        case 'bpjs':
+                            $pivoted[$packageKey]['bpjs_qty'] += 1;
+                            $pivoted[$packageKey]['bpjs_price'] = $hargaPackage;
+                            $pivoted[$packageKey]['bpjs_total'] += $hargaPackage;
+                            break;
+                        case 'asuransi':
+                            $pivoted[$packageKey]['asuransi_qty'] += 1;
+                            $pivoted[$packageKey]['asuransi_price'] = $hargaPackage;
+                            $pivoted[$packageKey]['asuransi_total'] += $hargaPackage;
+                            break;
+                        case 'umum':
+                            $pivoted[$packageKey]['umum_qty'] += 1;
+                            $pivoted[$packageKey]['umum_price'] = $hargaPackage;
+                            $pivoted[$packageKey]['umum_total'] += $hargaPackage;
+                            break;
+                    }
+
+                    // ✅ simpan parameter MCU (hanya untuk ditampilkan, qty kosong)
+                    if ($item->mcuPackage->mcuDetails) {
+                        foreach ($item->mcuPackage->mcuDetails as $detail) {
+                            $parameterKey = 'MCU_PARAM_' . $packageId . '_' . $detail->id;
+                            if (!isset($mcuParameters[$parameterKey])) {
+                                $mcuParameters[$parameterKey] = [
+                                    'test_name' => $packageName,
+                                    'parameter_name' => $detail->detailDepartment->nama_pemeriksaan ?? 'Unknown Parameter',
+                                    'department' => 'MCU',
+                                    'department_id' => 999,
+                                    'mcu_package_id' => $packageId,
+                                    'package_name' => $packageName,
+                                    'dokter' => '-',
+                                    'jasa_dokter' => 0,
+                                    'is_department_header' => false,
+                                    'is_subheader' => false,
+                                    'is_mcu_package' => false,
+                                    'is_mcu_parameter' => true,
+                                    'bpjs_qty' => 0,
+                                    'bpjs_price' => 0,
+                                    'bpjs_total' => 0,
+                                    'asuransi_qty' => 0,
+                                    'asuransi_price' => 0,
+                                    'asuransi_total' => 0,
+                                    'umum_qty' => 0,
+                                    'umum_price' => 0,
+                                    'umum_total' => 0,
+                                ];
+                            }
+                        }
+                    }
+                }
+                // --- ✅ Non-MCU ---
+                else {
+                    $displayName = $item->nama_parameter;
+                    $harga = $item->detailDepartment->harga ?? 0;
+                    $jasaDokter = $item->detailDepartment->jasa_dokter ?? 0;
+
+                    if (strtolower($item->nama_parameter) === 'all') {
+                        $displayName = $item->detailDepartment->nama_pemeriksaan ?? 'Hematologi';
+                    }
+
+                    $key = $deptId . '||' . $displayName . '||' . $namaDokter;
+
+                    if (!isset($pivoted[$key])) {
+                        $pivoted[$key] = [
+                            'test_name' => $displayName,
+                            'department' => $deptName,
+                            'department_id' => $deptId,
+                            'mcu_package_id' => null,
+                            'package_name' => null,
+                            'dokter' => $namaDokter,
+                            'jasa_dokter' => $jasaDokter,
+                            'is_department_header' => false,
+                            'is_subheader' => false,
+                            'is_mcu_package' => false,
+                            'is_mcu_parameter' => false,
+                            'bpjs_qty' => 0,
+                            'bpjs_price' => 0,
+                            'bpjs_total' => 0,
+                            'asuransi_qty' => 0,
+                            'asuransi_price' => 0,
+                            'asuransi_total' => 0,
+                            'umum_qty' => 0,
+                            'umum_price' => 0,
+                            'umum_total' => 0,
+                        ];
+                    }
+
+                    switch (strtolower($item->payment_method)) {
+                        case 'bpjs':
+                            $pivoted[$key]['bpjs_qty'] += $item->quantity;
+                            $pivoted[$key]['bpjs_price'] = $harga;
+                            $pivoted[$key]['bpjs_total'] += $item->quantity * $harga;
+                            break;
+                        case 'asuransi':
+                            $pivoted[$key]['asuransi_qty'] += $item->quantity;
+                            $pivoted[$key]['asuransi_price'] = $harga;
+                            $pivoted[$key]['asuransi_total'] += $item->quantity * $harga;
+                            break;
+                        case 'umum':
+                            $pivoted[$key]['umum_qty'] += $item->quantity;
+                            $pivoted[$key]['umum_price'] = $harga;
+                            $pivoted[$key]['umum_total'] += $item->quantity * $harga;
+                            break;
+                    }
+                }
+            }
+
+            $pivoted = array_merge($pivoted, $mcuParameters);
+
+            // --- Grouping ---
+            $grouped = collect($pivoted)->groupBy(function ($row) {
+                if ($row['is_mcu_package'] || $row['is_mcu_parameter']) {
+                    return 'MCU-' . $row['mcu_package_id'];
+                }
+                return $row['department_id'];
+            });
+
+            $final = [];
+
+            foreach ($grouped as $groupKey => $items) {
+                $firstItem = $items->first();
+
+                if (str_starts_with($groupKey, 'MCU-')) {
+                    $mcuPackages = $items->where('is_mcu_package', true);
+                    $mcuParams = $items->where('is_mcu_parameter', true);
+
+                    $final[] = [
+                        'test_name' => 'MCU',
+                        'department' => 'MCU',
+                        'department_id' => 999,
+                        'dokter' => '-',
+                        'jasa_dokter' => 0,
+                        'is_department_header' => true,
                         'is_subheader' => false,
+                        'is_mcu_package' => false,
+                        'is_mcu_parameter' => false,
                         'bpjs_qty' => 0,
                         'bpjs_price' => 0,
                         'bpjs_total' => 0,
@@ -209,116 +391,78 @@ class resultController extends Controller
                         'umum_price' => 0,
                         'umum_total' => 0,
                     ];
+
+                    foreach ($mcuPackages as $package) {
+                        $final[] = $package;
+                    }
+
+                    foreach ($mcuParams as $param) {
+                        $final[] = $param;
+                    }
+
+                    continue;
                 }
 
-                switch (strtolower($item->payment_method)) {
-                    case 'bpjs':
-                        $pivoted[$key]['bpjs_qty'] += $item->quantity;
-                        $pivoted[$key]['bpjs_price'] = $harga;
-                        $pivoted[$key]['bpjs_total'] += $item->quantity * $harga;
-                        break;
-                    case 'asuransi':
-                        $pivoted[$key]['asuransi_qty'] += $item->quantity;
-                        $pivoted[$key]['asuransi_price'] = $harga;
-                        $pivoted[$key]['asuransi_total'] += $item->quantity * $harga;
-                        break;
-                    case 'umum':
-                        $pivoted[$key]['umum_qty'] += $item->quantity;
-                        $pivoted[$key]['umum_price'] = $harga;
-                        $pivoted[$key]['umum_total'] += $item->quantity * $harga;
-                        break;
-                }
-            }
-
-            $grouped = collect($pivoted)->groupBy('department_id');
-            $final = [];
-
-            foreach ($grouped as $deptId => $items) {
-                // Hematologi → langsung tampilkan data (nama_parameter = 'Hematologi')
-                if ($deptId == 1) {
+                if ($firstItem['department_id'] == 1) {
                     foreach ($items as $item) {
-                        $item['is_department_header'] = false;
-                        $item['is_subheader'] = false;
                         $final[] = $item;
                     }
                     continue;
                 }
 
-                // Kimia Klinik → tampilkan header dan subheader
-                if ($deptId == 2) {
-                    $deptName = $items->first()['department'];
+                $deptName = $firstItem['department'];
+                $final[] = [
+                    'test_name' => strtoupper($deptName),
+                    'department' => $deptName,
+                    'department_id' => $firstItem['department_id'],
+                    'dokter' => '-',
+                    'jasa_dokter' => 0,
+                    'is_department_header' => true,
+                    'is_subheader' => false,
+                    'is_mcu_package' => false,
+                    'is_mcu_parameter' => false,
+                    'bpjs_qty' => 0,
+                    'bpjs_price' => 0,
+                    'bpjs_total' => 0,
+                    'asuransi_qty' => 0,
+                    'asuransi_price' => 0,
+                    'asuransi_total' => 0,
+                    'umum_qty' => 0,
+                    'umum_price' => 0,
+                    'umum_total' => 0,
+                ];
 
-                    // Header untuk Kimia Klinik
-                    $final[] = [
-                        'test_name' => $deptName,
-                        'department' => $deptName,
-                        'department_id' => $deptId,
-                        'is_department_header' => true
-                    ];
-
-                    // Group by parameter dan saring parameter dengan qty > 0
-                    $groupByParam = collect($items)->groupBy('test_name');
-                    foreach ($groupByParam as $paramName => $subItems) {
-                        // Hitung total quantity dari semua metode pembayaran
-                        $totalQty = $subItems->sum(function ($item) {
-                            return $item['bpjs_qty'] + $item['asuransi_qty'] + $item['umum_qty'];
-                        });
-
-                        // Jika tidak ada hasil sama sekali, skip
-                        if ($totalQty === 0) continue;
-
-                        // Subheader untuk parameter
-                        // $final[] = [
-                        //     'test_name' => $paramName,
-                        //     'department' => $deptName,
-                        //     'department_id' => $deptId,
-                        //     'is_subheader' => true
-                        // ];
-
-                        // Tambahkan data detailnya
-                        foreach ($subItems as $item) {
-                            $item['is_department_header'] = false;
-                            $item['is_subheader'] = true;
-                            $final[] = $item;
-                        }
-                    }
-
-                    continue;
-                }
-
-                // Department lain (tidak hematologi & tidak kimia klinik) → tampilkan langsung
                 foreach ($items as $item) {
-                    // Hanya tampilkan baris yang memiliki quantity lebih dari 0 di semua metode pembayaran
-                    $totalQty = $item['bpjs_qty'] + $item['asuransi_qty'] + $item['umum_qty'];
-                    if ($totalQty > 0) {
-                        $item['is_department_header'] = false;
-                        $item['is_subheader'] = false;
-                        $final[] = $item;
-                    }
+                    $item['is_subheader'] = true;
+                    $final[] = $item;
                 }
             }
 
-            // Tambahkan baris TOTAL
+            // --- Total ---
             $totalRow = [
                 'test_name' => 'TOTAL',
+                'department' => '',
+                'department_id' => null,
+                'dokter' => '-',
+                'jasa_dokter' => 0,
+                'is_department_header' => false,
+                'is_subheader' => false,
+                'is_mcu_package' => false,
+                'is_mcu_parameter' => false,
                 'bpjs_qty' => 0,
-                'bpjs_price' => 0,
                 'bpjs_total' => 0,
                 'asuransi_qty' => 0,
-                'asuransi_price' => 0,
                 'asuransi_total' => 0,
                 'umum_qty' => 0,
-                'umum_price' => 0,
                 'umum_total' => 0,
             ];
 
             foreach ($pivoted as $row) {
-                $totalRow['bpjs_qty'] += $row['bpjs_qty'];
-                $totalRow['bpjs_total'] += $row['bpjs_total'];
-                $totalRow['asuransi_qty'] += $row['asuransi_qty'];
-                $totalRow['asuransi_total'] += $row['asuransi_total'];
-                $totalRow['umum_qty'] += $row['umum_qty'];
-                $totalRow['umum_total'] += $row['umum_total'];
+                if (!$row['is_mcu_parameter'] && !$row['is_department_header']) {
+                    $totalRow['bpjs_total'] += $row['bpjs_total'];
+                    $totalRow['asuransi_total'] += $row['asuransi_total'];
+                    $totalRow['umum_total'] += $row['umum_total'];
+                }
             }
 
             $final[] = $totalRow;

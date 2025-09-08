@@ -21,7 +21,9 @@ class Report extends Model
         'quantity',
         'price',
         'total',
-        'tanggal'
+        'tanggal',
+        'nama_dokter',
+        'mcu_package_id'
     ];
     public function detailDepartment()
     {
@@ -30,5 +32,9 @@ class Report extends Model
     public function departments()
     {
         return $this->belongsTo(Department::class, 'department', 'id');
+    }
+    public function mcuPackage()
+    {
+        return $this->belongsTo(McuPackage::class, 'mcu_package_id');
     }
 }

@@ -118,6 +118,33 @@
                                         </div>
                                     </div>
                                 </div>
+                                <hr>
+                                    <h6 class="font-weight-bold text-primary">Biaya Jasa</h6>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Jasa Sarana:</label>
+                                            <input type="number" name="jasa_sarana" value="{{ old('jasa_sarana', 0) }}" class="form-control" onchange="calculatePrice()">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label>Jasa Pelayanan:</label>
+                                            <input type="number" name="jasa_pelayanan" value="{{ old('jasa_pelayanan', 0) }}" class="form-control" onchange="calculatePrice()">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label>Jasa Dokter:</label>
+                                            <input type="number" name="jasa_dokter" value="{{ old('jasa_dokter', 0) }}" class="form-control" onchange="calculatePrice()">
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label>Jasa Bidan:</label>
+                                            <input type="number" name="jasa_bidan" value="{{ old('jasa_bidan', 0) }}" class="form-control" onchange="calculatePrice()">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label>Jasa Perawat:</label>
+                                            <input type="number" name="jasa_perawat" value="{{ old('jasa_perawat', 0) }}" class="form-control" onchange="calculatePrice()">
+                                        </div>
+                                    </div>
                             </div>
                             
                             <div class="card-footer">
@@ -151,5 +178,30 @@ function calculatePrice() {
     document.getElementById('discountAmount').textContent = diskonAmount.toLocaleString('id-ID');
     document.getElementById('finalPrice').textContent = finalPrice.toLocaleString('id-ID');
 }
+
+// function calculatePrice() {
+//     let totalNormal = 0;
+
+//     // Hitung harga pemeriksaan
+//     const checkboxes = document.querySelectorAll('input[name="pemeriksaan[]"]:checked');
+//     checkboxes.forEach(checkbox => {
+//         totalNormal += parseInt(checkbox.getAttribute('data-harga'));
+//     });
+
+//     // Tambahkan jasa
+//     const jasaFields = ['jasa_sarana','jasa_pelayanan','jasa_dokter','jasa_bidan','jasa_perawat'];
+//     jasaFields.forEach(field => {
+//         const val = parseInt(document.querySelector(`input[name="${field}"]`).value) || 0;
+//         totalNormal += val;
+//     });
+
+//     const diskonPersen = parseFloat(document.getElementById('diskon').value) || 0;
+//     const diskonAmount = (diskonPersen / 100) * totalNormal;
+//     const finalPrice = totalNormal - diskonAmount;
+
+//     document.getElementById('normalPrice').textContent = totalNormal.toLocaleString('id-ID');
+//     document.getElementById('discountAmount').textContent = diskonAmount.toLocaleString('id-ID');
+//     document.getElementById('finalPrice').textContent = finalPrice.toLocaleString('id-ID');
+// }
 </script>
 @endpush
