@@ -71,17 +71,19 @@ class worklistController extends Controller
             'nama' => 'required',
             'ruangan' => 'required',
             'nama_dokter' => 'required',
-            'parameter_name.*' => 'required', // Validasi parameter_name
+            'parameter_name.*' => 'required',
             'nama_pemeriksaan.*' => 'required',
-            'hasil.*' => 'nullable', // UBAH: dari required ke nullable untuk parameter yang kosong
+            'hasil.*' => 'nullable',
             'duplo_d1.*' => 'nullable',
             'duplo_d2.*' => 'nullable',
             'duplo_d3.*' => 'nullable',
             'nilai_rujukan.*' => 'nullable',
             'satuan.*' => 'nullable',
             'department.*' => 'required',
+            'flag.*' => 'nullable', // ⬅️ tambahan
             'note' => 'nullable',
         ]);
+
 
         // Ambil data dari request
         $no_lab = $request->input('no_lab');
@@ -99,15 +101,9 @@ class worklistController extends Controller
         $d3 = $request->input('duplo_d3', []);
         $nilai_rujukan = $request->input('nilai_rujukan', []);
         $satuans = $request->input('satuan', []);
+        $flags = $request->input('flag', []);
         $departments = $request->input('department', []);
         $note = $request->input('note'); // Note adalah string, bukan array
-
-        // DEBUGGING LOG
-        \Log::info('=== WORKLIST STORE DEBUG ===');
-        \Log::info('Total parameter_names: ' . count($parameter_names));
-        \Log::info('Total nama_pemeriksaan: ' . count($nama_pemeriksaan));
-        \Log::info('Total hasils: ' . count($hasils));
-        \Log::info('Total departments: ' . count($departments));
 
         // Debug detail parameter urine
         $urineParams = [];
@@ -137,9 +133,6 @@ class worklistController extends Controller
                 $urineParams[] = "{$idx}: {$param} = " . ($hasils[$idx] ?? 'NULL');
             }
         }
-        \Log::info('Urine parameters found: ' . count($urineParams));
-        \Log::info('Urine details: ' . implode(', ', $urineParams));
-
         // Validasi panjang data
         $expectedLength = count($parameter_names);
         if (
@@ -148,12 +141,12 @@ class worklistController extends Controller
             count($departments) !== $expectedLength
         ) {
 
-            \Log::error('Array length mismatch:', [
-                'parameter_names' => count($parameter_names),
-                'nama_pemeriksaan' => count($nama_pemeriksaan),
-                'hasils' => count($hasils),
-                'departments' => count($departments)
-            ]);
+            // \Log::error('Array length mismatch:', [
+            //     'parameter_names' => count($parameter_names),
+            //     'nama_pemeriksaan' => count($nama_pemeriksaan),
+            //     'hasils' => count($hasils),
+            //     'departments' => count($departments)
+            // ]);
 
             return redirect()->back()->withErrors(['message' => 'Data tidak valid - panjang array tidak sama']);
         }
@@ -166,7 +159,7 @@ class worklistController extends Controller
 
             // Skip jika parameter kosong
             if (empty($parameter_name)) {
-                \Log::warning("Skipping empty parameter at index {$index}");
+                // \Log::warning("Skipping empty parameter at index {$index}");
                 continue;
             }
 
@@ -191,6 +184,7 @@ class worklistController extends Controller
                     'duplo_d3' => $d3[$index] ?? null,
                     'range' => $nilai_rujukan[$index] ?? null, // Gunakan field range yang sudah ada
                     'satuan' => $satuans[$index] ?? null,
+                    'flag' => $flags[$index] ?? null,
                     'department' => $departments[$index] ?? null,
                     'note' => $note,
                 ];
@@ -198,21 +192,21 @@ class worklistController extends Controller
                 if ($existingHasil) {
                     // Update existing record
                     $existingHasil->update($data);
-                    \Log::info("Updated parameter: {$parameter_name} = {$data['hasil']}");
+                    // \Log::info("Updated parameter: {$parameter_name} = {$data['hasil']}");
                 } else {
                     // Create new record
                     HasilPemeriksaan::create($data);
-                    \Log::info("Created parameter: {$parameter_name} = {$data['hasil']}");
+                    // \Log::info("Created parameter: {$parameter_name} = {$data['hasil']}");
                 }
 
                 $savedCount++;
             } catch (\Exception $e) {
                 $errorCount++;
-                \Log::error("Failed to save parameter {$parameter_name}: " . $e->getMessage());
+                // \Log::error("Failed to save parameter {$parameter_name}: " . $e->getMessage());
             }
         }
 
-        \Log::info("Saved: {$savedCount}, Errors: {$errorCount}");
+        // \Log::info("Saved: {$savedCount}, Errors: {$errorCount}");
 
         // Cari pasien dengan no_lab yang sama dan status 'Check In Spesiment'
         $pasien = pasien::where('no_lab', $no_lab)
@@ -359,7 +353,7 @@ class worklistController extends Controller
                     $savedCount++;
                 } catch (\Exception $e) {
                     $errorCount++;
-                    \Log::error("Failed to save parameter {$parameter_name}: " . $e->getMessage());
+                    Log::error("Failed to save parameter {$parameter_name}: " . $e->getMessage());
                 }
             }
 

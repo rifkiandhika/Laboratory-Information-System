@@ -1,120 +1,217 @@
-<link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
-    
-      <link rel="stylesheet" href="{{ asset('/assets/vendor/css/rtl/core.css') }}" class="template-customizer-core-css" />
-      <link rel="stylesheet" href="{{ asset('/assets/vendor/css/rtl/theme-default.css') }}" class="template-customizer-theme-css" />
-      <link rel="stylesheet" href="{{ asset('/assets/css/demo.css') }}" />
-      
-      <!-- Vendors CSS -->
-      <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/node-waves/node-waves.css') }}" />
-      <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
-      <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/typeahead-js/typeahead.css') }}" />
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-    <!-- atau jika menggunakan versi spesifik --><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Preview Cetak Hasil</title>
     <style>
+        body {
+            font-size: 8px !important;
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 5px;
+        }
         div {
             font-family: Arial, Helvetica, sans-serif;
-            /* font-size: 10px; */
         }
         .table-borderless th,
         .table-borderless td {
-            padding: 2px 0; /* Atur padding atas dan bawah */
+            padding: 1px 0;
+            font-size: 8px !important;
         }
-        .table-striped .tbody {
-        box-shadow: none !important;
-    }
-    .hasil-pemeriksaan {
-        position: relative;
-        min-height: 50vh; /* Agar kontainer memenuhi tinggi viewport */
-        padding-bottom: 30px; /* Ruang untuk footer */
-    }
-    .footer {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        background-color: white; /* Optional: Sesuaikan dengan latar belakang halaman */
-        padding: 10px;
-        
-    }
-    @media print {
-    /* Aturan CSS khusus untuk cetak */
-    body {
-        font-size: 12pt;
-        color: black;
-        background-color: gray !important;
-    }
-
-    .no-print {
-        display: none;
-    }
-
-    /* Gaya khusus untuk elemen tertentu saat dicetak */
-    .print-only {
-        display: block;
-        background-color: antiquewhite;
-    }
-    .footer-container {
-    padding: 20px;
-}
-
-.footer-container .user-info {
-    flex: 1;  /* Memberikan ruang yang cukup di sebelah kiri */
-}
-
-.footer-container .doctor-info {
-    flex: 1;  /* Memberikan ruang yang cukup di sebelah kanan */
-    text-align: right;
-}
-
-.footer-container h6 {
-    margin: 0;
-}
-     /* Pastikan icon tetap muncul saat print */
-     .flag i, .flag .printable-icon {
-            display: inline-block !important;
-        }
-        .text-primary {
-            color: #206bc4 !important;
-        }
-        .text-danger {
-            color: #d63939 !important;
-        }
-        /* Jika menggunakan simbol unicode */
-        .printable-icon {
+        .header h5 {
+            font-size: 9px !important;
             font-weight: bold;
-            font-size: 16px;
+            margin-bottom: 2px;
         }
-    }
+        .header p {
+            font-size: 8px !important;
+            margin-bottom: 2px;
+        }
+        hr {
+            margin: 3px 0;
+            border-top: 1px solid black;
+        }
+        .data-pasien table {
+            font-size: 8px !important;
+        }
+        .hasil-pemeriksaan {
+            position: relative;
+            min-height: 50vh;
+            padding-bottom: 20px;
+        }
+        #tabel-pemeriksaan table {
+            font-size: 8px !important;
+        }
+        #tabel-pemeriksaan th, 
+        #tabel-pemeriksaan td {
+            padding: 2px 3px !important;
+        }
+        .note-section {
+            font-size: 8px !important;
+            margin-top: 8px;
+        }
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: white;
+            padding: 5px;
+            font-size: 8px !important;
+        }
+        .footer-container h6 {
+            font-size: 8px !important;
+            margin-bottom: 15px;
+        }
+        .bg-light {
+            background-color: #f8f9fa !important;
+            padding: 3px !important;
+        }
 
-    /* Style untuk preview dan print */
-    .flag i {
-        font-family: 'tabler-icons' !important;
-        font-style: normal;
-        font-size: 16px;
-    }
+        @media print {
+            body {
+                font-size: 8pt !important;
+                color: black;
+                background-color: white !important;
+                margin: 0;
+                padding: 5px;
+            }
+            .no-print {
+                display: none;
+            }
+            .print-only {
+                display: block;
+            }
+            .header h5, .header p,
+            .data-pasien table,
+            #tabel-pemeriksaan table,
+            .note-section,
+            .footer-container h6 {
+                font-size: 8pt !important;
+            }
+            .footer-container {
+                padding: 15px;
+            }
+            .footer-container .user-info {
+                flex: 1;
+            }
+            .footer-container .doctor-info {
+                flex: 1;
+                text-align: right;
+            }
+            .footer-container h6 {
+                margin: 0;
+            }
+            .flag i, .flag .printable-icon {
+                display: inline-block !important;
+            }
+            .text-primary {
+                color: #206bc4 !important;
+            }
+            .text-danger {
+                color: #d63939 !important;
+            }
+            .printable-icon {
+                font-weight: bold;
+                font-size: 8px !important;
+            }
+        }
 
-    .address-container {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        gap: 0.5rem;
-    }
-    .address-label {
-        white-space: nowrap;
-    }
-    .address-value {
-        word-wrap: break-word;
-    }
+        .flag i {
+            font-family: 'tabler-icons' !important;
+            font-style: normal;
+            font-size: 8px !important;
+        }
 
-    .rapi-table {
-        table-layout: fixed; /* Membuat lebar kolom konsisten */
-        width: 100%; /* Sesuaikan dengan kebutuhan */
-    }
+        .address-container {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.3rem;
+        }
+        .address-label {
+            white-space: nowrap;
+        }
+        .address-value {
+            word-wrap: break-word;
+        }
+
+        .rapi-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+        
+        /* Tambahan untuk tampilan lebih rapi */
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -5px;
+            margin-left: -5px;
+        }
+        .col-3, .col-8, .col-4 {
+            position: relative;
+            width: 100%;
+            padding-right: 5px;
+            padding-left: 5px;
+        }
+        .col-3 {
+            flex: 0 0 25%;
+            max-width: 25%;
+        }
+        .col-8 {
+            flex: 0 0 66.666667%;
+            max-width: 66.666667%;
+        }
+        .col-4 {
+            flex: 0 0 33.333333%;
+            max-width: 33.333333%;
+        }
+        .text-center {
+            text-align: center !important;
+        }
+        .text-end {
+            text-align: right !important;
+        }
+        .fw-bold {
+            font-weight: bold !important;
+        }
+        .mb-0 {
+            margin-bottom: 0 !important;
+        }
+        .mb-2 {
+            margin-bottom: 5px !important;
+        }
+        .ms-2 {
+            margin-left: 5px !important;
+        }
+        .ml-4 {
+            margin-left: 15px !important;
+        }
+        .p-0 {
+            padding: 0 !important;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .table {
+            width: 100%;
+            margin-bottom: 8px;
+            border-collapse: collapse;
+        }
+        .table-sm th, .table-sm td {
+            padding: 2px;
+        }
+        .table-borderless th, .table-borderless td {
+            border: none;
+        }
+        .d-flex {
+            display: flex !important;
+        }
+        .justify-content-between {
+            justify-content: space-between !important;
+        }
+        .bg-light {
+            background-color: #f8f9fa !important;
+        }
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 </head>
@@ -278,11 +375,10 @@
         <div class="header text-sm">
             <div class="row m-0">
                 <div class="col-3 col-md-2 p-0">
-                    <img class="ml-4" src="{{ asset('image/logo.png') }}" width="120" alt="Logo">
+                    <img class="ml-4" src="{{ asset('image/logo.png') }}" width="80" alt="Logo">
                 </div>
                 <div class="col-8 col-md-8 text-center">
                     <h5 class="fw-bold mb-0">RUMAH SAKIT MUSLIMAT SINGOSARI</h5>
-                    {{-- <p class="mb-0">Instalasi Laboratorium Patologi Klinik</p> --}}
                     <p class="fw-bold mb-0">Jl. Ronggolawe No.24, Pangetan, Kec. Singosari, Kab. Malang</p>
                     <p class="fw-bold">Pelayanan 24 Jam</p>
                 </div>
@@ -293,7 +389,7 @@
         <div class="data-pasien mb-2">
             <div class="row">
                     <div class="col-8 col-md-8" >
-                        <table style="font-size: 12px" class="table-borderless mb-0">
+                        <table class="table-borderless mb-0">
                             <tr>
                                 <th scope="row" class="p-0">No.RM</th>
                                 <td>
@@ -347,10 +443,9 @@
                             </tr>
                         </table>
                     </div>
-                    <br>
                     
                 <div class="col-4 col-md-4">
-                    <table style="font-size: 12px" class="table-borderless">
+                    <table class="table-borderless">
                         <tr>
                             <th scope="row" class="p-0">No. Laboratorium</th>
                             <td>
@@ -398,31 +493,28 @@
         
         <div class="hasil-pemeriksaan p-0">
             <div id="tabel-pemeriksaan" class="table-responsive">
-                <table style="font-size: 12px" class="table table-sm" id="worklistTable">
+                <table class="table table-sm" id="worklistTable">
                     <thead style="border-top: 1px solid black; border-bottom: 1px solid black">
                         <tr>
-                            <th style="width: 35%; padding: 5px">Jenis Pemeriksaan</th>
-                            <th style="width: 20%; padding: 5px">Hasil</th>
-                            <th style="width: 10%; padding: 5px">Flag</th>
-                            <th style="width: 15%; padding: 5px">Satuan</th>
-                            <th style="width: 20%; padding: 5px">Nilai Rujukan</th>
+                            <th style="width: 35%; padding: 3px; font-size: 10px">Jenis Pemeriksaan</th>
+                            <th style="width: 20%; padding: 3px; font-size: 10px">Hasil</th>
+                            <th style="width: 10%; padding: 3px; font-size: 10px">Flag</th>
+                            <th style="width: 15%; padding: 3px; font-size: 10px">Satuan</th>
+                            <th style="width: 20%; padding: 3px; font-size: 10px">Nilai Rujukan</th>
                         </tr>
                     </thead>
                     <tbody id="hasil-tbody">
                         @foreach ($hasil_pemeriksaans->groupBy('department') as $department => $hasil_group)
                             <tr>
-                                <th colspan="5" class="bg-light">{{ strtoupper($department) }}</th>
+                                <th colspan="5" class="bg-light" style="font-size: 8px"><strong class="text-bold"><b>{{ strtoupper($department) }}</b></strong></th>
                             </tr>
                             @foreach ($hasil_group as $hasil)
                                 @php
-                                    // Skip jika nama pemeriksaan sama dengan department (untuk menghindari duplikasi)
                                     if (strtolower($hasil->nama_pemeriksaan) === strtolower($department)) {
                                         continue;
                                     }
                                     
-                                    // Rujukan defaults yang lengkap untuk semua parameter
                                     $rujukanDefaults = [
-                                        // Hematologi
                                         'WBC' => 'L. 4.0-10.0 P. 4.0-10.0',
                                         'LYM#' => '1.0-4.0',
                                         'MID#' => '0.2-0.8',
@@ -445,18 +537,15 @@
                                         'P-LCC' => '30-90',
                                         'P-LCR' => '13-43',
                                         
-                                        // Widal
                                         'Salmonella Typhi H' => 'Negatif',
                                         'Salmonella Typhi O' => 'Negatif',
                                         'Salmonella Paratyphi AO' => 'Negatif',
                                         'Salmonella Paratyphi BO' => 'Negatif',
                                         
-                                        // Urine - Makroskopis
                                         'Warna' => 'Kuning',
                                         'Kekeruhan' => 'Jernih',
                                         'Berat Jenis' => '1.003-1.035',
                                         
-                                        // Urine - Kimia
                                         'PH' => '4.5-8.0',
                                         'Leukosit' => 'Negatif',
                                         'Nitrit' => 'Negatif',
@@ -467,7 +556,6 @@
                                         'Bilirubin' => 'Negatif',
                                         'Blood' => 'Negatif',
                                         
-                                        // Urine - Sedimen
                                         'Eritrosit' => '0-2 /lpb',
                                         'Leukosit_sedimen' => '0-5 /lpb',
                                         'Epithel' => 'Tidak ada - Sedikit',
@@ -479,53 +567,63 @@
                                     ];
 
                                     $jenis_kelamin = strtolower($data_pasien->jenis_kelamin);
-                                    
-                                    // Ambil rujukan dari database atau default
-                                    $raw_rujukan = $nilai_rujukan_map[$hasil->nama_pemeriksaan] ?? $rujukanDefaults[$hasil->nama_pemeriksaan] ?? null;
+
+                                    $raw_rujukan = $nilai_rujukan_map[$hasil->nama_pemeriksaan] 
+                                        ?? $rujukanDefaults[$hasil->nama_pemeriksaan] 
+                                        ?? $hasil->range 
+                                        ?? null;
+
                                     $nilai_rujukan = '';
 
                                     if ($raw_rujukan) {
-                                        // Parse rujukan yang memiliki format L. dan P. (untuk hematologi)
-                                        preg_match('/L\.\s*([\d\.,\-–]+)/', $raw_rujukan, $match_l);
-                                        preg_match('/P\.\s*([\d\.,\-–]+)/', $raw_rujukan, $match_p);
+                                        // Bersihkan spasi ganda biar konsisten
+                                        $raw_rujukan = preg_replace('/\s+/', ' ', trim($raw_rujukan));
+
+                                        // Regex lebih fleksibel (boleh ada spasi)
+                                        preg_match('/L\.\s*([\d\.,\-–]+)/i', $raw_rujukan, $match_l);
+                                        preg_match('/P\.\s*([\d\.,\-–]+)/i', $raw_rujukan, $match_p);
 
                                         if ($jenis_kelamin === 'laki-laki' && isset($match_l[1])) {
-                                            $nilai_rujukan = $match_l[1];
+                                            $nilai_rujukan = trim($match_l[1]);
                                         } elseif ($jenis_kelamin === 'perempuan' && isset($match_p[1])) {
-                                            $nilai_rujukan = $match_p[1];
+                                            $nilai_rujukan = trim($match_p[1]);
                                         }
 
-                                        // Jika tidak ada format L./P., tampilkan rujukan langsung
+                                        // Kalau tidak ada L/P, langsung tampilkan apa adanya
                                         if (empty($nilai_rujukan) && !str_contains($raw_rujukan, 'L.') && !str_contains($raw_rujukan, 'P.')) {
                                             $nilai_rujukan = $raw_rujukan;
                                         }
                                     }
                                 @endphp
+                                @php
+                                    $hematologiMapping = [
+                                        'WBC'   => 'Leukosit',
+                                        'LYM#'  => 'LYM#',
+                                        'MID#'  => 'MID#',
+                                        'GRAN#' => 'GRAN#',
+                                        'LYM%'  => 'Limfosit',
+                                        'MID%'  => 'Monosit',
+                                        'GRAN%' => 'Granulosit',
+                                        'RBC'   => 'Eritrosit',
+                                        'HGB'   => 'Hemoglobin',
+                                        'HCT'   => 'Hematokrit',
+                                        'MCV'   => 'MCV',
+                                        'MCH'   => 'MCH',
+                                        'MCHC'  => 'MCHC',
+                                        'RDW-CV'=> 'RDW-CV',
+                                        'RDW-SD'=> 'RDW-SD',
+                                        'PLT'   => 'Trombosit',
+                                        'MPV'   => 'MPV',
+                                        'PDW'   => 'PDW',
+                                        'PCT'   => 'PCT',
+                                        'P-LCR' => 'P-LCR',
+                                    ];
+                                @endphp
                                 <tr>
-                                <td>{{ $hasil->nama_pemeriksaan }}</td>
+                                <td>{{ $hematologiMapping[$hasil->nama_pemeriksaan] ?? $hasil->nama_pemeriksaan }}</td>
                                 <td>{{ $hasil->hasil ?? 'Tidak ada hasil' }}</td>
                                 <td class="flag">
-                                    @php
-                                        $flag = '';
-                                        $hasilVal = $hasil->hasil;
-
-                                        if (is_numeric($hasilVal)) {
-                                            // Ambil nilai rujukan (dari map atau default)
-                                            $raw_rujukan = $nilai_rujukan_map[$hasil->nama_pemeriksaan] ?? $rujukanDefaults[$hasil->nama_pemeriksaan] ?? null;
-
-                                            if ($raw_rujukan && preg_match('/([\d\.]+)-([\d\.]+)/', $raw_rujukan, $match)) {
-                                                $min = (float) $match[1];
-                                                $max = (float) $match[2];
-
-                                                if ($hasilVal < $min) {
-                                                    $flag = '<i class="ti ti-arrow-down text-primary"></i>';
-                                                } elseif ($hasilVal > $max) {
-                                                    $flag = '<i class="ti ti-arrow-up text-danger"></i>';
-                                                }
-                                            }
-                                        }
-                                    @endphp
-                                    {!! $flag !!}
+                                    {{ $hasil->flag }}
                                 </td>
                                 <td class="text-center">{{ $hasil->satuan ?? '-' }}</td>
                                 <td>{{ $nilai_rujukan ?: '-' }}</td>
@@ -538,87 +636,70 @@
         </div>
         
         @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->note)
-            <div style="margin-top: 15px; font-size: 15px;">
+            <div class="note-section">
                 <strong>Note :</strong> {{ $hasil_pemeriksaans->first()->note }}
             </div>
         @endif
         @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->kesimpulan)
-            <div style="margin-top: 15px; font-size: 15px;">
+            <div class="note-section">
                 <strong>Kesimpulan :</strong> {{ $hasil_pemeriksaans->first()->kesimpulan }}
             </div>
         @endif
         @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->saran)
-            <div style="margin-top: 15px; font-size: 15px;">
+            <div class="note-section">
                 <strong>Saran :</strong> {{ $hasil_pemeriksaans->first()->saran }}
             </div>
         @endif
         <br>
         <div class="footer-container d-flex justify-content-between">
-            <!-- Bagian Kiri untuk Nama User -->
             <div class="user-info">
                 <h6>Lab Penanggung Jawab</h6>
                 <br>
                 <br>
-                <h6 style="padding-left: 25px">{{ auth()->user()->name }}</h6> <!-- Nama user yang sedang login -->
+                <h6 style="padding-left: 20px">{{ auth()->user()->name }}</h6>
             </div>
         
-            <!-- Bagian Kanan untuk Nama Dokter -->
             <div class="doctor-info text-end">
                 <h6>Dokter Penanggung Jawab</h6>
                 <br>
                 <br>
-                <h6 style="padding-right: 30px !important;">{{ $data_pasien->kode_dokter }}</h6>
+                <h6 style="padding-right: 25px !important;">{{ $data_pasien->kode_dokter }}</h6>
             </div>
         </div>
     </div>
 
     <script>
-        // Fungsi untuk menggunakan dalam template Laravel/Blade
-        function renderPemeriksaan(hasilPemeriksaans, dataParam) {
-            const tbody = document.getElementById('hasil-tbody');
-            if (!tbody) return;
-            
+        function renderPemeriksaan(data) {
             let html = '';
-            
-            // Group hasil by department
-            const groupedResults = {};
-            hasilPemeriksaans.forEach(hasil => {
-                const dept = hasil.department || 'LAINNYA';
-                if (!groupedResults[dept]) {
-                    groupedResults[dept] = [];
+
+            data.forEach((hasil) => {
+                const displayName = getDisplayName(hasil.nama_pemeriksaan);
+                const formattedHasil = formatHasil(hasil.hasil, hasil.nama_pemeriksaan);
+
+                let flagHtml = '';
+                if (hasil.flag === 'L') {
+                    flagHtml = '<span class="flag-low">L</span>';
+                } else if (hasil.flag === 'H') {
+                    flagHtml = '<span class="flag-high">H</span>';
                 }
-                groupedResults[dept].push(hasil);
+
+                const rujukanDefault = '-';
+
+                html += `
+                    <tr>
+                        <td>${displayName}</td>
+                        <td>${formattedHasil || 'Tidak ada hasil'}</td>
+                        <td class="flag">${flagHtml}</td>
+                        <td class="text-center">${hasil.satuan || '-'}</td>
+                        <td>${hasil.nilai_rujukan || rujukanDefault}</td>
+                    </tr>
+                `;
             });
-            
-            // Render each department
-            Object.keys(groupedResults).forEach(department => {
-                html += `<tr><th colspan="5" class="bg-light">${department.toUpperCase()}</th></tr>`;
-                
-                groupedResults[department].forEach(hasil => {
-                    const displayName = getDisplayName(hasil.nama_pemeriksaan);
-                    const flagHtml = getFlag(hasil.hasil, hasil.nama_pemeriksaan);
-                    const rujukanDefault = getRujukanDefault(hasil.nama_pemeriksaan);
-                    
-                    html += `
-                        <tr>
-                            <td>${displayName}</td>
-                            <td>${hasil.hasil || 'Tidak ada hasil'}</td>
-                            <td class="flag">${flagHtml}</td>
-                            <td class="text-center">${hasil.satuan || '-'}</td>
-                            <td>${hasil.nilai_rujukan || rujukanDefault}</td>
-                        </tr>
-                    `;
-                });
-            });
-            
-            tbody.innerHTML = html;
+
+            return html;
         }
         
-        window.print();
+        // window.print();
     </script>
-    
-    {{-- <script type="text/javascript">
-        window.print();
-    </script> --}}
 </body>
 </html>

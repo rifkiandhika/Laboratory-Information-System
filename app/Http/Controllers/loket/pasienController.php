@@ -132,7 +132,7 @@ class pasienController extends Controller
                 'id_departement'  => $data->department_id,
                 'nama_parameter'  => $data->nama_parameter,
                 'harga'           => $harga,
-                'mcu_package_id'  => $request->mcu_package_id, // 👈 tambahkan ini
+                'mcu_package_id'  => $request->mcu_package_id ?? null, // 👈 tambahkan ini
                 'created_at'      => now(),
                 'updated_at'      => now(),
             ]);

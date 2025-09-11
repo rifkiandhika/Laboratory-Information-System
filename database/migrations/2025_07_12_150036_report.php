@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('nolab');
             $table->bigInteger('id_parameter');
-            $table->bigInteger('mcu_package_id');
+            $table->bigInteger('mcu_package_id')->nullable();
             $table->integer('department');
             $table->string('payment_method');
             $table->string('nama_parameter');
-            $table->string('nama_dokter');
+            $table->string('nama_dokter')->nullable();
             $table->integer('quantity');
             $table->dateTime('tanggal');
             $table->timestamps();

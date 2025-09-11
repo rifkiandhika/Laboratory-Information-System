@@ -1861,8 +1861,9 @@
                                                                                 disabled value="${obxValues.duplo_d3 || ''}" step="0.01" />
                                                                         </td>
                                                                         <td class="col-3 flag-cell">
-                                                                            ${initialFlag}
-                                                                        </td>
+                                                                        ${initialFlag}
+                                                                        <input type="hidden" name="flag[]" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
+                                                                    </td>
                                                                         <td>
                                                                             <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
                                                                                 value="${param.satuan}" readonly />
@@ -2044,6 +2045,7 @@
                                                             </td>
                                                             <td class="col-3 flag-cell">
                                                                 ${initialFlag}
+                                                                <input type="hidden" name="flag[]" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
                                                             </td>
                                                             <td>
                                                                 <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
@@ -2210,6 +2212,7 @@
                                                                 </td>
                                                                     <td class="col-3 flag-cell">
                                                                         ${initialFlag}
+                                                                        <input type="hidden" name="flag[]" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
                                                                     </td>
                                                                     <td>
                                                                         <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
@@ -2295,81 +2298,66 @@
 
                             // Update fungsi updateFlag untuk mendukung hematologi, urine dan jenis kelamin
                             function updateFlag(value, flagCell, parameter = null) {
-                                // console.log('updateFlag called with:', { value, parameter });
-                                
                                 const numValue = parseFloat(value);
                                 const row = flagCell.closest('tr');
                                 const isHematologi = row && row.classList.contains('hematologi-row');
                                 const isWidal = row && row.classList.contains('widal-row');
                                 const isUrine = row && row.classList.contains('urine-row');
 
-                                // console.log('Parsed numValue:', numValue);
-                                // console.log('Is hematologi:', isHematologi);
-                                // console.log('Is widal:', isWidal);
-                                // console.log('Is urine:', isUrine);
+                                let flagText = ''; // untuk simpan teks flag (Normal / Low / High)
 
                                 if (isWidal) {
-                                    // Untuk widal, tidak ada flag normal/abnormal
+                                    // Widal tidak ada flag
                                     flagCell.innerHTML = '';
                                     return;
                                 }
 
                                 if (!isNaN(numValue) && value !== '') {
                                     if (isHematologi && parameter) {
-                                        // Cari range normal untuk parameter hematologi berdasarkan jenis kelamin
                                         const paramData = hematologiParams.find(p => p.nama === parameter);
                                         if (paramData) {
                                             const normalValues = getNormalValues(paramData, data_pasien.jenis_kelamin);
-                                            
+
                                             if (numValue < normalValues.min) {
-                                                flagCell.innerHTML = '<i class="ti ti-arrow-down text-primary"></i> Low';
+                                                flagText = 'Low';
                                             } else if (numValue > normalValues.max) {
-                                                flagCell.innerHTML = '<i class="ti ti-arrow-up text-danger"></i> High';
+                                                flagText = 'High';
                                             } else {
-                                                flagCell.innerHTML = '<i class="ti ti-check text-success"></i> Normal';
+                                                flagText = 'Normal';
                                             }
                                         }
                                     } else if (isUrine && parameter) {
-                                        // Cari range normal untuk parameter urine berdasarkan jenis kelamin
                                         const paramData = UrineParams.find(p => p.nama === parameter);
                                         if (paramData && paramData.normal_min_l !== '-' && paramData.normal_max_l !== '-') {
                                             const normalValues = getNormalValues(paramData, data_pasien.jenis_kelamin);
-                                            
+
                                             if (numValue < normalValues.min) {
-                                                flagCell.innerHTML = '<i class="ti ti-arrow-down text-primary"></i> Low';
+                                                flagText = 'Low';
                                             } else if (numValue > normalValues.max) {
-                                                flagCell.innerHTML = '<i class="ti ti-arrow-up text-danger"></i> High';
+                                                flagText = 'High';
                                             } else {
-                                                flagCell.innerHTML = '<i class="ti ti-check text-success"></i> Normal';
+                                                flagText = 'Normal';
                                             }
                                         }
                                     } else {
-                                        // Flag logic untuk non-hematologi berdasarkan nilai rujukan dari database
+                                        // Umum (non-hematologi/urine)
                                         const nilaiRujukanInput = row.querySelector('input[name="nilai_rujukan[]"]');
                                         const nilaiRujukan = nilaiRujukanInput ? nilaiRujukanInput.value : null;
-                                        
-                                        // console.log('Nilai rujukan found:', nilaiRujukan);
-                                        // console.log('Jenis kelamin:', data_pasien.jenis_kelamin);
-                                        
+
                                         if (nilaiRujukan && data_pasien.jenis_kelamin) {
-                                            // Inline parsing untuk memastikan bisa diakses
                                             let normalRange = null;
-                                            
-                                            // Konversi jenis kelamin
                                             let genderCode = '';
+
                                             if (data_pasien.jenis_kelamin.toLowerCase().includes('laki') || data_pasien.jenis_kelamin === 'L') {
                                                 genderCode = 'L';
                                             } else if (data_pasien.jenis_kelamin.toLowerCase().includes('perempuan') || data_pasien.jenis_kelamin === 'P') {
                                                 genderCode = 'P';
                                             }
-                                            
-                                            // console.log('Gender code:', genderCode);
-                                            
+
                                             if (genderCode) {
-                                                // Parse nilai rujukan
                                                 const parts = nilaiRujukan.split(' ');
                                                 let targetRange = null;
-                                                
+
                                                 for (const part of parts) {
                                                     if (genderCode === 'L' && part.startsWith('L.')) {
                                                         targetRange = part.substring(2);
@@ -2379,9 +2367,7 @@
                                                         break;
                                                     }
                                                 }
-                                                
-                                                console.log('Target range:', targetRange);
-                                                
+
                                                 if (targetRange) {
                                                     if (targetRange.startsWith('<')) {
                                                         const maxValue = parseFloat(targetRange.substring(1).replace(',', '.'));
@@ -2398,7 +2384,6 @@
                                                         if (rangeParts.length === 2) {
                                                             const min = parseFloat(rangeParts[0].replace(',', '.'));
                                                             const max = parseFloat(rangeParts[1].replace(',', '.'));
-                                                            
                                                             if (!isNaN(min) && !isNaN(max)) {
                                                                 normalRange = { min, max };
                                                             }
@@ -2406,32 +2391,39 @@
                                                     }
                                                 }
                                             }
-                                            
-                                            // console.log('Normal range calculated:', normalRange);
-                                            
+
                                             if (normalRange) {
                                                 if (numValue < normalRange.min) {
-                                                    // console.log('Setting flag: Low');
-                                                    flagCell.innerHTML = '<i class="ti ti-arrow-down text-primary"></i> Low';
+                                                    flagText = 'Low';
                                                 } else if (numValue > normalRange.max) {
-                                                    // console.log('Setting flag: High');
-                                                    flagCell.innerHTML = '<i class="ti ti-arrow-up text-danger"></i> High';
+                                                    flagText = 'High';
                                                 } else {
-                                                    // console.log('Setting flag: Normal');
-                                                    flagCell.innerHTML = '<i class="ti ti-check text-success"></i> Normal';
+                                                    flagText = 'Normal';
                                                 }
-                                            } else {
-                                                // console.log('Normal range is null, clearing flag');
-                                                flagCell.innerHTML = '';
                                             }
-                                        } else {
-                                            // console.log('Missing nilai rujukan or jenis kelamin, clearing flag');
-                                            flagCell.innerHTML = '';
                                         }
                                     }
+                                }
+
+                                // Render ulang isi cell dengan flag + hidden input
+                                if (flagText) {
+                                    let icon = '';
+                                    if (flagText === 'Low') {
+                                        icon = '<i class="ti ti-arrow-down text-primary"></i>';
+                                    } else if (flagText === 'High') {
+                                        icon = '<i class="ti ti-arrow-up text-danger"></i>';
+                                    } else if (flagText === 'Normal') {
+                                        icon = '<i class="ti ti-check text-success"></i>';
+                                    }
+
+                                    flagCell.innerHTML = `
+                                        ${icon} ${flagText}
+                                        <input type="hidden" name="flag[]" value="${flagText}">
+                                    `;
                                 } else {
-                                    // console.log('Invalid number or empty value, clearing flag');
-                                    flagCell.innerHTML = '';
+                                    flagCell.innerHTML = `
+                                        <input type="hidden" name="flag[]" value="">
+                                    `;
                                 }
                             }
 

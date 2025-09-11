@@ -261,37 +261,47 @@
                                                     <span class="badge bg-success text-white">Payment</span>
                                                 @endif
                                             </td>
-                                            <td class="col-md-3">
-                                                <button type="button" data-bs-target="#modalPreviewPasien"
-                                                    data-bs-toggle="modal" class="btn btn-secondary btn-edit text-white btn-update"
-                                                    data-id="{{ $pm->id }}"><i class='ti ti-edit'></i>
-                                                </button>
-                                                    
-                                                <button type="button" data-bs-target="#modalPembayaran"
-                                                    data-bs-toggle="modal" class="btn btn-payment btn-success text-white" 
-                                                    data-payment="{{ $pm->id }}"><i class='ti ti-cash-banknote'></i>
-                                                </button>
-
-                                               <button class="btn btn-secondary barcodeBtn"
-                                                    onclick="showBarcodeModal('{{ $pm->id }}', '{{ $pm->no_lab }}')"
-                                                    title="Tampilkan Barcode">
-                                                    <i class="ti ti-barcode"></i>
-                                                </button>                                              
-
-                                                <form id="delete-form-{{ $pm->id }}"
-                                                    action="{{ route('pasien.destroy', $pm->no_lab) }}" method="POST"
-                                                    style="display: none;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
-                                                
-                                                <button class="btn btn-danger"
-                                                    onclick="confirmDelete({{ $pm->id }})"><i
-                                                    class="ti ti-trash"></i>
-                                                </button>
-
-                                            
-                                                </td>
+                                            <td class="col-md-1">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-secondary" id="aksiDropdown{{ $pm->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="ti ti-dots-vertical fs-5"></i>
+                                                    </a>
+                                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="aksiDropdown{{ $pm->id }}">
+                                                        <li>
+                                                            <button type="button" data-bs-target="#modalPreviewPasien"
+                                                                data-bs-toggle="modal" class="dropdown-item btn-edit btn-update"
+                                                                data-id="{{ $pm->id }}">
+                                                                <i class="ti ti-edit me-2"></i> Edit
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button type="button" data-bs-target="#modalPembayaran"
+                                                                data-bs-toggle="modal" class="dropdown-item btn-payment"
+                                                                data-payment="{{ $pm->id }}">
+                                                                <i class="ti ti-cash-banknote me-2"></i> Payment
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button class="dropdown-item"
+                                                                onclick="showBarcodeModal('{{ $pm->id }}', '{{ $pm->no_lab }}')">
+                                                                <i class="ti ti-barcode me-2"></i> Barcode
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <form id="delete-form-{{ $pm->id }}"
+                                                                action="{{ route('pasien.destroy', $pm->no_lab) }}" method="POST"
+                                                                style="display: none;">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                            </form>
+                                                            <button class="dropdown-item text-danger"
+                                                                onclick="confirmDelete({{ $pm->id }})">
+                                                                <i class="ti ti-trash me-2"></i> Delete
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
                                         </tr>
                                         @php
                                             $counter++; // Tambah counter setelah setiap iterasi
@@ -324,37 +334,47 @@
                                                     <span class="badge bg-warning text-white">Returned by analyst</span>
                                                 @endif
                                             </td>
-                                            <td class="col-md-3">
-                                                <button type="button" data-bs-target="#modalPreviewPasien"
-                                                    data-bs-toggle="modal" class="btn btn-secondary btn-edit text-white btn-update btn-bf"
-                                                    data-id="{{ $dk->id }}"><i class='ti ti-edit'></i>
-                                                </button>
-                                                    
-                                                <button type="button" data-bs-target="#modalPembayaran"
-                                                    data-bs-toggle="modal" class="btn btn-secondary btn-payment text-white btn-pybf" 
-                                                    data-payment="{{ $dk->id }}"><i class='ti ti-cash-banknote'></i>
-                                                </button>
-
-                                                <button class="btn btn-secondary barcodeBtn btn-bcbf"
-                                                    onclick="showBarcodeModal('{{ $dk->id }}', '{{ $dk->no_lab }}')"
-                                                    title="Tampilkan Barcode">
-                                                    <i class="ti ti-barcode"></i>
-                                                </button> 
-
-                                                <form id="delete-form-{{ $dk->id }}"
-                                                    action="{{ route('pasien.destroy', $dk->no_lab) }}" method="POST"
-                                                    style="display: none;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
-                                                
-                                                <button class="btn btn-danger"
-                                                    onclick="confirmDelete({{ $dk->id }})"><i
-                                                    class="ti ti-trash"></i>
-                                                </button>
-
-                                            
-                                                </td>
+                                            <td class="col-md-1">
+                                                <div class="dropdown">
+                                                    <a href="#" class="text-secondary" id="aksiDropdown{{ $dk->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="ti ti-dots-vertical fs-5"></i>
+                                                    </a>
+                                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="aksiDropdown{{ $dk->id }}">
+                                                        <li>
+                                                            <button type="button" data-bs-target="#modalPreviewPasien"
+                                                                data-bs-toggle="modal" class="dropdown-item btn-edit btn-update btn-bf"
+                                                                data-id="{{ $dk->id }}">
+                                                                <i class="ti ti-edit me-2"></i> Edit
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button type="button" data-bs-target="#modalPembayaran"
+                                                                data-bs-toggle="modal" class="dropdown-item btn-payment btn-pybf"
+                                                                data-payment="{{ $dk->id }}">
+                                                                <i class="ti ti-cash-banknote me-2"></i> Payment
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button class="dropdown-item btn-bcbf"
+                                                                onclick="showBarcodeModal('{{ $dk->id }}', '{{ $dk->no_lab }}')">
+                                                                <i class="ti ti-barcode me-2"></i> Barcode
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <form id="delete-form-{{ $dk->id }}"
+                                                                action="{{ route('pasien.destroy', $dk->no_lab) }}" method="POST"
+                                                                style="display: none;">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                            </form>
+                                                            <button class="dropdown-item text-danger"
+                                                                onclick="confirmDelete({{ $dk->id }})">
+                                                                <i class="ti ti-trash me-2"></i> Delete
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
                                         </tr>
                                         @php
                                             $counter++; // Tambah counter setelah setiap iterasi
@@ -586,9 +606,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    {{-- <button type="button" class="btn btn-success" onclick="printBarcode()">
-                        <i class="ti ti-printer me-1"></i>Print Barcode
-                    </button> --}}
+                    <div class="btn-group" id="printButtons">
+                        <!-- Tombol print akan ditampilkan di sini secara dinamis -->
+                    </div>
                     <div class="btn-group" id="downloadButtons">
                         <!-- Tombol download akan ditampilkan di sini secara dinamis -->
                     </div>
@@ -1276,6 +1296,7 @@
     function generateBarcodeUI() {
         const barcodeRow = document.getElementById('barcodeRow');
         const downloadButtons = document.getElementById('downloadButtons');
+        const printButtons = document.getElementById('printButtons');
 
         if (availableDepartments.length === 0) {
             barcodeRow.innerHTML = `<div class="col-12 text-center"><div class="alert alert-warning">Departemen tidak ditemukan.</div></div>`;
@@ -1293,6 +1314,20 @@
                     const c = getDepartmentConfig(d);
                     return `
                         <li><a class="dropdown-item" href="#" onclick="downloadBarcode('${d}')"><i class="me-1"></i>Download ${c.name}</a></li>
+                    `;
+                }).join('')}
+            </ul>
+        `;
+
+        printButtons.innerHTML = `
+            <button class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="ti ti-printer me-1"></i>Print
+            </button>
+            <ul class="dropdown-menu">
+                ${availableDepartments.map(d => {
+                    const c = getDepartmentConfig(d);
+                    return `
+                        <li><a class="dropdown-item" href="#" onclick="printBarcode('${d}')"><i class="me-1"></i>Print ${c.name}</a></li>
                     `;
                 }).join('')}
             </ul>
@@ -1366,19 +1401,21 @@
         img.onload = () => {
             ctx.fillStyle = '#fff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 50, 40, 300, 100);
+            // Gambar barcode di posisi lebih atas karena tidak ada judul di atas
+            ctx.drawImage(img, 50, 20, 300, 100);
 
+            // Format: (Departemen) Kode-NoLab di bawah barcode
             ctx.fillStyle = '#000';
-            ctx.font = 'bold 16px Arial';
+            ctx.font = 'bold 14px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText(config.name, canvas.width / 2, 30);
-            ctx.font = '14px Arial';
-            ctx.fillText(code, canvas.width / 2, 160);
+            const titleText = `(${config.name}) ${code}`;
+            ctx.fillText(titleText, canvas.width / 2, 140);
+            
             ctx.font = '12px Arial';
-            ctx.fillText(`Nama: ${currentPatientName}`, canvas.width / 2, 180);
-            ctx.fillText(`Tanggal Lahir: ${currentPatientDOB}`, canvas.width / 2, 200);
+            ctx.fillText(`Nama: ${currentPatientName}`, canvas.width / 2, 160);
+            ctx.fillText(`Tanggal Lahir: ${currentPatientDOB}`, canvas.width / 2, 180);
             ctx.font = '10px Arial';
-            ctx.fillText(new Date().toLocaleDateString('id-ID'), canvas.width / 2, 220);
+            ctx.fillText(new Date().toLocaleDateString('id-ID'), canvas.width / 2, 200);
 
             canvas.toBlob(blob => {
                 const link = document.createElement('a');
@@ -1391,6 +1428,213 @@
         img.onerror = () => alert("Gagal memuat gambar barcode");
         img.src = url;
     }
+
+    function printBarcode(dept) {
+    const elementId = `barcode${dept}`;
+    const svg = document.getElementById(elementId);
+    if (!svg) return alert('Barcode tidak ditemukan');
+
+    const config = getDepartmentConfig(dept);
+    const code = config.code + currentBarcodeData;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 400;
+    canvas.height = 240;
+
+    const img = new Image();
+    const svgBlob = new Blob([new XMLSerializer().serializeToString(svg)], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(svgBlob);
+
+    img.onload = () => {
+        // Gambar background putih
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Gambar barcode di posisi lebih atas karena tidak ada judul di atas
+        ctx.drawImage(img, 50, 20, 300, 100);
+
+        // Tambahkan teks dengan format "(Departemen) Kode-NoLab" di bawah barcode
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 14px Arial';
+        ctx.textAlign = 'center';
+        const titleText = `(${config.name}) ${code}`;
+        ctx.fillText(titleText, canvas.width / 2, 140);
+        ctx.font = '12px Arial';
+        ctx.fillText(`Nama: ${currentPatientName}`, canvas.width / 2, 160);
+        ctx.fillText(`Tanggal Lahir: ${currentPatientDOB}`, canvas.width / 2, 180);
+        ctx.font = '10px Arial';
+        ctx.fillText(new Date().toLocaleDateString('id-ID'), canvas.width / 2, 200);
+
+        // Convert to image data URL
+        const imageData = canvas.toDataURL("image/png");
+        
+        // Cleanup blob URL
+        URL.revokeObjectURL(url);
+        
+        // Method 1: Menggunakan iframe tersembunyi (Recommended)
+        printWithIframe(imageData, config.name);
+        
+        // Method 2: Alternative - jika method 1 tidak berfungsi, uncomment baris di bawah
+        // printWithNewWindow(imageData, config.name);
+    };
+
+    img.onerror = () => {
+        URL.revokeObjectURL(url);
+        alert("Gagal memuat gambar barcode");
+    };
+    
+    img.src = url;
+}
+
+// Method 1: Print menggunakan iframe tersembunyi
+function printWithIframe(imageData, departmentName) {
+    // Hapus iframe lama jika ada
+    const oldIframe = document.getElementById('printFrame');
+    if (oldIframe) {
+        oldIframe.remove();
+    }
+
+    // Buat iframe tersembunyi
+    const iframe = document.createElement('iframe');
+    iframe.id = 'printFrame';
+    iframe.style.position = 'absolute';
+    iframe.style.width = '0px';
+    iframe.style.height = '0px';
+    iframe.style.border = 'none';
+    
+    document.body.appendChild(iframe);
+    
+    // Tunggu iframe siap
+    iframe.onload = function() {
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        
+        doc.open();
+        doc.write(`
+            <!DOCTYPE html>
+            <html>
+                <head>
+                    <title>Print Barcode - ${departmentName}</title>
+                    <style>
+                        @page {
+                            margin: 0.5in;
+                            size: A4;
+                        }
+                        body {
+                            margin: 0;
+                            padding: 20px;
+                            text-align: center;
+                            font-family: Arial, sans-serif;
+                        }
+                        .barcode-container {
+                            display: inline-block;
+                            border: 1px solid #ddd;
+                            padding: 20px;
+                            background: white;
+                        }
+                        img {
+                            max-width: 100%;
+                            height: auto;
+                        }
+                        @media print {
+                            body { margin: 0; padding: 10px; }
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="barcode-container">
+                        <img src="${imageData}" alt="Barcode ${departmentName}" />
+                    </div>
+                </body>
+            </html>
+        `);
+        doc.close();
+        
+        // Tunggu sebentar lalu print
+        setTimeout(() => {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+            
+            // Hapus iframe setelah print selesai
+            setTimeout(() => {
+                iframe.remove();
+            }, 1000);
+        }, 500);
+    };
+    
+    // Trigger onload
+    iframe.src = 'about:blank';
+}
+
+// Method 2: Print dengan window baru (alternative)
+function printWithNewWindow(imageData, departmentName) {
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    
+    if (!printWindow) {
+        alert('Pop-up diblokir! Silakan izinkan pop-up untuk print.');
+        return;
+    }
+    
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <title>Print Barcode - ${departmentName}</title>
+                <style>
+                    @page {
+                        margin: 0.5in;
+                        size: A4;
+                    }
+                    body {
+                        margin: 0;
+                        padding: 20px;
+                        text-align: center;
+                        font-family: Arial, sans-serif;
+                    }
+                    .barcode-container {
+                        display: inline-block;
+                        border: 1px solid #ddd;
+                        padding: 20px;
+                        background: white;
+                    }
+                    img {
+                        max-width: 100%;
+                        height: auto;
+                    }
+                    .no-print {
+                        margin-top: 20px;
+                    }
+                    @media print {
+                        .no-print { display: none; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="barcode-container">
+                    <img src="${imageData}" alt="Barcode ${departmentName}" onload="window.print();" />
+                </div>
+                <div class="no-print">
+                    <p>Jika print tidak otomatis, tekan Ctrl+P</p>
+                    <button onclick="window.print()">Print Manual</button>
+                    <button onclick="window.close()">Tutup</button>
+                </div>
+            </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
+    
+    // Auto close setelah print
+    printWindow.addEventListener('afterprint', () => {
+        setTimeout(() => {
+            printWindow.close();
+        }, 1000);
+    });
+}
+
+    // supaya bisa dipanggil dari HTML
+    window.printBarcode = printBarcode;
+
 
     // Agar bisa diakses oleh elemen HTML
     window.showBarcodeModal = showBarcodeModal;

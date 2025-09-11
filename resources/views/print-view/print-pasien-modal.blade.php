@@ -1,4 +1,4 @@
-<div id="printable-content">
+{{-- <div id="printable-content">
     <style>
         .print-container {
             font-family: Arial, Helvetica, sans-serif;
@@ -192,4 +192,4 @@
             </div>
         </div>
     </div>
-</div>
+</div> --}}

@@ -333,6 +333,9 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                             <button type="button" class="btn btn-success update-btn">
+                                <i class="ti ti-device-floppy"></i> Update
+                            </button>
                         </div>
                         </div>
                     </div>
@@ -912,7 +915,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 duplo_d3: item.duplo_d3 || '',
                 range: item.range || '',
                 satuan: item.satuan || '',
-                note: item.note || ''
+                note: item.note || '',
+                flag: item.flag || ''
             };
         });
     }
@@ -938,7 +942,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 duplo_d3: data.duplo_d3,
                 hasilUtama: data.hasil,
                 satuan: data.satuan,
-                range: data.range
+                range: data.range,
+                flag: data.flag
             };
         }
         
@@ -950,7 +955,8 @@ document.addEventListener('DOMContentLoaded', function() {
             duplo_d3: values[2] || '',
             hasilUtama: values[0] || '',
             satuan: '',
-            range: ''
+            range: '',
+            flag: '' 
         };
     }
 
@@ -1030,6 +1036,20 @@ document.addEventListener('DOMContentLoaded', function() {
             flagCell.innerHTML = flagIcon;
         }
         return flagIcon;
+    }
+    function renderFlag(flag) {
+        if (!flag) return '';
+
+        if (flag.toLowerCase() === 'normal') {
+            return `<i class="ti ti-check text-success"></i>Normal`;
+        }
+        if (flag.toLowerCase() === 'high') {
+            return `<i class="ti ti-arrow-up text-danger"></i>High`;
+        }
+        if (flag.toLowerCase() === 'low') {
+            return `<i class="ti ti-arrow-down text-primary"></i>Low`;
+        }
+        return flag;
     }
 
     const labData = data_pasien;
@@ -1135,7 +1155,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         </td>
                                                         <td class="col-1">
                                                             <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
-                                                                    data-index="${paramIdx}" disabled>
+                                                                    data-index="${paramIdx}">
                                                                 <i class="ti ti-switch-2"></i>
                                                             </button>
                                                         </td>
@@ -1195,7 +1215,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         </td>
                                                         <td class="col-1">
                                                             <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
-                                                                    data-index="${paramIdx}" disabled>
+                                                                    data-index="${paramIdx}">
                                                                 <i class="ti ti-switch-2"></i>
                                                             </button>
                                                         </td>
@@ -1286,7 +1306,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         </td>
                                                         <td class="col-1">
                                                             <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
-                                                                    data-index="${paramIdx}" disabled>
+                                                                    data-index="${paramIdx}">
                                                                 <i class="ti ti-switch-2"></i>
                                                             </button>
                                                         </td>
@@ -1368,12 +1388,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         </td>
                                                         <td class="col-2">
                                                             <input type="text" name="hasil[]" 
-                                                                class="form-control manualInput w-60 p-0" 
+                                                                class="form-control manualInput w-60 p-0 text-center" 
                                                                 value="${dataValues.hasilUtama}" readonly />
                                                         </td>
                                                         <td class="col-1">
                                                             <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
-                                                                    data-index="0" disabled>
+                                                                    data-index="0">
                                                                 <i class="ti ti-switch-2"></i>
                                                             </button>
                                                         </td>
@@ -1393,7 +1413,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                 value="${dataValues.duplo_d3}" readonly />
                                                         </td>
                                                         <td class="col-3 flag-cell">
-                                                            ${flagContent}
+                                                            ${renderFlag(dataValues.flag || updateFlag(dataValues.hasilUtama, {innerHTML: ''}, p.data_pemeriksaan.nama_parameter))}
                                                         </td>
                                                         <td>
                                                             <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
@@ -1495,6 +1515,51 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
+
+        document.querySelectorAll('.switch-btn').forEach((button) => {
+            button.addEventListener('click', function() {
+                const row = this.closest('tr');
+                const hasilInput = row.querySelector('.manualInput');
+                const d1Input = row.querySelector('.d1');
+                const d2Input = row.querySelector('.d2');
+                const d3Input = row.querySelector('.d3');
+                const flagCell = row.querySelector('.flag-cell');
+                const parameter = row.dataset.parameter;
+
+                let currentIndex = parseInt(this.getAttribute('data-switch-index')) || 0;
+
+                const updateValues = () => {
+                    switch (currentIndex) {
+                        case 0:
+                            if (d1Input && window.getComputedStyle(d1Input.closest('.d1-column')).display !== 'none') {
+                                const tempHasil = hasilInput.value;
+                                hasilInput.value = d1Input.value;
+                                d1Input.value = tempHasil;
+                            }
+                            break;
+                        case 1:
+                            if (d2Input && window.getComputedStyle(d2Input.closest('.d2-column')).display !== 'none') {
+                                const tempHasil = hasilInput.value;
+                                hasilInput.value = d2Input.value;
+                                d2Input.value = tempHasil;
+                            }
+                            break;
+                        case 2:
+                            if (d3Input && window.getComputedStyle(d3Input.closest('.d3-column')).display !== 'none') {
+                                const tempHasil = hasilInput.value;
+                                hasilInput.value = d3Input.value;
+                                d3Input.value = tempHasil;
+                            }
+                            break;
+                    }
+                };
+
+                updateValues();
+                currentIndex = (currentIndex + 1) % 3;
+                this.setAttribute('data-switch-index', currentIndex);
+                updateFlag(hasilInput.value, flagCell, parameter);
+            });
+        });
     }, 0);
 
     return content;
