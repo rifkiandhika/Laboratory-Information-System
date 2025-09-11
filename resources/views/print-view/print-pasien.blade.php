@@ -375,16 +375,17 @@
         <div class="header text-sm">
             <div class="row m-0">
                 <div class="col-3 col-md-2 p-0">
-                    <img class="ml-4" src="{{ asset('image/logo.png') }}" width="80" alt="Logo">
+                    <img class="ml-4" src="{{ asset('image/KRIMS.png') }}" width="80" alt="Logo">
                 </div>
                 <div class="col-8 col-md-8 text-center">
                     <h5 class="fw-bold mb-0">RUMAH SAKIT MUSLIMAT SINGOSARI</h5>
                     <p class="fw-bold mb-0">Jl. Ronggolawe No.24, Pangetan, Kec. Singosari, Kab. Malang</p>
                     <p class="fw-bold">Pelayanan 24 Jam</p>
                 </div>
-                <hr style="border-top: 1px solid black;">
             </div>
         </div>
+        <br>
+        <hr style="border-top: 1px solid black;">
         
         <div class="data-pasien mb-2">
             <div class="row">
@@ -621,7 +622,17 @@
                                 @endphp
                                 <tr>
                                 <td>{{ $hematologiMapping[$hasil->nama_pemeriksaan] ?? $hasil->nama_pemeriksaan }}</td>
-                                <td>{{ $hasil->hasil ?? 'Tidak ada hasil' }}</td>
+                                <td>
+                                    @if($hasil->nama_pemeriksaan === 'WBC')
+                                        {{ (strpos($hasil->hasil, '.') !== false && strlen(substr(strrchr($hasil->hasil, "."), 1)) == 2) 
+                                            ? $hasil->hasil . '0' 
+                                            : $hasil->hasil }}
+                                    @elseif($hasil->nama_pemeriksaan === 'PLT')
+                                        {{ $hasil->hasil . '.000' }}
+                                    @else
+                                        {{ $hasil->hasil ?? 'Tidak ada hasil' }}
+                                    @endif
+                                </td>
                                 <td class="flag">
                                     {{ $hasil->flag }}
                                 </td>
