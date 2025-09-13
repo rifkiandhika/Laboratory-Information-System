@@ -12,7 +12,8 @@ class dokter extends Model
 
     public function pasien()
     {
-        return $this->hasMany(Pasien::class, 'kode_dokter', 'kode_dokter');
+        return $this->hasMany(Pasien::class, 'kode_dokter', 'nama_dokter');
+        // foreignKey (di pasien), ownerKey (di dokter)
     }
 
     public function polis()

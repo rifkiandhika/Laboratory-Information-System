@@ -133,6 +133,19 @@
   0%, 80%, 100% { transform: scale(0); }
   40% { transform: scale(1); }
 }
+/* CSS untuk mengatur z-index SweetAlert agar di atas modal */
+.swal-high-z-index {
+    z-index: 10000 !important;
+}
+
+.swal2-container.swal-high-z-index {
+    z-index: 10000 !important;
+}
+
+/* Jika menggunakan SweetAlert2 */
+.swal2-container {
+    z-index: 10000 !important;
+}
   </style>
   
 <div class="content" id="scroll-content">
@@ -259,17 +272,19 @@
                                                     <i class="ti ti-printer me-2"></i> Print Result
                                                 </button>
                                             </li>
-                                           @if(in_array(auth()->user()->role, ['admin','dokter']) && Str::startsWith($dpc->no_lab, 'MCU'))
-                                                <li>
-                                                    <button type="button" 
-                                                            class="dropdown-item btn-kesimpulan-saran"
-                                                            data-id="{{ $dpc->no_lab }}"
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#kesimpulanSaranModal">
-                                                        <i class="ti ti-notes me-2"></i> Kesimpulan & Saran
-                                                    </button>
-                                                </li>
-                                            @endif
+                                           @hasanyrole('superadmin|dokter')
+                                                @if(Str::startsWith($dpc->no_lab, 'MCU'))
+                                                    <li>
+                                                        <button type="button" 
+                                                                class="dropdown-item btn-kesimpulan-saran"
+                                                                data-id="{{ $dpc->no_lab }}"
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#kesimpulanSaranModal">
+                                                            <i class="ti ti-notes me-2"></i> Kesimpulan & Saran
+                                                        </button>
+                                                    </li>
+                                                @endif
+                                            @endhasanyrole
 
                                         </ul>
                                     </div>
@@ -1004,11 +1019,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const paramData = hematologiParams.find(p => p.nama === parameter);
                 if (paramData) {
                     if (nilaiHasil < paramData.normal_min) {
-                        flagIcon = `<i class="ti ti-arrow-down text-primary"></i> Low`;
+                        flagIcon = `<i class="ti ti-arrow-down text-primary"></i> L`;
                     } else if (nilaiHasil > paramData.normal_max) {
-                        flagIcon = `<i class="ti ti-arrow-up text-danger"></i> High`;
+                        flagIcon = `<i class="ti ti-arrow-up text-danger"></i> H`;
                     } else {
-                        flagIcon = `<i class="ti ti-check text-success"></i> Normal`;
+                        flagIcon = ``;
                     }
                 }
             } else if (isUrine && parameter) {
@@ -1016,11 +1031,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const paramData = UrineParams.find(p => p.nama === parameter);
                 if (paramData && typeof paramData.normal_min === 'number' && typeof paramData.normal_max === 'number') {
                     if (nilaiHasil < paramData.normal_min) {
-                        flagIcon = `<i class="ti ti-arrow-down text-primary"></i> Low`;
+                        flagIcon = `<i class="ti ti-arrow-down text-primary"></i> L`;
                     } else if (nilaiHasil > paramData.normal_max) {
-                        flagIcon = `<i class="ti ti-arrow-up text-danger"></i> High`;
+                        flagIcon = `<i class="ti ti-arrow-up text-danger"></i> H`;
                     } else {
-                        flagIcon = `<i class="ti ti-check text-success"></i> Normal`;
+                        flagIcon = ``;
                     }
                 }
             } else {
@@ -1041,13 +1056,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!flag) return '';
 
         if (flag.toLowerCase() === 'normal') {
-            return `<i class="ti ti-check text-success"></i>Normal`;
+            return ``;
         }
         if (flag.toLowerCase() === 'high') {
-            return `<i class="ti ti-arrow-up text-danger"></i>High`;
+            return `<i class="ti ti-arrow-up text-danger"></i>H`;
         }
         if (flag.toLowerCase() === 'low') {
-            return `<i class="ti ti-arrow-down text-primary"></i>Low`;
+            return `<i class="ti ti-arrow-down text-primary"></i>L`;
         }
         return flag;
     }
@@ -1059,9 +1074,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Ambil note dari database jika ada
     const noteValue = hasil.length > 0 && hasil[0].note ? hasil[0].note : '';
+    const kesimpulanValue = hasil.length > 0 && hasil[0].kesimpulan ? hasil[0].kesimpulan : '';
+    const saranValue = hasil.length > 0 && hasil[0].saran ? hasil[0].saran : '';
 
     const content = `
-        
+    <form id="worklistForm" method="POST">
+        @csrf
         <input type="hidden" name="no_lab" value="${data_pasien.no_lab}">
         <input type="hidden" name="no_rm" value="${data_pasien.no_rm}">
         <input type="hidden" name="nama" value="${data_pasien.nama}">
@@ -1435,10 +1453,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 `).join('')}
             </div>
         </div>
+        </form>
          ${noteValue ? `
+            <div class="col-lg-12">
+                <label class="fw-bold mt-2">Catatan</label>
+                <textarea class="form-control" rows="3" disabled>${noteValue}</textarea>
+            </div>
+        ` : ''}
+         ${kesimpulanValue ? `
         <div class="col-lg-12">
-            <label class="fw-bold mt-2">Note</label>
-            <textarea class="form-control" rows="3" disabled>${noteValue}</textarea>
+            <label class="fw-bold mt-2">Kesimpulan</label>
+            <textarea class="form-control" rows="3" disabled>${kesimpulanValue}</textarea>
+        </div>
+    ` : ''}
+
+    ${saranValue ? `
+        <div class="col-lg-12">
+            <label class="fw-bold mt-2">Saran</label>
+            <textarea class="form-control" rows="3" disabled>${saranValue}</textarea>
         </div>
     ` : ''}
         
@@ -1560,6 +1592,56 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateFlag(hasilInput.value, flagCell, parameter);
             });
         });
+
+        // Update function menggunakan form submit seperti worklist.store (tanpa parameter_name)
+        document.querySelector('#resultReviewModal .update-btn').addEventListener('click', function () {
+    // SweetAlert konfirmasi sebelum update dengan z-index tinggi
+    Swal.fire({
+        title: 'Konfirmasi Update',
+        text: 'Apakah Anda yakin ingin mengupdate hasil pemeriksaan?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, Update!',
+        cancelButtonText: 'Batal',
+        customClass: {
+            container: 'swal-high-z-index'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.getElementById('worklistForm');
+            
+            // Show loading alert
+            Swal.fire({
+                title: 'Sedang memproses...',
+                text: 'Mohon tunggu, data sedang diupdate',
+                icon: 'info',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Enable semua input yang disabled agar nilainya bisa terkirim
+            const disabledInputs = form.querySelectorAll('input[disabled], select[disabled], textarea[disabled]');
+            disabledInputs.forEach(input => {
+                input.removeAttribute('disabled');
+            });
+            
+            // Ubah action form ke route update
+            const noLab = form.querySelector('input[name="no_lab"]').value;
+            form.action = `/analyst/worklist/update-hasil/${noLab}`;
+            
+            // Ubah method form ke POST (jika belum)
+            form.method = 'POST';
+            
+            // Submit form seperti worklist.store
+            form.submit();
+        }
+    });
+});
     }, 0);
 
     return content;
@@ -1809,7 +1891,7 @@ editBtns.forEach(function(editBtn) {
 
         let note = '';
         if (e.tabung === 'K3-EDTA' || e.tabung === 'EDTA' || e.tabung === 'CLOTH-ACT') {
-            note = '<p class="mb-0"><strong>Note</strong></p>';
+            note = '<p class="mb-0"><strong>Catatan</strong></p>';
         }
 
         accordionContent += `${title}

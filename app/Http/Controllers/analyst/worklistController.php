@@ -12,9 +12,11 @@ use App\Models\msh;
 use App\Models\obr;
 use App\Models\pembayaran;
 use App\Models\pemeriksaan_pasien;
+use App\Models\Report;
 use App\Models\spesimentCollection;
 use App\Models\spesimentHandling;
 use App\Models\Worklist;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -230,6 +232,12 @@ class worklistController extends Controller
                 'waktu_proses' => now(),
                 'created_at' => now(),
             ]);
+            $analystName = Auth::user()->name; // ambil nama user yang login
+            Report::where('nolab', $no_lab)
+                ->update([
+                    'analyst' => $analystName,
+                    'updated_at' => now(),
+                ]);
         } else {
             // Jika pasien tidak ditemukan, lakukan tindakan yang sesuai
             return redirect()->back()->withErrors(['message' => 'Pasien tidak ditemukan atau status tidak sesuai']);
@@ -244,6 +252,88 @@ class worklistController extends Controller
 
         return redirect()->route('worklist.index');
     }
+
+
+    public function updateHasil(Request $request, $no_lab)
+    {
+        // Debug - hapus dd() setelah testing
+        // dd($request->all());
+
+        // Validasi - hapus parameter_name karena tidak ada di form
+        $request->validate([
+            'no_lab' => 'required',
+            'nama_pemeriksaan.*' => 'required',
+            'hasil.*' => 'nullable',
+            'duplo_d1.*' => 'nullable',
+            'duplo_d2.*' => 'nullable',
+            'duplo_d3.*' => 'nullable',
+        ]);
+
+        try {
+            $data = $request->all();
+
+            // Log data untuk debugging
+            Log::info('Update data received:', [
+                'no_lab' => $no_lab,
+                'count_pemeriksaan' => count($data['nama_pemeriksaan']),
+                'data' => $data
+            ]);
+
+            // Loop untuk update setiap pemeriksaan menggunakan model HasilPemeriksaan
+            for ($i = 0; $i < count($data['nama_pemeriksaan']); $i++) {
+
+                // Skip jika nama_pemeriksaan kosong
+                if (empty($data['nama_pemeriksaan'][$i])) {
+                    continue;
+                }
+
+                // Data untuk update
+                $updateData = [
+                    'hasil' => $data['hasil'][$i] ?? null,
+                    'duplo_d1' => $data['duplo_d1'][$i] ?? null,
+                    'duplo_d2' => $data['duplo_d2'][$i] ?? null,
+                    'duplo_d3' => $data['duplo_d3'][$i] ?? null,
+                    'flag' => $data['flag'][$i] ?? null,
+                    'updated_at' => now()
+                ];
+
+                // Cari record berdasarkan no_lab dan nama_pemeriksaan
+                $hasilPemeriksaan = HasilPemeriksaan::where('no_lab', $no_lab)
+                    ->where('nama_pemeriksaan', $data['nama_pemeriksaan'][$i])
+                    ->first();
+
+                if ($hasilPemeriksaan) {
+                    // Update jika record ditemukan
+                    $hasilPemeriksaan->update($updateData);
+
+                    Log::info('Record updated successfully:', [
+                        'id' => $hasilPemeriksaan->id,
+                        'no_lab' => $no_lab,
+                        'nama_pemeriksaan' => $data['nama_pemeriksaan'][$i]
+                    ]);
+                } else {
+                    // Log jika record tidak ditemukan
+                    Log::warning('Record not found:', [
+                        'no_lab' => $no_lab,
+                        'nama_pemeriksaan' => $data['nama_pemeriksaan'][$i]
+                    ]);
+                }
+            }
+
+            toast('Data berhasil diupdate', 'success');
+            return redirect()->back();
+        } catch (\Exception $e) {
+            Log::error('Update error:', [
+                'no_lab' => $no_lab,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            toast('Gagal update data: ' . $e->getMessage(), 'error');
+            return redirect()->back();
+        }
+    }
+
 
 
     /**

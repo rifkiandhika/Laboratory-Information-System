@@ -41,8 +41,14 @@ class pasien extends Model
 
     public function dokter()
     {
-        return $this->belongsTo(dokter::class, 'kode_dokter', 'kode_dokter');
+        return $this->belongsTo(dokter::class, 'kode_dokter', 'nama_dokter');
     }
+
+    // public function dokters()
+    // {
+    //     // kolom 'kode_dokter' di tabel pasien dihubungkan dengan 'nama_dokter' di tabel dokters
+    //     return $this->belongsTo(Dokter::class, 'kode_dokter', 'nama_dokter');
+    // }
 
     public function history()
     {

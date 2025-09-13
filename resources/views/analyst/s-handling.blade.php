@@ -556,7 +556,7 @@
           cancelButtonText: 'Batal',
           inputValidator: (value) => {
             if (!value) {
-                  return 'Note wajib diisi!'; // Pesan kesalahan jika input kosong
+                  return 'Catatan wajib diisi!'; // Pesan kesalahan jika input kosong
               }
               return null;
           }
@@ -587,7 +587,7 @@
           cancelButtonText: 'Batal',
           inputValidator: (value) => {
             if (!value) {
-                  return 'Note wajib diisi!'; // Pesan kesalahan jika input kosong
+                  return 'Catatan wajib diisi!'; // Pesan kesalahan jika input kosong
               }
               return null;
           }
@@ -955,12 +955,12 @@ function generateAccordionHTML(e, scollection, type) {
     if (type === "handling") {
         noteHTML = `
             <input type="hidden" name="kode[]" value="${e.kode}">
-            <p class="mb-0"><strong>Note</strong></p>
+            <p class="mb-0"><strong>Catatan</strong></p>
             <textarea class="form-control" name="note[${e.kode}]" rows="3">${noteText}</textarea>
         `;
     } else {
         noteHTML = `
-            <p class="mb-0"><strong>Note</strong></p>
+            <p class="mb-0"><strong>Catatan</strong></p>
             <textarea class="form-control" rows="3" disabled>${noteText || '-'}</textarea>
         `;
     }

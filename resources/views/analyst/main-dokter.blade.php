@@ -923,7 +923,7 @@
             </div>
             
             <div>
-                <label>Note</label>
+                <label>Catatan</label>
                 <textarea class="form-control" name="note" cols="3" rows="3" 
                         placeholder="" readonly>${noteValue}</textarea>
             </div>
@@ -1168,7 +1168,7 @@ window.getTableContent = getTableContent;
 
         let note = '';
         if (e.tabung === 'K3-EDTA' || e.tabung === 'EDTA' || e.tabung === 'CLOTH-ACT') {
-            note = '<p class="mb-0"><strong>Note</strong></p>';
+            note = '<p class="mb-0"><strong>Catatan</strong></p>';
         }
 
         accordionContent += `${title}
@@ -1202,7 +1202,7 @@ window.getTableContent = getTableContent;
     if (historyItem && historyItem.note) {
         accordionContent += `
             <div class="col-lg-12">
-                <label class="fw-bold mt-2">Note</label>
+                <label class="fw-bold mt-2">Catatan</label>
                 <textarea id="noteTextarea" class="form-control" row="3" placeholder="${historyItem.note}" disabled></textarea>
             </div>
         `;

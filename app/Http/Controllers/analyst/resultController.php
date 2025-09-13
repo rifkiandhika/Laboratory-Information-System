@@ -146,7 +146,8 @@ class resultController extends Controller
     {
         $departments = Department::all();
         $dokters = dokter::all();
-        return view('print-view.report', compact('departments', 'dokters'));
+        $reports = Report::select('analyst')->distinct()->get();
+        return view('print-view.report', compact('departments', 'dokters', 'reports'));
     }
 
     public function getReportData(Request $request)
@@ -168,7 +169,8 @@ class resultController extends Controller
                 'detailDepartment',
                 'departments:id,nama_department',
                 'mcuPackage',
-                'mcuPackage.mcuDetails.detailDepartment'
+                'mcuPackage.mcuDetails.detailDepartment',
+                // 'analyst' // Add relation to users table for analyst
             ])->whereBetween('tanggal', [$tanggalAwal, $tanggalAkhir]);
 
             if (!empty($departments) && !in_array('All', $departments)) {
@@ -192,25 +194,36 @@ class resultController extends Controller
                     $query->whereNull('mcu_package_id');
                 }
             }
+            if ($request->analyst && !in_array('All', $request->analyst)) {
+                $query->whereIn('analyst', $request->analyst);
+            }
 
             $results = $query->get();
 
             $pivoted = [];
             $mcuParameters = [];
-            $processedMcuLabs = []; // ✅ untuk menghindari duplikasi paket per pasien
+            $processedMcuLabs = [];
+
+            // Get all users for analyst lookup
+            $users = \App\Models\User::select('id', 'name', 'fee', 'feemcu')->get()->keyBy('name');
 
             foreach ($results as $item) {
                 $deptId = $item->departments->id ?? $item->department;
                 $deptName = $item->departments->nama_department ?? 'Unknown';
                 $namaDokter = $item->nama_dokter ?? '-';
 
+                // Get analyst info
+                $analystName = $item->analyst ?? '-';
+                $analystData = $users->get($analystName);
+                $analystFee = $analystData->fee ?? 0; // Default fee (5%)
+                $analystMcuFee = $analystData->feemcu ?? 0; // MCU fee (10%)
+
                 // --- ✅ MCU Package ---
                 if ($item->mcu_package_id && $item->mcuPackage) {
                     $packageName = $item->mcuPackage->nama_paket;
                     $packageId = $item->mcu_package_id;
-                    $packageKey = 'MCU_PACKAGE_' . $packageId . '||' . $namaDokter;
+                    $packageKey = 'MCU_PACKAGE_' . $packageId . '||' . $namaDokter . '||' . $analystName;
 
-                    // ✅ pastikan hanya dihitung 1x per pasien (berdasarkan no_lab)
                     $uniquePatientKey = $packageKey . '||' . $item->no_lab;
                     if (in_array($uniquePatientKey, $processedMcuLabs)) {
                         continue;
@@ -226,6 +239,8 @@ class resultController extends Controller
                             'package_name' => $packageName,
                             'dokter' => $namaDokter,
                             'jasa_dokter' => $item->mcuPackage->jasa_dokter ?? 0,
+                            'analyst' => $analystName,
+                            'analyst_fee_percent' => $analystMcuFee,
                             'is_department_header' => false,
                             'is_subheader' => false,
                             'is_mcu_package' => true,
@@ -233,37 +248,43 @@ class resultController extends Controller
                             'bpjs_qty' => 0,
                             'bpjs_price' => 0,
                             'bpjs_total' => 0,
+                            'bpjs_analyst_fee' => 0,
                             'asuransi_qty' => 0,
                             'asuransi_price' => 0,
                             'asuransi_total' => 0,
+                            'asuransi_analyst_fee' => 0,
                             'umum_qty' => 0,
                             'umum_price' => 0,
                             'umum_total' => 0,
+                            'umum_analyst_fee' => 0,
                         ];
                     }
 
                     $hargaPackage = $item->mcuPackage->harga_final ?? 0;
 
-                    // ✅ qty dihitung per pasien, bukan per parameter
                     switch (strtolower($item->payment_method)) {
                         case 'bpjs':
                             $pivoted[$packageKey]['bpjs_qty'] += 1;
                             $pivoted[$packageKey]['bpjs_price'] = $hargaPackage;
                             $pivoted[$packageKey]['bpjs_total'] += $hargaPackage;
+                            // Calculate analyst fee for MCU (using feemcu)
+                            $pivoted[$packageKey]['bpjs_analyst_fee'] += $hargaPackage * ($analystMcuFee / 100);
                             break;
                         case 'asuransi':
                             $pivoted[$packageKey]['asuransi_qty'] += 1;
                             $pivoted[$packageKey]['asuransi_price'] = $hargaPackage;
                             $pivoted[$packageKey]['asuransi_total'] += $hargaPackage;
+                            $pivoted[$packageKey]['asuransi_analyst_fee'] += $hargaPackage * ($analystMcuFee / 100);
                             break;
                         case 'umum':
                             $pivoted[$packageKey]['umum_qty'] += 1;
                             $pivoted[$packageKey]['umum_price'] = $hargaPackage;
                             $pivoted[$packageKey]['umum_total'] += $hargaPackage;
+                            $pivoted[$packageKey]['umum_analyst_fee'] += $hargaPackage * ($analystMcuFee / 100);
                             break;
                     }
 
-                    // ✅ simpan parameter MCU (hanya untuk ditampilkan, qty kosong)
+                    // MCU Parameters (display only)
                     if ($item->mcuPackage->mcuDetails) {
                         foreach ($item->mcuPackage->mcuDetails as $detail) {
                             $parameterKey = 'MCU_PARAM_' . $packageId . '_' . $detail->id;
@@ -277,6 +298,8 @@ class resultController extends Controller
                                     'package_name' => $packageName,
                                     'dokter' => '-',
                                     'jasa_dokter' => 0,
+                                    'analyst' => '-',
+                                    'analyst_fee_percent' => 0,
                                     'is_department_header' => false,
                                     'is_subheader' => false,
                                     'is_mcu_package' => false,
@@ -284,12 +307,15 @@ class resultController extends Controller
                                     'bpjs_qty' => 0,
                                     'bpjs_price' => 0,
                                     'bpjs_total' => 0,
+                                    'bpjs_analyst_fee' => 0,
                                     'asuransi_qty' => 0,
                                     'asuransi_price' => 0,
                                     'asuransi_total' => 0,
+                                    'asuransi_analyst_fee' => 0,
                                     'umum_qty' => 0,
                                     'umum_price' => 0,
                                     'umum_total' => 0,
+                                    'umum_analyst_fee' => 0,
                                 ];
                             }
                         }
@@ -305,7 +331,7 @@ class resultController extends Controller
                         $displayName = $item->detailDepartment->nama_pemeriksaan ?? 'Hematologi';
                     }
 
-                    $key = $deptId . '||' . $displayName . '||' . $namaDokter;
+                    $key = $deptId . '||' . $displayName . '||' . $namaDokter . '||' . $analystName;
 
                     if (!isset($pivoted[$key])) {
                         $pivoted[$key] = [
@@ -316,6 +342,8 @@ class resultController extends Controller
                             'package_name' => null,
                             'dokter' => $namaDokter,
                             'jasa_dokter' => $jasaDokter,
+                            'analyst' => $analystName,
+                            'analyst_fee_percent' => $analystFee,
                             'is_department_header' => false,
                             'is_subheader' => false,
                             'is_mcu_package' => false,
@@ -323,38 +351,50 @@ class resultController extends Controller
                             'bpjs_qty' => 0,
                             'bpjs_price' => 0,
                             'bpjs_total' => 0,
+                            'bpjs_analyst_fee' => 0,
                             'asuransi_qty' => 0,
                             'asuransi_price' => 0,
                             'asuransi_total' => 0,
+                            'asuransi_analyst_fee' => 0,
                             'umum_qty' => 0,
                             'umum_price' => 0,
                             'umum_total' => 0,
+                            'umum_analyst_fee' => 0,
                         ];
                     }
+
+                    $totalValue = $item->quantity * $harga;
 
                     switch (strtolower($item->payment_method)) {
                         case 'bpjs':
                             $pivoted[$key]['bpjs_qty'] += $item->quantity;
                             $pivoted[$key]['bpjs_price'] = $harga;
-                            $pivoted[$key]['bpjs_total'] += $item->quantity * $harga;
+                            $pivoted[$key]['bpjs_total'] += $totalValue;
+                            // Calculate analyst fee for non-MCU (using fee)
+                            $pivoted[$key]['bpjs_analyst_fee'] += $totalValue * ($analystFee / 100);
                             break;
                         case 'asuransi':
                             $pivoted[$key]['asuransi_qty'] += $item->quantity;
                             $pivoted[$key]['asuransi_price'] = $harga;
-                            $pivoted[$key]['asuransi_total'] += $item->quantity * $harga;
+                            $pivoted[$key]['asuransi_total'] += $totalValue;
+                            $pivoted[$key]['asuransi_analyst_fee'] += $totalValue * ($analystFee / 100);
                             break;
                         case 'umum':
                             $pivoted[$key]['umum_qty'] += $item->quantity;
                             $pivoted[$key]['umum_price'] = $harga;
-                            $pivoted[$key]['umum_total'] += $item->quantity * $harga;
+                            $pivoted[$key]['umum_total'] += $totalValue;
+                            $pivoted[$key]['umum_analyst_fee'] += $totalValue * ($analystFee / 100);
                             break;
                     }
+
+                    // Update dokter fee calculation (multiply by quantity)
+                    // $pivoted[$key]['jasa_dokter'] = $jasaDokter * $pivoted[$key]['bpjs_qty'] + $pivoted[$key]['asuransi_qty'] + $pivoted[$key]['umum_qty'];
                 }
             }
 
             $pivoted = array_merge($pivoted, $mcuParameters);
 
-            // --- Grouping ---
+            // --- Grouping (same as before) ---
             $grouped = collect($pivoted)->groupBy(function ($row) {
                 if ($row['is_mcu_package'] || $row['is_mcu_parameter']) {
                     return 'MCU-' . $row['mcu_package_id'];
@@ -377,6 +417,8 @@ class resultController extends Controller
                         'department_id' => 999,
                         'dokter' => '-',
                         'jasa_dokter' => 0,
+                        'analyst' => '-',
+                        'analyst_fee_percent' => 0,
                         'is_department_header' => true,
                         'is_subheader' => false,
                         'is_mcu_package' => false,
@@ -384,12 +426,15 @@ class resultController extends Controller
                         'bpjs_qty' => 0,
                         'bpjs_price' => 0,
                         'bpjs_total' => 0,
+                        'bpjs_analyst_fee' => 0,
                         'asuransi_qty' => 0,
                         'asuransi_price' => 0,
                         'asuransi_total' => 0,
+                        'asuransi_analyst_fee' => 0,
                         'umum_qty' => 0,
                         'umum_price' => 0,
                         'umum_total' => 0,
+                        'umum_analyst_fee' => 0,
                     ];
 
                     foreach ($mcuPackages as $package) {
@@ -417,6 +462,8 @@ class resultController extends Controller
                     'department_id' => $firstItem['department_id'],
                     'dokter' => '-',
                     'jasa_dokter' => 0,
+                    'analyst' => '-',
+                    'analyst_fee_percent' => 0,
                     'is_department_header' => true,
                     'is_subheader' => false,
                     'is_mcu_package' => false,
@@ -424,12 +471,15 @@ class resultController extends Controller
                     'bpjs_qty' => 0,
                     'bpjs_price' => 0,
                     'bpjs_total' => 0,
+                    'bpjs_analyst_fee' => 0,
                     'asuransi_qty' => 0,
                     'asuransi_price' => 0,
                     'asuransi_total' => 0,
+                    'asuransi_analyst_fee' => 0,
                     'umum_qty' => 0,
                     'umum_price' => 0,
                     'umum_total' => 0,
+                    'umum_analyst_fee' => 0,
                 ];
 
                 foreach ($items as $item) {
@@ -438,30 +488,38 @@ class resultController extends Controller
                 }
             }
 
-            // --- Total ---
+            // --- Total Row ---
             $totalRow = [
                 'test_name' => 'TOTAL',
                 'department' => '',
                 'department_id' => null,
                 'dokter' => '-',
                 'jasa_dokter' => 0,
+                'analyst' => '-',
+                'analyst_fee_percent' => 0,
                 'is_department_header' => false,
                 'is_subheader' => false,
                 'is_mcu_package' => false,
                 'is_mcu_parameter' => false,
                 'bpjs_qty' => 0,
                 'bpjs_total' => 0,
+                'bpjs_analyst_fee' => 0,
                 'asuransi_qty' => 0,
                 'asuransi_total' => 0,
+                'asuransi_analyst_fee' => 0,
                 'umum_qty' => 0,
                 'umum_total' => 0,
+                'umum_analyst_fee' => 0,
             ];
 
             foreach ($pivoted as $row) {
                 if (!$row['is_mcu_parameter'] && !$row['is_department_header']) {
                     $totalRow['bpjs_total'] += $row['bpjs_total'];
+                    $totalRow['bpjs_analyst_fee'] += $row['bpjs_analyst_fee'];
                     $totalRow['asuransi_total'] += $row['asuransi_total'];
+                    $totalRow['asuransi_analyst_fee'] += $row['asuransi_analyst_fee'];
                     $totalRow['umum_total'] += $row['umum_total'];
+                    $totalRow['umum_analyst_fee'] += $row['umum_analyst_fee'];
                 }
             }
 

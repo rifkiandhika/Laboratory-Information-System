@@ -615,7 +615,7 @@ Dashboard|Spesiment
                     cancelButtonText: 'Batal',
                     inputValidator: (value) => {
                         if (!value) {
-                            return 'Note wajib diisi!'; // Pesan kesalahan jika input kosong
+                            return 'Catatan wajib diisi!'; // Pesan kesalahan jika input kosong
                         }
                         return null;
                     }
@@ -890,7 +890,7 @@ Dashboard|Spesiment
 
     let note = '';
     if (['K3-EDTA','CLOTH-ACTIVATOR'].includes(e.tabung)) {
-        note = '<p class="mb-0"><strong>Note</strong></p>';
+        note = '<p class="mb-0"><strong>Catatan</strong></p>';
     }
 
     detailContent += `${title}

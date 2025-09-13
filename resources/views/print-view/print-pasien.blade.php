@@ -212,6 +212,19 @@
         .bg-light {
             background-color: #f8f9fa !important;
         }
+        @font-face {
+            font-family: "Calibri Light";
+            src: url("/fonts/calibril.ttf") format("truetype"); /* path ke file Calibri Light */
+            font-weight: normal;
+            font-style: normal;
+        }
+        .calibri {
+            font-family: "Calibri Light", Calibri, sans-serif;
+        }
+        .courier-new {
+            font-family: "Courier New", Courier, monospace;
+        }
+
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 </head>
@@ -621,7 +634,7 @@
                                     ];
                                 @endphp
                                 <tr>
-                                <td>{{ $hematologiMapping[$hasil->nama_pemeriksaan] ?? $hasil->nama_pemeriksaan }}</td>
+                                <td><strong>‎ ‎ ‎ </strong>{{ $hematologiMapping[$hasil->nama_pemeriksaan] ?? $hasil->nama_pemeriksaan }}</td>
                                 <td>
                                     @if($hasil->nama_pemeriksaan === 'WBC')
                                         {{ (strpos($hasil->hasil, '.') !== false && strlen(substr(strrchr($hasil->hasil, "."), 1)) == 2) 
@@ -634,7 +647,11 @@
                                     @endif
                                 </td>
                                 <td class="flag">
-                                    {{ $hasil->flag }}
+                                    @if(strtolower($hasil->flag) === 'high')
+                                        <i class="ti ti-arrow-up text-danger"></i> H
+                                    @elseif(strtolower($hasil->flag) === 'low')
+                                        <i class="ti ti-arrow-down text-primary"></i> L
+                                    @endif
                                 </td>
                                 <td class="text-center">{{ $hasil->satuan ?? '-' }}</td>
                                 <td>{{ $nilai_rujukan ?: '-' }}</td>
@@ -645,38 +662,77 @@
                 </table>
             </div>
         </div>
+        <hr>
         
         @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->note)
-            <div class="note-section">
-                <strong>Note :</strong> {{ $hasil_pemeriksaans->first()->note }}
-            </div>
+            <table class="note-section">
+                <tr>
+                    <td><strong>Catatan :</strong></td>
+                    <td class="courier-new"> - {{ $hasil_pemeriksaans->first()->note }}</td> {{-- dinamis --}}
+                </tr>
+                <tr>
+                    <td></td>
+                    <td class="courier-new"> - Kesimpulan di atas ini hanya berdasarkan dari pemeriksaan laboratorium pada saat ini dan 
+                        dari keterangan klinis yang dicantumkan</td> {{-- statis --}}
+                </tr>
+                <tr>
+                    <td></td>
+                    <td class="courier-new"> - *) Nilai Kritis</td> {{-- statis --}}
+                </tr>
+            </table>
         @endif
+        <br>
+        <div class="footer-container d-flex justify-content-between">
+    @if($data_pasien->dokter)
+        <!-- KIRI: Analyst -->
+        <div class="user-info">
+            <h6>Lab Penanggung Jawab</h6>
+            @if(auth()->user()->signature)
+                <img src="{{ asset('storage/signatures/' . auth()->user()->signature) }}"
+                    alt="Signature"
+                    style="max-height:80px; display:block;">
+            @endif
+            <div style="padding-left: 20px">
+                <span style="border-bottom:1px solid #000; padding:0 5px;">
+                    {{ auth()->user()->name }}
+                </span>
+                <div style=" margin-top:2px;">
+                    NIK. {{ auth()->user()->nik }}
+                </div>
+            </div>
+        </div>
+
+        <!-- KANAN: Dokter -->
+        <div class="doctor-info text-end">
+        <h6>Dokter Penanggung Jawab</h6>
+        <div style="margin-top:40px; display:inline-block; text-align:center;">
+            <span style="display:inline-block; border-bottom:1px solid #000; padding:0 5px;">
+                {{ $data_pasien->dokter->nama_dokter }}
+            </span>
+            <div style=" margin-top:2px;">
+                NIK. {{ $data_pasien->dokter->nip ?? '' }}
+            </div>
+        </div>
+    </div>
+
+    @else
+        <!-- Kalau tidak ada dokter, Analyst pindah ke kanan -->
+        <div class="doctor-info text-end w-100">
+            <h6>Lab Penanggung Jawab</h6>
+            <h6 style="padding-right: 25px; margin-top:40px;">{{ auth()->user()->name }}</h6>
+        </div>
+    @endif
+</div>
         @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->kesimpulan)
-            <div class="note-section">
+            <div class="note-section calibri">
                 <strong>Kesimpulan :</strong> {{ $hasil_pemeriksaans->first()->kesimpulan }}
             </div>
         @endif
         @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->saran)
-            <div class="note-section">
+            <div class="note-section calibri">
                 <strong>Saran :</strong> {{ $hasil_pemeriksaans->first()->saran }}
             </div>
         @endif
-        <br>
-        <div class="footer-container d-flex justify-content-between">
-            <div class="user-info">
-                <h6>Lab Penanggung Jawab</h6>
-                <br>
-                <br>
-                <h6 style="padding-left: 20px">{{ auth()->user()->name }}</h6>
-            </div>
-        
-            <div class="doctor-info text-end">
-                <h6>Dokter Penanggung Jawab</h6>
-                <br>
-                <br>
-                <h6 style="padding-right: 25px !important;">{{ $data_pasien->kode_dokter }}</h6>
-            </div>
-        </div>
     </div>
 
     <script>

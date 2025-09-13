@@ -2233,7 +2233,7 @@
                                 </div>
                                 
                                 <div>
-                                    <label>Note</label>
+                                    <label>Catatan</label>
                                     <textarea class="form-control" name="note" cols="3" rows="3" 
                                             placeholder="Masukkan catatan pemeriksaan..."></textarea>
                                 </div>
@@ -2718,11 +2718,11 @@
         accordionContent += `
             <div class="d-flex justify-content-between mt-3">
                 <div class="doctor-note" style="width: 48%;">
-                    <label class="fw-bold mt-2">Note (Doctor)</label>
+                    <label class="fw-bold mt-2">Catatan (Doctor)</label>
                     <textarea class="form-control" rows="3" disabled>${historyItem.note}</textarea>
                 </div>
                 <div class="analyst-note" style="width: 48%;">
-                    <label class="fw-bold mt-2">Note (Analyst)</label>
+                    <label class="fw-bold mt-2">Catatan (Analyst)</label>
                     <textarea class="form-control" rows="3" disabled>${hasil.length > 0 && hasil[0].note ? hasil[0].note : '-'}</textarea>
                 </div>
             </div>
@@ -2823,12 +2823,12 @@ function generateAccordionHTML(e, scollection, shandling, type) {
     if (type === "handling") {
         noteHTML = `
             <input type="hidden" name="kode[]" value="${e.kode}">
-            <p class="mb-0"><strong>Note</strong></p>
+            <p class="mb-0"><strong>Catatan</strong></p>
             <textarea class="form-control" name="note[${e.kode}]" rows="3" disabled>${noteText}</textarea>
         `;
     } else {
         noteHTML = `
-            <p class="mb-0"><strong>Note</strong></p>
+            <p class="mb-0"><strong>Catatan</strong></p>
             <textarea class="form-control" rows="3" disabled>${noteText || '-'}</textarea>
         `;
     }

@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers\auth;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class userController extends Controller
+class AuthController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         return view('login');
@@ -66,36 +63,17 @@ class userController extends Controller
 
     public function proses(Request $request)
     {
-        $request->validate([
+        $fields = $request->validate([
             'username' => 'required',
-            'password' => 'required'
+            'password' => 'required',
         ]);
 
-        $data = [
-            'username' => $request->username,
-            'password' => $request->password
-        ];
-
-        if (Auth::attempt($data)) {
-            $request->session()->regenerate();
-
-            $role = explode(',', auth()->user()->role);
-
-            if ($role[0] == 'loket') {
-                toast('Berhasil Login', 'success');
-                return redirect()->route('pasien.index');
-            } elseif ($role[0] == 'analyst') {
-                toast('Berhasil Login', 'success');
-                return redirect()->route('analyst.index');
-            } elseif ($role[0] == 'admin') {
-                toast('Berhasil Login', 'success');
-                return redirect()->route('admin.dashboard');
-            }
-        } else {
-            return back()->withErrors([
-                'error' => 'Username atau Password Salah',
-            ]);
+        if (!Auth::attempt($fields)) {
+            toast(__("Wrong username or password"), 'error');
+            return redirect()->route('login.index');
         }
+
+        return redirect()->route('admin.dashboard');
     }
 
     public function logout(Request $request)

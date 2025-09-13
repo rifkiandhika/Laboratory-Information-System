@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\auth\userController;
 use App\Http\Controllers\icd10\icd10Controller;
 use App\Http\Controllers\loket\pasienController;
 use App\Http\Controllers\analyst\analystDasboard;
@@ -12,11 +11,13 @@ use App\Http\Controllers\analyst\LotController;
 use App\Http\Controllers\analyst\QcController;
 use App\Http\Controllers\analyst\QcHistoryController;
 use App\Http\Controllers\analyst\resultController;
+use App\Http\Controllers\analyst\RolePermissionController;
 use App\Http\Controllers\analyst\SpesimentController;
 use App\Http\Controllers\analyst\worklistController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\analyst\spesimentHendlingController;
 use App\Http\Controllers\analyst\vDokterController;
+use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\department\DepartmentController;
 use App\Http\Controllers\DokterController;
 use App\Http\Controllers\loket\DataPasienController;
@@ -27,6 +28,7 @@ use App\Http\Controllers\poli\PoliController;
 use App\Http\Controllers\report\ReportController;
 use App\Http\Controllers\rolepermission\PermissionController;
 use App\Http\Controllers\rolepermission\RoleController;
+use App\Http\Controllers\user\UserController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
 
@@ -53,15 +55,15 @@ Route::get('/test', function () {
 //     return view('print-view.print-pasien');
 // });
 Route::get('/', function () {
-    return redirect('/login');
+    return redirect('/login')->name('login.index');
 });
 
-route::resource('login', userController::class);
-route::post('login-proses', [userController::class, 'proses'])->name('login.proses');
-Route::post('/logout', [userController::class, 'logout'])->name('logout');
+route::resource('login', AuthController::class);
+route::post('login-proses', [AuthController::class, 'proses'])->name('login.proses');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 //admin
-route::middleware('auth', 'role:admin')->group(function () {
+route::middleware('auth')->group(function () {
     route::get('/dashboard', [AdminController::class, "index"])->name('admin.dashboard');
     // route::get('/dokter', [AdminController::class, "dokter"])->name('dokter');
     // route::post('tambah-dokter', [AdminController::class, "tambahdokter"]);
@@ -73,6 +75,8 @@ route::middleware('auth', 'role:admin')->group(function () {
     Route::resource('permission', PermissionController::class);
     Route::resource('spesiments', SpesimentController::class);
     Route::resource('mcu', McuMcuPackageController::class);
+    Route::resource('role-permissions', RolePermissionController::class);
+    Route::resource('users', UserController::class);
     Route::get('/package-details/{id}', [McuMcuPackageController::class, 'getPackageDetails'])->name('package-details');
 });
 
@@ -142,7 +146,7 @@ route::middleware('auth', 'role:admin')->group(function () {
 //     Route::get('print/pasien/{no_lab}', [resultController::class, 'print'])->name('print.pasien');
 // });
 
-route::group(['prefix' => 'loket', 'middleware' => ['auth', 'role:loket,admin']], function () {
+route::group(['prefix' => 'loket', 'middleware' => ['auth']], function () {
 
     route::resource('pasien', pasienController::class);
     route::get('loket', [pasienController::class, 'index']);
@@ -160,7 +164,7 @@ route::group(['prefix' => 'loket', 'middleware' => ['auth', 'role:loket,admin']]
     // Route::post('pasien.update', [pasienController::class, 'update'])->name('pasien.update');
 });
 
-Route::group(['prefix' => 'analyst', 'middleware' => ['auth', 'role:analyst,admin']], function () {
+Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
     // Route Dashboard
     Route::resource('analyst', analystDasboard::class);
     // route::post('/setuju', [analystDasboard::class, 'approve'])->name('analyst.approve');
@@ -181,6 +185,8 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth', 'role:analyst,admi
     Route::delete('analyst/worklist/{worklist}', [worklistController::class, 'destroy']);
     Route::post('/worklist/checkin/{id}', [worklistController::class, 'checkin'])->name('worklist.checkin');
     Route::post('/worklist/end/{id}', [worklistController::class, 'end'])->name('worklist.end');
+    Route::post('/worklist/update-hasil/{no_lab}', [WorklistController::class, 'updateHasil'])
+        ->name('worklist.update-hasil');
     // Route Dokter
     Route::resource('vdokter', vDokterController::class);
     Route::post('/dokter/back/{id}', [vDokterController::class, 'back'])->name('dokter.back');

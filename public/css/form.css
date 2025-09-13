@@ -60,3 +60,64 @@
     text-align: center;
     font-size: 12px;
 }
+
+.payment-header[data-type="BPJS"] {
+    display: none;
+}
+.payment-header[data-type="ASURANSI"] {
+    display: none;
+}
+.payment-header[data-type="UMUM"] {
+    display: none;
+}
+
+.sub-header[data-type="BPJS"] {
+    display: none;
+}
+.sub-header[data-type="ASURANSI"] {
+    display: none;
+}
+.sub-header[data-type="UMUM"] {
+    display: none;
+}
+
+.cell-bpjs {
+    display: none;
+}
+.cell-asuransi {
+    display: none;
+}
+.cell-umum {
+    display: none;
+}
+
+/* Tampilkan kolom yang aktif */
+.payment-header[data-type="BPJS"].show {
+    display: table-cell !important;
+}
+.payment-header[data-type="ASURANSI"].show {
+    display: table-cell !important;
+}
+.payment-header[data-type="UMUM"].show {
+    display: table-cell !important;
+}
+
+.sub-header[data-type="BPJS"].show {
+    display: table-cell !important;
+}
+.sub-header[data-type="ASURANSI"].show {
+    display: table-cell !important;
+}
+.sub-header[data-type="UMUM"].show {
+    display: table-cell !important;
+}
+
+.cell-bpjs.show {
+    display: table-cell !important;
+}
+.cell-asuransi.show {
+    display: table-cell !important;
+}
+.cell-umum.show {
+    display: table-cell !important;
+}

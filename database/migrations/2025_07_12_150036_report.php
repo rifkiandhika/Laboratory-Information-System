@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('payment_method');
             $table->string('nama_parameter');
             $table->string('nama_dokter')->nullable();
+            $table->string('analyst')->nullable();
             $table->integer('quantity');
             $table->dateTime('tanggal');
             $table->timestamps();
