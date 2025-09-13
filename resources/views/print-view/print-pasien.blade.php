@@ -396,7 +396,7 @@
             <div class="col-8 col-md-8 text-end" style="color:#0b980b; line-height:1.2;"> <!-- hijau -->
                 <p class="fw-bold m-0 p-0" style="color:#0b980b;">LABORATORIUM</p>
                 <p class="fw-bold m-0 p-0" style="color:#0b980b;">KLINIK RAWAT INAP MUSLIMAT SINGOSARI</p>
-                <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif">Jalan Ronggolawe No.24, Pangetan, Kec. Singosari, Kab. Malang</p>
+                <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif">Ijin Operasional No. 12120003102510002</p>
                 <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif">Jalan Ronggolawe No.24, Pangetan, Kec. Singosari, Kab. Malang</p>
                 <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif">Telp. (0341) 458344 e-mail : rs.muslimatsingosari@gmail.com</p>
                 <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif">Pelayanan 24 Jam</p>
