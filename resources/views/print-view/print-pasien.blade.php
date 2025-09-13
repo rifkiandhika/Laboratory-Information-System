@@ -386,16 +386,22 @@
 
     <div>
         <div class="header text-sm">
-            <div class="row m-0">
-                <div class="col-3 col-md-2 p-0">
-                    <img class="ml-4" src="{{ asset('image/KRIMS.png') }}" width="80" alt="Logo">
-                </div>
-                <div class="col-8 col-md-8 text-center">
-                    <h5 class="fw-bold mb-0">RUMAH SAKIT MUSLIMAT SINGOSARI</h5>
-                    <p class="fw-bold mb-0">Jl. Ronggolawe No.24, Pangetan, Kec. Singosari, Kab. Malang</p>
-                    <p class="fw-bold">Pelayanan 24 Jam</p>
-                </div>
+            <div class="row m-0 align-items-center">
+            <!-- Logo -->
+            <div class="col-3 col-md-2 p-0">
+                <img class="ml-4" src="{{ asset('image/KRIMS.png') }}" width="80" alt="Logo">
             </div>
+
+            <!-- Teks Header -->
+            <div class="col-8 col-md-8 text-end" style="color:#0b980b; line-height:1.2;"> <!-- hijau -->
+                <p class="fw-bold m-0 p-0" style="color:#0b980b;">LABORATORIUM</p>
+                <p class="fw-bold m-0 p-0" style="color:#0b980b;">KLINIK RAWAT INAP MUSLIMAT SINGOSARI</p>
+                <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif">Jalan Ronggolawe No.24, Pangetan, Kec. Singosari, Kab. Malang</p>
+                <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif">Jalan Ronggolawe No.24, Pangetan, Kec. Singosari, Kab. Malang</p>
+                <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif">Telp. (0341) 458344 e-mail : rs.muslimatsingosari@gmail.com</p>
+                <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif">Pelayanan 24 Jam</p>
+            </div>
+        </div>
         </div>
         <br>
         <hr style="border-top: 1px solid black;">
