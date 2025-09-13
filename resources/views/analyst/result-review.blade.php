@@ -1742,54 +1742,46 @@ editBtns.forEach(function(editBtn) {
 
 </script>
 <script>
-     $('.preview').on('click', function(event) {
-        event.preventDefault();
-        const id = this.getAttribute('data-id');
-        const previewDataPasien = document.getElementById('previewDataPasien');
-        const loader = $('#loader');
+$('.preview').on('click', function(event) {
+    event.preventDefault();
+    const id = this.getAttribute('data-id');
+    const previewDataPasien = document.getElementById('previewDataPasien');
+    const loader = $('#loader');
 
-        loader.show();
+    loader.show();
 
-        fetch(`/api/get-data-pasien/${id}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("HTTP error " + response.status);
-                }
-                return response.json();
-            })
-            .then(res => {
-                console.log(res);
-                if (res.status === 'success') {
-                    const data_pasien = res.data;
-                    const data_pemeriksaan_pasien = res.data.dpp;
-                    const history = res.data.history;
-                    const spesimen = res.data.spesiment; // Load spesimen data
-                    const scollection = res.data.spesimentcollection;
-                    const shandling = res.data.spesimenthandling;
-                    const hasil = res.data.hasil_pemeriksaan;
+    fetch(`/api/get-data-pasien/${id}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("HTTP error " + response.status);
+            }
+            return response.json();
+        })
+        .then(res => {
+            if (res.status === 'success') {
+                const data_pasien = res.data;
+                const data_pemeriksaan_pasien = res.data.dpp;
+                const history = res.data.history;
+                const spesimen = res.data.spesiment;
+                const scollection = res.data.spesimentcollection;
+                const shandling = res.data.spesimenthandling;
+                const hasil = res.data.hasil_pemeriksaan;
 
-                    // Populate Modal
-                    let accordionContent = '';
+                let accordionContent = '';
 
-                    accordionContent += `
-                    <hr>
-                    <h5>Detail Sampling</h5>
-                    <hr>
+                // ========== History ==========
+                accordionContent += `
                     <h5>History</h5>
                     <ul class="step-wizard-list mt-4">
                         ${history.map((h, index) => {
-                            // Membuat objek Date dari h.created_at
                             let createdAt = new Date(h.created_at);
-
-                            // Format tanggal dan waktu sesuai dengan yang diinginkan
                             let formattedDate = createdAt.toLocaleString('id-ID', {
-                                year: 'numeric', 
-                                month: 'numeric', 
+                                year: 'numeric',
+                                month: 'numeric',
                                 day: 'numeric',
-                                hour: '2-digit', 
+                                hour: '2-digit',
                                 minute: '2-digit'
                             });
-
                             return `
                                 <li class="step-wizard-item">
                                     <span class="progress-count">${index + 1}</span>
@@ -1799,193 +1791,170 @@ editBtns.forEach(function(editBtn) {
                             `;
                         }).join('')}
                     </ul>
+                `;
+
+                // ========== Spesimen Collection ==========
+                let collectionSpecimens = spesimen.filter(e => e.spesiment === "Spesiment Collection");
+                if (collectionSpecimens.length > 0) {
+                    accordionContent += `<h5 class="title mt-3">Spesiment Collection</h5><hr>`;
+                    accordionContent += `<div class="accordion" id="accordionCollection">`;
+                    collectionSpecimens.forEach(e => {
+                        accordionContent += generateAccordionHTML(e, scollection, shandling, "collection");
+                    });
+                    accordionContent += `</div>`;
+                }
+
+                // ========== Spesimen Handlings ==========
+                let handlingSpecimens = spesimen.filter(e => e.spesiment === "Spesiment Handlings");
+                if (handlingSpecimens.length > 0) {
+                    accordionContent += `<h5 class="title mt-3">Spesiment Handlings</h5><hr>`;
+                    accordionContent += `<div class="accordion" id="accordionHandling">`;
+                    handlingSpecimens.forEach(e => {
+                        accordionContent += generateAccordionHTML(e, scollection, shandling, "handling");
+                    });
+                    accordionContent += `</div>`;
+                }
+
+                // ========== Notes ==========
+                const historyItem = history.find(h => h.proses === 'Dikembalikan oleh dokter');
+                if (historyItem && historyItem.note) {
+                    accordionContent += `
+                        <div class="d-flex justify-content-between mt-3">
+                            <div class="doctor-note" style="width: 48%;">
+                                <label class="fw-bold mt-2">Catatan (Doctor)</label>
+                                <textarea class="form-control" rows="3" disabled>${historyItem.note}</textarea>
+                            </div>
+                            <div class="analyst-note" style="width: 48%;">
+                                <label class="fw-bold mt-2">Catatan (Analyst)</label>
+                                <textarea class="form-control" rows="3" disabled>${hasil.length > 0 && hasil[0].note ? hasil[0].note : '-'}</textarea>
+                            </div>
+                        </div>
                     `;
+                }
 
-                    spesimen.forEach(e => {
+                // render ke modal
+                previewDataPasien.innerHTML = accordionContent;
+                loader.hide();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            loader.hide();
+        });
+
+    // ========== Function generateAccordionHTML ==========
+    function generateAccordionHTML(e, scollection, shandling, type) {
         let details = '';
-        let detailsData = [];
-        let kapasitas, serumh, serum;
-        let processTime = '';
+        let hasData = false;
+        let noteText = '';
+        let kapasitas, serumh, clotact, serum;
 
-        const checkInSpesimen = history.find(h => h.status === 'Check in spesiment');
-        let noteFromCollection = null;
-        let noteFromHandling = null;
+        let dataItem = null;
 
-        if (e.tabung === 'K3-EDTA') {
-            const collectionItem = scollection.find(item => item.no_lab === e.laravel_through_key);
-            if (collectionItem) {
-                detailsData = collectionItem.details.filter(detail => 
-                    e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                );
-                kapasitas = collectionItem.kapasitas;
-                noteFromCollection = collectionItem.note;
-            }
-        } else if (e.tabung === 'EDTA') {
-            const collectionItem = scollection.find(item => 
-                item.no_lab === e.laravel_through_key && item.tabung === 'EDTA'
+        if (type === "collection") {
+            dataItem = scollection.find(item =>
+                item.no_lab === e.laravel_through_key &&
+                item.tabung === e.tabung &&
+                item.kode === e.kode
             );
-            if (collectionItem) {
-                detailsData = collectionItem.details.filter(detail => 
-                    e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                );
-                serumh = collectionItem.serumh;
-                noteFromCollection = collectionItem.note;
-            }
-        } else if (e.tabung === 'CLOT-ACT') {
-            const handlingItem = shandling.find(item => item.no_lab === e.laravel_through_key);
-            if (handlingItem) {
-                detailsData = handlingItem.details.filter(detail => 
-                    e.details.some(spesimenDetail => spesimenDetail.id === detail.id)
-                );
-                serum = handlingItem.serum;
-                noteFromHandling = handlingItem.note;
-            }
+        } else if (type === "handling") {
+            dataItem = shandling.find(item =>
+                item.no_lab === e.laravel_through_key &&
+                item.tabung === e.tabung &&
+                item.kode === e.kode
+            );
         }
 
-        if (e.details && e.details.length > 0){
+        if (dataItem) {
+            hasData  = true;
+            noteText = dataItem.note || '';
+            kapasitas = dataItem.kapasitas;
+            serumh   = dataItem.serumh;
+            clotact  = dataItem.clotact;
+            serum    = dataItem.serum;
+        }
+
+        const uniqId = `${e.tabung}-${e.kode}`.replace(/\s+/g, '');
+
+        if (e.details && e.details.length > 0) {
             details = `<div class="detail-container col-12 col-md-6">`;
             e.details.forEach(detail => {
                 const imageUrl = `/gambar/${detail.gambar}`;
                 let isChecked = '';
-                let isDisabled = 'disabled';
+                let isDisabled = '';
 
-                const matchedDetail = detailsData.find(d => d.id === detail.id)
-                if(matchedDetail){
-                    if (e.tabung === 'K3-EDTA' && kapasitas == detail.id) {
-                        isChecked = 'checked';
-                        isDisabled = '';
-                    } else if (e.tabung === 'EDTA' && serumh == detail.id) {
-                        isChecked = 'checked';
-                        isDisabled = '';
-                    } else if (e.tabung === 'CLOT-ACT' && serum == detail.id) {
-                        isChecked = 'checked';
-                        isDisabled = '';
+                if (hasData) {
+                    if (type === "collection") {
+                        if (e.tabung === 'K3-EDTA') {
+                            isChecked = kapasitas == detail.id ? 'checked' : '';
+                            isDisabled = 'disabled';
+                        } else if (e.tabung === 'CLOTH-ACTIVATOR') {
+                            isChecked = serumh == detail.id ? 'checked' : '';
+                            isDisabled = 'disabled';
+                        } else if (e.tabung === 'CLOTH-ACT') {
+                            isChecked = clotact == detail.id ? 'checked' : '';
+                            isDisabled = 'disabled';
+                        }
+                    } else if (type === "handling") {
+                        if (e.tabung === 'CLOTH-ACTIVATOR' || e.tabung === 'CLOT-ACTIVATOR') {
+                            isChecked = parseInt(serum) === parseInt(detail.id) ? 'checked' : '';
+                            isDisabled = 'disabled';
+                        }
                     }
+                } else {
+                    if (detail.nama_parameter.toLowerCase().includes('normal')) {
+                        isChecked = 'checked';
+                    }
+                    isDisabled = '';
                 }
 
-                details +=  
-                `<div class="detail-item">
+                const radioName = (type === "handling") ? `serum[${e.kode}]` : `${e.tabung}_${e.kode}`;
+
+                details += `
+                <div class="detail-item">
                     <div class="detail-text">${detail.nama_parameter}</div>
                     <div class="detail-image-container">
-                        <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>    
+                        <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>
                     </div>
-                    <div class="detail-radio-container ">
-                        <input type="radio" name="${e.tabung}" class="detail.radio" value="${detail.id}" ${isChecked} ${isDisabled} />  
+                    <div class="detail-radio-container">
+                        <input type="radio" name="${radioName}" value="${detail.id}" ${isChecked} ${isDisabled}/>
                     </div>
                 </div>`;
             });
-            details += `</div>`
+            details += `</div>`;
         }
 
-        let title = '';
-        let subtext = '';
-
-        if (e.tabung === 'K3-EDTA') {
-            title = '<h5 class="title">Spesiment Collection</h5> <hr>';
-        } else if (e.tabung === 'CLOTH-ACT') {
-            subtext = '<div class="subtext">Serum</div>';
-        } else if (e.tabung === 'CLOT-ACT') {
-            title = '<h5 class="title mt-3">Spesiment Handlings</h5> <hr>';
-            subtext = '<div class="subtext">Serum</div>';
+        let noteHTML = '';
+        if (type === "handling") {
+            noteHTML = `
+                <input type="hidden" name="kode[]" value="${e.kode}">
+                <p class="mb-0"><strong>Catatan</strong></p>
+                <textarea class="form-control" name="note[${e.kode}]" rows="3" disabled>${noteText}</textarea>
+            `;
+        } else {
+            noteHTML = `
+                <p class="mb-0"><strong>Catatan</strong></p>
+                <textarea class="form-control" rows="3" disabled>${noteText || '-'}</textarea>
+            `;
         }
 
-        let note = '';
-        if (e.tabung === 'K3-EDTA' || e.tabung === 'EDTA' || e.tabung === 'CLOTH-ACT') {
-            note = '<p class="mb-0"><strong>Catatan</strong></p>';
-        }
-
-        accordionContent += `${title}
-            <div class="accordion accordion-custom-button mt-4" id="accordion${e.tabung}">                          
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="heading${e.tabung}">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${e.tabung}" aria-expanded="true" aria-controls="collapse${e.tabung}">
-                        Tabung ${e.tabung}
-                        </button>
-                    </h2>
-                    <div id="collapse${e.tabung}" class="accordion-collapse collapse" aria-labelledby="heading${e.tabung}" data-bs-parent="#accordion${e.tabung}">
-                        <div class="accordion-body">
-                            ${subtext}
-                            <div class="container">
-                                ${details}
-                            </div>
-                            ${note}
-                            ${e.tabung === 'K3-EDTA' ? 
-                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
-                            ${e.tabung === 'EDTA' ? 
-                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromCollection || 'null'}" ${noteFromCollection ? '' : 'disabled'} disabled></textarea>` : ''}
-                            ${e.tabung === 'CLOT-ACT' ? 
-                                `<textarea class="form-control" name="note[]" row="3" placeholder="${noteFromHandling || 'null'}" ${noteFromHandling ? '' : 'disabled'} disabled></textarea>` : ''}
-                        </div>
-                    </div>
+        return `
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading${uniqId}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${uniqId}">
+                    Tabung ${e.tabung} (${e.kode})
+                </button>
+            </h2>
+            <div id="collapse${uniqId}" class="accordion-collapse collapse" aria-labelledby="heading${uniqId}">
+                <div class="accordion-body">
+                    <div class="container">${details}</div>
+                    ${noteHTML}
                 </div>
             </div>
-        `;
-    });
-                    
-
-                    // let detailContent = `
-                    //     <div class="row mb-3">
-                    //         <div class="header text-center mb-3">
-                    //             <h4>Data Pemeriksaan Pasien</h4>
-                    //         </div>
-                    //         <hr>
-                    //         <div class="col-lg-7 col-md-5 col-sm-12">
-                    //             <div class="row mb-1">
-                    //                 <label class="col-5 col-form-label fw-bold">Cito</label>
-                    //                 <div class="col-7">
-                    //                     : <i class='ti ti-bell-filled text-danger' style="font-size: 23px;"></i>
-                    //                 </div>
-                    //             </div>
-                    //             <div class="row mb-1">
-                    //                 <label class="col-5 col-form-label fw-bold">No LAB</label>
-                    //                 <div class="col-7">
-                    //                     <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.no_lab}">
-                    //                 </div>
-                    //             </div>
-                    //             <div class="row mb-1">
-                    //                 <label class="col-5 col-form-label fw-bold">No RM</label>
-                    //                 <div class="col-7">
-                    //                     <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.no_rm}">
-                    //                 </div>
-                    //             </div>
-                    //             <div class="row mb-1">
-                    //                 <label class="col-5 col-form-label fw-bold">Nama</label>
-                    //                 <div class="col-7">
-                    //                     <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.nama}">
-                    //                 </div>
-                    //             </div>
-                    //             <div class="row mb-1">
-                    //                 <label class="col-5 col-form-label fw-bold">Ruangan</label>
-                    //                 <div class="col-7">
-                    //                     <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.asal_ruangan}">
-                    //                 </div>
-                    //             </div>
-                    //             <div class="row mb-1">
-                    //                 <label class="col-5 col-form-label fw-bold">Tanggal Lahir Usia</label>
-                    //                 <div class="col-7">
-                    //                     <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.lahir} Tahun">
-                    //                 </div>
-                    //             </div>
-                    //             <div class="row mb-1">
-                    //                 <label class="col-5 col-form-label fw-bold">Dokter</label>
-                    //                 <div class="col-7">
-                    //                     <input type="text" readonly class="form-control-plaintext" value=": ${data_pasien.dokter.nama_dokter}">
-                    //                 </div>
-                    //             </div>
-                    //         </div>
-                    // `;
-
-                    // detailContent += accordionContent;
-                    previewDataPasien.innerHTML = accordionContent;
-
-                    loader.hide();
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                loader.hide();
-            });
+        </div>`;
+    }
 });
 </script>
+
 <script src="{{ asset('../js/ak.js') }}"></script>
 @endpush
