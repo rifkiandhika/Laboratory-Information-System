@@ -220,9 +220,11 @@
         }
         .calibri {
             font-family: "Calibri Light", Calibri, sans-serif;
+            white-space: pre;
         }
         .courier-new {
             font-family: "Courier New", Courier, monospace;
+            white-space: pre;
         }
 
     </style>
@@ -393,7 +395,7 @@
             </div>
 
             <!-- Teks Header -->
-            <div class="col-8 col-md-8 text-end" style="color:#0b980b; line-height:1.2;"> <!-- hijau -->
+            <div class="col-8 col-md-8 w-100 text-end" style="color:#0b980b; line-height:1.2;"> <!-- hijau -->
                 <p class="fw-bold m-0 p-0" style="color:#0b980b;">LABORATORIUM</p>
                 <p class="fw-bold m-0 p-0" style="color:#0b980b;">KLINIK RAWAT INAP MUSLIMAT SINGOSARI</p>
                 <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif">Ijin Operasional No. 12120003102510002</p>
@@ -526,7 +528,7 @@
                     <tbody id="hasil-tbody">
                         @foreach ($hasil_pemeriksaans->groupBy('department') as $department => $hasil_group)
                             <tr>
-                                <th colspan="5" class="bg-light" style="font-size: 8px"><strong class="text-bold"><b>{{ strtoupper($department) }}</b></strong></th>
+                                <th colspan="5" style="font-size: 9px; font-weight: 900;"><b><strong>{{ strtoupper($department) }}</strong></b></th>
                             </tr>
                             @foreach ($hasil_group as $hasil)
                                 @php
@@ -673,21 +675,16 @@
         @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->note)
             <table class="note-section">
                 <tr>
-                    <td><strong>Catatan :</strong></td>
+                    <td><b>Catatan :</b></td>
                     <td class="courier-new"> - {{ $hasil_pemeriksaans->first()->note }}</td> {{-- dinamis --}}
                 </tr>
                 <tr>
                     <td></td>
-                    <td class="courier-new"> - Kesimpulan di atas ini hanya berdasarkan dari pemeriksaan laboratorium pada saat ini dan 
-                        dari keterangan klinis yang dicantumkan</td> {{-- statis --}}
-                </tr>
-                <tr>
-                    <td></td>
-                    <td class="courier-new"> - *) Nilai Kritis</td> {{-- statis --}}
+                    <td class="courier-new"> - Kesimpulan di atas ini hanya berdasarkan dari pemeriksaan laboratorium pada saat ini 
+   dan dari keterangan klinis yang dicantumkan</td> {{-- statis --}}
                 </tr>
             </table>
         @endif
-        <br>
         <div class="footer-container d-flex justify-content-between">
     @if($data_pasien->dokter)
         <!-- KIRI: Analyst -->
@@ -710,8 +707,8 @@
 
         <!-- KANAN: Dokter -->
         <div class="doctor-info text-end">
-        <h6>Dokter Penanggung Jawab</h6>
-        <div style="margin-top:40px; display:inline-block; text-align:center;">
+        <h6 style="margin-right: 25px">Dokter Penanggung Jawab</h6>
+        <div class="text-center" style="margin-top:40px; display:inline-block; margin-right: 50px">
             <span style="display:inline-block; border-bottom:1px solid #000; padding:0 5px;">
                 {{ $data_pasien->dokter->nama_dokter }}
             </span>
@@ -724,21 +721,37 @@
     @else
         <!-- Kalau tidak ada dokter, Analyst pindah ke kanan -->
         <div class="doctor-info text-end w-100">
-            <h6>Lab Penanggung Jawab</h6>
-            <h6 style="padding-right: 25px; margin-top:40px;">{{ auth()->user()->name }}</h6>
+        <h6 style="margin-right: 50px">Lab Penanggung Jawab</h6>
+        @if(auth()->user()->signature)
+            <img class="text-end" src="{{ asset('storage/signatures/' . auth()->user()->signature) }}"
+                alt="Signature"
+                style="max-height:80px; display:block; margin-left:78%;">
+        @endif
+        <div style="padding-right: 25px; margin-top:5px; text-align:right; margin-right: 50px">
+            <span style="border-bottom:1px solid #000; padding:0 5px;">
+                {{ auth()->user()->name }}
+            </span>
+            <div style="margin-top:2px;">
+                NIK. {{ auth()->user()->nik }}
+            </div>
         </div>
+    </div>
     @endif
 </div>
-        @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->kesimpulan)
-            <div class="note-section calibri">
-                <strong>Kesimpulan :</strong> {{ $hasil_pemeriksaans->first()->kesimpulan }}
-            </div>
-        @endif
-        @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->saran)
-            <div class="note-section calibri">
-                <strong>Saran :</strong> {{ $hasil_pemeriksaans->first()->saran }}
-            </div>
-        @endif
+        <table class="note-section calibri">
+            @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->kesimpulan)
+                <tr>
+                    <td><b>Kesimpulan :</b></td>
+                    <td class="courier-new"> - {{ $hasil_pemeriksaans->first()->kesimpulan }}</td>
+                </tr>
+            @endif
+            @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->saran)
+                <tr>
+                    <td><b>Saran :</b></td>
+                    <td class="courier-new"> - {{ $hasil_pemeriksaans->first()->saran }}</td>
+                </tr>
+            @endif
+        </table>
     </div>
 
     <script>
