@@ -55,7 +55,7 @@ Route::get('/test', function () {
 //     return view('print-view.print-pasien');
 // });
 Route::get('/', function () {
-    return redirect('/login')->name('login.index');
+    return redirect('/login');
 });
 
 route::resource('login', AuthController::class);
