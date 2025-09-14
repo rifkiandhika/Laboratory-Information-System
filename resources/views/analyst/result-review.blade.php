@@ -226,11 +226,11 @@
                                         </a>
                                         <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="aksiDropdown{{ $dpc->id }}">
                                             <li>
-                                                <button type="button" 
-                                                        class="dropdown-item editBtn" 
-                                                        data-id="{{ $dpc->no_lab }}">
+                                                <a class="dropdown-item editBtn" 
+                                                data-id="{{ $dpc->no_lab }}" 
+                                                href="#">
                                                     <i class="ti ti-pencil me-2"></i> Edit
-                                                </button>
+                                                </a>
                                             </li>
                                             <li>
                                                 <button type="button" 
@@ -1732,13 +1732,15 @@ window.getResultTableContent = getResultTableContent;
    // Ambil semua elemen dengan class 'editBtn'
 var editBtns = document.querySelectorAll('.editBtn');
 
-// Loop untuk setiap tombol
 editBtns.forEach(function(editBtn) {
-    var no_lab = editBtn.getAttribute('data-id');  // Ambil nilai no_lab dari atribut data-id
-    var editUrl = "{{ route('pasien.viewedit', ':no_lab') }}";
-    editUrl = editUrl.replace(':no_lab', no_lab);  // Gantilah :no_lab dengan nilai yang telah diambil
-    editBtn.href = editUrl;  // Set URL pada href tombol Edit
+    editBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        var no_lab = this.getAttribute('data-id');
+        var editUrl = "{{ route('pasien.edit', ':no_lab') }}".replace(':no_lab', no_lab);
+        window.location.href = editUrl; // langsung redirect
+    });
 });
+
 
 </script>
 <script>
