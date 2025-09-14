@@ -411,17 +411,17 @@
                 <div class="col-12">
                     <table class="table table-borderless table-sm mb-0" style="font-size:14px; width:100%;">
                     <tr>
-                        <td style="width:120px;">Nama Pasien</td>
+                        <td style="width:120px;">No. RM</td>
                         <td style="width:10px;">:</td>
-                        <td style="width:250px;"><b>{{ $data_pasien->nama ?? '-'}}</b></td>
+                        <td style="width:250px;">{{ $data_pasien->no_rm ?? '-'}}</td>
                         <td style="width:150px;">No. Laboratorium</td>
                         <td style="width:10px;">:</td>
                         <td>{{ $data_pasien->no_lab ?? '-' }}</td>
                     </tr>
                     <tr>
-                        <td>No. RM</td>
+                        <td>Nama Pasien</td>
                         <td>:</td>
-                        <td>{{ $data_pasien->no_rm ?? '-'}}</td>
+                        <td><b>{{ $data_pasien->nama ?? '-'}}</b></td>
                         <td>Tanggal Transaksi</td>
                         <td>:</td>
                         <td>{{ $data_pasien->tanggal_masuk ?? '-'}}</td>
