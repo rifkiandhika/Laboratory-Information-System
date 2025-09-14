@@ -325,10 +325,15 @@ Dashboard|Spesiment
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body text-center">
+
+                            <div id="patientInfo" class="mb-3 text-center">
+                                <!-- Nama dan Tanggal Lahir akan ditampilkan di sini -->
+                            </div>
+
                             <div class="mb-3">
                                 <strong>No Lab: <span id="currentNoLab"></span></strong>
                             </div>
-                            
+                                            
                             <!-- Dynamic Barcode Container -->
                             <div class="row" id="barcodeRow">
                                 <!-- Barcode akan ditampilkan di sini secara dinamis -->
@@ -343,9 +348,9 @@ Dashboard|Spesiment
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-success" onclick="printBarcode()">
-                                <i class="ti ti-printer me-1"></i>Print Barcode
-                            </button>
+                            <div class="btn-group" id="printButtons">
+                                <!-- Tombol print akan ditampilkan di sini secara dinamis -->
+                            </div>
                             <div class="btn-group" id="downloadButtons">
                                 <!-- Tombol download akan ditampilkan di sini secara dinamis -->
                             </div>
@@ -394,6 +399,8 @@ Dashboard|Spesiment
     let currentBarcodeData = '';
     let availableDepartments = [];
     let patientDepartments = [];
+    let currentPatientName = '';
+    let currentPatientDOB = '';
 
     document.addEventListener('DOMContentLoaded', function () {
         barcodeModal = new bootstrap.Modal(document.getElementById('barcodeModal'));
@@ -416,46 +423,61 @@ Dashboard|Spesiment
     }
 
     function detectDepartments(departments) {
-        const detected = [];
+        const activeDepts = [];
 
-        if (!Array.isArray(departments)) return [];
-
-        departments.forEach(dept => {
+        departments.forEach((dept) => {
             const pemeriksaan = dept?.pasiens?.[0]?.data_pemeriksaan;
-            const name = (dept?.data_departement?.nama_department || '').toLowerCase();
-
-            // Tambahkan logika pengecekan agar hanya departemen dengan barcode aktif yang terdeteksi
             if (pemeriksaan && pemeriksaan.barcode === 'active') {
-                if (name.includes('hematologi')) detected.push('hematologi');
-                if (name.includes('kimia')) detected.push('kimia');
+                const deptName = dept.data_departement?.nama_department?.toLowerCase();
+                if (deptName) {
+                    activeDepts.push(deptName); // contoh: "kimia klinik"
+                }
             }
         });
 
-        return detected;
+        return activeDepts;
     }
 
-    function getDepartmentConfig(key) {
-        const config = {
-            hematologi: {
-                code: 'H-',
-                name: 'Hematologi',
-                icon: 'ti-droplet',
-                class: 'bg-success'
-            },
-            kimia: {
-                code: 'K-',
-                name: 'Kimia Klinik',
-                icon: 'ti-flask',
-                class: 'bg-primary'
-            }
-        };
-        return config[key] || {
-            code: 'X-',
-            name: key,
-            icon: 'ti-medical-cross',
-            class: 'bg-secondary'
-        };
+    function getDepartmentConfig(deptName) {
+        switch (deptName.toLowerCase()) {
+            case 'hematologi':
+                return {
+                    name: 'Hematologi',
+                    code: 'H-',
+                    icon: 'ti-droplet',
+                    class: 'bg-success' // Ungu
+                };
+            case 'kimia klinik':
+                return {
+                    name: 'Kimia Klinik',
+                    code: 'K-',
+                    icon: 'ti-flask',
+                    class: 'bg-primary' // Hijau
+                };
+            case 'imunoserologi':
+                return {
+                    name: 'Imunoserologi',
+                    code: 'I-',
+                    icon: 'ti-shield',
+                    class: 'bg-warning' // Kuning
+                };
+            case 'mikrobiologi':
+                return {
+                    name: 'Mikrobiologi',
+                    code: 'M-',
+                    icon: 'ti-bug',
+                    class: 'bg-danger' // Merah
+                };
+            default:
+                return {
+                    name: deptName,
+                    code: 'X-',
+                    icon: 'ti-alert-circle',
+                    class: 'bg-secondary' // Default abu-abu
+                };
+        }
     }
+
 
     async function showBarcodeModal(id, noLab = '', departments = null) {
         try {
@@ -465,15 +487,38 @@ Dashboard|Spesiment
 
             const barcodeRow = document.getElementById('barcodeRow');
             const downloadButtons = document.getElementById('downloadButtons');
+            const patientInfo = document.getElementById('patientInfo');
+
             barcodeRow.innerHTML = '<div class="col-12 text-center"><div class="spinner-border"></div><p>Memuat data departemen...</p></div>';
             downloadButtons.innerHTML = '';
+            patientInfo.innerHTML = '';
             barcodeModal.show();
 
+            let resData;
             if (!departments) {
-                departments = await fetchPatientDepartments(id);
+                const response = await fetch(`/api/get-data-pasien/${id}`);
+                if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+                const res = await response.json();
+                departments = res.data.dpp;
+                resData = res.data;
             }
 
             availableDepartments = detectDepartments(departments);
+
+            if (resData && resData.nama && resData.lahir) {
+                const formattedLahir = new Date(resData.lahir).toLocaleDateString('id-ID', {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                });
+
+                currentPatientName = resData.nama;
+                currentPatientDOB = formattedLahir;
+
+                patientInfo.innerHTML = `
+                    <h6 class="mb-1"><strong>Nama : ${resData.nama}</strong></h6>
+                    <p class="text-muted mb-0">Tanggal Lahir : ${formattedLahir}</p>
+                `;
+            }
+
             generateBarcodeUI();
 
         } catch (error) {
@@ -489,6 +534,7 @@ Dashboard|Spesiment
     function generateBarcodeUI() {
         const barcodeRow = document.getElementById('barcodeRow');
         const downloadButtons = document.getElementById('downloadButtons');
+        const printButtons = document.getElementById('printButtons');
 
         if (availableDepartments.length === 0) {
             barcodeRow.innerHTML = `<div class="col-12 text-center"><div class="alert alert-warning">Departemen tidak ditemukan.</div></div>`;
@@ -496,7 +542,7 @@ Dashboard|Spesiment
             return;
         }
 
-        // Tombol download tetap seperti yang kamu inginkan
+        
         downloadButtons.innerHTML = `
             <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
                 <i class="ti ti-download me-1"></i>Download
@@ -504,20 +550,38 @@ Dashboard|Spesiment
             <ul class="dropdown-menu">
                 ${availableDepartments.map(d => {
                     const c = getDepartmentConfig(d);
-                    return `<li><a class="dropdown-item" href="#" onclick="downloadBarcode('${d}')"><i class="${c.icon} me-1"></i>${c.name}</a></li>`;
+                    return `
+                        <li><a class="dropdown-item" href="#" onclick="downloadBarcode('${d}')"><i class="me-1"></i>Download ${c.name}</a></li>
+                    `;
                 }).join('')}
+            </ul>
+        `;
+
+        printButtons.innerHTML = `
+            <button class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="ti ti-printer me-1"></i>Print
+            </button>
+            <ul class="dropdown-menu">
+                ${availableDepartments.map(d => {
+                    const c = getDepartmentConfig(d);
+                    return `
+                        <li><a class="dropdown-item" href="#" onclick="printBarcode('${d}')">Print ${c.name}</a></li>
+                    `;
+                }).join('')}
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#" onclick="printAllBarcodes()">Print Semua</a></li>
             </ul>
         `;
 
         const colSize = availableDepartments.length === 1 ? '12' : '6';
         barcodeRow.innerHTML = '';
 
+        // Generate tampilan barcode
         availableDepartments.forEach(dept => {
             const config = getDepartmentConfig(dept);
             const code = config.code + currentBarcodeData;
             const elementId = `barcode${dept}`;
 
-            // Render hanya untuk departemen yang aktif
             barcodeRow.innerHTML += `
                 <div class="col-md-${colSize}">
                     <div class="card mb-3">
@@ -533,30 +597,30 @@ Dashboard|Spesiment
             `;
         });
 
-        // Render barcode hanya untuk departemen yang aktif
+        // Render barcode
         setTimeout(() => {
             availableDepartments.forEach(dept => {
                 const config = getDepartmentConfig(dept);
                 const code = config.code + currentBarcodeData;
                 const elementId = `barcode${dept}`;
-                const target = document.getElementById(elementId);
+                const svgEl = document.getElementById(elementId);
 
-                if (!target) {
+                if (svgEl) {
+                    JsBarcode(svgEl, code, {
+                        format: "CODE128",
+                        width: 2,
+                        height: 80,
+                        displayValue: false,
+                        fontSize: 14,
+                        margin: 10
+                    });
+                } else {
                     console.warn(`Element #${elementId} tidak ditemukan, barcode tidak dirender.`);
-                    return;
                 }
-
-                JsBarcode(target, code, {
-                    format: "CODE128",
-                    width: 2,
-                    height: 80,
-                    displayValue: false,
-                    fontSize: 14,
-                    margin: 10
-                });
             });
         }, 100);
     }
+
 
     function downloadBarcode(dept) {
         const elementId = `barcode${dept}`;
@@ -568,7 +632,7 @@ Dashboard|Spesiment
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = 400;
-        canvas.height = 200;
+        canvas.height = 240;
 
         const img = new Image();
         const svgBlob = new Blob([new XMLSerializer().serializeToString(svg)], { type: 'image/svg+xml' });
@@ -577,16 +641,21 @@ Dashboard|Spesiment
         img.onload = () => {
             ctx.fillStyle = '#fff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 50, 30, 300, 120);
+            // Gambar barcode di posisi lebih atas karena tidak ada judul di atas
+            ctx.drawImage(img, 50, 20, 300, 100);
 
+            // Format: (Departemen) Kode-NoLab di bawah barcode
             ctx.fillStyle = '#000';
-            ctx.font = 'bold 16px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText(config.name, canvas.width / 2, 25);
             ctx.font = 'bold 14px Arial';
-            ctx.fillText(code, canvas.width / 2, 170);
+            ctx.textAlign = 'center';
+            const titleText = `(${config.name}) ${code}`;
+            ctx.fillText(titleText, canvas.width / 2, 140);
+            
+            ctx.font = '12px Arial';
+            ctx.fillText(`Nama: ${currentPatientName}`, canvas.width / 2, 160);
+            ctx.fillText(`Tanggal Lahir: ${currentPatientDOB}`, canvas.width / 2, 180);
             ctx.font = '10px Arial';
-            ctx.fillText(new Date().toLocaleDateString('id-ID'), canvas.width / 2, 190);
+            ctx.fillText(new Date().toLocaleDateString('id-ID'), canvas.width / 2, 200);
 
             canvas.toBlob(blob => {
                 const link = document.createElement('a');
@@ -599,7 +668,307 @@ Dashboard|Spesiment
         img.onerror = () => alert("Gagal memuat gambar barcode");
         img.src = url;
     }
+
+    function printBarcode(dept) {
+    const elementId = `barcode${dept}`;
+    const svg = document.getElementById(elementId);
+    if (!svg) return alert('Barcode tidak ditemukan');
+
+    const config = getDepartmentConfig(dept);
+    const code = config.code + currentBarcodeData;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 400;
+    canvas.height = 240;
+
+    const img = new Image();
+    const svgBlob = new Blob([new XMLSerializer().serializeToString(svg)], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(svgBlob);
+
+    img.onload = () => {
+        // Gambar background putih
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Gambar barcode di posisi lebih atas karena tidak ada judul di atas
+        ctx.drawImage(img, 50, 20, 300, 100);
+
+        // Tambahkan teks dengan format "(Departemen) Kode-NoLab" di bawah barcode
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 14px Arial';
+        ctx.textAlign = 'center';
+        const titleText = `(${config.name}) ${code}`;
+        ctx.fillText(titleText, canvas.width / 2, 140);
+        ctx.font = '12px Arial';
+        ctx.fillText(`Nama: ${currentPatientName}`, canvas.width / 2, 160);
+        ctx.fillText(`Tanggal Lahir: ${currentPatientDOB}`, canvas.width / 2, 180);
+        ctx.font = '10px Arial';
+        ctx.fillText(new Date().toLocaleDateString('id-ID'), canvas.width / 2, 200);
+
+        // Convert to image data URL
+        const imageData = canvas.toDataURL("image/png");
+        
+        // Cleanup blob URL
+        URL.revokeObjectURL(url);
+        
+        // Method 1: Menggunakan iframe tersembunyi (Recommended)
+        printWithIframe(imageData, config.name);
+        
+        // Method 2: Alternative - jika method 1 tidak berfungsi, uncomment baris di bawah
+        // printWithNewWindow(imageData, config.name);
+    };
+
+    img.onerror = () => {
+        URL.revokeObjectURL(url);
+        alert("Gagal memuat gambar barcode");
+    };
+    
+    img.src = url;
+}
+async function printAllBarcodes() {
+    if (availableDepartments.length === 0) {
+        alert('Tidak ada barcode untuk diprint');
+        return;
+    }
+
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    if (!printWindow) {
+        alert('Pop-up diblokir! Silakan izinkan pop-up untuk print.');
+        return;
+    }
+
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Print Semua Barcode</title>
+            <style>
+                @page { size: A4; margin: 0.5in; }
+                body { font-family: Arial, sans-serif; text-align: center; }
+                .page { page-break-after: always; padding: 20px; }
+                img { max-width: 100%; height: auto; }
+            </style>
+        </head>
+        <body>
+    `);
+
+    for (const dept of availableDepartments) {
+        const elementId = `barcode${dept}`;
+        const svg = document.getElementById(elementId);
+        if (!svg) continue;
+
+        const config = getDepartmentConfig(dept);
+        const code = config.code + currentBarcodeData;
+
+        // Convert SVG to PNG (pakai canvas sama seperti printBarcode)
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 400;
+        canvas.height = 240;
+
+        const svgBlob = new Blob([new XMLSerializer().serializeToString(svg)], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(svgBlob);
+
+        await new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 50, 20, 300, 100);
+
+                ctx.fillStyle = '#000';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`(${config.name}) ${code}`, canvas.width / 2, 140);
+                ctx.font = '12px Arial';
+                ctx.fillText(`Nama: ${currentPatientName}`, canvas.width / 2, 160);
+                ctx.fillText(`Tanggal Lahir: ${currentPatientDOB}`, canvas.width / 2, 180);
+                ctx.font = '10px Arial';
+                ctx.fillText(new Date().toLocaleDateString('id-ID'), canvas.width / 2, 200);
+
+                const imageData = canvas.toDataURL("image/png");
+
+                printWindow.document.write(`
+                    <div class="page">
+                        <img src="${imageData}" alt="Barcode ${config.name}" />
+                    </div>
+                `);
+
+                URL.revokeObjectURL(url);
+                resolve();
+            };
+            img.onerror = reject;
+            img.src = url;
+        });
+    }
+
+    printWindow.document.write(`</body></html>`);
+    printWindow.document.close();
+
+    // tunggu render lalu print
+    printWindow.onload = () => {
+        setTimeout(() => {
+            printWindow.print();
+        }, 500);
+    };
+}
+
+// Method 1: Print menggunakan iframe tersembunyi
+function printWithIframe(imageData, departmentName) {
+    // Hapus iframe lama jika ada
+    const oldIframe = document.getElementById('printFrame');
+    if (oldIframe) {
+        oldIframe.remove();
+    }
+
+    // Buat iframe tersembunyi
+    const iframe = document.createElement('iframe');
+    iframe.id = 'printFrame';
+    iframe.style.position = 'absolute';
+    iframe.style.width = '0px';
+    iframe.style.height = '0px';
+    iframe.style.border = 'none';
+    
+    document.body.appendChild(iframe);
+    
+    // Tunggu iframe siap
+    iframe.onload = function() {
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        
+        doc.open();
+        doc.write(`
+            <!DOCTYPE html>
+            <html>
+                <head>
+                    <title>Print Barcode - ${departmentName}</title>
+                    <style>
+                        @page {
+                            margin: 0.5in;
+                            size: A4;
+                        }
+                        body {
+                            margin: 0;
+                            padding: 20px;
+                            text-align: center;
+                            font-family: Arial, sans-serif;
+                        }
+                        .barcode-container {
+                            display: inline-block;
+                            border: 1px solid #ddd;
+                            padding: 20px;
+                            background: white;
+                        }
+                        img {
+                            max-width: 100%;
+                            height: auto;
+                        }
+                        @media print {
+                            body { margin: 0; padding: 10px; }
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="barcode-container">
+                        <img src="${imageData}" alt="Barcode ${departmentName}" />
+                    </div>
+                </body>
+            </html>
+        `);
+        doc.close();
+        
+        // Tunggu sebentar lalu print
+        setTimeout(() => {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+            
+            // Hapus iframe setelah print selesai
+            setTimeout(() => {
+                iframe.remove();
+            }, 1000);
+        }, 500);
+    };
+    
+    // Trigger onload
+    iframe.src = 'about:blank';
+}
+
+// Method 2: Print dengan window baru (alternative)
+function printWithNewWindow(imageData, departmentName) {
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    
+    if (!printWindow) {
+        alert('Pop-up diblokir! Silakan izinkan pop-up untuk print.');
+        return;
+    }
+    
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <title>Print Barcode - ${departmentName}</title>
+                <style>
+                    @page {
+                        margin: 0.5in;
+                        size: A4;
+                    }
+                    body {
+                        margin: 0;
+                        padding: 20px;
+                        text-align: center;
+                        font-family: Arial, sans-serif;
+                    }
+                    .barcode-container {
+                        display: inline-block;
+                        border: 1px solid #ddd;
+                        padding: 20px;
+                        background: white;
+                    }
+                    img {
+                        max-width: 100%;
+                        height: auto;
+                    }
+                    .no-print {
+                        margin-top: 20px;
+                    }
+                    @media print {
+                        .no-print { display: none; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="barcode-container">
+                    <img src="${imageData}" alt="Barcode ${departmentName}" onload="window.print();" />
+                </div>
+                <div class="no-print">
+                    <p>Jika print tidak otomatis, tekan Ctrl+P</p>
+                    <button onclick="window.print()">Print Manual</button>
+                    <button onclick="window.close()">Tutup</button>
+                </div>
+            </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
+    
+    // Auto close setelah print
+    printWindow.addEventListener('afterprint', () => {
+        setTimeout(() => {
+            printWindow.close();
+        }, 1000);
+    });
+}
+
+    // supaya bisa dipanggil dari HTML
+    window.printBarcode = printBarcode;
+
+
+    // Agar bisa diakses oleh elemen HTML
+    window.showBarcodeModal = showBarcodeModal;
+    window.downloadBarcode = downloadBarcode;
+    
 </script>
+
 
 {{-- Script Kirim ke loket --}}
     <script>
@@ -914,10 +1283,6 @@ Dashboard|Spesiment
             </div>
         </div>`;
 });
-
-
-
-
                     // Masukkan detail spesimen ke dalam modal
                     detailSpesiment.innerHTML = detailContent;
                     // console.log(detailContent);

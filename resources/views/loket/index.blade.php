@@ -1327,9 +1327,11 @@
                 ${availableDepartments.map(d => {
                     const c = getDepartmentConfig(d);
                     return `
-                        <li><a class="dropdown-item" href="#" onclick="printBarcode('${d}')"><i class="me-1"></i>Print ${c.name}</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="printBarcode('${d}')">Print ${c.name}</a></li>
                     `;
                 }).join('')}
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#" onclick="printAllBarcodes()">Print Semua</a></li>
             </ul>
         `;
 
@@ -1484,6 +1486,93 @@
     };
     
     img.src = url;
+}
+async function printAllBarcodes() {
+    if (availableDepartments.length === 0) {
+        alert('Tidak ada barcode untuk diprint');
+        return;
+    }
+
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    if (!printWindow) {
+        alert('Pop-up diblokir! Silakan izinkan pop-up untuk print.');
+        return;
+    }
+
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Print Semua Barcode</title>
+            <style>
+                @page { size: A4; margin: 0.5in; }
+                body { font-family: Arial, sans-serif; text-align: center; }
+                .page { page-break-after: always; padding: 20px; }
+                img { max-width: 100%; height: auto; }
+            </style>
+        </head>
+        <body>
+    `);
+
+    for (const dept of availableDepartments) {
+        const elementId = `barcode${dept}`;
+        const svg = document.getElementById(elementId);
+        if (!svg) continue;
+
+        const config = getDepartmentConfig(dept);
+        const code = config.code + currentBarcodeData;
+
+        // Convert SVG to PNG (pakai canvas sama seperti printBarcode)
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 400;
+        canvas.height = 240;
+
+        const svgBlob = new Blob([new XMLSerializer().serializeToString(svg)], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(svgBlob);
+
+        await new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 50, 20, 300, 100);
+
+                ctx.fillStyle = '#000';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`(${config.name}) ${code}`, canvas.width / 2, 140);
+                ctx.font = '12px Arial';
+                ctx.fillText(`Nama: ${currentPatientName}`, canvas.width / 2, 160);
+                ctx.fillText(`Tanggal Lahir: ${currentPatientDOB}`, canvas.width / 2, 180);
+                ctx.font = '10px Arial';
+                ctx.fillText(new Date().toLocaleDateString('id-ID'), canvas.width / 2, 200);
+
+                const imageData = canvas.toDataURL("image/png");
+
+                printWindow.document.write(`
+                    <div class="page">
+                        <img src="${imageData}" alt="Barcode ${config.name}" />
+                    </div>
+                `);
+
+                URL.revokeObjectURL(url);
+                resolve();
+            };
+            img.onerror = reject;
+            img.src = url;
+        });
+    }
+
+    printWindow.document.write(`</body></html>`);
+    printWindow.document.close();
+
+    // tunggu render lalu print
+    printWindow.onload = () => {
+        setTimeout(() => {
+            printWindow.print();
+        }, 500);
+    };
 }
 
 // Method 1: Print menggunakan iframe tersembunyi
