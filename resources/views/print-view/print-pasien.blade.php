@@ -17,7 +17,7 @@
         .table-borderless th,
         .table-borderless td {
             padding: 1px 0;
-            font-size: 8px !important;
+            font-size: 10px !important;
         }
         .header h5 {
             font-size: 9px !important;
@@ -37,8 +37,8 @@
         }
         .hasil-pemeriksaan {
             position: relative;
-            min-height: 50vh;
-            padding-bottom: 20px;
+            min-height: auto;   /* ikut isi, bukan paksa setengah halaman */
+            padding-bottom: 0;  /* buang jarak ekstra */
         }
         #tabel-pemeriksaan table {
             font-size: 8px !important;
@@ -52,13 +52,12 @@
             margin-top: 8px;
         }
         .footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            background-color: white;
-            padding: 5px;
-            font-size: 8px !important;
+            position: static;
+            margin-top: 15px;
+            border-top: 1px solid #000; /* kasih garis pemisah */
+            padding-top: 8px;
         }
+
         .footer-container h6 {
             font-size: 8px !important;
             margin-bottom: 15px;
@@ -387,130 +386,80 @@
     </script>
 
     <div>
-        <div class="header text-sm">
-            <div class="row m-0 align-items-center">
-            <!-- Logo -->
-            <div class="col-3 col-md-2 p-0">
-                <img class="ml-4" src="{{ asset('image/KRIMS.png') }}" width="80" alt="Logo">
-            </div>
+        <div class="header text-sm pb-1 mb-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <!-- Logo -->
+                <div style="width:120px;">
+                    <img src="{{ asset('image/KRIMS.png') }}" width="100" alt="Logo">
+                </div>
 
-            <!-- Teks Header -->
-            <div class="col-8 col-md-8 w-100 text-end" style="color:#0b980b; line-height:1.2;"> <!-- hijau -->
-                <p class="fw-bold m-0 p-0" style="color:#0b980b;">LABORATORIUM</p>
-                <p class="fw-bold m-0 p-0" style="color:#0b980b;">KLINIK RAWAT INAP MUSLIMAT SINGOSARI</p>
-                <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif">Ijin Operasional No. 12120003102510002</p>
-                <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif">Jalan Ronggolawe No.24, Pangetan, Kec. Singosari, Kab. Malang</p>
-                <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif">Telp. (0341) 458344 e-mail : rs.muslimatsingosari@gmail.com</p>
-                <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif">Pelayanan 24 Jam</p>
+                <!-- Teks Header -->
+                <div class="text-end" style="color:#0b980b; line-height:1.2; flex:1;">
+                    <p class="m-0 p-0 fw-bolder" style="font-size:15px !important;">LABORATORIUM</p>
+                    <p class="m-0 p-0 fw-bolder" style="font-size:15px !important; ">KLINIK RAWAT INAP MUSLIMAT SINGOSARI</p>
+                    <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif; font-size:12px !important;">Ijin Operasional No. 12120003102510002</p>
+                    <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif; font-size:12px !important; ">Jalan Ronggolawe No.24, Pangetan, Kec. Singosari, Kab. Malang</p>
+                    <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif; font-size:12px !important;">Telp. (0341) 458344 e-mail : rs.muslimatsingosari@gmail.com</p>
+                    {{-- <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif; font-size:12px !important;">Pelayanan 24 Jam</p> --}}
+                </div>
             </div>
         </div>
-        </div>
-        <br>
         <hr style="border-top: 1px solid black;">
         
         <div class="data-pasien mb-2">
             <div class="row">
-                    <div class="col-8 col-md-8" >
-                        <table class="table-borderless mb-0">
-                            <tr>
-                                <th scope="row" class="p-0">No.RM</th>
-                                <td>
-                                    <div>
-                                        :  <span class="ms-2" id="norm">{{ $data_pasien->no_rm }}</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row" class="p-0">Nama Pasien</th>
-                                <td>
-                                    <div>
-                                        :  <span class="ms-2 fw-bold" id="nama">{{ $data_pasien->nama }}</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row" class="p-0">Umur</th>
-                                <td>
-                                    <div>
-                                        : <span class="ms-2">
-                                            {{ \Carbon\Carbon::parse($data_pasien->lahir)->age }} tahun
-                                        </span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row" class="p-0">Jenis Kelamin</th>
-                                <td>
-                                    <div>
-                                        :  <span class="ms-2" id="jenis_kelamin">{{ $data_pasien->jenis_kelamin }}</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row" class="p-0">Alamat Pasien</th>
-                                <td>
-                                    <div class="address-container">
-                                        <span class="address-label">:</span>
-                                        <span class="address-value" id="alamat">{{ $data_pasien->alamat }}</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row" class="p-0">Asal Pasien </th>
-                                <td>
-                                    <div>
-                                        :  <span class="ms-2" id="asal">-</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                    
-                <div class="col-4 col-md-4">
-                    <table class="table-borderless">
-                        <tr>
-                            <th scope="row" class="p-0">No. Laboratorium</th>
-                            <td>
-                                <div>
-                                    :  <span class="ms-2" id="nolab">{{ $data_pasien->no_lab }}</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="p-0">Tanggal Transaksi</th>
-                            <td>
-                                <div>
-                                    :  <span class="ms-2" id="tgltransaksi">{{ $data_pasien->tanggal_masuk }}</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="p-0">Tanggal Diterima</th>
-                            <td>
-                                <div>
-                                    :  <span class="ms-2" id="tglterima">{{ $data_pasien->created_at }}</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="p-0">Tanggal Selesai</th>
-                            <td>
-                                <div>
-                                    :  <span class="ms-2" id="tglselesai">{{ $data_pasien->updated_at }}</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="p-0 mb-0">Dokter Pengirim</th>
-                            <td>
-                                <div>
-                                    :  <span class="ms-2" id="dokter">{{ $data_pasien->kode_dokter}}</span>
-                                </div>
-                            </td>
-                        </tr>
+                <div class="col-12">
+                    <table class="table table-borderless table-sm mb-0" style="font-size:14px; width:100%;">
+                    <tr>
+                        <td style="width:120px;">Nama Pasien</td>
+                        <td style="width:10px;">:</td>
+                        <td style="width:250px;"><b>{{ $data_pasien->nama ?? '-'}}</b></td>
+                        <td style="width:150px;">No. Laboratorium</td>
+                        <td style="width:10px;">:</td>
+                        <td>{{ $data_pasien->no_lab ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td>No. RM</td>
+                        <td>:</td>
+                        <td>{{ $data_pasien->no_rm ?? '-'}}</td>
+                        <td>Tanggal Transaksi</td>
+                        <td>:</td>
+                        <td>{{ $data_pasien->tanggal_masuk ?? '-'}}</td>
+                    </tr>
+                    <tr>
+                        <td>Umur</td>
+                        <td>:</td>
+                        <td>{{ \Carbon\Carbon::parse($data_pasien->lahir)->age ?? '-' }} tahun</td>
+                        <td>Tanggal Diterima</td>
+                        <td>:</td>
+                        <td>{{ $data_pasien->created_at ?? '-'}}</td>
+                    </tr>
+                    <tr>
+                        <td>Jenis Kelamin</td>
+                        <td>:</td>
+                        <td>{{ $data_pasien->jenis_kelamin ?? '-'}}</td>
+                        <td>Tanggal Selesai</td>
+                        <td>:</td>
+                        <td>{{ $data_pasien->updated_at ?? '-'}}</td>
+                    </tr>
+                    <tr>
+                        <td>Alamat Pasien</td>
+                        <td>:</td>
+                        <td colspan="4">{{ $data_pasien->alamat ?? '-'}}</td>
+                    </tr>
+                    <tr>
+                        <td>Asal Pasien</td>
+                        <td>:</td>
+                        <td colspan="4">-</td>
+                    </tr>
+                    <tr>
+                        <td>Dokter Pengirim</td>
+                        <td>:</td>
+                        <td colspan="4">{{ $data_pasien->kode_dokter ?? '-'}}</td>
+                    </tr>
                     </table>
                 </div>
-            </div>
+                </div>
         </div>
         
         <div class="hasil-pemeriksaan p-0">
@@ -521,8 +470,8 @@
                             <th style="width: 35%; padding: 3px; font-size: 10px">Jenis Pemeriksaan</th>
                             <th style="width: 20%; padding: 3px; font-size: 10px">Hasil</th>
                             <th style="width: 10%; padding: 3px; font-size: 10px">Flag</th>
-                            <th style="width: 15%; padding: 3px; font-size: 10px">Satuan</th>
-                            <th style="width: 20%; padding: 3px; font-size: 10px">Nilai Rujukan</th>
+                            <th class="text-center" style="width: 15%; padding: 3px; font-size: 10px">Satuan</th>
+                            <th class="text-center" style="width: 20%; padding: 3px; font-size: 10px">Nilai Rujukan</th>
                         </tr>
                     </thead>
                     <tbody id="hasil-tbody">
@@ -662,15 +611,15 @@
                                     @endif
                                 </td>
                                 <td class="text-center">{{ $hasil->satuan ?? '-' }}</td>
-                                <td>{{ $nilai_rujukan ?: '-' }}</td>
+                                <td class="text-center">{{ $nilai_rujukan ?: '-' }}</td>
                             </tr>
                             @endforeach
-                        @endforeach
-                    </tbody>
-                </table>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    <hr>
             </div>
         </div>
-        <hr>
         
         @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->note)
             <table class="note-section">
