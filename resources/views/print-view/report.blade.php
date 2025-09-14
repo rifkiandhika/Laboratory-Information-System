@@ -69,7 +69,7 @@
                             <select id="dokter" name="dokter" class="form-control select2" multiple>
                                 <option value="All">Semua</option>
                                 @foreach($dokters as $dokter)
-                                    <option value="{{ $dokter->id }}">{{ $dokter->nama_dokter }}</option>
+                                    <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }}</option>
                                 @endforeach
                             </select>
                         </div>
