@@ -276,7 +276,7 @@
                                                         </li>
                                                         <li>
                                                             <button type="button" data-bs-target="#modalPembayaran"
-                                                                data-bs-toggle="modal" class="dropdown-item btn-payment"
+                                                                data-bs-toggle="modal" class="dropdown-item btn-payment disabled btn-secondary"
                                                                 data-payment="{{ $pm->id }}">
                                                                 <i class="ti ti-cash-banknote me-2"></i> Payment
                                                             </button>
