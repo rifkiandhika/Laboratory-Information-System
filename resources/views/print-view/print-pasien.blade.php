@@ -638,7 +638,7 @@
     @if($data_pasien->dokter)
         <!-- KIRI: Analyst -->
         <div class="user-info">
-            <h6>Lab Penanggung Jawab</h6>
+            <h6 style="margin-left: 15px">Analis Pemeriksa</h6>
             @if(auth()->user()->signature)
                 <img src="{{ asset('storage/signatures/' . auth()->user()->signature) }}"
                     alt="Signature"
@@ -656,7 +656,7 @@
 
         <!-- KANAN: Dokter -->
         <div class="doctor-info text-end">
-        <h6 style="margin-right: 25px">Dokter Penanggung Jawab</h6>
+        <h6 style="margin-right: 45px">Dokter Pemeriksa</h6>
         <div class="text-center" style="margin-top:40px; display:inline-block; margin-right: 50px">
             <span style="display:inline-block; border-bottom:1px solid #000; padding:0 5px;">
                 {{ $data_pasien->dokter->nama_dokter }}

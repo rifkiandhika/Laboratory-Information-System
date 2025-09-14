@@ -197,6 +197,7 @@ class pasienController extends Controller
      */
     public function edit($no_lab)
     {
+
         // $pasien = pasien::findOrFail($no_lab);
         $data_pasien = pasien::where('no_lab', $no_lab)->with([
             'dpp.pasiens' => function ($query) use ($no_lab) {
@@ -204,6 +205,7 @@ class pasienController extends Controller
             },
             'dpp.data_departement',
             'dokter',
+            'pembayaran',
             'pemeriksaan_pasien' => function ($query) {
                 $query->with('data_pemeriksaan');
             }
@@ -221,6 +223,7 @@ class pasienController extends Controller
         // Ambil ID pemeriksaan yang sudah dipilih dari tabel pemeriksaan_pasien
         $selectedInspections = $data_pasien->pemeriksaan_pasien->pluck('id_parameter')->toArray();
 
+        // dd($data_pasien->pembayaran);
 
 
         // Menghitung total harga pemeriksaan yang sudah dipilih
@@ -261,6 +264,15 @@ class pasienController extends Controller
             'diagnosa' => $request->diagnosa,
             'alamat' => $request->alamat,
         ]);
+
+        if ($request->filled('no_pasien')) {
+            $pembayaran = $pasien->pembayaran()->first(); // ambil relasi pembayaran pertama
+            if ($pembayaran) {
+                $pembayaran->update([
+                    'no_pasien' => $request->no_pasien,
+                ]);
+            }
+        }
 
         if ($pasien->status === 'Dikembalikan Analyst') {
             // Jika pasien statusnya "Dikembalikan Analyst", periksa dan update pemeriksaan yang ada

@@ -118,6 +118,12 @@
                                         <label for="alamat" class="fw-bold">Full Address</label>
                                         <textarea class="form-control ml-1" cols="119" rows="1" id="alamat" name="alamat">{{ $data_pasien->alamat }}</textarea>
                                     </div>
+                                    <div class="col-md-6 mb-6" id="noPasienField" style="display:none;">
+                                        <label for="no.transaksi" class="fw-bold">No.Transaksi</label>
+                                        <input type="number" class="form-control" name="no_pasien" 
+                                            placeholder="e.g. 245483165"
+                                            value="{{ $data_pasien->pembayaran->first()?->no_pasien }}">
+                                    </div>
                                     <div class="form-group col-12">
                                         <label for="basic-url">Kind Of Service</label>
                                         <div class="row">
@@ -297,6 +303,18 @@
                     }
                 }
             });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const pembayaran = @json($data_pasien->pembayaran->first());
+            const field = document.getElementById("noPasienField");
+
+            if (pembayaran && pembayaran.metode_pembayaran === "umum" && pembayaran.no_pasien) {
+                field.style.display = "block";
+            } else {
+                field.style.display = "none";
+            }
         });
     </script>
 @endpush

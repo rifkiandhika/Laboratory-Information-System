@@ -987,6 +987,12 @@
                             <label>Total Payment</label>
                             <input class="form-control bg-secondary-subtle" type="text" id="total_pembayaran_asli" name="total_pembayaran_asli" value="${totalHarga}" readonly>
                         </div>
+                        ${data_pasien.jenis_pelayanan === 'umum' ? `
+                            <div class="col-12 col-md-6">
+                                <label>No Transaksi</label>
+                                <input class="form-control" id="no_pasien" name="no_pasien" type="number"  required />
+                            </div>
+                        ` : ''}
                         ${data_pasien.jenis_pelayanan === 'bpjs' ? `
                             <div class="col-12 col-md-6">
                                 <label>No Bpjs</label>
