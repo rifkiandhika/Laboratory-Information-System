@@ -642,72 +642,141 @@ function cetakLaporan() {
 
 // Fungsi untuk unduh Excel
 function unduhExcel() {
-    const judul = $('#printTitle').val() || 'Laporan Review Hasil';
-    const rentangTanggal = getRentangTanggalTeks();
-    const pilihanPembayaran = ($('#payment').val() || []).map(p => p.toLowerCase());
-    const semuaTerpilih = pilihanPembayaran.includes('all');
-    const wb = XLSX.utils.book_new();
-    const data = [];
+    try {
+        const judul = $('#printTitle').val() || 'Laporan Review Hasil';
+        const rentangTanggal = getRentangTanggalTeks();
+        const pilihanPembayaran = ($('#payment').val() || []).map(p => String(p).toLowerCase());
+        const semuaTerpilih = pilihanPembayaran.includes('all');
+        const wb = XLSX.utils.book_new();
+        const data = [];
 
-    data.push([judul]);
-    data.push([rentangTanggal]);
-    data.push(['']);
-    data.push(['Filter:']);
-    data.push([getTeksFilter().replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')]);
-    data.push(['']);
+        // Header data
+        data.push([judul]);
+        data.push([rentangTanggal]);
+        data.push(['']);
+        data.push(['Filter:']);
+        data.push([getTeksFilter().replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')]);
+        data.push(['']);
 
-    const headerRow1 = ['DATA LAPORAN', 'DOKTER', 'FEE DOKTER', 'ANALIS', 'FEE ANALIS'];
-    const headerRow2 = ['', '', '', '', ''];
+        // Setup header rows
+        const headerRow1 = ['DATA LAPORAN', 'DOKTER', 'FEE DOKTER', 'ANALIS', 'FEE ANALIS'];
+        const headerRow2 = ['', '', '', '', ''];
 
-    if (semuaTerpilih || pilihanPembayaran.includes('bpjs')) {
-        headerRow1.push('BPJS', '', '');
-        headerRow2.push('QTY', 'HARGA', 'TOTAL');
-    }
-    if (semuaTerpilih || pilihanPembayaran.includes('asuransi')) {
-        headerRow1.push('ASURANSI', '', '');
-        headerRow2.push('QTY', 'HARGA', 'TOTAL');
-    }
-    if (semuaTerpilih || pilihanPembayaran.includes('umum')) {
-        headerRow1.push('UMUM', '', '');
-        headerRow2.push('QTY', 'HARGA', 'TOTAL');
-    }
+        if (semuaTerpilih || pilihanPembayaran.includes('bpjs')) {
+            headerRow1.push('BPJS', '', '');
+            headerRow2.push('QTY', 'HARGA', 'TOTAL');
+        }
+        if (semuaTerpilih || pilihanPembayaran.includes('asuransi')) {
+            headerRow1.push('ASURANSI', '', '');
+            headerRow2.push('QTY', 'HARGA', 'TOTAL');
+        }
+        if (semuaTerpilih || pilihanPembayaran.includes('umum')) {
+            headerRow1.push('UMUM', '', '');
+            headerRow2.push('QTY', 'HARGA', 'TOTAL');
+        }
 
-    data.push(headerRow1);
-    data.push(headerRow2);
+        data.push(headerRow1);
+        data.push(headerRow2);
 
-    $('#reportTableBody tr').each(function() {
-        const $row = $(this);
-        const $cells = $row.find('td');
-        if ($cells.length === 0) return;
+        // Process table rows
+        $('#reportTableBody tr').each(function() {
+            const $row = $(this);
+            const $cells = $row.find('td');
+            
+            // Skip empty rows
+            if ($cells.length === 0) return;
 
-        const row = [];
-        $cells.each(function(index) {
-            if ($(this).is(':visible')) {
-                let teks = $(this).text().trim();
+            const row = [];
+            const isTotal = String($row.find('td:first').text().trim()).toUpperCase() === 'TOTAL';
 
-                // 🔹 Perbaiki Fee Dokter di baris TOTAL
-                if ($row.find('td:first').text().trim().toUpperCase() === 'TOTAL' && index === 2) {
-                    const totalFeeDokter = hitungTotalFeeDokter();
-                    teks = totalFeeDokter > 0 ? totalFeeDokter : '';
+            $cells.each(function(index) {
+                if ($(this).is(':visible')) {
+                    let cellValue = '';
+                    
+                    try {
+                        // Get raw text and ensure it's a string
+                        let rawText = String($(this).text().trim() || '');
+
+                        // Special handling for Fee Dokter in TOTAL row
+                        if (isTotal && index === 2) {
+                            const totalFeeDokter = hitungTotalFeeDokter();
+                            rawText = String(totalFeeDokter > 0 ? totalFeeDokter : '');
+                        }
+
+                        // Process currency values
+                        if (rawText.includes('Rp ')) {
+                            // Remove currency formatting
+                            let numericValue = rawText.replace('Rp ', '').replace(/\./g, '').trim();
+                            
+                            if (numericValue === '-' || numericValue === '') {
+                                cellValue = '';
+                            } else {
+                                const parsed = parseInt(numericValue);
+                                cellValue = isNaN(parsed) ? '' : parsed;
+                            }
+                        } else {
+                            // For non-currency values, keep as string
+                            cellValue = rawText;
+                        }
+
+                    } catch (error) {
+                        console.warn('Error processing cell at index', index, ':', error);
+                        cellValue = ''; // Fallback to empty string
+                    }
+
+                    row.push(cellValue);
                 }
+            });
 
-                if (teks.includes('Rp ')) {
-                    teks = teks.replace('Rp ', '').replace(/\./g, '');
-                    teks = teks === '-' ? '' : parseInt(teks);
-                }
-                row.push(teks);
+            // Only add non-empty rows
+            if (row.some(cell => cell !== '')) {
+                data.push(row);
             }
         });
-        data.push(row);
-    });
 
-    const ws = XLSX.utils.aoa_to_sheet(data);
-    ws['!cols'] = [{ wch: 25 }, { wch: 20 }, { wch: 15 }, { wch: 15 }, { wch: 15 }];
-    XLSX.utils.book_append_sheet(wb, ws, 'Review Hasil');
-    const namaFile = `${judul.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.xlsx`;
-    XLSX.writeFile(wb, namaFile);
-    $('#printModal').modal('hide');
+        // Create worksheet
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        
+        // Set column widths
+        ws['!cols'] = [
+            { wch: 25 }, // DATA LAPORAN
+            { wch: 20 }, // DOKTER
+            { wch: 15 }, // FEE DOKTER
+            { wch: 15 }, // ANALIS
+            { wch: 15 }, // FEE ANALIS
+            { wch: 10 }, // QTY columns
+            { wch: 15 }, // HARGA columns
+            { wch: 15 }, // TOTAL columns
+            { wch: 10 }, // Additional QTY
+            { wch: 15 }, // Additional HARGA
+            { wch: 15 }, // Additional TOTAL
+            { wch: 10 }, // Additional QTY
+            { wch: 15 }, // Additional HARGA
+            { wch: 15 }  // Additional TOTAL
+        ];
+
+        // Add worksheet to workbook
+        XLSX.utils.book_append_sheet(wb, ws, 'Review Hasil');
+
+        // Generate filename
+        const safeJudul = judul.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
+        const tanggal = new Date().toISOString().slice(0, 10);
+        const namaFile = `${safeJudul}_${tanggal}.xlsx`;
+
+        // Save file
+        XLSX.writeFile(wb, namaFile);
+
+        // Hide modal
+        $('#printModal').modal('hide');
+
+        console.log('Excel file generated successfully:', namaFile);
+
+    } catch (error) {
+        console.error('Error in unduhExcel:', error);
+        alert('Terjadi kesalahan saat membuat file Excel. Silakan coba lagi.');
+    }
 }
+
 
 function getRentangTanggalTeks() {
     const tanggalMulai = $('#tanggal_awal').val();
