@@ -996,17 +996,17 @@
                         ${data_pasien.jenis_pelayanan === 'bpjs' ? `
                             <div class="col-12 col-md-6">
                                 <label>No Bpjs</label>
-                                <input class="form-control" id="no_pasien" name="no_pasien" type="number"  required />
+                                <input class="form-control" id="no_pasien" name="no_pasien" type="number" />
                             </div>
                         ` : ''}
                         ${data_pasien.jenis_pelayanan === 'asuransi' ? `
                             <div class="col-12 col-md-6">
                                 <label>No Asuransi</label>
-                                <input class="form-control" id="no_pasien" name="no_pasien" type="number" required />
+                                <input class="form-control" id="no_pasien" name="no_pasien" type="number"/>
                             </div>
                             <div class="col-12 col-md-6">
                                 <label>Penjamin</label>
-                                <input class="form-control" id="penjamin" name="penjamin" type="text" required />
+                                <input class="form-control" id="penjamin" name="penjamin" type="text" />
                             </div>
                         ` : ''}
                         <div class="col-12 col-md-6">

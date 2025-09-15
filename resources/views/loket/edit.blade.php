@@ -124,6 +124,24 @@
                                             placeholder="e.g. 245483165"
                                             value="{{ $data_pasien->pembayaran->first()?->no_pasien }}">
                                     </div>
+                                    <div class="col-md-6 mb-6" id="noAsuransi" style="display:none;">
+                                        <label for="no.asuransi" class="fw-bold">No.Asuransi</label>
+                                        <input type="number" class="form-control" name="no_pasien" 
+                                            placeholder="e.g. 245483165"
+                                            value="{{ $data_pasien->pembayaran->first()?->no_pasien }}">
+                                    </div>
+                                    <div class="col-md-6 mb-6" id="AsuransiPemjamin" style="display:none;">
+                                        <label for="penjamin" class="fw-bold">Penjamin</label>
+                                        <input type="penjamin" class="form-control" name="penjamin" 
+                                            placeholder="e.g. Penjamin"
+                                            value="{{ $data_pasien->pembayaran->first()?->no_pasien }}">
+                                    </div>
+                                    <div class="col-md-6 mb-6" id="noBPJS" style="display:none;">
+                                        <label for="no.bpjs" class="fw-bold">No.BPJS</label>
+                                        <input type="number" class="form-control" name="no_pasien" 
+                                            placeholder="e.g. 245483165"
+                                            value="{{ $data_pasien->pembayaran->first()?->no_pasien }}">
+                                    </div>
                                     <div class="form-group col-12">
                                         <label for="basic-url">Kind Of Service</label>
                                         <div class="row">
@@ -305,16 +323,36 @@
             });
         });
     </script>
-    <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const pembayaran = @json($data_pasien->pembayaran->first());
-        const field = document.getElementById("noPasienField");
+   <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const pembayaran = @json($data_pasien->pembayaran->first());
 
-        if (pembayaran && pembayaran.metode_pembayaran === "umum") {
-            field.style.display = "block"; // tampilkan walau no_pasien kosong
-        } else {
-            field.style.display = "none"; // sembunyikan kalau bukan umum
-        }
+    // Ambil semua field
+    const noPasienField   = document.getElementById("noPasienField");
+    const noAsuransi      = document.getElementById("noAsuransi");
+    const AsuransiPemjamin = document.getElementById("AsuransiPemjamin");
+    const noBPJS          = document.getElementById("noBPJS");
+
+    // Reset semua dulu
+    [noPasienField, noAsuransi, AsuransiPemjamin, noBPJS].forEach(el => {
+        if (el) el.style.display = "none";
     });
-    </script>
+
+    if (pembayaran) {
+        switch (pembayaran.metode_pembayaran) {
+            case "umum":
+                noPasienField.style.display = "block";
+                break;
+            case "asuransi":
+                noAsuransi.style.display = "block";
+                AsuransiPemjamin.style.display = "block";
+                break;
+            case "bpjs":
+                noBPJS.style.display = "block";
+                break;
+        }
+    }
+});
+</script>
+
 @endpush
