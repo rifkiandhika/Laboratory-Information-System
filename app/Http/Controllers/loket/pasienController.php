@@ -325,8 +325,7 @@ class pasienController extends Controller
         session(['updatedButtonIds' => $no_lab]);
         toast('Berhasil mengubah data pasien', 'success');
 
-        // 🔑 Redirect berdasarkan status pasien
-        if ($pasien->status === 'Result Review' || $pasien->status === 'Selesai') {
+        if ($pasien->status === 'Result Review' || $pasien->status === 'diselesaikan') {
             return redirect()->route('result.index');
         }
 
