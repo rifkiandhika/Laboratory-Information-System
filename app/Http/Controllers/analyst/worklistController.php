@@ -267,6 +267,7 @@ class worklistController extends Controller
             'duplo_d1.*' => 'nullable',
             'duplo_d2.*' => 'nullable',
             'duplo_d3.*' => 'nullable',
+            'duplo_dx.*' => 'nullable',
         ]);
 
         try {
@@ -293,6 +294,7 @@ class worklistController extends Controller
                     'duplo_d1' => $data['duplo_d1'][$i] ?? null,
                     'duplo_d2' => $data['duplo_d2'][$i] ?? null,
                     'duplo_d3' => $data['duplo_d3'][$i] ?? null,
+                    'duplo_dx' => $data['duplo_dx'][$i] ?? null,
                     'flag' => $data['flag'][$i] ?? null,
                     'updated_at' => now()
                 ];

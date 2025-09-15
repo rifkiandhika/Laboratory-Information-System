@@ -928,6 +928,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 duplo_d1: item.duplo_d1 || '',
                 duplo_d2: item.duplo_d2 || '',
                 duplo_d3: item.duplo_d3 || '',
+                duplo_dx: item.duplo_dx || '',
                 range: item.range || '',
                 satuan: item.satuan || '',
                 note: item.note || '',
@@ -955,6 +956,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 duplo_d1: data.duplo_d1,
                 duplo_d2: data.duplo_d2,
                 duplo_d3: data.duplo_d3,
+                duplo_dx: data.duplo_dx,
                 hasilUtama: data.hasil,
                 satuan: data.satuan,
                 range: data.range,
@@ -1094,6 +1096,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <th class="col-2">PARAMETER</th>
                             <th class="col-2">HASIL</th>
                             <th class="col-1"></th>
+                            <th class="col-2 duplo dx-column">DX</th>
                             <th class="col-2 duplo d1-column" style="display: ${duploStatus.hasD1 ? 'table-cell' : 'none'};">D1</th>
                             <th class="col-2 duplo d2-column" style="display: ${duploStatus.hasD2 ? 'table-cell' : 'none'};">D2</th>
                             <th class="col-2 duplo d3-column" style="display: ${duploStatus.hasD3 ? 'table-cell' : 'none'};">D3</th>
@@ -1124,6 +1127,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                             <th class="col-2">PARAMETER</th>
                                             <th class="col-2">HASIL</th>
                                             <th class="col-1"></th>
+                                            <th class="col-2 duplo dx-column">DX</th>
                                             <th class="col-2 duplo d1-column" style="display: ${duploStatus.hasD1 ? 'table-cell' : 'none'};">D1</th>
                                             <th class="col-2 duplo d2-column" style="display: ${duploStatus.hasD2 ? 'table-cell' : 'none'};">D2</th>
                                             <th class="col-2 duplo d3-column" style="display: ${duploStatus.hasD3 ? 'table-cell' : 'none'};">D3</th>
@@ -1176,6 +1180,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                     data-index="${paramIdx}">
                                                                 <i class="ti ti-switch-2"></i>
                                                             </button>
+                                                        </td>
+                                                        <td class="col-2 duplo dx-column text-center">
+                                                            <input type="number" name="duplo_dx[]" 
+                                                                class="form-control dx w-60 p-0 text-center" 
+                                                                value="${dataValues.duplo_dx}" step="0.01" />
                                                         </td>
                                                         <td class="col-2 duplo d1-column text-center" style="display: ${duploStatus.hasD1 ? 'table-cell' : 'none'};">
                                                             <input type="number" name="duplo_d1[]" 
@@ -1415,6 +1424,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                 <i class="ti ti-switch-2"></i>
                                                             </button>
                                                         </td>
+                                                        <td class="col-2 duplo dx-column text-center">
+                                                            <input type="number" name="duplo_dx[]" 
+                                                                class="form-control dx w-60 p-0 text-center" 
+                                                                value="${dataValues.duplo_dx}" step="0.01" />
+                                                        </td>
                                                         <td class="col-2 duplo d1-column text-center" style="display: ${duploStatus.hasD1 ? 'table-cell' : 'none'};">
                                                             <input type="number" name="duplo_d1[]" 
                                                                 class="form-control d1 w-60 p-0 text-center" 
@@ -1552,43 +1566,17 @@ document.addEventListener('DOMContentLoaded', function() {
             button.addEventListener('click', function() {
                 const row = this.closest('tr');
                 const hasilInput = row.querySelector('.manualInput');
-                const d1Input = row.querySelector('.d1');
-                const d2Input = row.querySelector('.d2');
-                const d3Input = row.querySelector('.d3');
+                const dxInput = row.querySelector('.dx');
                 const flagCell = row.querySelector('.flag-cell');
                 const parameter = row.dataset.parameter;
 
-                let currentIndex = parseInt(this.getAttribute('data-switch-index')) || 0;
+                // Switch hanya antara hasil utama dan dx
+                if (hasilInput && dxInput) {
+                    const tempHasil = hasilInput.value;
+                    hasilInput.value = dxInput.value;
+                    dxInput.value = tempHasil;
+                }
 
-                const updateValues = () => {
-                    switch (currentIndex) {
-                        case 0:
-                            if (d1Input && window.getComputedStyle(d1Input.closest('.d1-column')).display !== 'none') {
-                                const tempHasil = hasilInput.value;
-                                hasilInput.value = d1Input.value;
-                                d1Input.value = tempHasil;
-                            }
-                            break;
-                        case 1:
-                            if (d2Input && window.getComputedStyle(d2Input.closest('.d2-column')).display !== 'none') {
-                                const tempHasil = hasilInput.value;
-                                hasilInput.value = d2Input.value;
-                                d2Input.value = tempHasil;
-                            }
-                            break;
-                        case 2:
-                            if (d3Input && window.getComputedStyle(d3Input.closest('.d3-column')).display !== 'none') {
-                                const tempHasil = hasilInput.value;
-                                hasilInput.value = d3Input.value;
-                                d3Input.value = tempHasil;
-                            }
-                            break;
-                    }
-                };
-
-                updateValues();
-                currentIndex = (currentIndex + 1) % 3;
-                this.setAttribute('data-switch-index', currentIndex);
                 updateFlag(hasilInput.value, flagCell, parameter);
             });
         });

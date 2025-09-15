@@ -1444,10 +1444,12 @@
 
     const config = getDepartmentConfig(dept);
     const code = config.code + currentBarcodeData;
+    
+    // Canvas size untuk thermal printer 50x20mm (189x75 pixels at 96dpi)
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = 400;
-    canvas.height = 240;
+    canvas.width = 189;  // 50mm = ~189 pixels at 96dpi
+    canvas.height = 75;  // 20mm = ~75 pixels at 96dpi
 
     const img = new Image();
     const svgBlob = new Blob([new XMLSerializer().serializeToString(svg)], { type: 'image/svg+xml' });
@@ -1458,20 +1460,19 @@
         ctx.fillStyle = '#fff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        // Gambar barcode di posisi lebih atas karena tidak ada judul di atas
-        ctx.drawImage(img, 50, 20, 300, 100);
+        // Gambar barcode (ukuran disesuaikan untuk 50x20mm)
+        ctx.drawImage(img, 5, 5, 179, 35); // barcode area
 
-        // Tambahkan teks dengan format "(Departemen) Kode-NoLab" di bawah barcode
+        // Tambahkan teks dengan font kecil untuk thermal printer
         ctx.fillStyle = '#000';
-        ctx.font = 'bold 14px Arial';
+        ctx.font = 'bold 8px Arial';
         ctx.textAlign = 'center';
         const titleText = `(${config.name}) ${code}`;
-        ctx.fillText(titleText, canvas.width / 2, 140);
-        ctx.font = '12px Arial';
-        ctx.fillText(`Nama: ${currentPatientName}`, canvas.width / 2, 160);
-        ctx.fillText(`Tanggal Lahir: ${currentPatientDOB}`, canvas.width / 2, 180);
-        ctx.font = '10px Arial';
-        ctx.fillText(new Date().toLocaleDateString('id-ID'), canvas.width / 2, 200);
+        ctx.fillText(titleText, canvas.width / 2, 48);
+        
+        ctx.font = '6px Arial';
+        ctx.fillText(`${currentPatientName}`, canvas.width / 2, 58);
+        ctx.fillText(`${currentPatientDOB}`, canvas.width / 2, 68);
 
         // Convert to image data URL
         const imageData = canvas.toDataURL("image/png");
@@ -1479,11 +1480,11 @@
         // Cleanup blob URL
         URL.revokeObjectURL(url);
         
-        // Method 1: Menggunakan iframe tersembunyi (Recommended)
-        printWithIframe(imageData, config.name);
+        // Method 1: Menggunakan iframe tersembunyi (Recommended untuk thermal printer)
+        printThermalWithIframe(imageData, config.name);
         
         // Method 2: Alternative - jika method 1 tidak berfungsi, uncomment baris di bawah
-        // printWithNewWindow(imageData, config.name);
+        // printThermalWithNewWindow(imageData, config.name);
     };
 
     img.onerror = () => {
@@ -1493,13 +1494,14 @@
     
     img.src = url;
 }
+
 async function printAllBarcodes() {
     if (availableDepartments.length === 0) {
         alert('Tidak ada barcode untuk diprint');
         return;
     }
 
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    const printWindow = window.open('', '_blank', 'width=400,height=600');
     if (!printWindow) {
         alert('Pop-up diblokir! Silakan izinkan pop-up untuk print.');
         return;
@@ -1509,12 +1511,31 @@ async function printAllBarcodes() {
         <!DOCTYPE html>
         <html>
         <head>
-            <title>Print Semua Barcode</title>
+            <title>Print Semua Barcode Thermal</title>
             <style>
-                @page { size: A4; margin: 0.5in; }
-                body { font-family: Arial, sans-serif; text-align: center; }
-                .page { page-break-after: always; padding: 20px; }
-                img { max-width: 100%; height: auto; }
+                @page { 
+                    size: 50mm 20mm; 
+                    margin: 0; 
+                }
+                body { 
+                    font-family: Arial, sans-serif; 
+                    margin: 0; 
+                    padding: 0;
+                }
+                .barcode-item { 
+                    page-break-after: always; 
+                    width: 50mm;
+                    height: 20mm;
+                    display: block;
+                }
+                .barcode-item:last-child {
+                    page-break-after: auto;
+                }
+                img { 
+                    width: 50mm;
+                    height: 20mm;
+                    object-fit: contain;
+                }
             </style>
         </head>
         <body>
@@ -1528,11 +1549,11 @@ async function printAllBarcodes() {
         const config = getDepartmentConfig(dept);
         const code = config.code + currentBarcodeData;
 
-        // Convert SVG to PNG (pakai canvas sama seperti printBarcode)
+        // Convert SVG to PNG dengan ukuran thermal printer
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = 400;
-        canvas.height = 240;
+        canvas.width = 189;  // 50mm
+        canvas.height = 75;  // 20mm
 
         const svgBlob = new Blob([new XMLSerializer().serializeToString(svg)], { type: 'image/svg+xml' });
         const url = URL.createObjectURL(svgBlob);
@@ -1542,22 +1563,20 @@ async function printAllBarcodes() {
             img.onload = () => {
                 ctx.fillStyle = '#fff';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(img, 50, 20, 300, 100);
+                ctx.drawImage(img, 5, 5, 179, 35);
 
                 ctx.fillStyle = '#000';
-                ctx.font = 'bold 14px Arial';
+                ctx.font = 'bold 8px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText(`(${config.name}) ${code}`, canvas.width / 2, 140);
-                ctx.font = '12px Arial';
-                ctx.fillText(`Nama: ${currentPatientName}`, canvas.width / 2, 160);
-                ctx.fillText(`Tanggal Lahir: ${currentPatientDOB}`, canvas.width / 2, 180);
-                ctx.font = '10px Arial';
-                ctx.fillText(new Date().toLocaleDateString('id-ID'), canvas.width / 2, 200);
+                ctx.fillText(`(${config.name}) ${code}`, canvas.width / 2, 48);
+                ctx.font = '6px Arial';
+                ctx.fillText(`${currentPatientName}`, canvas.width / 2, 58);
+                ctx.fillText(`${currentPatientDOB}`, canvas.width / 2, 68);
 
                 const imageData = canvas.toDataURL("image/png");
 
                 printWindow.document.write(`
-                    <div class="page">
+                    <div class="barcode-item">
                         <img src="${imageData}" alt="Barcode ${config.name}" />
                     </div>
                 `);
@@ -1581,8 +1600,8 @@ async function printAllBarcodes() {
     };
 }
 
-// Method 1: Print menggunakan iframe tersembunyi
-function printWithIframe(imageData, departmentName) {
+// Method 1: Print thermal menggunakan iframe tersembunyi
+function printThermalWithIframe(imageData, departmentName) {
     // Hapus iframe lama jika ada
     const oldIframe = document.getElementById('printFrame');
     if (oldIframe) {
@@ -1608,37 +1627,38 @@ function printWithIframe(imageData, departmentName) {
             <!DOCTYPE html>
             <html>
                 <head>
-                    <title>Print Barcode - ${departmentName}</title>
+                    <title>Thermal Print - ${departmentName}</title>
                     <style>
                         @page {
-                            margin: 0.5in;
-                            size: A4;
+                            size: 50mm 20mm;
+                            margin: 0;
                         }
                         body {
                             margin: 0;
-                            padding: 20px;
-                            text-align: center;
+                            padding: 0;
                             font-family: Arial, sans-serif;
                         }
-                        .barcode-container {
-                            display: inline-block;
-                            border: 1px solid #ddd;
-                            padding: 20px;
+                        .thermal-container {
+                            width: 50mm;
+                            height: 20mm;
                             background: white;
+                            display: block;
                         }
                         img {
-                            max-width: 100%;
-                            height: auto;
+                            width: 50mm;
+                            height: 20mm;
+                            object-fit: contain;
+                            display: block;
                         }
                         @media print {
-                            body { margin: 0; padding: 10px; }
+                            body { margin: 0; padding: 0; }
                             .no-print { display: none; }
                         }
                     </style>
                 </head>
                 <body>
-                    <div class="barcode-container">
-                        <img src="${imageData}" alt="Barcode ${departmentName}" />
+                    <div class="thermal-container">
+                        <img src="${imageData}" alt="Thermal Barcode ${departmentName}" />
                     </div>
                 </body>
             </html>
@@ -1661,9 +1681,9 @@ function printWithIframe(imageData, departmentName) {
     iframe.src = 'about:blank';
 }
 
-// Method 2: Print dengan window baru (alternative)
-function printWithNewWindow(imageData, departmentName) {
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
+// Method 2: Print thermal dengan window baru (alternative)
+function printThermalWithNewWindow(imageData, departmentName) {
+    const printWindow = window.open('', '_blank', 'width=400,height=300');
     
     if (!printWindow) {
         alert('Pop-up diblokir! Silakan izinkan pop-up untuk print.');
@@ -1674,42 +1694,53 @@ function printWithNewWindow(imageData, departmentName) {
         <!DOCTYPE html>
         <html>
             <head>
-                <title>Print Barcode - ${departmentName}</title>
+                <title>Thermal Print - ${departmentName}</title>
                 <style>
                     @page {
-                        margin: 0.5in;
-                        size: A4;
+                        size: 50mm 20mm;
+                        margin: 0;
                     }
                     body {
                         margin: 0;
-                        padding: 20px;
-                        text-align: center;
+                        padding: 5px;
                         font-family: Arial, sans-serif;
+                        background: #f0f0f0;
                     }
-                    .barcode-container {
-                        display: inline-block;
-                        border: 1px solid #ddd;
-                        padding: 20px;
+                    .thermal-container {
+                        width: 50mm;
+                        height: 20mm;
                         background: white;
+                        border: 1px solid #ccc;
+                        display: inline-block;
                     }
                     img {
-                        max-width: 100%;
-                        height: auto;
+                        width: 50mm;
+                        height: 20mm;
+                        object-fit: contain;
+                        display: block;
                     }
-                    .no-print {
-                        margin-top: 20px;
+                    .controls {
+                        margin-top: 10px;
+                        text-align: center;
+                    }
+                    button {
+                        margin: 5px;
+                        padding: 5px 10px;
+                        font-size: 12px;
                     }
                     @media print {
+                        body { margin: 0; padding: 0; background: white; }
                         .no-print { display: none; }
+                        .thermal-container { border: none; }
                     }
                 </style>
             </head>
             <body>
-                <div class="barcode-container">
-                    <img src="${imageData}" alt="Barcode ${departmentName}" onload="window.print();" />
+                <div class="thermal-container">
+                    <img src="${imageData}" alt="Thermal Barcode ${departmentName}" onload="setTimeout(() => window.print(), 500);" />
                 </div>
-                <div class="no-print">
-                    <p>Jika print tidak otomatis, tekan Ctrl+P</p>
+                <div class="controls no-print">
+                    <p>Ukuran: 50mm x 20mm untuk thermal printer BP-TD110BT</p>
                     <button onclick="window.print()">Print Manual</button>
                     <button onclick="window.close()">Tutup</button>
                 </div>
@@ -1727,8 +1758,8 @@ function printWithNewWindow(imageData, departmentName) {
     });
 }
 
-    // supaya bisa dipanggil dari HTML
-    window.printBarcode = printBarcode;
+// supaya bisa dipanggil dari HTML
+window.printBarcode = printBarcode;
 
 
     // Agar bisa diakses oleh elemen HTML
