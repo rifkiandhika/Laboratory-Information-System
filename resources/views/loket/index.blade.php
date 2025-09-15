@@ -990,7 +990,7 @@
                         ${data_pasien.jenis_pelayanan === 'umum' ? `
                             <div class="col-12 col-md-6">
                                 <label>No Transaksi</label>
-                                <input class="form-control" id="no_pasien" name="no_pasien" type="number"  required />
+                                <input class="form-control" id="no_pasien" name="no_pasien" type="number" />
                             </div>
                         ` : ''}
                         ${data_pasien.jenis_pelayanan === 'bpjs' ? `

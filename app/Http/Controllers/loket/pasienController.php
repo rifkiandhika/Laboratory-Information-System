@@ -242,14 +242,12 @@ class pasienController extends Controller
         $cito = $request->cito ? 1 : 0;
         $harga = str_replace('.', '', $request->hargapemeriksaan);
 
-        // Cek jika harga valid
         if (!is_numeric($harga)) {
             return redirect()->back()->withErrors(['message' => 'Harga tidak valid']);
         }
 
         $pasien = pasien::findOrFail($no_lab);
 
-        // Update data pasien
         $pasien->update([
             'no_rm' => $request->norm,
             'cito' => $cito,
@@ -266,7 +264,7 @@ class pasienController extends Controller
         ]);
 
         if ($request->filled('no_pasien')) {
-            $pembayaran = $pasien->pembayaran()->first(); // ambil relasi pembayaran pertama
+            $pembayaran = $pasien->pembayaran()->first();
             if ($pembayaran) {
                 $pembayaran->update([
                     'no_pasien' => $request->no_pasien,
@@ -274,48 +272,39 @@ class pasienController extends Controller
             }
         }
 
+        // Update pemeriksaan pasien
         if ($pasien->status === 'Dikembalikan Analyst') {
-            // Jika pasien statusnya "Dikembalikan Analyst", periksa dan update pemeriksaan yang ada
             foreach ($request->pemeriksaan as $pemeriksaan) {
-                // Cari pemeriksaan yang sudah ada untuk pasien ini dan parameter ini
                 $existingPemeriksaan = pemeriksaan_pasien::where('no_lab', $pasien->no_lab)
                     ->where('id_parameter', $pemeriksaan)
                     ->first();
 
-                if ($existingPemeriksaan) {
-                    // Jika pemeriksaan sudah ada, update
-                    $data = DetailDepartment::find($pemeriksaan);
+                $data = DetailDepartment::find($pemeriksaan);
+                if ($existingPemeriksaan && $data) {
                     $existingPemeriksaan->update([
                         'id_departement' => $data->department_id,
                         'nama_parameter' => $data->nama_parameter,
                         'harga' => $harga,
                     ]);
-                } else {
-                    // Jika pemeriksaan belum ada, buat yang baru
-                    $data = DetailDepartment::find($pemeriksaan);
-                    if ($data) {
-                        pemeriksaan_pasien::create([
-                            'no_lab' => $pasien->no_lab,
-                            'id_parameter' => $pemeriksaan,
-                            'id_departement' => $data->department_id,
-                            'nama_parameter' => $data->nama_parameter,
-                            'harga' => $harga,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]);
-                    }
+                } elseif ($data) {
+                    pemeriksaan_pasien::create([
+                        'no_lab' => $pasien->no_lab,
+                        'id_parameter' => $pemeriksaan,
+                        'id_departement' => $data->department_id,
+                        'nama_parameter' => $data->nama_parameter,
+                        'harga' => $harga,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
                 }
             }
         } else {
-            // Jika pasien statusnya bukan "Dikembalikan Analyst", langsung tambahkan pemeriksaan baru
             foreach ($request->pemeriksaan as $pemeriksaan) {
-                // Periksa apakah pemeriksaan sudah ada untuk pasien ini dan id_parameter ini
                 $existingPemeriksaan = pemeriksaan_pasien::where('no_lab', $pasien->no_lab)
                     ->where('id_parameter', $pemeriksaan)
                     ->first();
 
                 if (!$existingPemeriksaan) {
-                    // Jika pemeriksaan belum ada, buat yang baru
                     $data = DetailDepartment::find($pemeriksaan);
                     if ($data) {
                         pemeriksaan_pasien::create([
@@ -332,13 +321,18 @@ class pasienController extends Controller
             }
         }
 
-        // Set status flash dan session
         session()->flash('status', 'updated');
         session(['updatedButtonIds' => $no_lab]);
         toast('Berhasil mengubah data pasien', 'success');
 
+        // 🔑 Redirect berdasarkan status pasien
+        if ($pasien->status === 'Result Review' || $pasien->status === 'Selesai') {
+            return redirect()->route('result.index');
+        }
+
         return redirect()->route('pasien.index');
     }
+
 
 
 

@@ -306,15 +306,15 @@
         });
     </script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const pembayaran = @json($data_pasien->pembayaran->first());
-            const field = document.getElementById("noPasienField");
+    document.addEventListener("DOMContentLoaded", function () {
+        const pembayaran = @json($data_pasien->pembayaran->first());
+        const field = document.getElementById("noPasienField");
 
-            if (pembayaran && pembayaran.metode_pembayaran === "umum" && pembayaran.no_pasien) {
-                field.style.display = "block";
-            } else {
-                field.style.display = "none";
-            }
-        });
+        if (pembayaran && pembayaran.metode_pembayaran === "umum") {
+            field.style.display = "block"; // tampilkan walau no_pasien kosong
+        } else {
+            field.style.display = "none"; // sembunyikan kalau bukan umum
+        }
+    });
     </script>
 @endpush
