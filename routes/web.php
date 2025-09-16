@@ -79,72 +79,20 @@ route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class);
     Route::get('/package-details/{id}', [McuMcuPackageController::class, 'getPackageDetails'])->name('package-details');
 });
+// routes/web.php
+Route::get('signature/{filename}', function ($filename) {
+    $path = storage_path('app/public/signatures/' . $filename);
 
-// route::group(['prefix' => 'demo', 'middleware' => ['auth']], function () {
+    if (!File::exists($path)) {
+        abort(404);
+    }
 
-//     Route::get('/admin', function () {
-//         return view('admin.dashboard');
-//     });
-//     Route::get('/adminlist', function () {
-//         return view('admin.data-user');
-//     });
-//     Route::get('/edit-user', function () {
-//         return view('admin.edit-user');
-//     });
-//     Route::get('/tambah', function () {
-//         return view('admin.tambah');
-//     });
-//     Route::get('/parameterlist', function () {
-//         return view('admin.data-parameter');
-//     });
+    $file = File::get($path);
+    $type = File::mimeType($path);
 
-//     route::get('/dashboard', [AdminController::class, "index"])->name('admin.dashboard');
-//     // route::get('/dokter', [AdminController::class, "dokter"])->name('dokter');
-//     // route::post('tambah-dokter', [AdminController::class, "tambahdokter"]);
-//     Route::resource('dokter', DokterController::class);
-//     Route::resource('poli', PoliController::class);
-//     Route::resource('department', DepartmentController::class);
-//     Route::resource('pemeriksaan', PemeriksaanController::class);
-//     Route::resource('role', RoleController::class);
-//     Route::resource('permission', PermissionController::class);
-//     Route::resource('spesiments', SpesimentController::class);
+    return response($file, 200)->header("Content-Type", $type);
+});
 
-//     route::resource('pasien', pasienController::class);
-//     route::get('loket', [pasienController::class, 'index']);
-//     route::post('/pasien/kirimlab', [pasienController::class, 'kirimLab'])->name('pasien.kirimlab');
-//     Route::get('/result', function () {
-//         return view('analyst.result-review');
-//     });
-//     Route::resource('report', ReportController::class);
-//     Route::resource('data-pasien', DataPasienController::class);
-//     Route::get('get-icd10', [icd10Controller::class, 'geticd10'])->name('geticd10');
-//     Route::get('print/barcode/{no_lab}', [pasienController::class, 'previewPrint'])->name('print.barcode');
-//     Route::get('/pasien/edit/{no_lab}', [pasienController::class, 'edit'])->name('pasien.viewedit');
-//     Route::put('/pasien/{id}', [pasienController::class, 'update'])->name('pasien.updatedata');
-//     Route::post('pasien/checkin', [pasienController::class, 'checkin'])->name('pasien.checkin');
-
-//     Route::resource('analyst', analystDasboard::class);
-//     // route::post('/setuju', [analystDasboard::class, 'approve'])->name('analyst.approve');
-//     Route::post('/approve/{id}', [analystDasboard::class, 'approve'])->name('analyst.approve');
-//     Route::post('/checkinall', [analystDasboard::class, 'checkinall'])->name('analyst.checkinall');
-//     // Route Spesiment
-//     Route::resource('spesiment', spesimentHendlingController::class);
-//     Route::post('spesiment/post', [spesimentHendlingController::class, 'postSpesiment'])->name('spesiment.post');
-//     Route::post('spesiment/checkin', [spesimentHendlingController::class, 'checkin'])->name('spesiment.checkin');
-//     Route::post('/spesiment/back/{id}', [spesimentHendlingController::class, 'back'])->name('spesiment.back');
-//     // Route Worklist
-//     Route::resource('worklist', worklistController::class);
-//     Route::delete('analyst/worklist/{worklist}', [worklistController::class, 'destroy']);
-//     Route::post('/worklist/checkin/{id}', [worklistController::class, 'checkin'])->name('worklist.checkin');
-//     Route::post('/worklist/end/{id}', [worklistController::class, 'end'])->name('worklist.end');
-//     // Route Dokter
-//     Route::resource('vdokter', vDokterController::class);
-//     Route::post('/dokter/back/{id}', [vDokterController::class, 'back'])->name('dokter.back');
-//     // Route Result Review
-//     Route::resource('result', resultController::class);
-
-//     Route::get('print/pasien/{no_lab}', [resultController::class, 'print'])->name('print.pasien');
-// });
 
 route::group(['prefix' => 'loket', 'middleware' => ['auth']], function () {
 
