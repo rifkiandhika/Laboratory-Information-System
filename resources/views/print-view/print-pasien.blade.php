@@ -644,7 +644,7 @@
     <div class="user-info">
         <h6 style="margin-left: 15px">Analis Pemeriksa</h6>
         @if(auth()->user()->signature)
-            <img src="{{ asset('storage/signatures/' . auth()->user()->signature) }}"
+            <img src="{{ asset('signatures/' . auth()->user()->signature) }}"
                 alt="Signature"
                 style="max-height:80px; display:block;">
         @endif
@@ -663,7 +663,7 @@
         <h6 style="margin-right: 55px">Dokter Pemeriksa</h6>
         <div class="text-center" style="display:inline-block; margin-right: 40px">
             @if($userDokter && $userDokter->signature)
-                <img src="{{ asset('storage/signatures/' . $userDokter->signature) }}"
+                <img src="{{ asset('signatures/' . $userDokter->signature) }}"
                     alt="Signature"
                     style="max-height:80px; display:block; margin:0 auto;">
             @endif
@@ -682,7 +682,7 @@
         <h6 style="margin-right: 50px">Lab Penanggung Jawab</h6>
         @if(auth()->user()->signature)
             <img class="text-end"
-                src="{{ asset('storage/signatures/' . auth()->user()->signature) }}"
+                src="{{ asset('signatures/' . auth()->user()->signature) }}"
                 alt="Signature"
                 style="max-height:80px; display:block; margin-left:78%;">
         @endif

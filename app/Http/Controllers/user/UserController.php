@@ -63,15 +63,15 @@ class UserController extends Controller
         $data = $request->only(['name', 'username', 'email', 'fee', 'feemcu', 'nik']);
         $data['password'] = bcrypt($request->password);
 
-        // Handle signature upload
+        // Handle signature upload (langsung ke public/signatures)
         if ($request->hasFile('signature')) {
             $signature = $request->file('signature');
             $signatureName = time() . '_' . $signature->getClientOriginalName();
-            $signature->storeAs('public/signatures', $signatureName);
+            $signature->move(public_path('signatures'), $signatureName);
             $data['signature'] = $signatureName;
         }
 
-        // Simpan user dulu
+        // Simpan user
         $user = User::create($data);
 
         // Role
@@ -81,6 +81,7 @@ class UserController extends Controller
         toast('Data saved successfully!', 'success');
         return redirect()->route('users.index');
     }
+
 
 
 
@@ -116,10 +117,10 @@ class UserController extends Controller
             'fee' => 'nullable|numeric|min:0|max:100',
             'feemcu' => 'nullable|numeric|min:0|max:100',
             'nik' => 'nullable|string|max:50',
-            'signature' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
+            'signature' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Hanya ambil field yang sesuai kolom di tabel
+        // Field yang sesuai tabel
         $data = $request->only(['name', 'username', 'email', 'fee', 'feemcu', 'nik']);
 
         // Update password hanya kalau diisi
@@ -130,26 +131,28 @@ class UserController extends Controller
         // Handle signature upload
         if ($request->hasFile('signature')) {
             // Hapus signature lama jika ada
-            if ($user->signature) {
-                Storage::delete('public/signatures/' . $user->signature);
+            if ($user->signature && file_exists(public_path('signatures/' . $user->signature))) {
+                unlink(public_path('signatures/' . $user->signature));
             }
 
             $signature = $request->file('signature');
             $signatureName = time() . '_' . $signature->getClientOriginalName();
-            $signature->storeAs('public/signatures', $signatureName);
+            $signature->move(public_path('signatures'), $signatureName);
+
             $data['signature'] = $signatureName;
         }
 
         // Simpan user
         $user->update($data);
 
-        // Update role (syncRole biar tidak nambah role ganda)
+        // Update role (pakai syncRole supaya tidak dobel)
         $role = Role::find($request->role);
         $user->syncRoles([$role]);
 
         toast('Data updated successfully!', 'success');
         return redirect()->route('users.index');
     }
+
 
 
     /**

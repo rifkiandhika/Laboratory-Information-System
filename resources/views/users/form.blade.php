@@ -103,7 +103,7 @@
       <div class="mt-2">
         <label class="form-label">Tanda Tangan Saat Ini:</label>
         <div class="signature-preview">
-          <img src="{{ asset('storage/signatures/' . $user->signature) }}" 
+          <img src="{{ asset('signatures/' . $user->signature) }}" 
                alt="Current Signature" 
                style="max-width: 200px; max-height: 100px; border: 1px solid #ddd; padding: 5px;">
         </div>
