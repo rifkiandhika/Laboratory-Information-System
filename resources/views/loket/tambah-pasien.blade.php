@@ -82,7 +82,7 @@
                                             <input type="number" class="form-control" name="notelepon" placeholder="Add Phone Number" required>
                                     </div>
                                     <div class="col-md-6 mb-6">
-                                        <label for="doctorSelect" class="fw-bold">Doctor</label>
+                                        <label for="doctorSelect" class="fw-bold">Doctor Internal</label>
                                         <select class="form-select" id="doctorSelect" name="dokter_internal" >
                                             <option hidden>Choose...</option>
                                             @foreach ($dokters as $dokter)
@@ -93,7 +93,7 @@
                                     </div>
                                     
                                     <div class="col-md-6 mb-6">
-                                        <label for="external_doctor" class="fw-bold">External Doctor</label>
+                                        <label for="external_doctor" class="fw-bold">Pengirim</label>
                                         <input type="text" class="form-control" name="dokter_external" placeholder="e.g Abdul Mughni">
                                     </div>
                                                                         
