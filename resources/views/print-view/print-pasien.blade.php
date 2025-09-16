@@ -679,7 +679,7 @@
 @else
     <!-- Kalau tidak ada dokter sama sekali -->
     <div class="doctor-info text-end w-100">
-        <h6 style="margin-right: 50px">Lab Penanggung Jawab</h6>
+        <h6 style="margin-right: 55px">Analis Pemeriksa</h6>
         @if(auth()->user()->signature)
             <img class="text-end"
                 src="{{ asset('signatures/' . auth()->user()->signature) }}"
@@ -687,11 +687,13 @@
                 style="max-height:80px; display:block; margin-left:78%;">
         @endif
         <div style="padding-right: 25px; margin-top:5px; text-align:right; margin-right: 50px">
-            <span style="border-bottom:1px solid #000; padding:0 5px;">
+            <span style=" padding:0 5px; text-align: center">
                 {{ auth()->user()->name }}
             </span>
             <div style="margin-top:2px;">
-                NIK. {{ auth()->user()->nik }}
+                <span style="border-top: 1px solid #000">
+                    NIK. {{ auth()->user()->nik }}
+                </span>
             </div>
         </div>
     </div>
