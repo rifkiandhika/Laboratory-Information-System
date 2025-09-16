@@ -10,6 +10,7 @@ use App\Models\historyPasien;
 use App\Models\pasien;
 use App\Models\pemeriksaan_pasien;
 use App\Models\Report;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -64,7 +65,6 @@ class resultController extends Controller
         $hasil_pemeriksaans = HasilPemeriksaan::where('no_lab', $no_lab)->get();
 
         $nilai_rujukan_map = [];
-
         foreach ($data_pasien->dpp as $dpp) {
             foreach ($dpp->pasiens as $pasien) {
                 $pemeriksaan = $pasien->data_pemeriksaan;
@@ -74,8 +74,32 @@ class resultController extends Controller
             }
         }
 
-        return view('print-view.print-pasien', compact('data_pasien', 'note', 'hasil_pemeriksaans', 'nilai_rujukan_map'));
+        // Cari user dokter / dokter external
+        $userDokter = null;
+        $dokterName = null;
+
+        if (!empty($data_pasien->dokter_external)) {
+            // Kalau ada dokter_external
+            $dokterName = $data_pasien->dokter_external;
+            $userDokter = User::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($dokterName))])->first();
+        } elseif ($data_pasien->dokter) {
+            // Kalau tidak ada dokter_external, pakai dokter dari relasi
+            $dokterName = $data_pasien->dokter->nama_dokter;
+            $userDokter = User::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($dokterName))])->first();
+        }
+
+        return view('print-view.print-pasien', compact(
+            'data_pasien',
+            'note',
+            'hasil_pemeriksaans',
+            'nilai_rujukan_map',
+            'userDokter',
+            'dokterName'
+        ));
     }
+
+
+
 
     public function simpanKesimpulanSaran(Request $request)
     {

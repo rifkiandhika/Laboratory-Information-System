@@ -91,7 +91,7 @@ class pasienController extends Controller
         $harga = (int) str_replace('.', '', $request->hargapemeriksaan);
 
         // dokter internal / eksternal
-        $dokter = $request->dokter_internal ?: $request->dokter_external;
+        // $dokter = $request->dokter_internal ?: $request->dokter_external;
 
         // Ambil no_lab dari form
         $noLab = $request->no_lab;
@@ -114,7 +114,8 @@ class pasienController extends Controller
             'lahir'           => $request->tanggallahir,
             'jenis_kelamin'   => $request->jeniskelamin,
             'no_telp'         => $request->notelepon,
-            'kode_dokter'     => $dokter,
+            'kode_dokter'     => $request->dokter_internal,
+            'dokter_external' => $request->dokter_external,
             'asal_ruangan'    => $request->asal_ruangan,
             'diagnosa'        => $request->diagnosa,
             'tanggal_masuk'   => now(),
@@ -149,7 +150,7 @@ class pasienController extends Controller
             if ($existingReport) {
                 $existingReport->increment('quantity');
                 $existingReport->update([
-                    'nama_dokter'   => $dokter,
+                    'nama_dokter'   => $request->dokter_internal,
                     'mcu_package_id' => $request->mcu_package_id, // 👈 update kalau sudah ada
                 ]);
             } else {
@@ -159,7 +160,7 @@ class pasienController extends Controller
                     'payment_method' => $request->jenispelayanan,
                     'id_parameter'   => $pemeriksaan,
                     'nama_parameter' => $data->nama_parameter,
-                    'nama_dokter'    => $dokter,
+                    'nama_dokter'    => $request->dokter_internal,
                     'mcu_package_id' => $request->mcu_package_id, // 👈 simpan saat create
                     'quantity'       => 1,
                     'tanggal'        => now(),

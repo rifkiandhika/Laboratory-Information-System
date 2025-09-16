@@ -83,8 +83,8 @@
                                     </div>
                                     <div class="col-md-6 mb-6">
                                         <label for="doctorSelect" class="fw-bold">Doctor</label>
-                                        <select class="form-select" id="doctorSelect" name="dokter_internal">
-                                            <option hidden></option>
+                                        <select class="form-select" id="doctorSelect" name="dokter_internal" >
+                                            <option hidden>Choose...</option>
                                             @foreach ($dokters as $dokter)
                                                 <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }}</option>
                                             @endforeach
@@ -92,9 +92,9 @@
                                         </select>
                                     </div>
                                     
-                                    <div class="col-md-6 mb-6" id="externalDoctorContainer" style="display: none;">
+                                    <div class="col-md-6 mb-6">
                                         <label for="external_doctor" class="fw-bold">External Doctor</label>
-                                        <input type="text" class="form-control" id="external_doctor" name="dokter_external" placeholder="Masukkan nama dokter">
+                                        <input type="text" class="form-control" name="dokter_external" placeholder="e.g Abdul Mughni">
                                     </div>
                                                                         
                                     <div class="col-md-6 mb-6">

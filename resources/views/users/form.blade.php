@@ -45,6 +45,7 @@
   @enderror
 </div>
 {{-- Input tambahan untuk analyst --}}
+{{-- Input tambahan untuk analyst --}}
 <div id="analyst-extra-fields" style="display: none;">
   <div class="mb-3">
     <label for="fee" class="form-label">Fee (%)</label>
@@ -86,7 +87,10 @@
       <div class="invalid-feedback">{{ $message }}</div>
     @enderror
   </div>
+</div>
 
+{{-- Input tanda tangan untuk analyst & dokter --}}
+<div id="signature-field" style="display: none;">
   <div class="mb-3">
     <label for="signature" class="form-label">Tanda Tangan</label>
     <input type="file" name="signature" id="signature" 
@@ -110,60 +114,67 @@
       <div class="invalid-feedback">{{ $message }}</div>
     @enderror
   </div>
-  
 </div>
+
 
 @push('script')
     <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const roleSelect = document.getElementById("role");
-    const analystFields = document.getElementById("analyst-extra-fields");
+  const roleSelect = document.getElementById("role");
+  const analystFields = document.getElementById("analyst-extra-fields");
+  const signatureField = document.getElementById("signature-field");
 
-    function toggleAnalystFields() {
-      const selectedRole = roleSelect.options[roleSelect.selectedIndex].text.toLowerCase();
-      if (selectedRole === "analyst") {
-        analystFields.style.display = "block";
-      } else {
-        analystFields.style.display = "none";
+  function toggleFields() {
+    const selectedRole = roleSelect.options[roleSelect.selectedIndex].text.toLowerCase();
+    
+    // hanya analyst yg bisa lihat fee, feemcu, nik
+    if (selectedRole === "analyst") {
+      analystFields.style.display = "block";
+    } else {
+      analystFields.style.display = "none";
+    }
+
+    // analyst & dokter bisa tanda tangan
+    if (selectedRole === "analyst" || selectedRole === "doctor") {
+      signatureField.style.display = "block";
+    } else {
+      signatureField.style.display = "none";
+    }
+  }
+
+  // trigger pertama kali saat edit
+  toggleFields();
+
+  // saat role diganti
+  roleSelect.addEventListener("change", toggleFields);
+
+  // Preview gambar tanda tangan sebelum upload
+  const signatureInput = document.getElementById('signature');
+  if (signatureInput) {
+    signatureInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          const oldPreview = document.querySelector('.new-signature-preview');
+          if (oldPreview) oldPreview.remove();
+
+          const preview = document.createElement('div');
+          preview.className = 'new-signature-preview mt-2';
+          preview.innerHTML = `
+            <label class="form-label">Preview Tanda Tangan Baru:</label>
+            <div>
+              <img src="${ev.target.result}" alt="New Signature Preview" 
+                   style="max-width: 200px; max-height: 100px; border: 1px solid #ddd; padding: 5px;">
+            </div>
+          `;
+          signatureInput.parentNode.appendChild(preview);
+        };
+        reader.readAsDataURL(file);
       }
-    }
+    });
+  }
+});
 
-    // trigger pertama kali saat edit
-    toggleAnalystFields();
-
-    // saat role diganti
-    roleSelect.addEventListener("change", toggleAnalystFields);
-
-    // Preview gambar tanda tangan sebelum upload
-    const signatureInput = document.getElementById('signature');
-    if (signatureInput) {
-      signatureInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            // Hapus preview lama jika ada
-            const oldPreview = document.querySelector('.new-signature-preview');
-            if (oldPreview) {
-              oldPreview.remove();
-            }
-            
-            // Buat preview baru
-            const preview = document.createElement('div');
-            preview.className = 'new-signature-preview mt-2';
-            preview.innerHTML = `
-              <label class="form-label">Preview Tanda Tangan Baru:</label>
-              <div>
-                <img src="${e.target.result}" alt="New Signature Preview" 
-                     style="max-width: 200px; max-height: 100px; border: 1px solid #ddd; padding: 5px;">
-              </div>
-            `;
-            signatureInput.parentNode.appendChild(preview);
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-    }
-  });
 </script>
 @endpush

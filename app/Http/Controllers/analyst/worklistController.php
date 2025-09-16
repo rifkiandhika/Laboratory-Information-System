@@ -188,7 +188,7 @@ class worklistController extends Controller
                     'satuan' => $satuans[$index] ?? null,
                     'flag' => $flags[$index] ?? null,
                     'department' => $departments[$index] ?? null,
-                    'note' => $note,
+                    'note' => $note ?? null,
                 ];
 
                 if ($existingHasil) {
@@ -228,7 +228,7 @@ class worklistController extends Controller
                 'no_lab' => $pasien->no_lab,
                 'proses' => 'Diverifikasi Analyst',
                 'tempat' => 'Laboratorium',
-                'note' => $note,
+                'note' => $note ?? null,
                 'waktu_proses' => now(),
                 'created_at' => now(),
             ]);

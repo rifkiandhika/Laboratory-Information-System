@@ -13,6 +13,7 @@
     .scrollbox{
         overflow: auto;
     }
+
 </style>
 @section('content')
     <div class="content" id="scroll-content">
@@ -1336,8 +1337,7 @@
                         <li><a class="dropdown-item" href="#" onclick="printBarcode('${d}')">Print ${c.name}</a></li>
                     `;
                 }).join('')}
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#" onclick="printAllBarcodes()">Print Semua</a></li>
+                {{-- <li><a class="dropdown-item" href="#" onclick="printAllBarcodes()">Print Semua</a></li> --}}
             </ul>
         `;
 
@@ -1409,136 +1409,232 @@
         img.onload = () => {
             ctx.fillStyle = '#fff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            // Gambar barcode di posisi lebih atas karena tidak ada judul di atas
             ctx.drawImage(img, 50, 20, 300, 100);
 
-            // Format: (Departemen) Kode-NoLab di bawah barcode
             ctx.fillStyle = '#000';
             ctx.font = 'bold 14px Arial';
             ctx.textAlign = 'center';
             const titleText = `(${config.name}) ${code}`;
             ctx.fillText(titleText, canvas.width / 2, 140);
-            
+
             ctx.font = '12px Arial';
             ctx.fillText(`Nama: ${currentPatientName}`, canvas.width / 2, 160);
             ctx.fillText(`Tanggal Lahir: ${currentPatientDOB}`, canvas.width / 2, 180);
             ctx.font = '10px Arial';
             ctx.fillText(new Date().toLocaleDateString('id-ID'), canvas.width / 2, 200);
 
+            // === Buat PNG ===
             canvas.toBlob(blob => {
+                const imageData = canvas.toDataURL("image/png");
+
+                // 1) Download PNG
                 const link = document.createElement('a');
                 link.download = `barcode_${currentBarcodeData}_${dept}.png`;
                 link.href = URL.createObjectURL(blob);
                 link.click();
+
+                // 2) Print PNG (ukuran sama seperti download)
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Print Barcode</title>
+                        <style>
+                            body { margin: 0; padding: 0; text-align: center; }
+                            img { max-width: 100%; max-height: 100%; }
+                        </style>
+                    </head>
+                    <body>
+                        <img src="${imageData}" 
+                            onload="window.print(); window.onafterprint = () => window.close();" />
+                    </body>
+                    </html>
+                `);
+                printWindow.document.close();
             }, 'image/png');
+
+            URL.revokeObjectURL(url);
         };
 
-        img.onerror = () => alert("Gagal memuat gambar barcode");
+        img.onerror = () => {
+            URL.revokeObjectURL(url);
+            alert("Gagal memuat gambar barcode");
+        };
+
         img.src = url;
     }
 
-    function printBarcode(dept) {
+
+    
+
+    
+// Fungsi yang diperbaiki: gunakan hasil download untuk print
+function printBarcode(dept, orientation = 'landscape') {
     const elementId = `barcode${dept}`;
     const svg = document.getElementById(elementId);
     if (!svg) return alert('Barcode tidak ditemukan');
 
     const config = getDepartmentConfig(dept);
     const code = config.code + currentBarcodeData;
-    
-    // Canvas size untuk thermal printer 50x20mm (189x75 pixels at 96dpi)
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = 189;  // 50mm = ~189 pixels at 96dpi
-    canvas.height = 75;  // 20mm = ~75 pixels at 96dpi
+    
+    // Gunakan ukuran yang SAMA dengan downloadBarcode
+    canvas.width = 400;
+    canvas.height = 240;
 
     const img = new Image();
     const svgBlob = new Blob([new XMLSerializer().serializeToString(svg)], { type: 'image/svg+xml' });
     const url = URL.createObjectURL(svgBlob);
 
     img.onload = () => {
-        // Gambar background putih
+        // Render SAMA PERSIS dengan downloadBarcode
         ctx.fillStyle = '#fff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Gambar barcode (ukuran disesuaikan untuk 50x20mm)
-        ctx.drawImage(img, 5, 5, 179, 35); // barcode area
+        ctx.drawImage(img, 50, 20, 300, 100);
 
-        // Tambahkan teks dengan font kecil untuk thermal printer
         ctx.fillStyle = '#000';
-        ctx.font = 'bold 8px Arial';
+        ctx.font = 'bold 14px Arial';
         ctx.textAlign = 'center';
         const titleText = `(${config.name}) ${code}`;
-        ctx.fillText(titleText, canvas.width / 2, 48);
-        
-        ctx.font = '6px Arial';
-        ctx.fillText(`${currentPatientName}`, canvas.width / 2, 58);
-        ctx.fillText(`${currentPatientDOB}`, canvas.width / 2, 68);
+        ctx.fillText(titleText, canvas.width / 2, 140);
 
-        // Convert to image data URL
+        ctx.font = '12px Arial';
+        ctx.fillText(`Nama: ${currentPatientName}`, canvas.width / 2, 160);
+        ctx.fillText(`Tanggal Lahir: ${currentPatientDOB}`, canvas.width / 2, 180);
+        ctx.font = '10px Arial';
+        ctx.fillText(new Date().toLocaleDateString('id-ID'), canvas.width / 2, 200);
+
+        // Konversi ke PNG (sama dengan download)
         const imageData = canvas.toDataURL("image/png");
         
-        // Cleanup blob URL
+        // Print dengan gambar yang sudah jadi
+        printImageDirect(imageData, config.name, orientation);
+        
         URL.revokeObjectURL(url);
-        
-        // Method 1: Menggunakan iframe tersembunyi (Recommended untuk thermal printer)
-        printThermalWithIframe(imageData, config.name);
-        
-        // Method 2: Alternative - jika method 1 tidak berfungsi, uncomment baris di bawah
-        // printThermalWithNewWindow(imageData, config.name);
     };
 
     img.onerror = () => {
         URL.revokeObjectURL(url);
         alert("Gagal memuat gambar barcode");
     };
-    
+
     img.src = url;
 }
 
+// Fungsi print yang lebih sederhana - langsung print gambar PNG
+function printImageDirect(imageData, departmentName, orientation = 'landscape') {
+    const printWindow = window.open('', '_blank', 'width=600,height=400');
+    
+    if (!printWindow) {
+        alert('Pop-up diblokir! Silakan izinkan pop-up untuk print.');
+        return;
+    }
+    
+    const css = `
+        @page { 
+            size: 50mm 20mm;  /* width x height */
+            margin: 0; 
+        }
+        body { 
+            margin: 0; 
+            padding: 0;
+            text-align: center;
+        }
+        img { 
+            width: 400px;   /* sama persis dengan canvas */
+            height: 240px;  /* sama persis dengan canvas */
+        }
+        @media print {
+            .no-print { display: none; }
+        }
+    `;
+    
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Print Barcode - ${departmentName}</title>
+            <style>${css}</style>
+        </head>
+        <body>
+            <img src="${imageData}" alt="Barcode ${departmentName}" />
+        </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
+    
+    printWindow.onload = () => {
+        setTimeout(() => {
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }, 500);
+    };
+}
+
+
+// Fungsi print semua yang diperbaiki
 async function printAllBarcodes() {
     if (availableDepartments.length === 0) {
         alert('Tidak ada barcode untuk diprint');
         return;
     }
 
-    const printWindow = window.open('', '_blank', 'width=400,height=600');
+    const printWindow = window.open('', '_blank', 'width=800,height=1000');
     if (!printWindow) {
         alert('Pop-up diblokir! Silakan izinkan pop-up untuk print.');
         return;
     }
 
+    const css = `
+        @page { 
+            size: A4 portrait; 
+            margin: 10mm; 
+        }
+        body { 
+            margin: 0; 
+            padding: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .barcode-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .barcode-item {
+            flex: 0 0 auto;
+            width: 400px;   /* sama persis dengan printBarcode */
+            height: 240px;  /* sama persis dengan printBarcode */
+            text-align: center;
+            border: 1px solid #ddd;
+            padding: 5px;
+            background: #fff;
+            page-break-inside: avoid;
+        }
+        .barcode-item img { 
+            width: 400px;
+            height: 240px;
+        }
+        @media print {
+            .no-print { display: none; }
+            body { padding: 0; }
+        }
+    `;
+
     printWindow.document.write(`
         <!DOCTYPE html>
         <html>
         <head>
-            <title>Print Semua Barcode Thermal</title>
-            <style>
-                @page { 
-                    size: 50mm 20mm; 
-                    margin: 0; 
-                }
-                body { 
-                    font-family: Arial, sans-serif; 
-                    margin: 0; 
-                    padding: 0;
-                }
-                .barcode-item { 
-                    page-break-after: always; 
-                    width: 50mm;
-                    height: 20mm;
-                    display: block;
-                }
-                .barcode-item:last-child {
-                    page-break-after: auto;
-                }
-                img { 
-                    width: 50mm;
-                    height: 20mm;
-                    object-fit: contain;
-                }
-            </style>
+            <title>Print Semua Barcode</title>
+            <style>${css}</style>
         </head>
         <body>
+            <div class="barcode-grid">
     `);
 
     for (const dept of availableDepartments) {
@@ -1549,32 +1645,35 @@ async function printAllBarcodes() {
         const config = getDepartmentConfig(dept);
         const code = config.code + currentBarcodeData;
 
-        // Convert SVG to PNG dengan ukuran thermal printer
+        // Render ke canvas sama persis seperti printBarcode
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = 189;  // 50mm
-        canvas.height = 75;  // 20mm
+        canvas.width = 400;
+        canvas.height = 240;
 
-        const svgBlob = new Blob([new XMLSerializer().serializeToString(svg)], { type: 'image/svg+xml' });
-        const url = URL.createObjectURL(svgBlob);
-
-        await new Promise((resolve, reject) => {
+        await new Promise((resolve) => {
             const img = new Image();
+            const svgBlob = new Blob([new XMLSerializer().serializeToString(svg)], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(svgBlob);
+
             img.onload = () => {
                 ctx.fillStyle = '#fff';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(img, 5, 5, 179, 35);
+                ctx.drawImage(img, 50, 20, 300, 100);
 
                 ctx.fillStyle = '#000';
-                ctx.font = 'bold 8px Arial';
+                ctx.font = 'bold 14px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText(`(${config.name}) ${code}`, canvas.width / 2, 48);
-                ctx.font = '6px Arial';
-                ctx.fillText(`${currentPatientName}`, canvas.width / 2, 58);
-                ctx.fillText(`${currentPatientDOB}`, canvas.width / 2, 68);
+                ctx.fillText(`(${config.name}) ${code}`, canvas.width / 2, 140);
+                ctx.font = '12px Arial';
+                ctx.fillText(`Nama: ${currentPatientName}`, canvas.width / 2, 160);
+                ctx.fillText(`Tanggal Lahir: ${currentPatientDOB}`, canvas.width / 2, 180);
+                ctx.font = '10px Arial';
+                ctx.fillText(new Date().toLocaleDateString('id-ID'), canvas.width / 2, 200);
 
                 const imageData = canvas.toDataURL("image/png");
 
+                // Tambahkan ke print window
                 printWindow.document.write(`
                     <div class="barcode-item">
                         <img src="${imageData}" alt="Barcode ${config.name}" />
@@ -1584,182 +1683,41 @@ async function printAllBarcodes() {
                 URL.revokeObjectURL(url);
                 resolve();
             };
-            img.onerror = reject;
+
+            img.onerror = () => {
+                URL.revokeObjectURL(url);
+                resolve();
+            };
+
             img.src = url;
         });
     }
 
-    printWindow.document.write(`</body></html>`);
-    printWindow.document.close();
-
-    // tunggu render lalu print
-    printWindow.onload = () => {
-        setTimeout(() => {
-            printWindow.print();
-        }, 500);
-    };
-}
-
-// Method 1: Print thermal menggunakan iframe tersembunyi
-function printThermalWithIframe(imageData, departmentName) {
-    // Hapus iframe lama jika ada
-    const oldIframe = document.getElementById('printFrame');
-    if (oldIframe) {
-        oldIframe.remove();
-    }
-
-    // Buat iframe tersembunyi
-    const iframe = document.createElement('iframe');
-    iframe.id = 'printFrame';
-    iframe.style.position = 'absolute';
-    iframe.style.width = '0px';
-    iframe.style.height = '0px';
-    iframe.style.border = 'none';
-    
-    document.body.appendChild(iframe);
-    
-    // Tunggu iframe siap
-    iframe.onload = function() {
-        const doc = iframe.contentDocument || iframe.contentWindow.document;
-        
-        doc.open();
-        doc.write(`
-            <!DOCTYPE html>
-            <html>
-                <head>
-                    <title>Thermal Print - ${departmentName}</title>
-                    <style>
-                        @page {
-                            size: 50mm 20mm;
-                            margin: 0;
-                        }
-                        body {
-                            margin: 0;
-                            padding: 0;
-                            font-family: Arial, sans-serif;
-                        }
-                        .thermal-container {
-                            width: 50mm;
-                            height: 20mm;
-                            background: white;
-                            display: block;
-                        }
-                        img {
-                            width: 50mm;
-                            height: 20mm;
-                            object-fit: contain;
-                            display: block;
-                        }
-                        @media print {
-                            body { margin: 0; padding: 0; }
-                            .no-print { display: none; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="thermal-container">
-                        <img src="${imageData}" alt="Thermal Barcode ${departmentName}" />
-                    </div>
-                </body>
-            </html>
-        `);
-        doc.close();
-        
-        // Tunggu sebentar lalu print
-        setTimeout(() => {
-            iframe.contentWindow.focus();
-            iframe.contentWindow.print();
-            
-            // Hapus iframe setelah print selesai
-            setTimeout(() => {
-                iframe.remove();
-            }, 1000);
-        }, 500);
-    };
-    
-    // Trigger onload
-    iframe.src = 'about:blank';
-}
-
-// Method 2: Print thermal dengan window baru (alternative)
-function printThermalWithNewWindow(imageData, departmentName) {
-    const printWindow = window.open('', '_blank', 'width=400,height=300');
-    
-    if (!printWindow) {
-        alert('Pop-up diblokir! Silakan izinkan pop-up untuk print.');
-        return;
-    }
-    
     printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-            <head>
-                <title>Thermal Print - ${departmentName}</title>
-                <style>
-                    @page {
-                        size: 50mm 20mm;
-                        margin: 0;
-                    }
-                    body {
-                        margin: 0;
-                        padding: 5px;
-                        font-family: Arial, sans-serif;
-                        background: #f0f0f0;
-                    }
-                    .thermal-container {
-                        width: 50mm;
-                        height: 20mm;
-                        background: white;
-                        border: 1px solid #ccc;
-                        display: inline-block;
-                    }
-                    img {
-                        width: 50mm;
-                        height: 20mm;
-                        object-fit: contain;
-                        display: block;
-                    }
-                    .controls {
-                        margin-top: 10px;
-                        text-align: center;
-                    }
-                    button {
-                        margin: 5px;
-                        padding: 5px 10px;
-                        font-size: 12px;
-                    }
-                    @media print {
-                        body { margin: 0; padding: 0; background: white; }
-                        .no-print { display: none; }
-                        .thermal-container { border: none; }
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="thermal-container">
-                    <img src="${imageData}" alt="Thermal Barcode ${departmentName}" onload="setTimeout(() => window.print(), 500);" />
-                </div>
-                <div class="controls no-print">
-                    <p>Ukuran: 50mm x 20mm untuk thermal printer BP-TD110BT</p>
-                    <button onclick="window.print()">Print Manual</button>
-                    <button onclick="window.close()">Tutup</button>
-                </div>
-            </body>
+            </div>
+            <div class="no-print" style="text-align: center; margin-top: 20px;">
+                <button onclick="window.print()" style="padding: 10px 20px; margin: 5px;">Print Semua</button>
+                <button onclick="window.close()" style="padding: 10px 20px; margin: 5px;">Tutup</button>
+            </div>
+        </body>
         </html>
     `);
-    
+
     printWindow.document.close();
-    
-    // Auto close setelah print
-    printWindow.addEventListener('afterprint', () => {
+
+    printWindow.onload = () => {
         setTimeout(() => {
-            printWindow.close();
+            printWindow.focus();
+            printWindow.print();
         }, 1000);
-    });
+    };
 }
 
-// supaya bisa dipanggil dari HTML
+
+// Export functions
 window.printBarcode = printBarcode;
+window.printAllBarcodes = printAllBarcodes;
+window.printThermalBarcode = printThermalBarcode;
 
 
     // Agar bisa diakses oleh elemen HTML

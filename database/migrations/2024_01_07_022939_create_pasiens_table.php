@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('diagnosa')->nullable();
             $table->text('alamat')->nullable();
             $table->string('kode_dokter')->nullable();
+            $table->string('dokter_external')->nullable();
             $table->string('asal_ruangan')->nullable();
             $table->string('status')->default('Belum Dilayani');
             $table->dateTime('tanggal_masuk')->default(now());

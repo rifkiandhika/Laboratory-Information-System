@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('note')->nullable();
             $table->string('kesimpulan')->nullable();
             $table->string('saran')->nullable();
+            $table->string('duplo_dx')->nullable();
             $table->string('duplo_d1')->nullable();
             $table->string('duplo_d2')->nullable();
             $table->string('duplo_d3')->nullable();

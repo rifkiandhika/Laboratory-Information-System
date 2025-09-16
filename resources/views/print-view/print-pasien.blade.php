@@ -409,55 +409,59 @@
         <div class="data-pasien mb-2">
             <div class="row">
                 <div class="col-12">
-                    <table class="table table-borderless table-sm mb-0" style="font-size:14px; width:100%;">
-                    <tr>
-                        <td style="width:120px;">No. RM</td>
-                        <td style="width:10px;">:</td>
-                        <td style="width:250px;">{{ $data_pasien->no_rm ?? '-'}}</td>
-                        <td style="width:150px;">No. Laboratorium</td>
-                        <td style="width:10px;">:</td>
-                        <td>{{ $data_pasien->no_lab ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>Nama Pasien</td>
-                        <td>:</td>
-                        <td><b>{{ $data_pasien->nama ?? '-'}}</b></td>
-                        <td>Tanggal Transaksi</td>
-                        <td>:</td>
-                        <td>{{ $data_pasien->tanggal_masuk ?? '-'}}</td>
-                    </tr>
-                    <tr>
-                        <td>Umur</td>
-                        <td>:</td>
-                        <td>{{ \Carbon\Carbon::parse($data_pasien->lahir)->age ?? '-' }} tahun</td>
-                        <td>Tanggal Diterima</td>
-                        <td>:</td>
-                        <td>{{ $data_pasien->created_at ?? '-'}}</td>
-                    </tr>
-                    <tr>
-                        <td>Jenis Kelamin</td>
-                        <td>:</td>
-                        <td>{{ $data_pasien->jenis_kelamin ?? '-'}}</td>
-                        <td>Tanggal Selesai</td>
-                        <td>:</td>
-                        <td>{{ $data_pasien->updated_at ?? '-'}}</td>
-                    </tr>
-                    <tr>
-                        <td>Alamat Pasien</td>
-                        <td>:</td>
-                        <td colspan="4">{{ $data_pasien->alamat ?? '-'}}</td>
-                    </tr>
-                    <tr>
-                        <td>Asal Pasien</td>
-                        <td>:</td>
-                        <td colspan="4">-</td>
-                    </tr>
-                    <tr>
-                        <td>Dokter Pengirim</td>
-                        <td>:</td>
-                        <td colspan="4">{{ $data_pasien->kode_dokter ?? '-'}}</td>
-                    </tr>
+                   <table class="table table-borderless table-sm mb-0" style="font-size:14px; width:100%;">
+                        <tr>
+                            <td style="width:120px;">No. RM</td>
+                            <td style="width:10px;">:</td>
+                            <td style="width:250px;">{{ $data_pasien->no_rm ?? '-'}}</td>
+                            <td style="width:150px;">No. Laboratorium</td>
+                            <td style="width:10px;">:</td>
+                            <td>{{ $data_pasien->no_lab ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td>Nama Pasien</td>
+                            <td>:</td>
+                            <td><b>{{ $data_pasien->nama ?? '-'}}</b></td>
+                            <td>Tanggal Transaksi</td>
+                            <td>:</td>
+                            <td>{{ $data_pasien->tanggal_masuk ?? '-'}}</td>
+                        </tr>
+                        <tr>
+                            <td>Umur</td>
+                            <td>:</td>
+                            <td>{{ \Carbon\Carbon::parse($data_pasien->lahir)->age ?? '-' }} tahun</td>
+                            <td>Tanggal Diterima</td>
+                            <td>:</td>
+                            <td>{{ $data_pasien->created_at ?? '-'}}</td>
+                        </tr>
+                        <tr>
+                            <td>Jenis Kelamin</td>
+                            <td>:</td>
+                            <td>{{ $data_pasien->jenis_kelamin ?? '-'}}</td>
+                            <td>Tanggal Selesai</td>
+                            <td>:</td>
+                            <td>{{ $data_pasien->updated_at ?? '-'}}</td>
+                        </tr>
+                        <tr>
+                            <td>Asal Pasien</td>
+                            <td>:</td>
+                            <td>-</td>
+                            <td>Dokter Pengirim</td>
+                            <td>:</td>
+                            <td>{{ $data_pasien->dokter_external ?? '-'}}</td>
+                        </tr>
+                        <tr>
+                            <td>Dokter Pemeriksa</td>
+                            <td>:</td>
+                            <td colspan="4">{{ $data_pasien->kode_dokter ?? '-'}}</td>
+                        </tr>
+                        <tr>
+                            <td>Alamat Pasien</td>
+                            <td>:</td>
+                            <td colspan="4">{{ $data_pasien->alamat ?? '-'}}</td>
+                        </tr>
                     </table>
+
                 </div>
                 </div>
         </div>
@@ -611,7 +615,7 @@
                                     @endif
                                 </td>
                                 <td class="text-center">{{ $hasil->satuan ?? '-' }}</td>
-                                <td class="text-center">{{ $nilai_rujukan ?: '-' }}</td>
+                                <td class="text-center">{{ $nilai_rujukan ?? '-' }}</td>
                             </tr>
                             @endforeach
                             @endforeach
@@ -635,44 +639,50 @@
             </table>
         @endif
         <div class="footer-container d-flex justify-content-between">
-    @if($data_pasien->dokter)
-        <!-- KIRI: Analyst -->
-        <div class="user-info">
-            <h6 style="margin-left: 15px">Analis Pemeriksa</h6>
-            @if(auth()->user()->signature)
-                <img src="{{ asset('storage/signatures/' . auth()->user()->signature) }}"
-                    alt="Signature"
-                    style="max-height:80px; display:block;">
-            @endif
-            <div style="padding-left: 20px">
-                <span style="border-bottom:1px solid #000; padding:0 5px;">
-                    {{ auth()->user()->name }}
-                </span>
-                <div style=" margin-top:2px;">
-                    NIK. {{ auth()->user()->nik }}
-                </div>
-            </div>
-        </div>
-
-        <!-- KANAN: Dokter -->
-        <div class="doctor-info text-end">
-        <h6 style="margin-right: 45px">Dokter Pemeriksa</h6>
-        <div class="text-center" style="margin-top:40px; display:inline-block; margin-right: 50px">
-            <span style="display:inline-block; border-bottom:1px solid #000; padding:0 5px;">
-                {{ $data_pasien->dokter->nama_dokter }}
+   @if($dokterName)
+    <!-- KIRI: Analyst -->
+    <div class="user-info">
+        <h6 style="margin-left: 15px">Analis Pemeriksa</h6>
+        @if(auth()->user()->signature)
+            <img src="{{ asset('storage/signatures/' . auth()->user()->signature) }}"
+                alt="Signature"
+                style="max-height:80px; display:block;">
+        @endif
+        <div style="padding-left: 20px">
+            <span style="border-bottom:1px solid #000; padding:0 5px;">
+                {{ auth()->user()->name }}
             </span>
-            <div style=" margin-top:2px;">
-                NIK. {{ $data_pasien->dokter->nip ?? '' }}
+            <div style="margin-top:2px;">
+                NIK. {{ auth()->user()->nik }}
             </div>
         </div>
     </div>
 
-    @else
-        <!-- Kalau tidak ada dokter, Analyst pindah ke kanan -->
-        <div class="doctor-info text-end w-100">
+    <!-- KANAN: Dokter (internal / external) -->
+    <div class="doctor-info text-end">
+        <h6 style="margin-right: 55px">Dokter Pemeriksa</h6>
+        <div class="text-center" style="display:inline-block; margin-right: 40px">
+            @if($userDokter && $userDokter->signature)
+                <img src="{{ asset('storage/signatures/' . $userDokter->signature) }}"
+                    alt="Signature"
+                    style="max-height:80px; display:block; margin:0 auto;">
+            @endif
+            <span style="display:inline-block; border-bottom:1px solid #000; padding:0 5px;">
+                {{ $dokterName }}
+            </span>
+            <div style="margin-top:2px;">
+                {{-- Kalau external biasanya tidak ada nip, jadi kosongkan --}}
+                NIK. {{ $data_pasien->dokter->nip ?? '' }}
+            </div>
+        </div>
+    </div>
+@else
+    <!-- Kalau tidak ada dokter sama sekali -->
+    <div class="doctor-info text-end w-100">
         <h6 style="margin-right: 50px">Lab Penanggung Jawab</h6>
         @if(auth()->user()->signature)
-            <img class="text-end" src="{{ asset('storage/signatures/' . auth()->user()->signature) }}"
+            <img class="text-end"
+                src="{{ asset('storage/signatures/' . auth()->user()->signature) }}"
                 alt="Signature"
                 style="max-height:80px; display:block; margin-left:78%;">
         @endif
@@ -685,7 +695,8 @@
             </div>
         </div>
     </div>
-    @endif
+@endif
+
 </div>
         <table class="note-section calibri">
             @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->kesimpulan)
@@ -718,7 +729,6 @@
                     flagHtml = '<span class="flag-high">H</span>';
                 }
 
-                const rujukanDefault = '-';
 
                 html += `
                     <tr>
@@ -726,7 +736,7 @@
                         <td>${formattedHasil || 'Tidak ada hasil'}</td>
                         <td class="flag">${flagHtml}</td>
                         <td class="text-center">${hasil.satuan || '-'}</td>
-                        <td>${hasil.nilai_rujukan || rujukanDefault}</td>
+                        <td>${hasil.nilai_rujukan || '-'}</td>
                     </tr>
                 `;
             });
