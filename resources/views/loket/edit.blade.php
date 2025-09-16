@@ -83,7 +83,7 @@
                                             <input type="number" class="form-control" name="notelepon" placeholder="Add Phone Number" value="{{ $data_pasien->no_telp }}">
                                     </div>
                                     <div class="col-md-6 mb-6">
-                                        <label for="exampleFormControlSelect1" class="fw-bold">Doctor</label>
+                                        <label for="exampleFormControlSelect1" class="fw-bold">Doctor Internal</label>
                                         <select class="form-select" id="exampleFormControlSelect1" name="dokter_internal">
                                             <option selected hidden value="{{ $data_pasien->kode_dokter }}">{{ $data_pasien->dokter ? $data_pasien->dokter->nama_dokter : '' }}</option>
                                             {{-- <option value="1">Permintaan Sendiri</option> --}}
@@ -94,7 +94,7 @@
                                         </select>
                                     </div>
                                     <div class="col-md-6 mb-6">
-                                        <label for="name" class="fw-bold">External Doctor</label>
+                                        <label for="name" class="fw-bold">Pengirim</label>
                                         <input type="text " class="form-control"
                                             name="dokter_external" placeholder="External Doctor" value="{{ $data_pasien->dokter_external }}">
                                     </div>
