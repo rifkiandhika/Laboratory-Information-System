@@ -194,14 +194,16 @@
                                                 @foreach ($departement->detailDepartments as $x => $pemeriksaan)
                                                     @if ($pemeriksaan->status === 'active')
                                                         <div class="form-check">
-                                                            <input style="cursor: pointer" class="form-check-input child-pemeriksaan"
-                                                                type="checkbox" name="pemeriksaan[]"
+                                                            <input style="cursor: pointer"
+                                                                class="form-check-input child-pemeriksaan"
+                                                                type="checkbox"
+                                                                name="pemeriksaan[]"
                                                                 value="{{ $pemeriksaan->id }}"
-                                                                id="{{ $pemeriksaan->id_departement . '-' . $x }}"
+                                                                id="pemeriksaan-{{ $pemeriksaan->id_departement }}-{{ $pemeriksaan->id }}"
                                                                 onclick="checkpemeriksaan({{ $pemeriksaan->harga }})"
                                                                 data-harga="{{ $pemeriksaan->harga }}">
                                                             <label class="form-check-label"
-                                                                for="{{ $pemeriksaan->id_departement . '-' . $x }}">
+                                                                for="pemeriksaan-{{ $pemeriksaan->id_departement }}-{{ $pemeriksaan->id }}">
                                                                 {{ $pemeriksaan->nama_pemeriksaan }}
                                                                 Rp.{{ number_format($pemeriksaan->harga, 0, ',', '.') }}
                                                             </label>
