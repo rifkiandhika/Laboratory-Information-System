@@ -84,7 +84,7 @@
                                     </div>
                                     <div class="col-md-6 mb-6">
                                         <label for="exampleFormControlSelect1" class="fw-bold">Doctor</label>
-                                        <select class="form-select" id="exampleFormControlSelect1" name="dokter">
+                                        <select class="form-select" id="exampleFormControlSelect1" name="dokter_internal">
                                             <option selected hidden value="{{ $data_pasien->kode_dokter }}">{{ $data_pasien->dokter ? $data_pasien->dokter->nama_dokter : '' }}</option>
                                             {{-- <option value="1">Permintaan Sendiri</option> --}}
                                             @foreach ($dokters as $dokter)
@@ -96,7 +96,7 @@
                                     <div class="col-md-6 mb-6">
                                         <label for="name" class="fw-bold">External Doctor</label>
                                         <input type="text " class="form-control"
-                                            name="dokter" placeholder="External Doctor" value="{{ $data_pasien->kode_dokter }}">
+                                            name="dokter" placeholder="External Doctor" value="{{ $data_pasien->dokter_external }}">
                                     </div>
                                     <div class="col-md-6 mb-6">
                                         <label for="name" class="fw-bold">Room</label>

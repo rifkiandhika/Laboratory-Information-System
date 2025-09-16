@@ -446,7 +446,7 @@
                             <td>Asal Pasien</td>
                             <td>:</td>
                             <td>-</td>
-                            <td>Dokter Pengirim</td>
+                            <td>Pengirim</td>
                             <td>:</td>
                             <td>{{ $data_pasien->dokter_external ?? '-'}}</td>
                         </tr>
