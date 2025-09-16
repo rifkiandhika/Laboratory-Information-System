@@ -96,7 +96,7 @@
                                     <div class="col-md-6 mb-6">
                                         <label for="name" class="fw-bold">External Doctor</label>
                                         <input type="text " class="form-control"
-                                            name="dokter" placeholder="External Doctor" value="{{ $data_pasien->dokter_external }}">
+                                            name="dokter_external" placeholder="External Doctor" value="{{ $data_pasien->dokter_external }}">
                                     </div>
                                     <div class="col-md-6 mb-6">
                                         <label for="name" class="fw-bold">Room</label>
