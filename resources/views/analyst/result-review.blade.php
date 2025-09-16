@@ -163,7 +163,10 @@
               <!-- Card Header - Dropdown -->
               <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                   <h6 class="m-0 font-weight-bold" style="color: #96B6C5;">Result Pasien</h6>
+                  
+                @hasanyrole('Superadmin')
                   <a href="{{ route('result.report') }}" class="btn btn-primary">Report</a>
+                @endhasanyrole
               </div>
               
               <!-- Card Body -->
@@ -272,7 +275,8 @@
                                                     <i class="ti ti-printer me-2"></i> Print Result
                                                 </button>
                                             </li>
-                                           @hasanyrole('superadmin|dokter')
+
+                                           @hasanyrole('Superadmin|Doctor')
                                                 @if(Str::startsWith($dpc->no_lab, 'MCU'))
                                                     <li>
                                                         <button type="button" 
