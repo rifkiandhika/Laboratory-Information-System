@@ -687,13 +687,11 @@
                 style="max-height:80px; display:block; margin-left:78%;">
         @endif
         <div style="padding-right: 25px; margin-top:5px; text-align:right; margin-right: 50px">
-            <span style=" padding:0 5px; text-align: center">
-                {{ auth()->user()->name }}
-            </span>
-            <div style="margin-top:2px;">
-                <span style="border-top: 1px solid #000">
-                    NIK. {{ auth()->user()->nik }}
-                </span>
+            <div style="display: inline-block; text-align: center;">
+                <div style="padding-top: 2px; min-width: 65px;">
+                    <div style="font-weight: bold;">{{ auth()->user()->name }}</div>
+                    <div style="border-top: 1px solid #000;">NIK. {{ auth()->user()->nik }}</div>
+                </div>
             </div>
         </div>
     </div>
