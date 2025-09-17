@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('kode');
             $table->string('nama_department');
+            $table->string('statusdep');
             $table->timestamps();
         });
     }

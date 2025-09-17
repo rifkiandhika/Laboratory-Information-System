@@ -30,6 +30,13 @@ Add Department
                                     <hr>
                                     <label for="id_departement">Departement</label>
                                     <input type="text" class="form-control" name="nama_department" placeholder="e.g Hematologi" id="" required>
+                                    <div>
+                                        <select name="statusdep" class="form-select mt-5" id="statusdep">
+                                            <option value="" selected disabled hidden>Choose..</option>
+                                            <option value="single">Single</option>
+                                            <option value="multi">Multi</option>
+                                        </select>
+                                    </div>
 
                                 </div>
                                 <div class="form-group">

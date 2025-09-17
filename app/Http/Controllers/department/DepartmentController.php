@@ -44,6 +44,7 @@ class DepartmentController extends Controller
         // dd($request->all());
         $request->validate([
             'nama_department' => 'required|unique:departments,nama_department',
+            'statusdep' => 'required',
             'kode*' => 'required', // Memastikan kode_hidden diterima
             'judul.*' => 'nullable',
             'nama_parameter.*' => 'required',
@@ -68,6 +69,7 @@ class DepartmentController extends Controller
         // Membuat department baru
         $departments = Department::create([
             'nama_department' => $request->nama_department,
+            'statusdep' => $request->statusdep,
         ]);
 
         // Menghitung panjang array parameter
@@ -162,6 +164,7 @@ class DepartmentController extends Controller
             // Update department
             $department = Department::findOrFail($id);
             $department->nama_department = $request->nama_department;
+            $department->statusdep = $request->statusdep;
             $department->save();
 
             // Handle penghapusan data existing

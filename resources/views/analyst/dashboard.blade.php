@@ -1149,23 +1149,55 @@ function printWithNewWindow(imageData, departmentName) {
                     let Tabung = {};
 
                     data_pemeriksaan_pasien.forEach((e, i) => {
-                    detailContent += `          <input type="hidden" name="no_lab" value="${e.no_lab}">
-                                                <div class="col-12 col-md-6" id="${e.id_departement}">
-                                                <h6>${e.data_departement.nama_department}</h6>
-                                                <ol>`;
-                    e.pasiens.forEach(e => {
-                        detailContent += `<li>${e.data_pemeriksaan.nama_pemeriksaan}</li>`;
-                        if (!Tabung[e.spesiment]) {
-                            Tabung[e.spesiment] = [];
-                        }
-                        Tabung[e.spesiment] += `<li>${e.data_pemeriksaan.nama_pemeriksaan}</li>`;
-                    });
-                    detailContent += `</ol><hr></div>`;
-                });
-                detailContent += '</div>';
+                        detailContent += `<input type="hidden" name="no_lab" value="${e.no_lab}">
+                                        <div class="col-12 col-md-6" id="${e.id_departement}">
+                                            <h6>${e.data_departement.nama_department}</h6>`;
 
-                // Create a map of department permissions
-                const departmentPermissions = {};
+                        let statusdep = e.data_departement.statusdep; // pastikan field ini ada
+
+                        if (statusdep === 'single') {
+                            // SINGLE → langsung pakai judul
+                            detailContent += `<ol>`;
+                            e.pasiens.forEach(p => {
+                                detailContent += `<li>${p.data_pemeriksaan.judul}</li>`;
+
+                                if (!Tabung[p.spesiment]) {
+                                    Tabung[p.spesiment] = [];
+                                }
+                                Tabung[p.spesiment] += `<li>${p.data_pemeriksaan.judul}</li>`;
+                            });
+                            detailContent += `</ol>`;
+                        } else if (statusdep === 'multi') {
+                            // MULTI → group by judul
+                            let grouped = {};
+                            e.pasiens.forEach(p => {
+                                let judul = p.data_pemeriksaan.judul;
+                                if (!grouped[judul]) {
+                                    grouped[judul] = [];
+                                }
+                                grouped[judul].push(p);
+                            });
+
+                            for (let judul in grouped) {
+                                detailContent += `<strong>${judul}</strong><ol>`;
+                                grouped[judul].forEach(p => {
+                                    detailContent += `<li>${p.data_pemeriksaan.nama_pemeriksaan}</li>`;
+
+                                    if (!Tabung[p.spesiment]) {
+                                        Tabung[p.spesiment] = [];
+                                    }
+                                    Tabung[p.spesiment] += `<li>${p.data_pemeriksaan.nama_pemeriksaan}</li>`;
+                                });
+                                detailContent += `</ol>`;
+                            }
+                        }
+
+                        detailContent += `<hr></div>`;
+                    });
+                    detailContent += '</div>';
+
+                    // Create a map of department permissions
+                    const departmentPermissions = {};
 
 
                 // Alternatif: Cek berdasarkan nama pemeriksaan atau department

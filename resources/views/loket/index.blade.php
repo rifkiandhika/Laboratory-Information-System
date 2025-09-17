@@ -932,24 +932,46 @@
 
                     if (filteredPasiens.length > 0) {
                         let departmentName = e.data_departement.nama_department;
+                        let statusdep = e.data_departement.statusdep; // pastikan field ini memang ada di object
 
                         if (!departmentIds.has(e.id_departement)) {
                             departmentIds.add(e.id_departement);
                             detailContent += `<div class="col-12 col-md-6" id="${e.id_departement}">
-                                                <h6>${departmentName}</h6>
-                                                <ol>`;
+                                                <h6>${departmentName}</h6>`;
                         }
 
-                        filteredPasiens.forEach((pemeriksaan) => {
-                            // Tampilkan harga asli pemeriksaan (tidak berubah)
-                            let hargaAsli = pemeriksaan.data_pemeriksaan.harga;
-                            detailContent += `<li>${pemeriksaan.data_pemeriksaan.nama_pemeriksaan} - Rp ${hargaAsli.toLocaleString('id-ID')}</li>`;
-                            
-                            // Hitung total harga individual untuk perbandingan
-                            originalPackagePrice += Number(pemeriksaan.data_pemeriksaan.harga);
-                        });
-                        
-                        detailContent += `</ol><hr></div>`;
+                        if (statusdep === 'single') {
+                            // SINGLE → langsung tampilkan judul
+                            detailContent += `<ol>`;
+                            filteredPasiens.forEach((pemeriksaan) => {
+                                let hargaAsli = pemeriksaan.data_pemeriksaan.harga;
+                                detailContent += `<li>${pemeriksaan.data_pemeriksaan.judul} - Rp ${Number(hargaAsli).toLocaleString('id-ID')}</li>`;
+                                originalPackagePrice += Number(hargaAsli);
+                            });
+                            detailContent += `</ol>`;
+                        } else if (statusdep === 'multi') {
+                            // MULTI → group by judul
+                            let grouped = {};
+                            filteredPasiens.forEach((pemeriksaan) => {
+                                let judul = pemeriksaan.data_pemeriksaan.judul;
+                                if (!grouped[judul]) {
+                                    grouped[judul] = [];
+                                }
+                                grouped[judul].push(pemeriksaan);
+                            });
+
+                            for (let judul in grouped) {
+                                detailContent += `<strong>${judul}</strong><ol>`;
+                                grouped[judul].forEach((pemeriksaan) => {
+                                    let hargaAsli = pemeriksaan.data_pemeriksaan.harga;
+                                    detailContent += `<li>${pemeriksaan.data_pemeriksaan.nama_pemeriksaan} - Rp ${Number(hargaAsli).toLocaleString('id-ID')}</li>`;
+                                    originalPackagePrice += Number(hargaAsli);
+                                });
+                                detailContent += `</ol>`;
+                            }
+                        }
+
+                        detailContent += `<hr></div>`;
                     }
                 });
 

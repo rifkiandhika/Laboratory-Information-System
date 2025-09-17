@@ -31,6 +31,13 @@ Edit Department
                                     <hr>
                                     <label for="id_departement">Departement</label>
                                     <input type="text" name="nama_department" id="department" class="form-control" value="{{ $departments->nama_department }}">
+                                    <div>
+                                        <select name="statusdep" class="form-select mt-5" id="statusdep">
+                                            <option value="" disabled hidden>Choose..</option>
+                                            <option value="single" {{ $departments->statusdep == 'single' ? 'selected' : '' }}>Single</option>
+                                            <option value="multi" {{ $departments->statusdep == 'multi' ? 'selected' : '' }}>Multi</option>
+                                        </select>
+                                    </div>
 
                                 </div>
                                 <div class="form-group">
