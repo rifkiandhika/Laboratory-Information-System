@@ -29,7 +29,7 @@ Add Department
                                     <h4>Department</h4>
                                     <hr>
                                     <label for="id_departement">Departement</label>
-                                    <input type="text" class="form-control" name="nama_department" id="" required>
+                                    <input type="text" class="form-control" name="nama_department" placeholder="e.g Hematologi" id="" required>
 
                                 </div>
                                 <div class="form-group">
@@ -52,41 +52,44 @@ Add Department
                                                             <!-- Kolom Kiri -->
                                                             <div class="col-md-6">
                                                                 <label for="Code">Code <span class="text-danger">*</span></label>
-                                                                <input type="text" name="kode[]" class="form-control" id="kode" required>
+                                                                <input type="text" name="kode[]" class="form-control" id="kode" placeholder="e.g. 240562548" required>
                                                                 <input type="hidden" name="kode_hidden[]" id="kode_hidden">
 
+                                                                <label class="mt-2">Judul</label>
+                                                                <input type="text" name="judul[]" class="form-control" placeholder="e.g. Darah Lengkap">
+
                                                                 <label class="mt-2">Nama Parameter <span class="text-danger">*</span></label>
-                                                                <input type="text" name="nama_parameter[]" class="form-control" required>
+                                                                <input type="text" name="nama_parameter[]" class="form-control" placeholder="e.g. Hematologi" required>
 
                                                                 <label class="mt-2">Nama Pemeriksaan <span class="text-danger">*</span></label>
-                                                                <input type="text" name="nama_pemeriksaan[]" class="form-control" required>
+                                                                <input type="text" name="nama_pemeriksaan[]" class="form-control" placeholder="e.g. Hematologi" required>
 
                                                                 <label class="mt-2">Harga <span class="text-danger">*</span></label>
-                                                                <input type="number" name="harga[]" class="form-control" required>
+                                                                <input type="number" name="harga[]" class="form-control" placeholder="e.g. 65000" required>
 
                                                                 <label class="mt-2">Nilai Rujukan (L.13,3-17 P.11,7-15,7)<span class="text-danger">*</span></label>
-                                                                <input type="text" name="nilai_rujukan[]" class="form-control" required>
+                                                                <input type="text" name="nilai_rujukan[]" class="form-control" placeholder="e.g. L.13,3-17 P.11,7-15,7" required>
 
                                                                 <label class="mt-2">Nilai Satuan <span class="text-danger">*</span></label>
-                                                                <input type="text" name="nilai_satuan[]" class="form-control" required>
+                                                                <input type="text" name="nilai_satuan[]" class="form-control" placeholder="e.g. % mg/dL" required>
                                                             </div>
 
                                                             <!-- Kolom Kanan -->
                                                             <div class="col-md-6">
                                                                 <label>JASA SARANA:</label>
-                                                                <input type="number" name="jasa_sarana[]" class="form-control" >
+                                                                <input type="number" name="jasa_sarana[]" placeholder="0" class="form-control" >
 
                                                                 <label class="mt-2">JASA PELAYANAN:</label>
-                                                                <input type="number" name="jasa_pelayanan[]" class="form-control">
+                                                                <input type="number" name="jasa_pelayanan[]" placeholder="0" class="form-control">
 
                                                                 <label class="mt-2">JASA DOKTER:</label>
-                                                                <input type="number" name="jasa_dokter[]" class="form-control">
+                                                                <input type="number" name="jasa_dokter[]" placeholder="0" class="form-control">
 
                                                                 <label class="mt-2">JASA BIDAN:</label>
-                                                                <input type="number" name="jasa_bidan[]" class="form-control">
+                                                                <input type="number" name="jasa_bidan[]" placeholder="0" class="form-control">
 
                                                                 <label class="mt-2">JASA PERAWAT:</label>
-                                                                <input type="number" name="jasa_perawat[]" class="form-control">
+                                                                <input type="number" name="jasa_perawat[]" placeholder="0" class="form-control">
 
                                                                 <label class="mt-2">Tipe Inputan<span class="text-danger">*</span></label>
                                                                 <select name="tipe_inputan[]" class="form-select tipe-inputan">
@@ -240,57 +243,57 @@ document.addEventListener('DOMContentLoaded', function () {
                         <!-- Kolom Kiri -->
                         <div class="col-md-6">
                             <label for="otomatis">Code <span class="text-danger">*</span></label>
-                            <input type="text" name="kode[]" class="form-control kode" required>
+                            <input type="text" name="kode[]" class="form-control kode" placeholder="e.g. 240562548" required>
                             <input type="hidden" name="kode_hidden[]" class="kode_hidden">
 
                             <label class="mt-2">Nama Parameter <span class="text-danger">*</span></label>
-                            <input type="text" name="nama_parameter[]" class="form-control" required>
+                            <input type="text" name="nama_parameter[]" class="form-control" placeholder="e.g. Hematologi" required>
 
                             <label class="mt-2">Nama Pemeriksaan <span class="text-danger">*</span></label>
-                            <input type="text" name="nama_pemeriksaan[]" class="form-control" required>
+                            <input type="text" name="nama_pemeriksaan[]" class="form-control" placeholder="e.g. Hematologi" required>
 
                             <label class="mt-2">Harga <span class="text-danger">*</span></label>
-                            <input type="number" name="harga[]" class="form-control" required>
+                            <input type="number" name="harga[]" class="form-control" placeholder="e.g. 65000" required>
 
                             <label class="mt-2">Nilai Rujukan (L.13,3-17 P.11,7-15,7) <span class="text-danger">*</span></label>
-                            <input type="text" name="nilai_rujukan[]" class="form-control" required>
+                            <input type="text" name="nilai_rujukan[]" class="form-control" placeholder="e.g. L.13,3-17 P.11,7-15,7" required>
 
                             <label class="mt-2">Nilai Satuan <span class="text-danger">*</span></label>
-                            <input type="text" name="nilai_satuan[]" class="form-control" required>
+                            <input type="text" name="nilai_satuan[]" class="form-control" placeholder="e.g. % mg/dL" required>
                         </div>
 
                         <!-- Kolom Kanan -->
                         <div class="col-md-6">
                             <label>JASA SARANA:</label>
-                            <input type="number" name="jasa_sarana[]" class="form-control">
+                            <input type="number" name="jasa_sarana[]" class="form-control" placeholder="0">
 
                             <label class="mt-2">JASA PELAYANAN:</label>
-                            <input type="number" name="jasa_pelayanan[]" class="form-control">
+                            <input type="number" name="jasa_pelayanan[]" class="form-control" placeholder="0">
 
                             <label class="mt-2">JASA DOKTER:</label>
-                            <input type="number" name="jasa_dokter[]" class="form-control">
+                            <input type="number" name="jasa_dokter[]" class="form-control" placeholder="0">
 
                             <label class="mt-2">JASA BIDAN:</label>
-                            <input type="number" name="jasa_bidan[]" class="form-control">
+                            <input type="number" name="jasa_bidan[]" class="form-control" placeholder="0">
 
                             <label class="mt-2">JASA PERAWAT:</label>
-                            <input type="number" name="jasa_perawat[]" class="form-control">
+                            <input type="number" name="jasa_perawat[]" class="form-control" placeholder="0">
 
                             <label class="mt-2">Tipe Inputan <span class="text-danger">*</span></label>
                             <select name="tipe_inputan[]" class="form-select tipe-inputan">
-                                <option value="" hidden>Pilih tipe inputan</option>
+                                <option value="" hidden>Choose</option>
                                 <option value="Text">Text</option>
                                 <option value="Dropdown">Dropdown</option>
                             </select>
 
                             <div class="opsi-output-wrapper mt-2" style="display: none;">
                                 <label>Opsi Output</label>
-                                <input type="text" name="opsi_output[]" class="form-control">
+                                <input type="text" name="opsi_output[]" class="form-control" placeholder="e.g. Positive, Negative">
                             </div>
 
                             <div class="urutan-wrapper mt-2" style="display: none;">
                                 <label>Urutan</label>
-                                <input type="text" name="urutan[]" class="form-control">
+                                <input type="text" name="urutan[]" class="form-control" placeholder="e.g. 1">
                             </div>
                         </div>
                     </div>

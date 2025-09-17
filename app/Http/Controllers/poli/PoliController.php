@@ -34,6 +34,7 @@ class PoliController extends Controller
         $request->validate([
             'kode' => 'required',
             'nama_poli' => 'required|unique:polis,nama_poli',
+            'status' => 'required',
 
         ]);
         Poli::create($request->all());
@@ -65,12 +66,14 @@ class PoliController extends Controller
         $request->validate([
             'kode' => 'required',
             'nama_poli' => 'required',
+            'status' => 'required',
         ]);
 
         $polis = Poli::findOrfail($id);
         // dd($id);
         $polis->kode = $request->kode;
         $polis->nama_poli = $request->nama_poli;
+        $polis->status = $request->status;
         $polis->save();
 
         toast('Data Berhasil di Update', 'success');

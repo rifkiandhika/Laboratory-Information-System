@@ -445,13 +445,13 @@
                         <tr>
                             <td>Asal Pasien</td>
                             <td>:</td>
-                            <td>-</td>
+                            <td>{{ $data_pasien->asal_ruangan }}</td>
                             <td>Pengirim</td>
                             <td>:</td>
                             <td>{{ $data_pasien->dokter_external ?? '-'}}</td>
                         </tr>
                         <tr>
-                            <td>Dokter Pemeriksa</td>
+                            <td>Dokter Internal</td>
                             <td>:</td>
                             <td colspan="4">{{ $data_pasien->kode_dokter ?? '-'}}</td>
                         </tr>
@@ -468,134 +468,146 @@
         
         <div class="hasil-pemeriksaan p-0">
             <div id="tabel-pemeriksaan" class="table-responsive">
-                <table class="table table-sm" id="worklistTable">
-                    <thead style="border-top: 1px solid black; border-bottom: 1px solid black">
-                        <tr>
-                            <th style="width: 35%; padding: 3px; font-size: 10px">Jenis Pemeriksaan</th>
-                            <th style="width: 20%; padding: 3px; font-size: 10px">Hasil</th>
-                            <th style="width: 10%; padding: 3px; font-size: 10px">Flag</th>
-                            <th class="text-center" style="width: 15%; padding: 3px; font-size: 10px">Satuan</th>
-                            <th class="text-center" style="width: 20%; padding: 3px; font-size: 10px">Nilai Rujukan</th>
-                        </tr>
-                    </thead>
-                    <tbody id="hasil-tbody">
-                        @foreach ($hasil_pemeriksaans->groupBy('department') as $department => $hasil_group)
+        <table class="table table-sm" id="worklistTable">
+        <thead style="border-top: 1px solid black; border-bottom: 1px solid black">
+            <tr>
+                <th style="width: 35%; padding: 3px; font-size: 10px">Jenis Pemeriksaan</th>
+                <th style="width: 20%; padding: 3px; font-size: 10px">Hasil</th>
+                <th style="width: 10%; padding: 3px; font-size: 10px">Flag</th>
+                <th class="text-center" style="width: 15%; padding: 3px; font-size: 10px">Satuan</th>
+                <th class="text-center" style="width: 20%; padding: 3px; font-size: 10px">Nilai Rujukan</th>
+            </tr>
+        </thead>
+         <tbody id="hasil-tbody">
+                @foreach ($hasil_pemeriksaans->groupBy('department') as $department => $hasil_group)
+                    {{-- Judul Department --}}
+                    <tr>
+                        <th colspan="5" style="font-size: 9px; font-weight: 900;">
+                            <b><strong>{{ strtoupper($department) }}</strong></b>
+                        </th>
+                    </tr>
+
+                    {{-- Group by judul supaya tidak duplicate --}}
+                    @foreach ($hasil_group->groupBy('judul') as $judul => $group_by_judul)
+                        @if($judul)
                             <tr>
-                                <th colspan="5" style="font-size: 9px; font-weight: 900;"><b><strong>{{ strtoupper($department) }}</strong></b></th>
+                                <td style="font-size: 9px;" colspan="5"><b>‎ ‎{{ $judul ?? '' }}</b></td>
                             </tr>
-                            @foreach ($hasil_group as $hasil)
-                                @php
-                                    if (strtolower($hasil->nama_pemeriksaan) === strtolower($department)) {
-                                        continue;
+                        @endif
+
+                        {{-- Loop data hasil berdasarkan judul --}}
+                        @foreach ($group_by_judul as $hasil)
+                            @php
+                                if (strtolower($hasil->nama_pemeriksaan) === strtolower($department)) {
+                                    continue;
+                                }
+
+                                $rujukanDefaults = [
+                                    'WBC' => 'L. 4.0-10.0 P. 4.0-10.0',
+                                    'LYM#' => '1.0-4.0',
+                                    'MID#' => '0.2-0.8',
+                                    'GRAN#' => '2.0-7.0',
+                                    'LYM%' => '20-40',
+                                    'MID%' => '3-15',
+                                    'GRAN%' => '50-70',
+                                    'RBC' => 'L. 4.5-6.5 P. 3.0-6.0',
+                                    'HGB' => 'L. 13.3-17.0 P. 11.7-15.7',
+                                    'HCT' => 'L. 40-50 P. 36-46',
+                                    'MCV' => '80-100',
+                                    'MCH' => '27-33',
+                                    'MCHC' => '32-36',
+                                    'RDW-CV' => '11.5-14.5',
+                                    'RDW-SD' => '39-46',
+                                    'PLT' => '150-350',
+                                    'MPV' => '7-11',
+                                    'PDW' => '10-18',
+                                    'PCT' => '0.15-0.50',
+                                    'P-LCC' => '30-90',
+                                    'P-LCR' => '13-43',
+
+                                    'Salmonella Typhi H' => 'Negatif',
+                                    'Salmonella Typhi O' => 'Negatif',
+                                    'Salmonella Paratyphi AO' => 'Negatif',
+                                    'Salmonella Paratyphi BO' => 'Negatif',
+
+                                    'Warna' => 'Kuning',
+                                    'Kekeruhan' => 'Jernih',
+                                    'Berat Jenis' => '1.003-1.035',
+
+                                    'PH' => '4.5-8.0',
+                                    'Leukosit' => 'Negatif',
+                                    'Nitrit' => 'Negatif',
+                                    'Protein' => 'Negatif',
+                                    'Glukosa' => 'Negatif',
+                                    'Keton' => 'Negatif',
+                                    'Urobilinogen' => 'Negatif',
+                                    'Bilirubin' => 'Negatif',
+                                    'Blood' => 'Negatif',
+
+                                    'Eritrosit' => '0-2 /lpb',
+                                    'Leukosit_sedimen' => '0-5 /lpb',
+                                    'Epithel' => 'Tidak ada - Sedikit',
+                                    'Silinder' => 'Tidak ada',
+                                    'Kristal' => 'Tidak ada',
+                                    'Bakteri' => 'Tidak ada',
+                                    'Jamur' => 'Tidak ada',
+                                    'Lain-lain' => '-'
+                                ];
+
+                                $jenis_kelamin = strtolower($data_pasien->jenis_kelamin);
+
+                                $raw_rujukan = $nilai_rujukan_map[$hasil->nama_pemeriksaan] 
+                                    ?? $rujukanDefaults[$hasil->nama_pemeriksaan] 
+                                    ?? $hasil->range 
+                                    ?? null;
+
+                                $nilai_rujukan = '';
+
+                                if ($raw_rujukan) {
+                                    $raw_rujukan = preg_replace('/\s+/', ' ', trim($raw_rujukan));
+
+                                    preg_match('/L\.\s*([\d\.,\-–]+)/i', $raw_rujukan, $match_l);
+                                    preg_match('/P\.\s*([\d\.,\-–]+)/i', $raw_rujukan, $match_p);
+
+                                    if ($jenis_kelamin === 'laki-laki' && isset($match_l[1])) {
+                                        $nilai_rujukan = trim($match_l[1]);
+                                    } elseif ($jenis_kelamin === 'perempuan' && isset($match_p[1])) {
+                                        $nilai_rujukan = trim($match_p[1]);
                                     }
-                                    
-                                    $rujukanDefaults = [
-                                        'WBC' => 'L. 4.0-10.0 P. 4.0-10.0',
-                                        'LYM#' => '1.0-4.0',
-                                        'MID#' => '0.2-0.8',
-                                        'GRAN#' => '2.0-7.0',
-                                        'LYM%' => '20-40',
-                                        'MID%' => '3-15',
-                                        'GRAN%' => '50-70',
-                                        'RBC' => 'L. 4.5-6.5 P. 3.0-6.0',
-                                        'HGB' => 'L. 13.3-17.0 P. 11.7-15.7',
-                                        'HCT' => 'L. 40-50 P. 36-46',
-                                        'MCV' => '80-100',
-                                        'MCH' => '27-33',
-                                        'MCHC' => '32-36',
-                                        'RDW-CV' => '11.5-14.5',
-                                        'RDW-SD' => '39-46',
-                                        'PLT' => '150-350',
-                                        'MPV' => '7-11',
-                                        'PDW' => '10-18',
-                                        'PCT' => '0.15-0.50',
-                                        'P-LCC' => '30-90',
-                                        'P-LCR' => '13-43',
-                                        
-                                        'Salmonella Typhi H' => 'Negatif',
-                                        'Salmonella Typhi O' => 'Negatif',
-                                        'Salmonella Paratyphi AO' => 'Negatif',
-                                        'Salmonella Paratyphi BO' => 'Negatif',
-                                        
-                                        'Warna' => 'Kuning',
-                                        'Kekeruhan' => 'Jernih',
-                                        'Berat Jenis' => '1.003-1.035',
-                                        
-                                        'PH' => '4.5-8.0',
-                                        'Leukosit' => 'Negatif',
-                                        'Nitrit' => 'Negatif',
-                                        'Protein' => 'Negatif',
-                                        'Glukosa' => 'Negatif',
-                                        'Keton' => 'Negatif',
-                                        'Urobilinogen' => 'Negatif',
-                                        'Bilirubin' => 'Negatif',
-                                        'Blood' => 'Negatif',
-                                        
-                                        'Eritrosit' => '0-2 /lpb',
-                                        'Leukosit_sedimen' => '0-5 /lpb',
-                                        'Epithel' => 'Tidak ada - Sedikit',
-                                        'Silinder' => 'Tidak ada',
-                                        'Kristal' => 'Tidak ada',
-                                        'Bakteri' => 'Tidak ada',
-                                        'Jamur' => 'Tidak ada',
-                                        'Lain-lain' => '-'
-                                    ];
 
-                                    $jenis_kelamin = strtolower($data_pasien->jenis_kelamin);
-
-                                    $raw_rujukan = $nilai_rujukan_map[$hasil->nama_pemeriksaan] 
-                                        ?? $rujukanDefaults[$hasil->nama_pemeriksaan] 
-                                        ?? $hasil->range 
-                                        ?? null;
-
-                                    $nilai_rujukan = '';
-
-                                    if ($raw_rujukan) {
-                                        // Bersihkan spasi ganda biar konsisten
-                                        $raw_rujukan = preg_replace('/\s+/', ' ', trim($raw_rujukan));
-
-                                        // Regex lebih fleksibel (boleh ada spasi)
-                                        preg_match('/L\.\s*([\d\.,\-–]+)/i', $raw_rujukan, $match_l);
-                                        preg_match('/P\.\s*([\d\.,\-–]+)/i', $raw_rujukan, $match_p);
-
-                                        if ($jenis_kelamin === 'laki-laki' && isset($match_l[1])) {
-                                            $nilai_rujukan = trim($match_l[1]);
-                                        } elseif ($jenis_kelamin === 'perempuan' && isset($match_p[1])) {
-                                            $nilai_rujukan = trim($match_p[1]);
-                                        }
-
-                                        // Kalau tidak ada L/P, langsung tampilkan apa adanya
-                                        if (empty($nilai_rujukan) && !str_contains($raw_rujukan, 'L.') && !str_contains($raw_rujukan, 'P.')) {
-                                            $nilai_rujukan = $raw_rujukan;
-                                        }
+                                    if (empty($nilai_rujukan) && !str_contains($raw_rujukan, 'L.') && !str_contains($raw_rujukan, 'P.')) {
+                                        $nilai_rujukan = $raw_rujukan;
                                     }
-                                @endphp
-                                @php
-                                    $hematologiMapping = [
-                                        'WBC'   => 'Leukosit',
-                                        'LYM#'  => 'LYM#',
-                                        'MID#'  => 'MID#',
-                                        'GRAN#' => 'GRAN#',
-                                        'LYM%'  => 'Limfosit',
-                                        'MID%'  => 'Monosit',
-                                        'GRAN%' => 'Granulosit',
-                                        'RBC'   => 'Eritrosit',
-                                        'HGB'   => 'Hemoglobin',
-                                        'HCT'   => 'Hematokrit',
-                                        'MCV'   => 'MCV',
-                                        'MCH'   => 'MCH',
-                                        'MCHC'  => 'MCHC',
-                                        'RDW-CV'=> 'RDW-CV',
-                                        'RDW-SD'=> 'RDW-SD',
-                                        'PLT'   => 'Trombosit',
-                                        'MPV'   => 'MPV',
-                                        'PDW'   => 'PDW',
-                                        'PCT'   => 'PCT',
-                                        'P-LCR' => 'P-LCR',
-                                    ];
-                                @endphp
-                                <tr>
-                                <td><strong>‎ ‎ ‎ </strong>{{ $hematologiMapping[$hasil->nama_pemeriksaan] ?? $hasil->nama_pemeriksaan }}</td>
+                                }
+
+                                $hematologiMapping = [
+                                    'WBC'   => 'Leukosit',
+                                    'LYM#'  => 'LYM#',
+                                    'MID#'  => 'MID#',
+                                    'GRAN#' => 'GRAN#',
+                                    'LYM%'  => 'Limfosit',
+                                    'MID%'  => 'Monosit',
+                                    'GRAN%' => 'Granulosit',
+                                    'RBC'   => 'Eritrosit',
+                                    'HGB'   => 'Hemoglobin',
+                                    'HCT'   => 'Hematokrit',
+                                    'MCV'   => 'MCV',
+                                    'MCH'   => 'MCH',
+                                    'MCHC'  => 'MCHC',
+                                    'RDW-CV'=> 'RDW-CV',
+                                    'RDW-SD'=> 'RDW-SD',
+                                    'PLT'   => 'Trombosit',
+                                    'MPV'   => 'MPV',
+                                    'PDW'   => 'PDW',
+                                    'PCT'   => 'PCT',
+                                    'P-LCR' => 'P-LCR',
+                                ];
+                            @endphp
+
+                            <tr>
+                                <td>
+                                    <strong>‎ ‎ ‎ ‎</strong>{{ $hematologiMapping[$hasil->nama_pemeriksaan] ?? $hasil->nama_pemeriksaan }}
+                                </td>
                                 <td>
                                     @if($hasil->nama_pemeriksaan === 'WBC')
                                         {{ (strpos($hasil->hasil, '.') !== false && strlen(substr(strrchr($hasil->hasil, "."), 1)) == 2) 
@@ -617,12 +629,13 @@
                                 <td class="text-center">{{ $hasil->satuan ?? '-' }}</td>
                                 <td class="text-center">{{ $nilai_rujukan ?? '-' }}</td>
                             </tr>
-                            @endforeach
-                            @endforeach
-                        </tbody>
-                    </table>
-                    <hr>
-            </div>
+                        @endforeach
+                    @endforeach
+                @endforeach
+            </tbody>
+    </table>
+    <hr>
+</div>
         </div>
         
         @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->note)

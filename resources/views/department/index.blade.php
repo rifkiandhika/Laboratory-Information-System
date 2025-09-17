@@ -75,7 +75,7 @@
                                                     <td>{{ $Department->nama_department }}</td>
                                                     <td>
                                                         @foreach($Department->detailDepartments as $detail)
-                                                            <li>{{ $detail->kode }} - {{ $detail->nama_parameter }} - {{ $detail->nama_pemeriksaan }} - {{ $detail->harga }} - {{ $detail->nilai_statik }} - {{ $detail->nilai_satuan }}</li>
+                                                            <li>{{ $detail->kode }} - {{ $detail->judul }} - {{ $detail->nama_parameter }} - {{ $detail->nama_pemeriksaan }} - {{ $detail->harga }} - {{ $detail->nilai_statik }} - {{ $detail->nilai_satuan }}</li>
                                                         @endforeach
                                                     </td>
                                                     <td>

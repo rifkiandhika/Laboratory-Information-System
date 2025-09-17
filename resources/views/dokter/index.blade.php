@@ -1,260 +1,280 @@
 <title>Dokter</title>
 @extends('layouts.admin')
 @section('content')
-    <section>
-        <div class="content" id="scroll-content">
-            <div class="container-fluid">
-                <!-- Page Heading -->
-                <div class="d-sm-flex mb-3">
-                    <div class="row">
-                        <h1 class="h3 mb-0 text-gray-600">Doctor Data</h1>
-                    </div>
-                </div>
-
+<section>
+    <div class="content" id="scroll-content">
+        <div class="container-fluid">
+            <!-- Page Heading -->
+            <div class="d-sm-flex mb-3">
                 <div class="row">
-                    <div class="col-xl-12">
-                        <div class="card shadow mb-4">
-                            <div class="card-header py-3">
-                                <div class="d-flex justify-content-between">
-                                    <!-- Button trigger modal -->
-                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
-                                        data-bs-target="#exampleModal">
-                                        + Add Doctor
-                                    </button>
+                    <h1 class="h3 mb-0 text-gray-600">Doctor Data</h1>
+                </div>
+            </div>
 
-                                    <!-- Modal -->
-                                    <div class="modal fade" id="exampleModal" tabindex="-1"
-                                        aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel">Doctor</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                                </div>
-                                                <form action="{{ route('dokter.store') }}" method="post">
-                                                    @csrf
-                                                    <div class="modal-body">
-                                                        <div class="kodedokter">
-                                                            <label for="kode-dokter"><b>Doctor Code</b></label>
-                                                            <input class="form-control" placeholder="D01094" type="text"
-                                                                name="kode_dokter">
-                                                        </div>
-                                                        <div class="nip">
-                                                            <label for="nip"><b>NIP/NIK</b></label>
-                                                            <input class="form-control" placeholder="355102" type="text"
-                                                                name="nip">
-                                                        </div>
-                                                        <div class="namadokter">
-                                                            <label for="nama-dokter"><b>Doctor Name</b></label>
-                                                            <input class="form-control" placeholder="Abdul Mughni"
-                                                                type="text" name="nama_dokter">
-                                                        </div>
-                                                        <div class="poli">
-                                                            <label for="poli"><b>Room</b></label>
-                                                            <select name="id_poli" id="" class="form-control">
-                                                                <option value="" hidden>Room</option>
-                                                                @foreach ($polis as $Poli)
-                                                                    <option class="form-control"
-                                                                        value="{{ $Poli->id }}">
-                                                                        {{ $Poli->nama_poli }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                        <div class="Poli">
-                                                            <label for="Poli"><b>Poli</b></label>
-                                                            <input class="form-control" type="text" placeholder="KIA"
-                                                                name="poli" required>
-                                                        </div>
-                                                        <div class="no-telp">
-                                                            <label for="telp"><b>Phone Number</b></label>
-                                                            <input class="form-control" placeholder="08xxxxxx"
-                                                                type="number" name="no_telp">
-                                                        </div>
-                                                        <div class="email">
-                                                            <label for="email"><b>Email</b></label>
-                                                            <input class="form-control" placeholder="dokter@gmail.com"
-                                                                type="email" name="email">
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Close</button>
-                                                        <button type="submit" class="btn btn-primary">Save</button>
-                                                    </div>
-                                                </form>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <div class="d-flex justify-content-between">
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal">
+                                    + Add Doctor
+                                </button>
+
+                                <!-- Modal Add -->
+                                <div class="modal fade" id="exampleModal" tabindex="-1"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Doctor</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-bordered" id="myTable">
-                                        <thead style="font-size: 12px;">
-                                            <tr>
-                                                <th scope="col">No.</th>
-                                                <th scope="col">Doctor Code</th>
-                                                <th scope="col">Nip/Nik</th>
-                                                <th scope="col">Doctor Name</th>
-                                                <th scope="col">Room</th>
-                                                <th scope="col">Poli</th>
-                                                <th scope="col">Phone Number</th>
-                                                <th scope="col">Email</th>
-                                                <th scope="col">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody style="font-size: 14px">
-                                            @php
-                                        $counter = 1; // Inisialisasi counter untuk nomor urut
-                                    @endphp
-                                            @foreach ($dokters as $dokter)
-                                                <tr>
-                                                    <td>{{ $counter }}</td>
-                                                    <td>{{ $dokter->kode_dokter }}</td>
-                                                    <td>{{ $dokter->nip }}</td>
-                                                    <td>{{ $dokter->nama_dokter }}</td>
-                                                    <td>{{ $dokter->polis->nama_poli }}</td>
-                                                    <td>{{ $dokter->poli}}</td>
-                                                    <td>{{ $dokter->no_telp }}</td>
-                                                    <td>{{ $dokter->email }}</td>
-                                                    <td>
-                                                        <button class="btn btn-success btn-edit"
-                                                            data-id="{{ $dokter->id }}"
-                                                            data-kode="{{ $dokter->kode_dokter }}"
-                                                            data-nama="{{ $dokter->nama_dokter }}"
-                                                            data-room="{{ $dokter->polis->id }}"
-                                                            data-poli="{{ $dokter->poli }}"
-                                                            data-nip="{{ $dokter->nip }}"
-                                                            data-telp="{{ $dokter->no_telp }}"
-                                                            data-email="{{ $dokter->email }}"><i
-                                                                class="bi bi-pencil-square"></i>
-                                                            Edit</button>
-                                                        {{-- Delete --}}
-                                                        <form id="delete-form-{{ $dokter->id }}"
-                                                            action="{{ route('dokter.destroy', $dokter->id) }}"
-                                                            method="POST" style="display: none;">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                        </form>
-                                                        <button class="btn btn-danger"
-                                                            onclick="confirmDelete({{ $dokter->id }})"><i
-                                                                class="bi bi-trash"></i> Delete</button>
-                                                    </td>
-
-                                                </tr>
-                                                @php $counter++; @endphp
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                    {{-- Edit Dokter --}}
-                                    <div class="modal fade" id="editDokter" tabindex="-1" role="dialog"
-                                        aria-labelledby="editModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="editModalLabel">Doctor Edit</h5>
-                                                    <button type="button" class="close" data-bs-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <form id="editFormdokter" method="post">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <div class="modal-body">
-                                                        <div class="kodedokter">
-                                                            <label for="kodedokter"><b>Doctor Code</b></label>
-                                                            <input class="form-control" type="text" id="kodedokter"
-                                                                name="kode_dokter" required>
-                                                        </div>
-                                                        <div class="nip">
-                                                            <label for="nip"><b>NIP/NIK</b></label>
-                                                            <input class="form-control" placeholder="355102" type="text" id="Nip"
-                                                                name="nip">
-                                                        </div>
-                                                        <div class="namadokter">
-                                                            <label for="namadokter"><b>Doctor Name</b></label>
-                                                            <input class="form-control" id="namadokter" type="text"
-                                                                name="nama_dokter" required>
-                                                        </div>
-                                                        <div class="poli">
-                                                            <label for="poli"><b>Room</b></label>
-                                                            <select name="id_poli" id="Room" class="form-control">
-                                                                <option value="" hidden selected>
+                                            <form action="{{ route('dokter.store') }}" method="post">
+                                                @csrf
+                                                <div class="modal-body">
+                                                    <div class="form-group">
+                                                        <label><b>Doctor Code</b></label>
+                                                        <input class="form-control" placeholder="D01094" type="text"
+                                                            name="kode_dokter" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label><b>NIP/NIK</b></label>
+                                                        <input class="form-control" placeholder="355102" type="text"
+                                                            name="nip" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label><b>Doctor Name</b></label>
+                                                        <input class="form-control" placeholder="Abdul Mughni"
+                                                            type="text" name="nama_dokter" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label><b>Room</b></label>
+                                                        <select name="id_poli" class="form-control" required>
+                                                            <option value="" hidden>Room</option>
+                                                            @foreach ($polis as $Poli)
+                                                                <option value="{{ $Poli->id }}">
+                                                                    {{ $Poli->nama_poli }}
                                                                 </option>
-                                                                @foreach ($polis as $Poli)
-                                                                    <option class="form-control"
-                                                                        value="{{ $Poli->id }}">
-                                                                        {{ $Poli->nama_poli }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-
-                                                        </div>
-                                                        <div class="Poli">
-                                                            <label for="Poli"><b>Poli</b></label>
-                                                            <input class="form-control" id="Poli" type="text"
-                                                                name="poli" required>
-                                                        </div>
-                                                        <div class="no-telp">
-                                                            <label for="poli"><b>Phone Number</b></label>
-                                                            <input class="form-control" id="telp" type="number"
-                                                                name="no_telp" required>
-                                                        </div>
-                                                        <div class="email">
-                                                            <label for="email"><b>Email</b></label>
-                                                            <input class="form-control" id="email" type="email"
-                                                                name="email" required>
-                                                        </div>
+                                                            @endforeach
+                                                        </select>
                                                     </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Close</button>
-                                                        <button type="submit" class="btn btn-primary">Save</button>
+                                                    <div class="form-group">
+                                                        <label><b>Poli</b></label>
+                                                        <input class="form-control" type="text" placeholder="KIA"
+                                                            name="poli" required>
                                                     </div>
-                                                </form>
-                                            </div>
+                                                    <div class="form-group">
+                                                        <label><b>Phone Number</b></label>
+                                                        <input class="form-control" placeholder="08xxxxxx"
+                                                            type="number" name="no_telp" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label><b>Email</b></label>
+                                                        <input class="form-control" placeholder="dokter@gmail.com"
+                                                            type="email" name="email" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label><b>Status</b></label>
+                                                        <select name="status" class="form-control" required>
+                                                            <option value="" selected hidden>Choose..</option>
+                                                            <option value="internal">Internal</option>
+                                                            <option value="external">External</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Save</button>
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
-                                    {{-- Edit Dokter --}}
                                 </div>
+                                <!-- End Modal Add -->
                             </div>
                         </div>
 
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered" id="myTable">
+                                    <thead style="font-size: 12px;">
+                                        <tr>
+                                            <th scope="col">No.</th>
+                                            <th scope="col">Doctor Code</th>
+                                            <th scope="col">Nip/Nik</th>
+                                            <th scope="col">Doctor Name</th>
+                                            <th scope="col">Room</th>
+                                            <th scope="col">Poli</th>
+                                            <th scope="col">Phone Number</th>
+                                            <th scope="col">Email</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="font-size: 14px">
+                                        @php $counter = 1; @endphp
+                                        @foreach ($dokters as $dokter)
+                                            <tr>
+                                                <td>{{ $counter }}</td>
+                                                <td>{{ $dokter->kode_dokter }}</td>
+                                                <td>{{ $dokter->nip }}</td>
+                                                <td>{{ $dokter->nama_dokter }}</td>
+                                                <td>{{ $dokter->polis->nama_poli }}</td>
+                                                <td>{{ $dokter->poli }}</td>
+                                                <td>{{ $dokter->no_telp }}</td>
+                                                <td>{{ $dokter->email }}</td>
+                                                <td>{{ $dokter->status }}</td>
+                                                <td>
+                                                    <button class="btn btn-success btn-edit"
+                                                        data-id="{{ $dokter->id }}"
+                                                        data-kode="{{ $dokter->kode_dokter }}"
+                                                        data-nama="{{ $dokter->nama_dokter }}"
+                                                        data-room="{{ $dokter->polis->id }}"
+                                                        data-poli="{{ $dokter->poli }}"
+                                                        data-nip="{{ $dokter->nip }}"
+                                                        data-telp="{{ $dokter->no_telp }}"
+                                                        data-email="{{ $dokter->email }}"
+                                                        data-status="{{ $dokter->status }}">
+                                                        <i class="bi bi-pencil-square"></i> Edit
+                                                    </button>
 
-    </section>
+                                                    {{-- Delete --}}
+                                                    <form id="delete-form-{{ $dokter->id }}"
+                                                        action="{{ route('dokter.destroy', $dokter->id) }}"
+                                                        method="POST" style="display: none;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+                                                    <button class="btn btn-danger"
+                                                        onclick="confirmDelete({{ $dokter->id }})"><i
+                                                            class="bi bi-trash"></i> Delete</button>
+                                                </td>
+                                            </tr>
+                                            @php $counter++; @endphp
+                                        @endforeach
+                                    </tbody>
+                                </table>
+
+                                <!-- Modal Edit -->
+                                <div class="modal fade" id="editDokter" tabindex="-1" role="dialog"
+                                    aria-labelledby="editModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="editModalLabel">Doctor Edit</h5>
+                                                <button type="button" class="close" data-bs-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <form id="editFormdokter" method="post">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="modal-body">
+                                                    <div class="form-group">
+                                                        <label><b>Doctor Code</b></label>
+                                                        <input class="form-control" type="text" id="kodedokter"
+                                                            name="kode_dokter" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label><b>NIP/NIK</b></label>
+                                                        <input class="form-control" id="Nip" type="text"
+                                                            name="nip" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label><b>Doctor Name</b></label>
+                                                        <input class="form-control" id="namadokter" type="text"
+                                                            name="nama_dokter" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label><b>Room</b></label>
+                                                        <select name="id_poli" id="Room" class="form-control" required>
+                                                            <option value="" hidden></option>
+                                                            @foreach ($polis as $Poli)
+                                                                <option value="{{ $Poli->id }}">
+                                                                    {{ $Poli->nama_poli }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label><b>Poli</b></label>
+                                                        <input class="form-control" id="Poli" type="text"
+                                                            name="poli" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label><b>Phone Number</b></label>
+                                                        <input class="form-control" id="telp" type="number"
+                                                            name="no_telp" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label><b>Email</b></label>
+                                                        <input class="form-control" id="email" type="email"
+                                                            name="email" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label><b>Status</b></label>
+                                                        <select class="form-control" name="status" id="EditStatus" required>
+                                                            <option value="" hidden>Choose..</option>
+                                                            <option value="internal">Internal</option>
+                                                            <option value="external">External</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Save</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End Modal Edit -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 @endsection
 
 @push('script')
-    <script>
-        $(function() {
-            $('.btn-edit').on('click', function() {
-                var id = $(this).data('id');
-                var kode = $(this).data('kode');
-                var nama = $(this).data('nama');
-                var poli = $(this).data('poli');
-                var room = $(this).data('room');
-                var nip = $(this).data('nip');
-                var telp = $(this).data('telp');
-                var email = $(this).data('email');
+<script>
+    $(function() {
+        $('.btn-edit').on('click', function() {
+            let id = $(this).data('id');
+            let kode = $(this).data('kode');
+            let nama = $(this).data('nama');
+            let poli = $(this).data('poli');
+            let room = $(this).data('room');
+            let nip = $(this).data('nip');
+            let telp = $(this).data('telp');
+            let email = $(this).data('email');
+            let status = $(this).data('status');
 
-                // set the values modal
-                $('#kodedokter').val(kode);
-                $('#Nip').val(nip);
-                $('#namadokter').val(nama);
-                $('#Room').val(room);
-                $('#Poli').val(poli);
-                $('#telp').val(telp);
-                $('#email').val(email);
+            // Set nilai ke form edit
+            $('#kodedokter').val(kode);
+            $('#Nip').val(nip);
+            $('#namadokter').val(nama);
+            $('#Room').val(room);
+            $('#Poli').val(poli);
+            $('#telp').val(telp);
+            $('#email').val(email);
+            $('#EditStatus').val(status);
 
-                // Form edit 
-                $('#editFormdokter').attr('action', '/dokter/' + id);
+            // Update action form
+            $('#editFormdokter').attr('action', '/dokter/' + id);
 
-                // show the modal
-                $('#editDokter').modal('show');
-            });
-        })
-    </script>
+            // Show modal
+            $('#editDokter').modal('show');
+        });
+    })
+</script>
 @endpush

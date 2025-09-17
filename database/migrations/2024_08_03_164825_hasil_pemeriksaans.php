@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('ruangan');
             $table->string('nama_dokter');
             $table->string('department')->nullable();
+            $table->string('judul')->nullable();
             $table->string('nama_pemeriksaan');
             $table->string('hasil');
             $table->string('note')->nullable();

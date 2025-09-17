@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('poli');
             $table->string('no_telp');
             $table->string('email');
+            $table->string('status');
             $table->timestamps();
 
 

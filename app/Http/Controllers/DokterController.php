@@ -39,6 +39,7 @@ class DokterController extends Controller
             'nip' => 'required',
             'id_poli' => 'required',
             'poli' => 'required',
+            'status' => 'required',
             'no_telp' => 'required|unique:dokters,no_telp',
             'email' => 'required|unique:dokters,email'
         ]);
@@ -74,6 +75,7 @@ class DokterController extends Controller
             'nama_dokter' => 'required',
             'id_poli' => 'required',
             'poli' => 'required',
+            'status' => 'required',
             'no_telp' => ['required', Rule::unique('dokters')->ignore($id)],
             'email' => ['required', Rule::unique('dokters')->ignore($id)],
         ]);
@@ -85,6 +87,7 @@ class DokterController extends Controller
         $dokters->nama_dokter = $request->nama_dokter;
         $dokters->id_poli = $request->id_poli;
         $dokters->poli = $request->poli;
+        $dokters->status = $request->status;
         $dokters->no_telp = $request->no_telp;
         $dokters->email = $request->email;
         $dokters->save();

@@ -45,6 +45,7 @@ class DepartmentController extends Controller
         $request->validate([
             'nama_department' => 'required|unique:departments,nama_department',
             'kode*' => 'required', // Memastikan kode_hidden diterima
+            'judul.*' => 'nullable',
             'nama_parameter.*' => 'required',
             'nama_pemeriksaan.*' => 'required',
             'harga.*' => 'required',
@@ -77,6 +78,7 @@ class DepartmentController extends Controller
             // Pastikan semua data ada untuk setiap index
             if (
                 isset($request->kode[$x]) &&
+                isset($request->judul[$x]) &&
                 isset($request->nama_parameter[$x]) &&
                 isset($request->nama_pemeriksaan[$x]) &&
                 isset($request->harga[$x]) &&
@@ -92,14 +94,15 @@ class DepartmentController extends Controller
                 try {
                     $departments->detailDepartments()->create([
                         'kode' => $request->kode[$x], // Menggunakan kode_hidden
+                        'judul' => $request->judul[$x] ?? null,
                         'nama_parameter' => $request->nama_parameter[$x],
                         'nama_pemeriksaan' => $request->nama_pemeriksaan[$x],
                         'harga' => $request->harga[$x],
-                        'jasa_sarana' => $request->jasa_sarana[$x] ?? null, // Nullable jika tidak ada
-                        'jasa_pelayanan' => $request->jasa_pelayanan[$x] ?? null,
-                        'jasa_dokter' => $request->jasa_dokter[$x] ?? null,
-                        'jasa_bidan' => $request->jasa_bidan[$x] ?? null,
-                        'jasa_perawat' => $request->jasa_perawat[$x] ?? null,
+                        'jasa_sarana' => $request->jasa_sarana[$x] ?? 0, // Nullable jika tidak ada
+                        'jasa_pelayanan' => $request->jasa_pelayanan[$x] ?? 0,
+                        'jasa_dokter' => $request->jasa_dokter[$x] ?? 0,
+                        'jasa_bidan' => $request->jasa_bidan[$x] ?? 0,
+                        'jasa_perawat' => $request->jasa_perawat[$x] ?? 0,
                         'nilai_rujukan' => $request->nilai_rujukan[$x],
                         'nilai_satuan' => $request->nilai_satuan[$x],
                         'status' => $request->status[$x],
@@ -177,6 +180,7 @@ class DepartmentController extends Controller
                         if ($detail) {
                             $detail->update([
                                 'kode' => $request->kode[$index] ?? '',
+                                'judul' => $request->judul[$index] ?? '',
                                 'nama_parameter' => $request->nama_parameter[$index] ?? '',
                                 'nama_pemeriksaan' => $request->nama_pemeriksaan[$index] ?? '',
                                 'harga' => $request->harga[$index] ?? 0,
@@ -209,6 +213,7 @@ class DepartmentController extends Controller
                     DetailDepartment::create([
                         'department_id' => $department->id,
                         'kode' => $request->kode[$i] ?? '',
+                        'judul' => $request->judul[$i] ?? '',
                         'nama_parameter' => $request->nama_parameter[$i],
                         'nama_pemeriksaan' => $request->nama_pemeriksaan[$i] ?? '',
                         'harga' => $request->harga[$i] ?? 0,

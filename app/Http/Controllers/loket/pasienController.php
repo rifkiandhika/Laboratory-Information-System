@@ -25,6 +25,7 @@ use App\Models\DetailDepartment;
 use App\Models\dokter;
 use App\Models\McuPackage;
 use App\Models\Pemeriksaan;
+use App\Models\Poli;
 use App\Models\Report;
 use Carbon\Carbon;
 use Exception;
@@ -56,7 +57,20 @@ class pasienController extends Controller
     public function create()
     {
         $data['departments']  = Department::with('pemeriksaan')->get();
-        $data['dokters']      = Dokter::with('polis')->get();
+
+        // filter dokter berdasarkan status
+        $data['dokterInternal'] = Dokter::with('polis')
+            ->where('status', 'internal')
+            ->get();
+
+        $data['dokterExternal'] = Dokter::with('polis')
+            ->where('status', 'external')
+            ->get();
+
+        // filter poli berdasarkan status
+        $data['poliInternal'] = Poli::where('status', 'internal')->get();
+        $data['poliExternal'] = Poli::where('status', 'external')->get();
+
         $data['mcuPackages']  = McuPackage::with('detailDepartments')
             ->where('status', 'active')
             ->get();
@@ -64,9 +78,7 @@ class pasienController extends Controller
         // ✅ Generate nomor lab unik
         $tanggal = date('dmy');
         do {
-            // 4 digit angka random
             $random = str_pad(rand(0, 999), 3, '0', STR_PAD_LEFT);
-
             $noLab = 'LAB' . $tanggal . $random;
         } while (Pasien::where('no_lab', $noLab)->exists());
 
@@ -74,6 +86,8 @@ class pasienController extends Controller
 
         return view('loket.tambah-pasien', $data);
     }
+
+
 
 
 

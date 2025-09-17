@@ -83,6 +83,7 @@ class worklistController extends Controller
             'satuan.*' => 'nullable',
             'department.*' => 'required',
             'flag.*' => 'nullable', // ⬅️ tambahan
+            'judul.*' => 'nullable', // ⬅️ tambahan
             'note' => 'nullable',
         ]);
 
@@ -103,6 +104,7 @@ class worklistController extends Controller
         $d3 = $request->input('duplo_d3', []);
         $nilai_rujukan = $request->input('nilai_rujukan', []);
         $satuans = $request->input('satuan', []);
+        $judul = $request->input('judul', []);
         $flags = $request->input('flag', []);
         $departments = $request->input('department', []);
         $note = $request->input('note'); // Note adalah string, bukan array
@@ -187,6 +189,7 @@ class worklistController extends Controller
                     'range' => $nilai_rujukan[$index] ?? null, // Gunakan field range yang sudah ada
                     'satuan' => $satuans[$index] ?? null,
                     'flag' => $flags[$index] ?? null,
+                    'judul' => $judul[$index] ?? null,
                     'department' => $departments[$index] ?? null,
                     'note' => $note ?? null,
                 ];

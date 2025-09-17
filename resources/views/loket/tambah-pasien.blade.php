@@ -83,24 +83,33 @@
                                     </div>
                                     <div class="col-md-6 mb-6">
                                         <label for="doctorSelect" class="fw-bold">Doctor Internal</label>
-                                        <select class="form-select" id="doctorSelect" name="dokter_internal" >
-                                            <option hidden>Choose...</option>
-                                            @foreach ($dokters as $dokter)
+                                        <select class="form-select" id="doctorSelect" name="dokter_internal">
+                                            <option value="" hidden>Choose...</option>
+                                            @foreach ($dokterInternal as $dokter)
                                                 <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }}</option>
                                             @endforeach
-                                            <option value="external">Lainnya...</option>
                                         </select>
                                     </div>
-                                    
+
                                     <div class="col-md-6 mb-6">
-                                        <label for="external_doctor" class="fw-bold">Pengirim</label>
-                                        <input type="text" class="form-control" name="dokter_external" placeholder="e.g Abdul Mughni">
+                                        <label for="externalDoctorSelect" class="fw-bold">Doctor External</label>
+                                        <select class="form-select" id="externalDoctorSelect" name="dokter_external">
+                                            <option value="" hidden>Choose...</option>
+                                            @foreach ($dokterExternal as $dokter)
+                                                <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                                                         
                                     <div class="col-md-6 mb-6">
-                                        <label for="name" class="fw-bold">Room</label>
-                                        <input type="text " class="form-control"
-                                            name="asal_ruangan" placeholder="Add Room">
+                                        <label for="asal_ruangan" class="fw-bold">Room</label>
+                                        <select class="form-select" id="asal_ruangan" name="asal_ruangan">
+                                            <option value="" hidden>Choose...</option>
+                                            @foreach ($poliInternal as $poli)
+                                                <option value="{{ $poli->nama_poli }}">{{ $poli->nama_poli }}</option>
+                                            @endforeach
+                                            <option value="lainnya">Lainnya...</option>
+                                        </select>
                                     </div>
                                     <div class="col-md-6 mb-6">
                                         <label for="name" class="fw-bold">Diagnosis</label>
@@ -488,4 +497,32 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const asalRuangan = document.getElementById("asal_ruangan");
+
+        // Simpan opsi internal & external ke dalam variabel JS
+        const internalOptions = `
+            @foreach ($poliInternal as $poli)
+                <option value="{{ $poli->nama_poli }}">{{ $poli->nama_poli }}</option>
+            @endforeach
+            <option value="lainnya">Lainnya...</option>
+        `;
+
+        const externalOptions = `
+            @foreach ($poliExternal as $poli)
+                <option value="{{ $poli->nama_poli }}">{{ $poli->nama_poli }}</option>
+            @endforeach
+            <option value="internal">Kembali ke Internal</option>
+        `;
+
+        asalRuangan.addEventListener("change", function () {
+            if (this.value === "lainnya") {
+                this.innerHTML = `<option value="" hidden>Choose...</option>` + externalOptions;
+            } else if (this.value === "internal") {
+                this.innerHTML = `<option value="" hidden>Choose...</option>` + internalOptions;
+            }
+        });
+    });
+</script>
 @endpush
