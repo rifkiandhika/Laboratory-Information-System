@@ -213,44 +213,87 @@ Edit Department
 @push('script')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    
     // ===== HANDLER CHECKBOX =====
     function setupCheckboxHandlers() {
-        handleCheckboxGroup('status');
-        handleCheckboxGroup('barcode'); 
-        handleCheckboxGroup('permission');
-        handleCheckboxGroup('handling');
-    }
-    
-    function handleCheckboxGroup(groupName) {
-        // Handle checkbox yang sudah ada (dari data existing)
-        document.querySelectorAll(`input[name^="${groupName}["]`).forEach(function(checkbox) {
+        // Handler untuk data existing
+        document.querySelectorAll('input[name^="status["], input[name^="barcode["], input[name^="permission["], input[name^="handling["]').forEach(function(checkbox) {
             if (checkbox.type === 'checkbox') {
-                const index = checkbox.name.match(/\[(\d+)\]/)[1];
-                const hiddenInput = document.querySelector(`input[name="${groupName}_hidden[${index}]"]`);
+                const name = checkbox.name;
+                const matches = name.match(/(\w+)\[(\d+)\]/);
                 
-                checkbox.addEventListener('change', function() {
+                if (matches) {
+                    const fieldName = matches[1];
+                    const index = matches[2];
+                    const hiddenInput = document.querySelector(`input[name="${fieldName}_hidden[${index}]"]`);
+                    
+                    checkbox.addEventListener('change', function() {
+                        if (hiddenInput) {
+                            hiddenInput.value = this.checked ? 'active' : 'deactive';
+                        }
+                    });
+                    
+                    // Set initial state
                     if (hiddenInput) {
-                        hiddenInput.value = this.checked ? 'active' : 'deactive';
+                        hiddenInput.value = checkbox.checked ? 'active' : 'deactive';
                     }
-                });
-                
-                // Set initial state
-                if (hiddenInput) {
-                    hiddenInput.value = checkbox.checked ? 'active' : 'deactive';
                 }
             }
         });
         
-        // Handle checkbox untuk row baru (dynamic)
-        document.querySelectorAll(`input[name="${groupName}[]"]`).forEach(function(checkbox) {
-            if (checkbox.type === 'checkbox') {
-                checkbox.addEventListener('change', function() {
-                    const hiddenInput = this.closest('td').querySelector(`input[name="${groupName}[]"][type="hidden"]`);
-                    if (hiddenInput) {
-                        hiddenInput.value = this.checked ? 'active' : 'deactive';
-                    }
-                });
+        // Handler untuk data baru
+        document.querySelectorAll('tr').forEach(function(row, index) {
+            if (row.querySelector('input[name="status[]"]')) {
+                // Handler untuk status
+                const statusCheckbox = row.querySelector('input[name="status[]"]');
+                const statusHidden = row.querySelector('input[name="status_hidden[]"]');
+                
+                if (statusCheckbox && statusHidden) {
+                    statusCheckbox.addEventListener('change', function() {
+                        statusHidden.value = this.checked ? 'active' : 'deactive';
+                    });
+                    
+                    // Set initial state
+                    statusHidden.value = statusCheckbox.checked ? 'active' : 'deactive';
+                }
+                
+                // Handler untuk barcode
+                const barcodeCheckbox = row.querySelector('input[name="barcode[]"]');
+                const barcodeHidden = row.querySelector('input[name="barcode_hidden[]"]');
+                
+                if (barcodeCheckbox && barcodeHidden) {
+                    barcodeCheckbox.addEventListener('change', function() {
+                        barcodeHidden.value = this.checked ? 'active' : 'deactive';
+                    });
+                    
+                    // Set initial state
+                    barcodeHidden.value = barcodeCheckbox.checked ? 'active' : 'deactive';
+                }
+                
+                // Handler untuk permission
+                const permissionCheckbox = row.querySelector('input[name="permission[]"]');
+                const permissionHidden = row.querySelector('input[name="permission_hidden[]"]');
+                
+                if (permissionCheckbox && permissionHidden) {
+                    permissionCheckbox.addEventListener('change', function() {
+                        permissionHidden.value = this.checked ? 'active' : 'deactive';
+                    });
+                    
+                    // Set initial state
+                    permissionHidden.value = permissionCheckbox.checked ? 'active' : 'deactive';
+                }
+                
+                // Handler untuk handling
+                const handlingCheckbox = row.querySelector('input[name="handling[]"]');
+                const handlingHidden = row.querySelector('input[name="handling_hidden[]"]');
+                
+                if (handlingCheckbox && handlingHidden) {
+                    handlingCheckbox.addEventListener('change', function() {
+                        handlingHidden.value = this.checked ? 'active' : 'deactive';
+                    });
+                    
+                    // Set initial state
+                    handlingHidden.value = handlingCheckbox.checked ? 'active' : 'deactive';
+                }
             }
         });
     }
@@ -317,14 +360,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ===== UPDATE VISIBILITY BUTTON DELETE =====
     function updateDeleteButtonVisibility() {
-        const visibleRows = document.querySelectorAll('#tableDetail tbody tr[style*="display: none"]').length;
-        const totalRows = document.querySelectorAll('#tableDetail tbody tr').length;
-        const remainingRows = totalRows - visibleRows;
+        const visibleRows = document.querySelectorAll('#tableDetail tbody tr').length;
+        const hiddenRows = document.querySelectorAll('#tableDetail tbody tr[style*="display: none"]').length;
+        const remainingRows = visibleRows - hiddenRows;
         
         // Jika hanya tersisa 1 baris, sembunyikan semua button delete
         if (remainingRows <= 1) {
             document.querySelectorAll('.btn-delete-existing, .btn-remove').forEach(function(btn) {
                 btn.style.display = 'none';
+            });
+        } else {
+            document.querySelectorAll('.btn-delete-existing, .btn-remove').forEach(function(btn) {
+                btn.style.display = 'block';
             });
         }
     }
@@ -399,25 +446,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 <td class="text-center align-middle" style="min-width: 180px;">
                     <div class="d-flex justify-content-center align-items-center mb-1" style="gap: 8px; white-space: nowrap;">
                         <label class="mb-0" style="font-size: 14px;">Active to loket?</label>
-                        <input type="hidden" name="status[]" value="deactive">
+                        <input type="hidden" name="status_hidden[]" value="deactive">
                         <input type="checkbox" name="status[]" value="active" class="form-check-input align-middle">
                     </div>
                     <br>
                     <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
                         <label class="mb-0" style="font-size: 14px;">Active Barcode?</label>
-                        <input type="hidden" name="barcode[]" value="deactive">
+                        <input type="hidden" name="barcode_hidden[]" value="deactive">
                         <input type="checkbox" name="barcode[]" value="active" class="form-check-input align-middle">
                     </div>
                     <br>
                     <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
                         <label class="mb-0" style="font-size: 14px;">Check to Collection?</label>
-                        <input type="hidden" name="permission[]" value="deactive">
+                        <input type="hidden" name="permission_hidden[]" value="deactive">
                         <input type="checkbox" name="permission[]" value="active" class="form-check-input align-middle">
                     </div>
                     <br>
                     <div class="d-flex justify-content-center align-items-center" style="gap: 8px; white-space: nowrap;">
                         <label class="mb-0" style="font-size: 14px;">Check to Handling?</label>
-                        <input type="hidden" name="handling[]" value="deactive">
+                        <input type="hidden" name="handling_hidden[]" value="deactive">
                         <input type="checkbox" name="handling[]" value="active" class="form-check-input align-middle">
                     </div>
                 </td>
@@ -438,7 +485,7 @@ document.addEventListener('DOMContentLoaded', function () {
             btnFunction();
         });
 
-        $(".btn-remove").unbind('click').bind('click', function () {
+        $(document).on('click', '.btn-remove', function() {
             $(this).closest('tr').remove();
             updateDeleteButtonVisibility();
         });
@@ -515,9 +562,9 @@ document.addEventListener('DOMContentLoaded', function () {
     btnFunction();
     setupDropdownListeners();
     setupCheckboxHandlers();
-    setupDeleteHandlers(); // TAMBAHAN UNTUK HANDLE DELETE
-    setupSubmitConfirmation(); // TAMBAHAN UNTUK KONFIRMASI SUBMIT
-    updateDeleteButtonVisibility(); // TAMBAHAN UNTUK UPDATE VISIBILITY
+    setupDeleteHandlers();
+    setupSubmitConfirmation();
+    updateDeleteButtonVisibility();
 });
 </script>
 @endpush
