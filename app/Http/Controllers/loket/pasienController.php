@@ -165,6 +165,7 @@ class pasienController extends Controller
                 $existingReport->increment('quantity');
                 $existingReport->update([
                     'nama_dokter'   => $request->dokter_internal,
+                    'dokter_external' => $request->dokter_external,
                     'mcu_package_id' => $request->mcu_package_id, // 👈 update kalau sudah ada
                 ]);
             } else {
@@ -175,6 +176,7 @@ class pasienController extends Controller
                     'id_parameter'   => $pemeriksaan,
                     'nama_parameter' => $data->nama_parameter,
                     'nama_dokter'    => $request->dokter_internal,
+                    'dokter_external' => $request->dokter_external,
                     'mcu_package_id' => $request->mcu_package_id, // 👈 simpan saat create
                     'quantity'       => 1,
                     'tanggal'        => now(),

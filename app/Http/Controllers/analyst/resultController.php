@@ -176,9 +176,10 @@ class resultController extends Controller
     public function report()
     {
         $departments = Department::all();
-        $dokters = dokter::all();
+        $dokters_internal = Dokter::where('status', 'internal')->get();
+        $dokters_external = Dokter::where('status', 'external')->get();
         $reports = Report::select('analyst')->distinct()->get();
-        return view('print-view.report', compact('departments', 'dokters', 'reports'));
+        return view('print-view.report', compact('departments', 'dokters_internal', 'dokters_external', 'reports'));
     }
 
     public function getReportData(Request $request)
@@ -194,14 +195,17 @@ class resultController extends Controller
             $departments = $request->input('department', []);
             $paymentMethods = array_map('strtolower', $request->input('payment_method', []));
             $mcuFilter = $request->input('mcu', []);
-            $dokters = $request->input('dokter', []);
+
+            // ✅ PERBAIKAN: Pisahkan filter dokter internal dan external
+            $doktersInternal = $request->input('dokter_internal', []);
+            $doktersExternal = $request->input('dokter_external', []);
+            $analystFilter = $request->input('analyst', []);
 
             $query = Report::with([
                 'detailDepartment',
                 'departments:id,nama_department',
                 'mcuPackage',
                 'mcuPackage.mcuDetails.detailDepartment',
-                // 'analyst' // Add relation to users table for analyst
             ])->whereBetween('tanggal', [$tanggalAwal, $tanggalAkhir]);
 
             if (!empty($departments) && !in_array('All', $departments)) {
@@ -212,8 +216,36 @@ class resultController extends Controller
                 $query->whereIn(DB::raw('LOWER(payment_method)'), $paymentMethods);
             }
 
-            if (!empty($dokters) && !in_array('All', $dokters)) {
-                $query->whereIn('nama_dokter', $dokters);
+            // ✅ PERBAIKAN: Filter dokter dengan logika terpisah
+            if (!empty($doktersInternal) || !empty($doktersExternal)) {
+                $allowedDoctors = [];
+
+                // Jika dokter internal dipilih
+                if (!empty($doktersInternal) && !in_array('All', $doktersInternal)) {
+                    $allowedDoctors = array_merge($allowedDoctors, $doktersInternal);
+                } elseif (in_array('All', $doktersInternal)) {
+                    // Jika "Semua" dipilih untuk internal, ambil semua dokter internal
+                    $internalDoctors = \App\Models\Dokter::where('status', 'internal')
+                        ->pluck('nama_dokter')
+                        ->toArray();
+                    $allowedDoctors = array_merge($allowedDoctors, $internalDoctors);
+                }
+
+                // Jika dokter external dipilih
+                if (!empty($doktersExternal) && !in_array('All', $doktersExternal)) {
+                    $allowedDoctors = array_merge($allowedDoctors, $doktersExternal);
+                } elseif (in_array('All', $doktersExternal)) {
+                    // Jika "Semua" dipilih untuk external, ambil semua dokter external
+                    $externalDoctors = \App\Models\Dokter::where('status', 'external')
+                        ->pluck('nama_dokter')
+                        ->toArray();
+                    $allowedDoctors = array_merge($allowedDoctors, $externalDoctors);
+                }
+
+                // Jika ada dokter yang dipilih, filter berdasarkan daftar tersebut
+                if (!empty($allowedDoctors)) {
+                    $query->whereIn('nama_dokter', array_unique($allowedDoctors));
+                }
             }
 
             if (!empty($mcuFilter) && !in_array('All', $mcuFilter)) {
@@ -225,8 +257,9 @@ class resultController extends Controller
                     $query->whereNull('mcu_package_id');
                 }
             }
-            if ($request->analyst && !in_array('All', $request->analyst)) {
-                $query->whereIn('analyst', $request->analyst);
+
+            if (!empty($analystFilter) && !in_array('All', $analystFilter)) {
+                $query->whereIn('analyst', $analystFilter);
             }
 
             $results = $query->get();
@@ -298,7 +331,6 @@ class resultController extends Controller
                             $pivoted[$packageKey]['bpjs_qty'] += 1;
                             $pivoted[$packageKey]['bpjs_price'] = $hargaPackage;
                             $pivoted[$packageKey]['bpjs_total'] += $hargaPackage;
-                            // Calculate analyst fee for MCU (using feemcu)
                             $pivoted[$packageKey]['bpjs_analyst_fee'] += $hargaPackage * ($analystMcuFee / 100);
                             break;
                         case 'asuransi':
@@ -401,7 +433,6 @@ class resultController extends Controller
                             $pivoted[$key]['bpjs_qty'] += $item->quantity;
                             $pivoted[$key]['bpjs_price'] = $harga;
                             $pivoted[$key]['bpjs_total'] += $totalValue;
-                            // Calculate analyst fee for non-MCU (using fee)
                             $pivoted[$key]['bpjs_analyst_fee'] += $totalValue * ($analystFee / 100);
                             break;
                         case 'asuransi':
@@ -417,15 +448,12 @@ class resultController extends Controller
                             $pivoted[$key]['umum_analyst_fee'] += $totalValue * ($analystFee / 100);
                             break;
                     }
-
-                    // Update dokter fee calculation (multiply by quantity)
-                    // $pivoted[$key]['jasa_dokter'] = $jasaDokter * $pivoted[$key]['bpjs_qty'] + $pivoted[$key]['asuransi_qty'] + $pivoted[$key]['umum_qty'];
                 }
             }
 
             $pivoted = array_merge($pivoted, $mcuParameters);
 
-            // --- Grouping (same as before) ---
+            // --- Grouping ---
             $grouped = collect($pivoted)->groupBy(function ($row) {
                 if ($row['is_mcu_package'] || $row['is_mcu_parameter']) {
                     return 'MCU-' . $row['mcu_package_id'];

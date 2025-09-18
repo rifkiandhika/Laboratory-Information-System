@@ -65,10 +65,20 @@
 
                         <!-- Dokter -->
                         <div class="col-12 col-md-6 col-lg-2">
-                            <label for="dokter" class="form-label"><b>Dokter</b> <span class="text-danger"> *</span></label>
-                            <select id="dokter" name="dokter" class="form-control select2" multiple>
+                            <label for="dokter_internal" class="form-label"><b>Dokter Internal</b> <span class="text-danger"> *</span></label>
+                            <select id="dokter_internal" name="dokter_internal[]" class="form-control select2" multiple>
                                 <option value="All">Semua</option>
-                                @foreach($dokters as $dokter)
+                                @foreach($dokters_internal as $dokter)
+                                    <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-2">
+                            <label for="dokter_external" class="form-label"><b>Dokter External</b> <span class="text-danger"> *</span></label>
+                            <select id="dokter_external" name="dokter_external[]" class="form-control select2" multiple>
+                                <option value="All">Semua</option>
+                                @foreach($dokters_external as $dokter)
                                     <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }}</option>
                                 @endforeach
                             </select>
@@ -138,7 +148,7 @@
 @push('script')
 <script>
 $(document).ready(function () {
-    $('#department, #payment, #dokter, #mcu, #analyst').select2({ 
+    $('#department, #payment, #dokter_internal, #dokter_external, #mcu, #analyst').select2({ 
         placeholder: 'Pilih...', 
         allowClear: true 
     });
@@ -150,7 +160,7 @@ $(document).ready(function () {
 
     $('#filterForm').on('reset', function () {
         setTimeout(() => {
-            $('#department, #payment, #mcu, #dokter, #analyst').val(null).trigger('change');
+            $('#department, #payment, #mcu, #dokter_internal, #dokter_external, #analyst').val(null).trigger('change');
             $('#tanggal_awal').val(hariPertama.toISOString().split('T')[0]);
             $('#tanggal_akhir').val(hariIni.toISOString().split('T')[0]);
         }, 100);
@@ -161,7 +171,11 @@ function muatDataLaporan() {
     const pilihanPembayaran = ($('#payment').val() || []).map(p => p.toLowerCase());
     const semuaTerpilih = pilihanPembayaran.includes('all');
     const pilihanMcu = $('#mcu').val() || [];
-    const pilihanAnalyst = $('#analyst').val() || []; // ✅ ambil pilihan analis
+    const pilihanAnalyst = $('#analyst').val() || [];
+    
+    // ✅ PERBAIKAN: Pisahkan filter dokter internal dan external
+    const pilihanDokterInternal = $('#dokter_internal').val() || [];
+    const pilihanDokterExternal = $('#dokter_external').val() || [];
 
     toggleKolomPembayaran(pilihanPembayaran, semuaTerpilih);
 
@@ -170,8 +184,9 @@ function muatDataLaporan() {
         tanggal_akhir: $('#tanggal_akhir').val() || hariIni.toISOString().split('T')[0],
         department: $('#department').val(),
         mcu: pilihanMcu,
-        dokter: $('#dokter').val(),
-        analyst: pilihanAnalyst, // ✅ kirim filter analyst ke server
+        dokter_internal: pilihanDokterInternal, // ✅ Kirim dokter internal terpisah
+        dokter_external: pilihanDokterExternal, // ✅ Kirim dokter external terpisah
+        analyst: pilihanAnalyst,
         payment_method: pilihanPembayaran,
         _token: $('meta[name="csrf-token"]').attr('content') || '{{ csrf_token() }}'
     };
