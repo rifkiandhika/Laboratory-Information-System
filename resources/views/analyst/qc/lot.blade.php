@@ -184,6 +184,57 @@
         font-size: 10px;
         font-weight: bold;
     }
+    /* Tambahkan CSS ini ke dalam <style> tag di view */
+
+.editable-field {
+    transition: all 0.3s ease;
+}
+
+.editable-field:not([readonly]):not([disabled]) {
+    background-color: #fff3cd !important;
+    border: 1px solid #ffeaa7 !important;
+}
+
+.editable-field:focus {
+    outline: none;
+    border-color: #fdcb6e !important;
+    box-shadow: 0 0 0 0.2rem rgba(253, 203, 110, 0.25);
+    background-color: white !important;
+}
+
+.edit-indicator {
+    background: #ffc107;
+    color: #856404;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Styling khusus untuk mode edit */
+.edit-lot-container .editable-field:not([readonly]):not([disabled]) {
+    border-radius: 4px;
+    padding: 2px 6px;
+}
+
+/* Hover effect pada field yang bisa diedit */
+.edit-lot-container .editable-field:not([readonly]):not([disabled]):hover {
+    border-color: #e67e22;
+    background-color: #ffeaa7;
+}
 </style>
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <div class="container-fluid">
@@ -392,8 +443,12 @@
     function createParameterRow(param, index, totalParams, lotData, existingData = null) {
         return `
             <tr data-param="${param}">
-                ${index === 0 ? `<td rowspan="${totalParams}" class="first-row-cells lot-info-cell">${lotData.no_lot}</td>` : ''}
-                ${index === 0 ? `<td rowspan="${totalParams}" class="first-row-cells lot-info-cell">${lotData.name_control}</td>` : ''}
+                ${index === 0 ? `<td rowspan="${totalParams}" class="first-row-cells lot-info-cell">
+                    <span class="table-no-lot">${lotData.no_lot}</span>
+                </td>` : ''}
+                ${index === 0 ? `<td rowspan="${totalParams}" class="first-row-cells lot-info-cell">
+                    <span class="table-name-control">${lotData.name_control}</span>
+                </td>` : ''}
                 <td class="parameter-name">
                     <div class="parameter-controls">
                         <span>${param}</span>
@@ -460,11 +515,36 @@
                     <div class="lot-info-summary">
                         <div class="lot-info-item">
                             <div class="lot-info-label">No Lot:</div>
-                            <div class="lot-info-value">${lotData.no_lot}</div>
+                            <div class="lot-info-value">
+                                <input type="text" class="editable-field" 
+                                    data-field="no_lot" 
+                                    value="${lotData.no_lot}"
+                                    style="border: none; background: transparent; font-weight: 500; width: 100px;"
+                                    ${!isEdit ? 'readonly' : ''}>
+                            </div>
                         </div>
                         <div class="lot-info-item">
                             <div class="lot-info-label">Nama Control:</div>
-                            <div class="lot-info-value">${lotData.name_control}</div>
+                            <div class="lot-info-value">
+                                <input type="text" class="editable-field" 
+                                    data-field="name_control" 
+                                    value="${lotData.name_control}"
+                                    style="border: none; background: transparent; font-weight: 500; width: 150px;"
+                                    ${!isEdit ? 'readonly' : ''}>
+                            </div>
+                        </div>
+                        <div class="lot-info-item">
+                            <div class="lot-info-label">Level:</div>
+                            <div class="lot-info-value">
+                                <select class="editable-field" 
+                                        data-field="level" 
+                                        style="border: none; background: transparent; font-weight: 500; width: 80px;"
+                                        ${!isEdit ? 'disabled' : ''}>
+                                    <option value="Low" ${lotData.level === 'Low' ? 'selected' : ''}>Low</option>
+                                    <option value="Normal" ${lotData.level === 'Normal' ? 'selected' : ''}>Normal</option>
+                                    <option value="High" ${lotData.level === 'High' ? 'selected' : ''}>High</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="lot-info-item">
                             <div class="lot-info-label">Department:</div>
@@ -472,15 +552,33 @@
                         </div>
                         <div class="lot-info-item">
                             <div class="lot-info-label">Exp Date:</div>
-                            <div class="lot-info-value">${formatDate(lotData.exp_date)}</div>
+                            <div class="lot-info-value">
+                                <input type="date" class="editable-field" 
+                                    data-field="exp_date" 
+                                    value="${lotData.exp_date}"
+                                    style="border: none; background: transparent; font-weight: 500; width: 120px;"
+                                    ${!isEdit ? 'readonly' : ''}>
+                            </div>
                         </div>
                         <div class="lot-info-item">
                             <div class="lot-info-label">Use QC:</div>
-                            <div class="lot-info-value">${formatDate(lotData.use_qc)}</div>
+                            <div class="lot-info-value">
+                                <input type="date" class="editable-field" 
+                                    data-field="use_qc" 
+                                    value="${lotData.use_qc || ''}"
+                                    style="border: none; background: transparent; font-weight: 500; width: 120px;"
+                                    ${!isEdit ? 'readonly' : ''}>
+                            </div>
                         </div>
                         <div class="lot-info-item">
                             <div class="lot-info-label">Last QC:</div>
-                            <div class="lot-info-value">${formatDate(lotData.last_qc)}</div>
+                            <div class="lot-info-value">
+                                <input type="date" class="editable-field" 
+                                    data-field="last_qc" 
+                                    value="${lotData.last_qc || ''}"
+                                    style="border: none; background: transparent; font-weight: 500; width: 120px;"
+                                    ${!isEdit ? 'readonly' : ''}>
+                            </div>
                         </div>
                         <button class="btn btn-submit-main" onclick="submitAllData('${lotId}')">
                             ${isEdit ? 'Update' : 'Submit'}
@@ -859,9 +957,17 @@
         });
 
         const lotElement = document.getElementById(lotId);
-        const lotDataStr = lotElement.getAttribute('data-lot-data');
-        const lotData = JSON.parse(lotDataStr);
         const isEdit = lotElement.getAttribute('data-is-edit') === 'true';
+        
+        // Ambil data lot dari input yang bisa diedit
+        const editableFields = lotElement.querySelectorAll('.editable-field');
+        const lotData = JSON.parse(lotElement.getAttribute('data-lot-data'));
+        
+        // Update lot data dengan nilai dari input
+        editableFields.forEach(field => {
+            const fieldName = field.dataset.field;
+            lotData[fieldName] = field.value;
+        });
         
         // Kumpulkan data parameter
         const parameterData = {};
@@ -935,6 +1041,9 @@
             Swal.close(); // Tutup loading
 
             if (response.ok && result.success) {
+                // Update tampilan tabel dengan data yang baru
+                updateTableDisplay(lotElement, lotData);
+                
                 // SweetAlert sukses dengan animasi
                 await Swal.fire({
                     icon: 'success',
@@ -992,14 +1101,66 @@
         }
     }
 
+    function updateTableDisplay(lotElement, newLotData) {
+        // Update nilai di tabel parameter
+        const tableNoLot = lotElement.querySelector('.table-no-lot');
+        const tableNameControl = lotElement.querySelector('.table-name-control');
+        
+        if (tableNoLot) {
+            tableNoLot.textContent = newLotData.no_lot;
+        }
+        if (tableNameControl) {
+            tableNameControl.textContent = newLotData.name_control;
+        }
+    }
+
     // Function edit dengan SweetAlert
-    async function editLot(lotId) {
-        await Swal.fire({
-            icon: 'info',
-            title: 'Mode Edit',
-            text: 'LOT sudah dalam mode edit. Ubah data parameter lalu klik "Update" untuk menyimpan perubahan.',
-            confirmButtonColor: '#3085d6'
-        });
+    function editLot(lotId) {
+        const lotElement = document.getElementById(lotId);
+        const editableFields = lotElement.querySelectorAll('.editable-field');
+        const isCurrentlyEdit = lotElement.getAttribute('data-is-edit') === 'true';
+        
+        if (!isCurrentlyEdit) {
+            // Enable edit mode
+            editableFields.forEach(field => {
+                if (field.type === 'text' || field.type === 'date') {
+                    field.readOnly = false;
+                    field.style.border = '1px solid #ced4da';
+                    field.style.borderRadius = '4px';
+                    field.style.padding = '2px 6px';
+                } else if (field.tagName === 'SELECT') {
+                    field.disabled = false;
+                    field.style.border = '1px solid #ced4da';
+                    field.style.borderRadius = '4px';
+                }
+            });
+            
+            lotElement.setAttribute('data-is-edit', 'true');
+            lotElement.classList.add('edit-lot-container');
+            lotElement.querySelector('.lot-header').classList.add('edit-lot-header');
+            
+            // Tambah edit indicator jika belum ada
+            const existingIndicator = lotElement.querySelector('.edit-indicator');
+            if (!existingIndicator) {
+                const indicatorHtml = '<span class="edit-indicator">EDIT MODE</span>';
+                const buttonContainer = lotElement.querySelector('.d-flex.gap-2.align-items-center');
+                buttonContainer.insertAdjacentHTML('afterbegin', indicatorHtml);
+            }
+            
+            Swal.fire({
+                icon: 'info',
+                title: 'Mode Edit Aktif',
+                text: 'Sekarang Anda bisa mengedit semua field LOT. Klik "Update" untuk menyimpan perubahan.',
+                confirmButtonColor: '#3085d6'
+            });
+        } else {
+            Swal.fire({
+                icon: 'info',
+                title: 'Sudah dalam Mode Edit',
+                text: 'LOT sudah dalam mode edit. Ubah data lalu klik "Update" untuk menyimpan perubahan.',
+                confirmButtonColor: '#3085d6'
+            });
+        }
     }
 
     // Function print

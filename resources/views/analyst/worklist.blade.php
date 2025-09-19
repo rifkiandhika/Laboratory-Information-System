@@ -1244,288 +1244,408 @@
                         ];
 
                         // TAMBAHAN: Definisi UrineParams
+                        // const UrineParams = [
+                        //     {
+                        //         nama: 'Warna',
+                        //         display_name: 'Warna',
+                        //         satuan: '-',
+                        //         normal_min_l: '-',
+                        //         normal_max_l: '-',
+                        //         normal_min_p: '-',
+                        //         normal_max_p: '-',
+                        //         nilai_rujukan_l: '-',
+                        //         nilai_rujukan_p: '-',
+                        //         tipe_inputan: 'Dropdown',
+                        //         opsi_output: 'Kuning;Kuning Pucat;Kuning Tua;Kuning kecokelatan;Orange;Merah;Coklat',
+                        //         default: 'Kuning'
+                        //     },
+                        //     {
+                        //         nama: 'Kekeruhan',
+                        //         display_name: 'Kekeruhan',
+                        //         satuan: '-',
+                        //         normal_min_l: '-',
+                        //         normal_max_l: '-',
+                        //         normal_min_p: '-',
+                        //         normal_max_p: '-',
+                        //         nilai_rujukan_l: '-',
+                        //         nilai_rujukan_p: '-',
+                        //         tipe_inputan: 'Dropdown',
+                        //         opsi_output: 'Jernih;Agak Keruh;Keruh;Sangat keruh',
+                        //         default: 'Jernih'
+                        //     },
+                        //     {
+                        //         nama: 'Berat Jenis',
+                        //         display_name: 'Berat Jenis',
+                        //         satuan: '-',
+                        //         normal_min_l: 1.003,
+                        //         normal_max_l: 1.035,
+                        //         normal_min_p: 1.003,
+                        //         normal_max_p: 1.035,
+                        //         nilai_rujukan_l: '1,003-1,035',
+                        //         nilai_rujukan_p: '1,003-1,035',
+                        //         tipe_inputan: 'Dropdown',
+                        //         opsi_output: '<1.005;1.005;1.010;1.015;1.020;1.025;1.030',
+                        //         default: '1.015'
+                        //     },
+                        //     {
+                        //         nama: 'PH',
+                        //         display_name: 'pH',
+                        //         satuan: '-',
+                        //         normal_min_l: 4.5,
+                        //         normal_max_l: 8.0,
+                        //         normal_min_p: 4.5,
+                        //         normal_max_p: 8.0,
+                        //         nilai_rujukan_l: '4,5-8,0',
+                        //         nilai_rujukan_p: '4,5-8,0',
+                        //         tipe_inputan: 'Dropdown',
+                        //         opsi_output: '4.5;5.0;5.5;6.0;6.5;7.0;7.5;8.0;8.5;9.0',
+                        //         default: '6.0'
+                        //     },
+                        //     {
+                        //         nama: 'Leukosit',
+                        //         display_name: 'Leukosit',
+                        //         satuan: '-',
+                        //         normal_min_l: '-',
+                        //         normal_max_l: '-',
+                        //         normal_min_p: '-',
+                        //         normal_max_p: '-',
+                        //         nilai_rujukan_l: '-',
+                        //         nilai_rujukan_p: '-',
+                        //         tipe_inputan: 'Dropdown',
+                        //         opsi_output: 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
+                        //         default: 'Negatif'
+                        //     },
+                        //     {
+                        //         nama: 'Nitrit',
+                        //         display_name: 'Nitrit',
+                        //         satuan: '-',
+                        //         normal_min_l: '-',
+                        //         normal_max_l: '-',
+                        //         normal_min_p: '-',
+                        //         normal_max_p: '-',
+                        //         nilai_rujukan_l: '-',
+                        //         nilai_rujukan_p: '-',
+                        //         tipe_inputan: 'Dropdown',
+                        //         opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
+                        //         default: 'Negatif'
+                        //     },
+                        //     {
+                        //         nama: 'Protein',
+                        //         display_name: 'Protein',
+                        //         satuan: '-',
+                        //         normal_min_l: '-',
+                        //         normal_max_l: '-',
+                        //         normal_min_p: '-',
+                        //         normal_max_p: '-',
+                        //         nilai_rujukan_l: '-',
+                        //         nilai_rujukan_p: '-',
+                        //         tipe_inputan: 'Dropdown',
+                        //         opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
+                        //         default: 'Negatif'
+                        //     },
+                        //     {
+                        //         nama: 'Glukosa',
+                        //         display_name: 'Glukosa',
+                        //         satuan: '-',
+                        //         normal_min_l: '-',
+                        //         normal_max_l: '-',
+                        //         normal_min_p: '-',
+                        //         normal_max_p: '-',
+                        //         nilai_rujukan_l: '-',
+                        //         nilai_rujukan_p: '-',
+                        //         tipe_inputan: 'Dropdown',
+                        //         opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
+                        //         default: 'Negatif'
+                        //     },
+                        //     {
+                        //         nama: 'Keton',
+                        //         display_name: 'Keton',
+                        //         satuan: '-',
+                        //         normal_min_l: '-',
+                        //         normal_max_l: '-',
+                        //         normal_min_p: '-',
+                        //         normal_max_p: '-',
+                        //         nilai_rujukan_l: '-',
+                        //         nilai_rujukan_p: '-',
+                        //         tipe_inputan: 'Dropdown',
+                        //         opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
+                        //         default: 'Negatif'
+                        //     },
+                        //     {
+                        //         nama: 'Urobilinogen',
+                        //         display_name: 'Urobilinogen',
+                        //         satuan: '-',
+                        //         normal_min_l: '-',
+                        //         normal_max_l: '-',
+                        //         normal_min_p: '-',
+                        //         normal_max_p: '-',
+                        //         nilai_rujukan_l: '-',
+                        //         nilai_rujukan_p: '-',
+                        //         tipe_inputan: 'Dropdown',
+                        //         opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
+                        //         default: 'Negatif'
+                        //     },
+                        //     {
+                        //         nama: 'Bilirubin',
+                        //         display_name: 'Bilirubin',
+                        //         satuan: '-',
+                        //         normal_min_l: '-',
+                        //         normal_max_l: '-',
+                        //         normal_min_p: '-',
+                        //         normal_max_p: '-',
+                        //         nilai_rujukan_l: '-',
+                        //         nilai_rujukan_p: '-',
+                        //         tipe_inputan: 'Dropdown',
+                        //         opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
+                        //         default: 'Negatif'
+                        //     },
+                        //     {
+                        //         nama: 'Blood',
+                        //         display_name: 'Blood',
+                        //         satuan: '-',
+                        //         normal_min_l: '-',
+                        //         normal_max_l: '-',
+                        //         normal_min_p: '-',
+                        //         normal_max_p: '-',
+                        //         nilai_rujukan_l: '-',
+                        //         nilai_rujukan_p: '-',
+                        //         tipe_inputan: 'Dropdown',
+                        //         opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
+                        //         default: 'Negatif'
+                        //     },
+                        //     {
+                        //         nama: 'Eritrosit',
+                        //         display_name: '- Eritrosit',
+                        //         satuan: '',
+                        //         normal_min_l: 0,
+                        //         normal_max_l: 2,
+                        //         normal_min_p: 0,
+                        //         normal_max_p: 2,
+                        //         nilai_rujukan_l: '0-2',
+                        //         nilai_rujukan_p: '0-2',
+                        //         tipe_inputan: 'Text',
+                        //         opsi_output: '',
+                        //         default: 'Negatif'
+                        //     },
+                        //     {
+                        //         nama: 'Leukosit_sedimen',
+                        //         display_name: '- Leukosit',
+                        //         satuan: '',
+                        //         normal_min_l: 0,
+                        //         normal_max_l: 5,
+                        //         normal_min_p: 0,
+                        //         normal_max_p: 5,
+                        //         nilai_rujukan_l: '0-5',
+                        //         nilai_rujukan_p: '0-5',
+                        //         tipe_inputan: 'Text',
+                        //         opsi_output: '',
+                        //         default: 'Negatif'
+                        //     },
+                        //     {
+                        //         nama: 'Epithel',
+                        //         display_name: '- Epithel',
+                        //         satuan: '-',
+                        //         normal_min_l: '-',
+                        //         normal_max_l: '-',
+                        //         normal_min_p: '-',
+                        //         normal_max_p: '-',
+                        //         nilai_rujukan_l: 'Tidak ada - Sedikit',
+                        //         nilai_rujukan_p: 'Tidak ada - Sedikit',
+                        //         tipe_inputan: 'Text',
+                        //         opsi_output: 'Tidak ada;Sedikit;Sedang;Banyak',
+                        //         default: 'Negatif'
+                        //     },
+                        //     {
+                        //         nama: 'Silinder',
+                        //         display_name: '- Silinder',
+                        //         satuan: '-',
+                        //         normal_min_l: '-',
+                        //         normal_max_l: '-',
+                        //         normal_min_p: '-',
+                        //         normal_max_p: '-',
+                        //         nilai_rujukan_l: 'Tidak ada',
+                        //         nilai_rujukan_p: 'Tidak ada',
+                        //         tipe_inputan: 'Dropdown',
+                        //         opsi_output: 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
+                        //         default: 'Negatif'
+                        //     },
+                        //     {
+                        //         nama: 'Kristal',
+                        //         display_name: '- Kristal',
+                        //         satuan: '-',
+                        //         normal_min_l: '-',
+                        //         normal_max_l: '-',
+                        //         normal_min_p: '-',
+                        //         normal_max_p: '-',
+                        //         nilai_rujukan_l: 'Tidak ada',
+                        //         nilai_rujukan_p: 'Tidak ada',
+                        //         tipe_inputan: 'Dropdown',
+                        //         opsi_output: 'Tidak ada;Asam urat;Kalsium oksalat;Fosfat amorf;Lainnya',
+                        //         default: 'Negatif'
+                        //     },
+                        //     {
+                        //         nama: 'Bakteri',
+                        //         display_name: '- Bakteri',
+                        //         satuan: '-',
+                        //         normal_min_l: '-',
+                        //         normal_max_l: '-',
+                        //         normal_min_p: '-',
+                        //         normal_max_p: '-',
+                        //         nilai_rujukan_l: 'Tidak ada',
+                        //         nilai_rujukan_p: 'Tidak ada',
+                        //         tipe_inputan: 'Dropdown',
+                        //         opsi_output: 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
+                        //         default: 'Negatif'
+                        //     },
+                        //     {
+                        //         nama: 'Jamur',
+                        //         display_name: '- Jamur',
+                        //         satuan: '-',
+                        //         normal_min_l: '-',
+                        //         normal_max_l: '-',
+                        //         normal_min_p: '-',
+                        //         normal_max_p: '-',
+                        //         nilai_rujukan_l: 'Tidak ada',
+                        //         nilai_rujukan_p: 'Tidak ada',
+                        //         tipe_inputan: 'Dropdown',
+                        //         opsi_output: 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
+                        //         default: 'Negatif'
+                        //     },
+                        //     {
+                        //         nama: 'Lain-lain',
+                        //         display_name: '- Lain-lain',
+                        //         satuan: '-',
+                        //         normal_min_l: '',
+                        //         normal_max_l: '',
+                        //         normal_min_p: '',
+                        //         normal_max_p: '',
+                        //         nilai_rujukan_l: '',
+                        //         nilai_rujukan_p: '',
+                        //         tipe_inputan: 'Text',
+                        //         opsi_output: '',
+                        //         default: ''
+                        //     }
+                        // ];
                         const UrineParams = [
-                            {
-                                nama: 'Warna',
-                                display_name: 'Warna',
-                                satuan: '-',
-                                normal_min_l: '-',
-                                normal_max_l: '-',
-                                normal_min_p: '-',
-                                normal_max_p: '-',
-                                nilai_rujukan_l: '-',
-                                nilai_rujukan_p: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Kuning;Kuning Pucat;Kuning Tua;Kuning kecokelatan;Orange;Merah;Coklat',
-                                default: 'Kuning'
-                            },
-                            {
-                                nama: 'Kekeruhan',
-                                display_name: 'Kekeruhan',
-                                satuan: '-',
-                                normal_min_l: '-',
-                                normal_max_l: '-',
-                                normal_min_p: '-',
-                                normal_max_p: '-',
-                                nilai_rujukan_l: '-',
-                                nilai_rujukan_p: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Jernih;Agak Keruh;Keruh;Sangat keruh',
-                                default: 'Jernih'
-                            },
-                            {
-                                nama: 'Berat Jenis',
-                                display_name: 'Berat Jenis',
-                                satuan: '-',
-                                normal_min_l: 1.003,
-                                normal_max_l: 1.035,
-                                normal_min_p: 1.003,
-                                normal_max_p: 1.035,
-                                nilai_rujukan_l: '1,003-1,035',
-                                nilai_rujukan_p: '1,003-1,035',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: '<1.005;1.005;1.010;1.015;1.020;1.025;1.030',
-                                default: '1.015'
-                            },
-                            {
-                                nama: 'PH',
-                                display_name: 'pH',
-                                satuan: '-',
-                                normal_min_l: 4.5,
-                                normal_max_l: 8.0,
-                                normal_min_p: 4.5,
-                                normal_max_p: 8.0,
-                                nilai_rujukan_l: '4,5-8,0',
-                                nilai_rujukan_p: '4,5-8,0',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: '4.5;5.0;5.5;6.0;6.5;7.0;7.5;8.0;8.5;9.0',
-                                default: '6.0'
-                            },
-                            {
-                                nama: 'Leukosit',
-                                display_name: 'Leukosit',
-                                satuan: '-',
-                                normal_min_l: '-',
-                                normal_max_l: '-',
-                                normal_min_p: '-',
-                                normal_max_p: '-',
-                                nilai_rujukan_l: '-',
-                                nilai_rujukan_p: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
-                                default: 'Negatif'
-                            },
-                            {
-                                nama: 'Nitrit',
-                                display_name: 'Nitrit',
-                                satuan: '-',
-                                normal_min_l: '-',
-                                normal_max_l: '-',
-                                normal_min_p: '-',
-                                normal_max_p: '-',
-                                nilai_rujukan_l: '-',
-                                nilai_rujukan_p: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
-                                default: 'Negatif'
-                            },
-                            {
-                                nama: 'Protein',
-                                display_name: 'Protein',
-                                satuan: '-',
-                                normal_min_l: '-',
-                                normal_max_l: '-',
-                                normal_min_p: '-',
-                                normal_max_p: '-',
-                                nilai_rujukan_l: '-',
-                                nilai_rujukan_p: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
-                                default: 'Negatif'
-                            },
-                            {
-                                nama: 'Glukosa',
-                                display_name: 'Glukosa',
-                                satuan: '-',
-                                normal_min_l: '-',
-                                normal_max_l: '-',
-                                normal_min_p: '-',
-                                normal_max_p: '-',
-                                nilai_rujukan_l: '-',
-                                nilai_rujukan_p: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
-                                default: 'Negatif'
-                            },
-                            {
-                                nama: 'Keton',
-                                display_name: 'Keton',
-                                satuan: '-',
-                                normal_min_l: '-',
-                                normal_max_l: '-',
-                                normal_min_p: '-',
-                                normal_max_p: '-',
-                                nilai_rujukan_l: '-',
-                                nilai_rujukan_p: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
-                                default: 'Negatif'
-                            },
-                            {
-                                nama: 'Urobilinogen',
-                                display_name: 'Urobilinogen',
-                                satuan: '-',
-                                normal_min_l: '-',
-                                normal_max_l: '-',
-                                normal_min_p: '-',
-                                normal_max_p: '-',
-                                nilai_rujukan_l: '-',
-                                nilai_rujukan_p: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
-                                default: 'Negatif'
-                            },
-                            {
-                                nama: 'Bilirubin',
-                                display_name: 'Bilirubin',
-                                satuan: '-',
-                                normal_min_l: '-',
-                                normal_max_l: '-',
-                                normal_min_p: '-',
-                                normal_max_p: '-',
-                                nilai_rujukan_l: '-',
-                                nilai_rujukan_p: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
-                                default: 'Negatif'
-                            },
-                            {
-                                nama: 'Blood',
-                                display_name: 'Blood',
-                                satuan: '-',
-                                normal_min_l: '-',
-                                normal_max_l: '-',
-                                normal_min_p: '-',
-                                normal_max_p: '-',
-                                nilai_rujukan_l: '-',
-                                nilai_rujukan_p: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
-                                default: 'Negatif'
-                            },
-                            {
-                                nama: 'Eritrosit',
-                                display_name: '- Eritrosit',
-                                satuan: '',
-                                normal_min_l: 0,
-                                normal_max_l: 2,
-                                normal_min_p: 0,
-                                normal_max_p: 2,
-                                nilai_rujukan_l: '0-2',
-                                nilai_rujukan_p: '0-2',
-                                tipe_inputan: 'Text',
-                                opsi_output: '',
-                                default: 'Negatif'
-                            },
-                            {
-                                nama: 'Leukosit_sedimen',
-                                display_name: '- Leukosit',
-                                satuan: '',
-                                normal_min_l: 0,
-                                normal_max_l: 5,
-                                normal_min_p: 0,
-                                normal_max_p: 5,
-                                nilai_rujukan_l: '0-5',
-                                nilai_rujukan_p: '0-5',
-                                tipe_inputan: 'Text',
-                                opsi_output: '',
-                                default: 'Negatif'
-                            },
-                            {
-                                nama: 'Epithel',
-                                display_name: '- Epithel',
-                                satuan: '-',
-                                normal_min_l: '-',
-                                normal_max_l: '-',
-                                normal_min_p: '-',
-                                normal_max_p: '-',
-                                nilai_rujukan_l: 'Tidak ada - Sedikit',
-                                nilai_rujukan_p: 'Tidak ada - Sedikit',
-                                tipe_inputan: 'Text',
-                                opsi_output: 'Tidak ada;Sedikit;Sedang;Banyak',
-                                default: 'Negatif'
-                            },
-                            {
-                                nama: 'Silinder',
-                                display_name: '- Silinder',
-                                satuan: '-',
-                                normal_min_l: '-',
-                                normal_max_l: '-',
-                                normal_min_p: '-',
-                                normal_max_p: '-',
-                                nilai_rujukan_l: 'Tidak ada',
-                                nilai_rujukan_p: 'Tidak ada',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
-                                default: 'Negatif'
-                            },
-                            {
-                                nama: 'Kristal',
-                                display_name: '- Kristal',
-                                satuan: '-',
-                                normal_min_l: '-',
-                                normal_max_l: '-',
-                                normal_min_p: '-',
-                                normal_max_p: '-',
-                                nilai_rujukan_l: 'Tidak ada',
-                                nilai_rujukan_p: 'Tidak ada',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Tidak ada;Asam urat;Kalsium oksalat;Fosfat amorf;Lainnya',
-                                default: 'Negatif'
-                            },
-                            {
-                                nama: 'Bakteri',
-                                display_name: '- Bakteri',
-                                satuan: '-',
-                                normal_min_l: '-',
-                                normal_max_l: '-',
-                                normal_min_p: '-',
-                                normal_max_p: '-',
-                                nilai_rujukan_l: 'Tidak ada',
-                                nilai_rujukan_p: 'Tidak ada',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
-                                default: 'Negatif'
-                            },
-                            {
-                                nama: 'Jamur',
-                                display_name: '- Jamur',
-                                satuan: '-',
-                                normal_min_l: '-',
-                                normal_max_l: '-',
-                                normal_min_p: '-',
-                                normal_max_p: '-',
-                                nilai_rujukan_l: 'Tidak ada',
-                                nilai_rujukan_p: 'Tidak ada',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
-                                default: 'Negatif'
-                            },
-                            {
-                                nama: 'Lain-lain',
-                                display_name: '- Lain-lain',
-                                satuan: '-',
-                                normal_min_l: '',
-                                normal_max_l: '',
-                                normal_min_p: '',
-                                normal_max_p: '',
-                                nilai_rujukan_l: '',
-                                nilai_rujukan_p: '',
-                                tipe_inputan: 'Text',
-                                opsi_output: '',
-                                default: ''
-                            }
-                        ];
+                        {
+                            nama: 'Warna',
+                            display_name: 'Warna',
+                            satuan: '-',
+                            normal_min: 'L.- P.-',
+                            normal_max: 'L.- P.-',
+                            nilai_rujukan: '-',
+                            tipe_inputan: 'Dropdown',
+                            opsi_output: 'Kuning;Orange;Merah;Coklat',
+                        },
+                        {
+                            nama: 'Kekeruhan',
+                            display_name: 'Kekeruhan',
+                            satuan: '-',
+                            normal_min: 'L.- P.-',
+                            normal_max: 'L.- P.-',
+                            nilai_rujukan: 'L.- P.-',
+                            tipe_inputan: 'Dropdown',
+                            opsi_output: 'Jernih;Agak Keruh;Keruh',
+                        },
+                        {
+                            nama: 'Berat Jenis',
+                            display_name: 'Berat Jenis',
+                            satuan: '-',
+                            normal_min: 'L.1,003 P.1,003',
+                            normal_max: 'L.1,035 P.1,035',
+                            nilai_rujukan: 'L.1,003-1,035 P.1,003-1,035',
+                            tipe_inputan: 'text',
+                        },
+                        {
+                            nama: 'PH',
+                            display_name: 'PH',
+                            satuan: '-',
+                            normal_min: 'L.4,5 P.4,5',
+                            normal_max: 'L.8,0 P.8,0',
+                            nilai_rujukan: 'L.4,5-8,0 P.4,5-8,0',
+                            tipe_inputan: 'text',
+                        },
+                        {
+                            nama: 'Leukosit',
+                            display_name: 'Leukosit',
+                            satuan: '-',
+                            normal_min: 'L.- P.-',
+                            normal_max: 'L.- P.-',
+                            nilai_rujukan: 'L.- P.-',
+                            tipe_inputan: 'Dropdown',
+                            opsi_output: 'Negatif;Positif',
+                        },
+                        {
+                            nama: 'Nitrit',
+                            display_name: 'Nitrit',
+                            satuan: '-',
+                            normal_min: 'L.- P.-',
+                            normal_max: 'L.- P.-',
+                            nilai_rujukan: 'L.- P.-',
+                            tipe_inputan: 'Dropdown',
+                            opsi_output: 'Negatif;Positif',
+                        },
+                        {
+                            nama: 'Preotein',
+                            display_name: 'Protein',
+                            satuan: '-',
+                            normal_min: 'L.- P.-',
+                            normal_max: 'L.- P.-',
+                            nilai_rujukan: 'L.- P.-',
+                            tipe_inputan: 'Dropdown',
+                            opsi_output: 'Negatif;Positif',
+                        },
+                        {
+                            nama: 'Glukosa',
+                            display_name: 'Glukosa',
+                            satuan: '-',
+                            normal_min: 'L.- P.-',
+                            normal_max: 'L.- P.-',
+                            nilai_rujukan: 'L.- P.-',
+                            tipe_inputan: 'Dropdown',
+                            opsi_output: 'Negatif;Positif',
+                        },
+                        {
+                            nama: 'Keton',
+                            display_name: 'Keton',
+                            satuan: '-',
+                            normal_min: 'L.- P.-',
+                            normal_max: 'L.- P.-',
+                            nilai_rujukan: 'L.- P.-',
+                            tipe_inputan: 'Dropdown',
+                            opsi_output: 'Negatif;Positif',
+                        },
+                        {
+                            nama: 'Urobilinogen',
+                            display_name: 'Urobilinogen',
+                            satuan: '-',
+                            normal_min: 'L.- P.-',
+                            normal_max: 'L.- P.-',
+                            nilai_rujukan: 'L.- P.-',
+                            tipe_inputan: 'Dropdown',
+                            opsi_output: 'Negatif;Positif',
+                        },
+                        {
+                            nama: 'Bilirubin',
+                            display_name: 'Bilirubin',
+                            satuan: '-',
+                            normal_min: 'L.- P.-',
+                            normal_max: 'L.- P.-',
+                            nilai_rujukan: 'L.- P.-',
+                            tipe_inputan: 'Dropdown',
+                            opsi_output: 'Negatif;Positif',
+                        },
+                        {
+                            nama: 'Blood',
+                            display_name: 'Blood',
+                            satuan: '-',
+                            normal_min: 'L.- P.-',
+                            normal_max: 'L.- P.-',
+                            nilai_rujukan: 'L.- P.-',
+                            tipe_inputan: 'Dropdown',
+                            opsi_output: 'Negatif;Positif',
+                        }
+                    ];
                         const MicrobiologiParams = [
                             {
                                 nama: 'Observation',
@@ -2066,7 +2186,7 @@
                                                                     <tr data-id="${rowId}" data-parameter="${param.nama}" class="urine-row">
                                                                         <td class="col-2 ${judulUrine ? 'ps-4' : ''}" ${judulUrine ? 'style="border-left: 2px solid #e9ecef;"' : ''}>
                                                                             <strong>${param.display_name}</strong>
-                                                                            ${normalValues.rujukan !== '-' && normalValues.rujukan !== '' ? `<small class="text-muted d-block">${normalValues.rujukan}</small>` : ''}
+                                                                            ${normalValues.rujukan !== '-' && normalValues.rujukan !== '' ? `<small class="text-muted d-block">${normalValues.rujukan ?? ''}</small>` : ''}
                                                                             <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanUrine}" />
                                                                             ${judulUrine ? `<input type="hidden" name="judul[]" value="${judulUrine}" />` : ''}
                                                                             <input type="hidden" name="parameter_name[]" value="${param.nama}" />
@@ -2074,7 +2194,7 @@
                                                                             <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
                                                                         </td>
                                                                         <td class="col-2">
-                                                                            ${param.tipe_inputan === 'Text' ? `
+                                                                            ${param.tipe_inputan === 'text' ? `
                                                                                 <input type="text" name="hasil[]" 
                                                                                     class="form-control manualInput w-60 p-0 text-center" 
                                                                                     disabled value="${obxValues.hasilUtama || param.default || ''}" />
@@ -2097,7 +2217,7 @@
                                                                             </button>
                                                                         </td>
                                                                         <td class="col-2 duplo d1-column text-center" style="display: none;">
-                                                                            ${param.tipe_inputan === 'Text' ? `
+                                                                            ${param.tipe_inputan === 'text' ? `
                                                                                 <input type="text" name="duplo_d1[]" 
                                                                                     class="form-control d1 w-60 p-0 text-center" 
                                                                                     disabled value="${obxValues.duplo_d1 || ''}" />
@@ -2112,7 +2232,7 @@
                                                                             `}
                                                                         </td>
                                                                         <td class="col-2 duplo d2-column" style="display: none;">
-                                                                            ${param.tipe_inputan === 'Text' ? `
+                                                                            ${param.tipe_inputan === 'text' ? `
                                                                                 <input type="text" name="duplo_d2[]" 
                                                                                     class="form-control d2 w-60 p-0 text-center" 
                                                                                     disabled value="${obxValues.duplo_d2 || ''}" />
@@ -2127,7 +2247,7 @@
                                                                             `}
                                                                         </td>
                                                                         <td class="col-2 duplo d3-column" style="display: none;">
-                                                                            ${param.tipe_inputan === 'Text' ? `
+                                                                            ${param.tipe_inputan === 'text' ? `
                                                                                 <input type="text" name="duplo_d3[]" 
                                                                                     class="form-control d3 w-50 p-0 text-center" 
                                                                                     disabled value="${obxValues.duplo_d3 || ''}" />

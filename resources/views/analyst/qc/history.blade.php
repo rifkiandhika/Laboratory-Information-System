@@ -679,7 +679,7 @@ function initChart() {
         data: {
             labels: [],
             datasets: [{
-                label: 'QC Results History',
+                label: 'QC Results',
                 data: [],
                 borderColor: '#3b82f6',
                 backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -722,10 +722,12 @@ function initChart() {
                     callbacks: {
                         title: (ctx) => 'Date: ' + (ctx[0] ? ctx[0].label : ''),
                         label: function(ctx) {
-                            if (qcChart && qcChart.originalData && qcChart.originalData[ctx.dataIndex] !== null) {
-                                return 'Value: ' + Number(qcChart.originalData[ctx.dataIndex]).toFixed(2);
+                            // Tampilkan nilai asli dari originalData
+                            if (qcChart && qcChart.originalData && qcChart.originalData[ctx.dataIndex] !== null && qcChart.originalData[ctx.dataIndex] !== undefined) {
+                                const originalValue = qcChart.originalData[ctx.dataIndex];
+                                return 'Value: ' + Number(originalValue).toFixed(2);
                             }
-                            return 'Value: ' + (ctx.parsed && ctx.parsed.y !== undefined ? Number(ctx.parsed.y).toFixed(2) : '');
+                            return 'Value: N/A';
                         }
                     }
                 }
@@ -762,7 +764,7 @@ function initChart() {
                                 11: '+3SD',
                                 9: '+2SD', 
                                 7: '+1SD',
-                                5: 'Normal',
+                                5: 'Normal', // Changed from 'Normal' to 'Mean'
                                 3: '-1SD',
                                 1: '-2SD',
                                 '-1': '-3SD'
@@ -795,13 +797,13 @@ function initChart() {
                                     11: L.plus3sd,
                                     9: L.plus2sd,
                                     7: L.plus1sd,
-                                    5: L.standard,
+                                    5: L.mean, // Changed from L.standard to L.mean
                                     3: L.minus1sd,
                                     1: L.minus2sd,
                                     '-1': L.minus3sd
                                 };
                                 const numValue = mapping[value];
-                                return (numValue !== undefined && numValue !== null) ? numValue.toFixed(1) : '';
+                                return (numValue !== undefined && numValue !== null && isFinite(numValue)) ? numValue.toFixed(2) : '';
                             }
                             return '';
                         }
@@ -824,7 +826,7 @@ function initChart() {
                     '+3SD': { yPos: 11, color: '#dc2626', width: 2, dash: [] },
                     '+2SD': { yPos: 9, color: '#ea580c', width: 1, dash: [6,3] },
                     '+1SD': { yPos: 7, color: '#16a34a', width: 1, dash: [4,2] },
-                    'Normal': { yPos: 5, color: '#16a34a', width: 2, dash: [] },
+                    'Normal': { yPos: 5, color: '#16a34a', width: 2, dash: [] }, // Display as 'Normal'
                     '-1SD': { yPos: 3, color: '#16a34a', width: 1, dash: [4,2] },
                     '-2SD': { yPos: 1, color: '#ea580c', width: 1, dash: [6,3] },
                     '-3SD': { yPos: -1, color: '#dc2626', width: 2, dash: [] }
@@ -856,6 +858,7 @@ async function loadChartData() {
         if (qcChart) {
             qcChart.data.labels = [];
             qcChart.data.datasets[0].data = [];
+            qcChart.originalData = [];
             qcChart.controlLimits = null;
             qcChart.update();
         }
@@ -863,14 +866,28 @@ async function loadChartData() {
     }
 
     try {
-        // Load chart data for historical trend (multiple dates)
-        const response = await fetch(`/analyst/api/get-chart-data-history/${currentQcData.id}/${selectedParameter}`);
+        console.log(`Loading chart data for parameter: ${selectedParameter}, QC ID: ${currentQcData.id}`);
+        
+        const response = await fetch(`/analyst/api/get-chart-data/${currentQcData.id}/${selectedParameter}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('Chart data response:', data);
 
-        if (!data.success || !qcChart) return;
+        if (!data.success || !qcChart) {
+            console.warn('Chart data not successful or qcChart not initialized');
+            return;
+        }
 
         const controlResponse = await fetch(`/analyst/api/get-control-limits/${currentQcData.id}/${selectedParameter}`);
+        if (!controlResponse.ok) {
+            throw new Error(`Control limits HTTP error! status: ${controlResponse.status}`);
+        }
+        
         const controlData = await controlResponse.json();
+        console.log('Control limits response:', controlData);
 
         const labels = data.labels || [];
         const values = (data.values || []).map(v => {
@@ -879,10 +896,20 @@ async function loadChartData() {
             return isNaN(num) ? null : num;
         });
 
+        console.log('Processed values:', values);
+        console.log('Labels:', labels);
+
+        // Validasi data
+        if (labels.length === 0 && values.length === 0) {
+            console.warn('No data available for this parameter');
+            // Clear chart but don't return, still try to set up control limits
+        }
+
         let controlLimits = null;
 
         if (controlData.success && controlData.limits) {
             const limits = controlData.limits;
+            console.log('Raw control limits:', limits);
             
             const mean = parseFloat(limits.mean);
             const rangeRaw = parseFloat(limits.range);
@@ -890,30 +917,38 @@ async function loadChartData() {
             const btsAtas = parseFloat(limits.bts_atas);
             const btsBawah = parseFloat(limits.bts_bawah);
 
-            let center = standard;
+            // Use mean as the center point (changed from standard)
+            let center = mean;
             if (!isFinite(center)) {
-                center = mean;
+                center = standard; // Fallback to standard if mean is not available
             }
             if (!isFinite(center)) {
-                console.warn('No valid center point found');
-                return;
+                // Calculate from data if both mean and standard are not available
+                const validValues = values.filter(v => v !== null && isFinite(v));
+                if (validValues.length > 0) {
+                    center = validValues.reduce((a, b) => a + b, 0) / validValues.length;
+                } else {
+                    console.warn('No valid center point found, using 0');
+                    center = 0;
+                }
             }
 
             let sdRange = rangeRaw;
             if (!isFinite(sdRange) || sdRange <= 0) {
                 const validValues = values.filter(v => v !== null && isFinite(v));
                 if (validValues.length > 1) {
-                    const meanVal = validValues.reduce((a, b) => a + b, 0) / validValues.length;
-                    const variance = validValues.reduce((sum, val) => sum + Math.pow(val - meanVal, 2), 0) / (validValues.length - 1);
+                    const variance = validValues.reduce((sum, val) => sum + Math.pow(val - center, 2), 0) / (validValues.length - 1);
                     sdRange = Math.sqrt(variance);
+                    console.log('Calculated SD from data:', sdRange);
                 } else {
-                    sdRange = 1;
+                    sdRange = 1; // Default fallback
+                    console.warn('Using default SD range of 1');
                 }
             }
 
             controlLimits = {
-                mean: isFinite(mean) ? mean : center,
-                standard: center,
+                mean: center, // Use mean as the center
+                standard: isFinite(standard) ? standard : center,
                 range: sdRange,
                 bts_atas: isFinite(btsAtas) ? btsAtas : null,
                 bts_bawah: isFinite(btsBawah) ? btsBawah : null,
@@ -924,34 +959,73 @@ async function loadChartData() {
                 minus2sd: center - (sdRange * 2),
                 minus3sd: center - (sdRange * 3)
             };
+
+            console.log('Final control limits:', controlLimits);
+        } else {
+            console.warn('No control limits data available');
         }
 
-        // Map values to chart positions
-        let mappedValues = values;
-        if (controlLimits) {
+        // Convert values to chart positions
+        let mappedValues = [];
+        if (controlLimits && values.length > 0) {
             mappedValues = values.map(value => {
-                if (value === null || !isFinite(value)) return null;
+                if (value === null || value === undefined || !isFinite(value)) return null;
                 
-                const center = controlLimits.standard;
+                const center = controlLimits.mean; // Use mean as center
                 const sdRange = controlLimits.range;
+                
+                if (sdRange === 0) {
+                    return 5; // Return center position if no variation
+                }
+                
+                // Calculate SD position
                 const sdPosition = (value - center) / sdRange;
+                
+                // Map to chart range (-1 to 11), where 5 is the mean
                 const chartPosition = 5 + (sdPosition * 2);
+                
+                console.log(`Value ${value} -> SD pos ${sdPosition.toFixed(2)} -> Chart pos ${chartPosition.toFixed(2)}`);
                 
                 return chartPosition;
             });
+        } else if (values.length > 0) {
+            // If no control limits, map values directly but this shouldn't happen in normal cases
+            console.warn('No control limits available, cannot map values properly');
+            mappedValues = values.map(() => 5); // Put all at center
         }
 
+        console.log('Mapped values:', mappedValues);
+
+        // Update chart
         qcChart.originalData = values;
         qcChart.data.labels = labels;
         qcChart.data.datasets[0].data = mappedValues;
         qcChart.controlLimits = controlLimits;
 
         qcChart.update('none');
+        console.log('Chart updated successfully');
 
     } catch (err) {
-        console.error('Error loading chart data:', err);
+        console.error('Error loadChartData:', err);
+        
+        // Clear chart on error
+        if (qcChart) {
+            qcChart.data.labels = [];
+            qcChart.data.datasets[0].data = [];
+            qcChart.originalData = [];
+            qcChart.controlLimits = null;
+            qcChart.update();
+        }
     }
 }
+
+function resizeChart() {
+    if (qcChart) {
+        qcChart.resize();
+    }
+}
+
+window.addEventListener('resize', resizeChart);
 
 function changeParameter() {
     selectedParameter = document.getElementById('parameterSelector').value;
@@ -959,9 +1033,10 @@ function changeParameter() {
     document.getElementById('chartParameterName').textContent = displayName || 'Pilih Parameter';
     
     if (selectedParameter && currentQcData) {
-        document.getElementById('chartInfo').textContent = `Historical trend data untuk ${displayName} - LOT: ${currentQcData.no_lot}`;
+        document.getElementById('chartInfo').textContent = `Trend data untuk ${displayName} - LOT: ${currentQcData.no_lot}`;
+        console.log(`Parameter changed to: ${selectedParameter}`);
     } else {
-        document.getElementById('chartInfo').textContent = 'Select a parameter to view historical trend data';
+        document.getElementById('chartInfo').textContent = 'Select a parameter to view trend data';
     }
     
     loadChartData();
@@ -976,7 +1051,25 @@ function updateParameterSelector() {
             const displayName = getDisplayName(param.parameter);
             selector.innerHTML += `<option value="${param.parameter}">${displayName}</option>`;
         });
+        console.log('Parameter selector updated with', currentParameters.length, 'parameters');
+    } else {
+        console.warn('No parameters available for selector');
     }
+}
+
+// Helper function to debug chart state
+function debugChart() {
+    console.log('=== CHART DEBUG INFO ===');
+    console.log('qcChart exists:', !!qcChart);
+    console.log('selectedParameter:', selectedParameter);
+    console.log('currentQcData:', currentQcData);
+    console.log('currentParameters:', currentParameters);
+    if (qcChart) {
+        console.log('Chart data:', qcChart.data);
+        console.log('Original data:', qcChart.originalData);
+        console.log('Control limits:', qcChart.controlLimits);
+    }
+    console.log('========================');
 }
 
 function refreshChart() {

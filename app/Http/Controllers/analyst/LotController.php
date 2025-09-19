@@ -8,6 +8,7 @@ use App\Models\Qc;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class LotController extends Controller
 {
@@ -98,15 +99,19 @@ class LotController extends Controller
     public function updateComplete(Request $request, $id)
     {
         // Log data yang diterima untuk debugging
-        Log::info('Update data yang diterima:', $request->all());
+        Log::info('Data update yang diterima:', $request->all());
 
         try {
-            // Find existing LOT
+            // Cari quality control yang akan diupdate
             $qc = Qc::findOrFail($id);
 
-            // Validasi data (tanpa unique constraint untuk no_lot jika sama)
+            // Validasi data dengan rule khusus untuk update
             $validated = $request->validate([
-                'lot.no_lot' => 'required|string|unique:quality_controls,no_lot,' . $id,
+                'lot.no_lot' => [
+                    'required',
+                    'string',
+                    Rule::unique('quality_controls', 'no_lot')->ignore($id)
+                ],
                 'lot.name_control' => 'required|string',
                 'lot.level' => 'required|in:Low,Normal,High',
                 'lot.exp_date' => 'required|date',
@@ -127,7 +132,7 @@ class LotController extends Controller
         try {
             DB::beginTransaction();
 
-            // Update data LOT
+            // Update data quality_controls
             $qc->update([
                 'no_lot' => $validated['lot']['no_lot'],
                 'name_control' => $validated['lot']['name_control'],
@@ -140,10 +145,10 @@ class LotController extends Controller
 
             Log::info('QC updated with ID:', ['id' => $qc->id]);
 
-            // Hapus parameter lama
-            DetailLot::where('quality_control_id', $qc->id)->delete();
+            // Hapus detail lama
+            $qc->detailLots()->delete();
 
-            // Simpan parameter baru
+            // Simpan detail yang baru
             foreach ($validated['parameters'] as $paramName => $fields) {
                 DetailLot::create([
                     'quality_control_id' => $qc->id,
@@ -163,11 +168,11 @@ class LotController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Data Quality Control berhasil diupdate',
-                'data' => $qc->load('detailLots')
+                'data' => $qc->fresh()->load('detailLots')
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Error saat update data:', [
+            Log::error('Error saat mengupdate data:', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
@@ -176,7 +181,7 @@ class LotController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal update data: ' . $e->getMessage(),
+                'message' => 'Gagal mengupdate data: ' . $e->getMessage(),
                 'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
             ], 500);
         }
