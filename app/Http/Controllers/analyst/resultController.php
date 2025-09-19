@@ -225,7 +225,7 @@ class resultController extends Controller
                     $allowedDoctors = array_merge($allowedDoctors, $doktersInternal);
                 } elseif (in_array('All', $doktersInternal)) {
                     // Jika "Semua" dipilih untuk internal, ambil semua dokter internal
-                    $internalDoctors = \App\Models\Dokter::where('status', 'internal')
+                    $internalDoctors = dokter::where('status', 'internal')
                         ->pluck('nama_dokter')
                         ->toArray();
                     $allowedDoctors = array_merge($allowedDoctors, $internalDoctors);
@@ -236,7 +236,7 @@ class resultController extends Controller
                     $allowedDoctors = array_merge($allowedDoctors, $doktersExternal);
                 } elseif (in_array('All', $doktersExternal)) {
                     // Jika "Semua" dipilih untuk external, ambil semua dokter external
-                    $externalDoctors = \App\Models\Dokter::where('status', 'external')
+                    $externalDoctors = dokter::where('status', 'external')
                         ->pluck('nama_dokter')
                         ->toArray();
                     $allowedDoctors = array_merge($allowedDoctors, $externalDoctors);
@@ -269,7 +269,7 @@ class resultController extends Controller
             $processedMcuLabs = [];
 
             // Get all users for analyst lookup
-            $users = \App\Models\User::select('id', 'name', 'fee', 'feemcu')->get()->keyBy('name');
+            $users = User::select('id', 'name', 'fee', 'feemcu')->get()->keyBy('name');
 
             foreach ($results as $item) {
                 $deptId = $item->departments->id ?? $item->department;
