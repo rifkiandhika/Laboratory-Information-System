@@ -112,7 +112,7 @@
                         <tr>
                             <th rowspan="2">DATA LAPORAN</th>
                             <th rowspan="2">DOKTER</th>
-                            <th rowspan="2">FEE DOKTER</th>
+                            <th rowspan="2">FEE DOKTER / Pengirim</th>
                             <th rowspan="2">ANALIS</th>
                             <th rowspan="2">FEE ANALIS</th>
                             <th colspan="3" class="payment-header" data-type="BPJS">BPJS</th>

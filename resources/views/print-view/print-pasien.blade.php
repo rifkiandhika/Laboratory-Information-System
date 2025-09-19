@@ -446,12 +446,12 @@
                             <td>Asal Pasien</td>
                             <td>:</td>
                             <td>{{ $data_pasien->asal_ruangan }}</td>
-                            <td>Pengirim</td>
+                            <td>Dokter External / Pengirim</td>
                             <td>:</td>
                             <td>{{ $data_pasien->dokter_external ?? '-'}}</td>
                         </tr>
                         <tr>
-                            <td>Dokter Internal</td>
+                            <td>Dokter Internal / Pengirim</td>
                             <td>:</td>
                             <td colspan="4">{{ $data_pasien->kode_dokter ?? '-'}}</td>
                         </tr>

@@ -20,6 +20,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\pemeriksaan_pasien;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Jobs\SendPasienToLis;
 use App\Models\Department;
 use App\Models\DetailDepartment;
 use App\Models\dokter;
@@ -462,32 +463,17 @@ class pasienController extends Controller
 
     public function kirimLab(Request $request)
     {
-        // $data_pasien = pasien::all();
-        $pasien = pasien::where('no_lab', $request->no_lab)->first();
+        $pasien = Pasien::with(['pemeriksaan_pasien'])
+            ->where('no_lab', $request->no_lab)
+            ->firstOrFail();
 
-        $status = 'Telah Dibayar';
-        $history_proses = 'Payment';
-        // dd($data_pasien);
-        // foreach ($data_pasien as $pasien) {
-        // if ($pasien->status === 'Dikembalikan Analyst') {
-        //     $status = 'Telah Dibayar';
-        //     $history_proses = 'Additional Inspection Payment';
-
-        //     $pasien->update([
-        //         'status' => $status,
-        //     ]);
-        // }
-        // }
-
-        if ($pasien) {
-            $pasien->update(['status' => 'Telah Dibayar']);
-        }
-
-
+        // Update status pasien
+        $pasien->update(['status' => 'Telah Dibayar']);
 
         $no_pasien = $request->no_pasien ?? null;
         $diskon = $request->diskon ?? 0;
-        // dd($request);
+
+        // Simpan pembayaran
         DB::table('pembayarans')->insert([
             'no_lab' => $request->no_lab,
             'petugas' => $request->petugas,
@@ -503,16 +489,43 @@ class pasienController extends Controller
             'updated_at' => now(),
         ]);
 
-        historyPasien::create([
+        // Tambahkan riwayat pasien
+        HistoryPasien::create([
             'no_lab' => $request->no_lab,
-            'proses' => $history_proses,
+            'proses' => 'Payment',
             'tempat' => 'Loket',
             'waktu_proses' => now(),
         ]);
 
-        toast('Pembayaran Berhasil!!', 'success');
+        // Siapkan payload untuk dikirim ke LIS
+        $payload = [
+            'no_lab' => $pasien->no_lab,
+            'no_rm' => $pasien->no_rm,
+            'cito' => $pasien->cito,
+            'nik' => $pasien->nik,
+            'jenis_pelayanan' => $pasien->jenis_pelayanan,
+            'nama' => $pasien->nama,
+            'lahir' => $pasien->lahir,
+            'jenis_kelamin' => $pasien->jenis_kelamin,
+            'no_telp' => $pasien->no_telp,
+            'kode_dokter' => $pasien->kode_dokter,
+            'dokter_external' => $pasien->dokter_external,
+            'asal_ruangan' => $pasien->asal_ruangan,
+            'diagnosa' => $pasien->diagnosa,
+            'tanggal_masuk' => $pasien->tanggal_masuk,
+            'alamat' => $pasien->alamat,
+            'tanggal' => $pasien->tanggal,
+            'status' => $pasien->status,
+            'pemeriksaan' => $pasien->pemeriksaan_pasien->map(fn($p) => $p->toArray()),
+        ];
+
+        // Dispatch job ke queue
+        // SendPasienToLis::dispatch($payload);
+
+        toast('Pembayaran Berhasil', 'success');
         return redirect()->route('pasien.index');
     }
+
 
     public function checkin(Request $request)
     {

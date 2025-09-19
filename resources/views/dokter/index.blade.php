@@ -67,6 +67,15 @@
                                                             name="poli" required>
                                                     </div>
                                                     <div class="form-group">
+                                                        <label><b>Jabatan</b></label>
+                                                        <select name="jabatan" class="form-control" required>
+                                                            <option value="" selected hidden>Pilih Jabatan</option>
+                                                            <option value="Dokter Umum">Dokter Umum</option>
+                                                            <option value="Dokter Spesialis">Dokter Spesialis</option>
+                                                            <option value="Dokter Tamu">Dokter Tamu</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
                                                         <label><b>Phone Number</b></label>
                                                         <input class="form-control" placeholder="08xxxxxx"
                                                             type="number" name="no_telp" required>
@@ -109,6 +118,7 @@
                                             <th scope="col">Doctor Name</th>
                                             <th scope="col">Room</th>
                                             <th scope="col">Poli</th>
+                                            <th scope="col">Jabatan</th>
                                             <th scope="col">Phone Number</th>
                                             <th scope="col">Email</th>
                                             <th scope="col">Status</th>
@@ -125,6 +135,7 @@
                                                 <td>{{ $dokter->nama_dokter }}</td>
                                                 <td>{{ $dokter->polis->nama_poli }}</td>
                                                 <td>{{ $dokter->poli }}</td>
+                                                <td>{{ $dokter->jabatan }}</td>
                                                 <td>{{ $dokter->no_telp }}</td>
                                                 <td>{{ $dokter->email }}</td>
                                                 <td>{{ $dokter->status }}</td>
@@ -138,7 +149,8 @@
                                                         data-nip="{{ $dokter->nip }}"
                                                         data-telp="{{ $dokter->no_telp }}"
                                                         data-email="{{ $dokter->email }}"
-                                                        data-status="{{ $dokter->status }}">
+                                                        data-status="{{ $dokter->status }}"
+                                                        data-jabatan="{{ $dokter->jabatan }}">
                                                         <i class="bi bi-pencil-square"></i> Edit
                                                     </button>
 
@@ -207,6 +219,15 @@
                                                             name="poli" required>
                                                     </div>
                                                     <div class="form-group">
+                                                        <label><b>Jabatan</b></label>
+                                                        <select class="form-control" name="jabatan" id="Jabatan" required>
+                                                            <option value="" hidden>Pilih Jabatan</option>
+                                                            <option value="dokter">Dokter</option>
+                                                            <option value="bidan">Bidan</option>
+                                                            <option value="perawat">Perawat</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
                                                         <label><b>Phone Number</b></label>
                                                         <input class="form-control" id="telp" type="number"
                                                             name="no_telp" required>
@@ -258,6 +279,7 @@
             let telp = $(this).data('telp');
             let email = $(this).data('email');
             let status = $(this).data('status');
+            let jabatan = $(this).data('jabatan');
 
             // Set nilai ke form edit
             $('#kodedokter').val(kode);
@@ -268,6 +290,7 @@
             $('#telp').val(telp);
             $('#email').val(email);
             $('#EditStatus').val(status);
+            $('#Jabatan').val(jabatan);
 
             // Update action form
             $('#editFormdokter').attr('action', '/dokter/' + id);

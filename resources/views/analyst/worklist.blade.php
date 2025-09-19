@@ -2018,7 +2018,7 @@
                                                                         <td class="col-2">
                                                                             <input type="number" name="hasil[]" 
                                                                                 class="form-control manualInput w-60 p-0 text-center" 
-                                                                                disabled value="${obxValues.hasilUtama || ''}" 
+                                                                                value="${obxValues.hasilUtama || ''}" 
                                                                                 step="0.01" placeholder="" required />
                                                                         </td>
                                                                         <td class="col-1">

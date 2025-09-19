@@ -40,6 +40,7 @@ class DokterController extends Controller
             'id_poli' => 'required',
             'poli' => 'required',
             'status' => 'required',
+            'jabatan' => 'required',
             'no_telp' => 'required|unique:dokters,no_telp',
             'email' => 'required|unique:dokters,email'
         ]);
@@ -76,6 +77,7 @@ class DokterController extends Controller
             'id_poli' => 'required',
             'poli' => 'required',
             'status' => 'required',
+            'jabatan' => 'required',
             'no_telp' => ['required', Rule::unique('dokters')->ignore($id)],
             'email' => ['required', Rule::unique('dokters')->ignore($id)],
         ]);
@@ -90,6 +92,7 @@ class DokterController extends Controller
         $dokters->status = $request->status;
         $dokters->no_telp = $request->no_telp;
         $dokters->email = $request->email;
+        $dokters->jabatan = $request->jabatan;
         $dokters->save();
 
         toast('Data Berhasil di Update', 'success');

@@ -302,7 +302,10 @@ class resultController extends Controller
                             'mcu_package_id' => $packageId,
                             'package_name' => $packageName,
                             'dokter' => $namaDokter,
-                            'jasa_dokter' => $item->mcuPackage->jasa_dokter ?? 0,
+                            // default 0 semua
+                            'jasa_dokter' => 0,
+                            'jasa_bidan' => 0,
+                            'jasa_perawat' => 0,
                             'analyst' => $analystName,
                             'analyst_fee_percent' => $analystMcuFee,
                             'is_department_header' => false,
@@ -323,6 +326,16 @@ class resultController extends Controller
                             'umum_analyst_fee' => 0,
                         ];
                     }
+
+                    // tentukan jasa berdasarkan jabatan
+                    if ($item->jabatan == 'dokter') {
+                        $pivoted[$packageKey]['jasa_dokter'] = $item->mcuPackage->jasa_dokter ?? 0;
+                    } elseif ($item->jabatan == 'bidan') {
+                        $pivoted[$packageKey]['jasa_bidan'] = $item->mcuPackage->jasa_bidan ?? 0;
+                    } elseif ($item->jabatan == 'perawat') {
+                        $pivoted[$packageKey]['jasa_perawat'] = $item->mcuPackage->jasa_perawat ?? 0;
+                    }
+
 
                     $hargaPackage = $item->mcuPackage->harga_final ?? 0;
 
@@ -385,10 +398,23 @@ class resultController extends Controller
                     }
                 }
                 // --- ✅ Non-MCU ---
+                // --- ✅ Non-MCU ---
                 else {
                     $displayName = $item->nama_parameter;
                     $harga = $item->detailDepartment->harga ?? 0;
-                    $jasaDokter = $item->detailDepartment->jasa_dokter ?? 0;
+
+                    // 🔍 Ambil dokter dari tabel berdasarkan nama
+                    $dokter = dokter::where('nama_dokter', $item->nama_dokter)->first();
+                    $jabatan = strtolower($dokter->jabatan ?? 'dokter'); // default dokter
+
+                    // Tentukan jasa berdasarkan jabatan
+                    if ($jabatan === 'bidan') {
+                        $jasa = $item->detailDepartment->jasa_bidan ?? 0;
+                    } elseif ($jabatan === 'perawat') {
+                        $jasa = $item->detailDepartment->jasa_perawat ?? 0;
+                    } else {
+                        $jasa = $item->detailDepartment->jasa_dokter ?? 0;
+                    }
 
                     if (strtolower($item->nama_parameter) === 'all') {
                         $displayName = $item->detailDepartment->nama_pemeriksaan ?? 'Hematologi';
@@ -404,7 +430,7 @@ class resultController extends Controller
                             'mcu_package_id' => null,
                             'package_name' => null,
                             'dokter' => $namaDokter,
-                            'jasa_dokter' => $jasaDokter,
+                            'jasa_dokter' => $jasa, // ✅ sesuai jabatan
                             'analyst' => $analystName,
                             'analyst_fee_percent' => $analystFee,
                             'is_department_header' => false,

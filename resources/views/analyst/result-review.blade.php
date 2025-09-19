@@ -614,8 +614,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(res => {
                     if (res.status === 'success') {
                         // Debug: Log data untuk melihat struktur
-                        console.log('API Response:', res);
-                        console.log('Hasil Pemeriksaan:', res.data.hasil_pemeriksaan);
+                        // console.log('API Response:', res);
+                        // console.log('Hasil Pemeriksaan:', res.data.hasil_pemeriksaan);
                         
                         const data_pasien = res.data;
                         const data_pemeriksaan_pasien = res.data.dpp;
@@ -1658,7 +1658,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                 </td>
                                                 <td class="col-3 flag-cell">
                                                     ${initialFlag}
-                                                    <input type="hidden" name="flag[]" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
+                                                    <input type="hidden" name="" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
                                                 </td>
                                                 <td>
                                                     <input type="hidden" name="satuan[]" value="${param.satuan}" readonly />
@@ -2156,7 +2156,7 @@ window.getResultTableContent = getResultTableContent;
     function checkAndShowDuploColumns() {
         const accordion = document.getElementById('accordionPemeriksaan');
         if (!accordion) {
-            console.log('Accordion not found');
+            // console.log('Accordion not found');
             return;
         }
         
@@ -2164,11 +2164,11 @@ window.getResultTableContent = getResultTableContent;
         // const d2Cells = accordion.querySelectorAll('.d2-column');
         // const d3Cells = accordion.querySelectorAll('.d3-column');
         
-        console.log('Found duplo cells:', {
-            d1: d1Cells.length,
-            d2: d2Cells.length,
-            d3: d3Cells.length
-        });
+        // console.log('Found duplo cells:', {
+        //     d1: d1Cells.length,
+        //     d2: d2Cells.length,
+        //     d3: d3Cells.length
+        // });
         
         let hasD1 = false;
         let hasD2 = false;
@@ -2176,27 +2176,27 @@ window.getResultTableContent = getResultTableContent;
         
         // Check if any D1, D2, D3 values exist
         const duploInputs = accordion.querySelectorAll('input.d1, input.d2, input.d3');
-        console.log('Found duplo inputs:', duploInputs.length);
+        // console.log('Found duplo inputs:', duploInputs.length);
         
         duploInputs.forEach(input => {
             const value = input.value ? input.value.trim() : '';
             if (value !== '' && value !== '0' && value !== '0.00') {
                 if (input.classList.contains('d1')) {
                     hasD1 = true;
-                    console.log('Found D1 data:', value);
+                    // console.log('Found D1 data:', value);
                 }
                 if (input.classList.contains('d2')) {
                     hasD2 = true;
-                    console.log('Found D2 data:', value);
+                    // console.log('Found D2 data:', value);
                 }
                 if (input.classList.contains('d3')) {
                     hasD3 = true;
-                    console.log('Found D3 data:', value);
+                    // console.log('Found D3 data:', value);
                 }
             }
         });
         
-        console.log('Duplo data status:', { hasD1, hasD2, hasD3 });
+        // console.log('Duplo data status:', { hasD1, hasD2, hasD3 });
         
         // Always show all duplo columns regardless of data availability
         d1Cells.forEach(cell => {
@@ -2220,7 +2220,7 @@ window.getResultTableContent = getResultTableContent;
             }
         });
         
-        console.log('All duplo columns are now visible');
+        // console.log('All duplo columns are now visible');
     }
 });
 </script>

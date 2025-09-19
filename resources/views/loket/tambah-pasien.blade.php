@@ -82,21 +82,21 @@
                                             <input type="number" class="form-control" name="notelepon" placeholder="Add Phone Number" required>
                                     </div>
                                     <div class="col-md-6 mb-6">
-                                        <label for="doctorSelect" class="fw-bold">Doctor Internal</label>
+                                        <label for="doctorSelect" class="fw-bold">Doctor Internal / Pengirim</label>
                                         <select class="form-select" id="doctorSelect" name="dokter_internal">
                                             <option value="" hidden>Choose...</option>
                                             @foreach ($dokterInternal as $dokter)
-                                                <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }}</option>
+                                                <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }} ({{ $dokter->jabatan }})</option>
                                             @endforeach
                                         </select>
                                     </div>
 
                                     <div class="col-md-6 mb-6">
-                                        <label for="externalDoctorSelect" class="fw-bold">Doctor External</label>
+                                        <label for="externalDoctorSelect" class="fw-bold">Doctor External / Pengirim</label>
                                         <select class="form-select" id="externalDoctorSelect" name="dokter_external">
                                             <option value="" hidden>Choose...</option>
                                             @foreach ($dokterExternal as $dokter)
-                                                <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }}</option>
+                                                <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }} ({{ $dokter->jabatan }})</option>
                                             @endforeach
                                         </select>
                                     </div>
