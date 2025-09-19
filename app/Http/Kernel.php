@@ -69,6 +69,7 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         // Middleware lainnya...
         'role' => \App\Http\Middleware\CheckRole::class,
+        'verify.api.token' => \App\Http\Middleware\VerifyApiToken::class,
 
         'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
         'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,

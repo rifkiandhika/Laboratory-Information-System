@@ -88,8 +88,54 @@ class pasienController extends Controller
     }
 
 
+    public function syncFromExternal(Request $request)
+    {
+        $validated = $request->validate([
+            'no_lab' => 'required',
+            'nama' => 'required',
+            'lahir' => 'required|date',
+            'jenis_kelamin' => 'required',
+            'pemeriksaan' => 'array|required',
+        ]);
 
+        // Simpan/Update pasien
+        $pasien = pasien::updateOrCreate(
+            ['no_lab' => $validated['no_lab']],
+            collect($request->all())->except(['pemeriksaan', 'reports', 'histories'])->toArray()
+        );
 
+        // Simpan pemeriksaan
+        foreach ($request->pemeriksaan as $periksa) {
+            pemeriksaan_pasien::updateOrCreate(
+                [
+                    'no_lab' => $pasien->no_lab,
+                    'id_parameter' => $periksa['id_parameter']
+                ],
+                $periksa
+            );
+        }
+
+        // Reports
+        foreach ($request->reports ?? [] as $report) {
+            Report::updateOrCreate(
+                [
+                    'nolab' => $report['nolab'],
+                    'id_parameter' => $report['id_parameter'],
+                ],
+                $report
+            );
+        }
+
+        // Histories
+        foreach ($request->histories ?? [] as $history) {
+            historyPasien::create($history);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data pasien berhasil diterima & disinkronkan.'
+        ]);
+    }
 
 
 

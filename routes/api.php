@@ -50,3 +50,5 @@ route::get('/collection/post', [spesimentHendlingController::class, 'postCollect
 
 Route::get('/qc/{id}', [QcController::class, 'getQcUnified']);
 Route::get('/get-parameters/{qcId}', [QcController::class, 'getParameters']);
+
+Route::middleware('verify.api.token')->post('/pasien/sync', [PasienController::class, 'syncFromExternal']);
