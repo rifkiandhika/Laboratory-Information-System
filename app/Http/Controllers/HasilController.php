@@ -35,7 +35,7 @@ class HasilController extends Controller
                     'no_telp'         => $data_pasien['no_telp'] ?? null,
                     'asal_ruangan'    => $data_pasien['asal_ruangan'] ?? null,
                     'jenis_pelayanan' => $data_pasien['jenis_pelayanan'] ?? null,
-                    'dokter_internal' => $data_pasien['dokter_internal'] ?? null,
+                    'kode_dokter' => $data_pasien['kode_dokter'] ?? null,
                     'dokter_external' => $data_pasien['dokter_external'] ?? null,
                     'tanggal_masuk'   => $data_pasien['tanggal_masuk'] ?? now(),
                     'status'          => $data_pasien['status'] ?? 'Result Review',
@@ -47,7 +47,6 @@ class HasilController extends Controller
                 HasilPemeriksaan::updateOrCreate(
                     [
                         'no_lab' => $pasien->no_lab,
-                        'id_parameter' => $h['id_parameter'],
                     ],
                     [
                         'nama_pemeriksaan' => $h['nama_pemeriksaan'],
@@ -116,7 +115,7 @@ class HasilController extends Controller
 
     public function kirimHasil($no_lab)
     {
-        $pasien = Pasien::with(['hasil_pemeriksaan', 'dokter'])->where('no_lab', $no_lab)->firstOrFail();
+        $pasien = pasien::with(['hasil_pemeriksaan', 'dokter'])->where('no_lab', $no_lab)->firstOrFail();
 
         // Buat data pasien
         $data_pasien = [
@@ -131,7 +130,7 @@ class HasilController extends Controller
             'no_telp'       => $pasien->no_telp,
             'asal_ruangan'  => $pasien->asal_ruangan,
             'jenis_pelayanan' => $pasien->jenis_pelayanan,
-            'dokter_internal' => $pasien->dokter?->nama_dokter,
+            'kode_dokter' => $pasien->kode_dokter,
             'dokter_external' => $pasien->dokter_external,
             'tanggal_masuk' => $pasien->tanggal_masuk,
             'status'        => $pasien->status,
@@ -140,7 +139,6 @@ class HasilController extends Controller
         // Buat data hasil pemeriksaan
         $data_hasil = $pasien->hasil_pemeriksaan->map(function ($h) {
             return [
-                'id_parameter'   => $h->id_parameter,
                 'nama_pemeriksaan' => $h->nama_pemeriksaan,
                 'hasil'          => $h->hasil,
                 'flag'           => $h->flag,
