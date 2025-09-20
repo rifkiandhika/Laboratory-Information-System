@@ -32,6 +32,7 @@ Route::get('/get-data-pasien/{lab}', [pasienController::class, 'getDataPasien'])
 Route::get('/get-data-diagnosa', [pasienController::class, 'getDataDiagnosa']);
 Route::get('/get-data-qc/{lab}', [QcController::class, 'getDataQc']);
 
+
 // Endpoint untuk Check data apakah masuk atau belum
 
 Route::get('/check-data', [ApiController::class, 'checkData']);
@@ -56,3 +57,7 @@ Route::get('/get-parameters/{qcId}', [QcController::class, 'getParameters']);
 Route::middleware('verify.api.token')->post('/pasien/sync', [PasienController::class, 'syncFromExternal']);
 
 Route::middleware('verify.api.token')->post('/hasil/sync', [HasilController::class, 'syncFromExternal']);
+
+Route::get('/get-hasil/{lab}', [HasilController::class, 'getDataHasil']);
+
+Route::post('/store-hasil', [HasilController::class, 'storeHasil']);
