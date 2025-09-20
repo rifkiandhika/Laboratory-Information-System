@@ -31,21 +31,21 @@ class SendHasilToLis implements ShouldQueue
     {
         try {
             $response = Http::withToken(env('LIS_API_TOKEN'))
-                ->timeout(10)
+                ->timeout(15)
                 ->post(env('LIS_API_URL') . '/hasil/sync', $this->payload);
 
             if ($response->successful()) {
-                Log::info("Hasil {$this->payload['no_lab']} terkirim ke LIS");
+                Log::info("✅ Hasil untuk pasien {$this->payload['pasien']['no_lab']} terkirim ke LIS");
             } else {
-                Log::warning("Gagal kirim hasil ke LIS", [
+                Log::warning("⚠️ Gagal kirim hasil ke LIS", [
                     'status' => $response->status(),
                     'body' => $response->body()
                 ]);
-                $this->release(60);
+                $this->release(60); // coba ulang setelah 1 menit
             }
         } catch (\Exception $e) {
-            Log::error("Error kirim hasil ke LIS: " . $e->getMessage());
-            $this->release(120);
+            Log::error("❌ Error kirim hasil ke LIS: " . $e->getMessage());
+            $this->release(120); // coba ulang setelah 2 menit
         }
     }
 }
