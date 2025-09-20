@@ -520,7 +520,7 @@ class pasienController extends Controller
         ];
 
         // Dispatch job ke queue
-        // SendPasienToLis::dispatch($payload);
+        SendPasienToLis::dispatch($payload);
 
         toast('Pembayaran Berhasil', 'success');
         return redirect()->route('pasien.index');
