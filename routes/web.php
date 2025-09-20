@@ -20,6 +20,7 @@ use App\Http\Controllers\analyst\vDokterController;
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\department\DepartmentController;
 use App\Http\Controllers\DokterController;
+use App\Http\Controllers\HasilController;
 use App\Http\Controllers\loket\DataPasienController;
 use App\Http\Controllers\mcu\McuPackageController as McuMcuPackageController;
 use App\Http\Controllers\McuPackageController;
@@ -135,6 +136,7 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
     Route::post('/worklist/end/{id}', [worklistController::class, 'end'])->name('worklist.end');
     Route::post('/worklist/update-hasil/{no_lab}', [WorklistController::class, 'updateHasil'])
         ->name('worklist.update-hasil');
+    Route::post('/hasil/kirim/{no_lab}', [HasilController::class, 'kirimHasil'])->name('hasil.kirim');
     // Route Dokter
     Route::resource('vdokter', vDokterController::class);
     Route::post('/dokter/back/{id}', [vDokterController::class, 'back'])->name('dokter.back');

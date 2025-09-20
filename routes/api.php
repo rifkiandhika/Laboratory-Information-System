@@ -9,6 +9,7 @@ use App\Http\Controllers\analyst\spesimentHendlingController;
 use App\Http\Controllers\analyst\worklistController;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\department\DepartmentController;
+use App\Http\Controllers\HasilController;
 use App\Http\Controllers\mcu\McuPackageController;
 
 /*
@@ -54,4 +55,4 @@ Route::get('/get-parameters/{qcId}', [QcController::class, 'getParameters']);
 
 Route::middleware('verify.api.token')->post('/pasien/sync', [PasienController::class, 'syncFromExternal']);
 
-Route::middleware('verify.api.token')->post('/hasil/sync', [resultController::class, 'syncFromExternal']);
+Route::middleware('verify.api.token')->post('/hasil/sync', [HasilController::class, 'syncFromExternal']);

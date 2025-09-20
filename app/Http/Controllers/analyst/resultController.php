@@ -106,53 +106,6 @@ class resultController extends Controller
         ));
     }
 
-    public function syncFromExternal(Request $request)
-    {
-        $validated = $request->validate([
-            'no_lab' => 'required',
-            'hasil' => 'array|required'
-        ]);
-
-        foreach ($request->hasil as $h) {
-            HasilPemeriksaan::updateOrCreate(
-                [
-                    'no_lab' => $request->no_lab,
-                    'id_parameter' => $h['id_parameter']
-                ],
-                $h
-            );
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Hasil pemeriksaan berhasil diterima.'
-        ]);
-    }
-
-    public function kirimHasil($no_lab)
-    {
-        $pasien = Pasien::with('hasil_pemeriksaan')->where('no_lab', $no_lab)->firstOrFail();
-
-        $payload = [
-            'no_lab' => $pasien->no_lab,
-            'hasil' => $pasien->hasil_pemeriksaan->map(function ($h) {
-                return [
-                    'id_parameter' => $h->id_parameter,
-                    'hasil' => $h->hasil,
-                    'flag' => $h->flag,
-                    'satuan' => $h->satuan,
-                    'nilai_rujukan' => $h->nilai_rujukan,
-                    'tanggal_selesai' => $h->tanggal_selesai,
-                    'catatan' => $h->catatan,
-                ];
-            })->toArray()
-        ];
-
-        SendHasilToLis::dispatch($payload);
-
-        return back()->with('success', 'Hasil berhasil dikirim ke LIS.');
-    }
-
 
 
 
