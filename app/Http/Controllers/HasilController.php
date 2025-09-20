@@ -7,44 +7,74 @@ use App\Models\HasilPemeriksaan;
 use App\Models\pasien;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HasilController extends Controller
 {
     public function syncFromExternal(Request $request)
     {
         $validated = $request->validate([
-            'no_lab' => 'required|string',
-            'hasil' => 'required|array',
-            'hasil.*.nama_pemeriksaan' => 'required|string',
-            'hasil.*.hasil' => 'nullable|string',
-            'hasil.*.flag' => 'nullable|string',
-            'hasil.*.satuan' => 'nullable|string',
-            'hasil.*.nilai_rujukan' => 'nullable|string',
-            'hasil.*.tanggal_selesai' => 'nullable|date',
-            'hasil.*.catatan' => 'nullable|string',
+            'pasien' => 'required|array',
+            'hasil'  => 'required|array',
         ]);
 
-        foreach ($validated['hasil'] as $h) {
-            HasilPemeriksaan::updateOrCreate(
+        DB::beginTransaction();
+        try {
+            // ===== 1. Simpan / update pasien =====
+            $data_pasien = $validated['pasien'];
+
+            $pasien = pasien::updateOrCreate(
+                ['no_lab' => $data_pasien['no_lab']],
                 [
-                    'no_lab' => $validated['no_lab'],
-                    'nama_pemeriksaan' => $h['nama_pemeriksaan'],
-                ],
-                [
-                    'hasil' => $h['hasil'] ?? null,
-                    'flag' => $h['flag'] ?? null,
-                    'satuan' => $h['satuan'] ?? null,
-                    'range' => $h['nilai_rujukan'] ?? null,
-                    'tanggal_selesai' => $h['tanggal_selesai'] ?? null,
-                    'note' => $h['catatan'] ?? null,
+                    'no_rm'           => $data_pasien['no_rm'] ?? null,
+                    'nama'            => $data_pasien['nama'],
+                    'nik'             => $data_pasien['nik'] ?? null,
+                    'lahir'           => $data_pasien['lahir'],
+                    'jenis_kelamin'   => $data_pasien['jenis_kelamin'],
+                    'alamat'          => $data_pasien['alamat'] ?? null,
+                    'no_telp'         => $data_pasien['no_telp'] ?? null,
+                    'asal_ruangan'    => $data_pasien['asal_ruangan'] ?? null,
+                    'jenis_pelayanan' => $data_pasien['jenis_pelayanan'] ?? null,
+                    'dokter_internal' => $data_pasien['dokter_internal'] ?? null,
+                    'dokter_external' => $data_pasien['dokter_external'] ?? null,
+                    'tanggal_masuk'   => $data_pasien['tanggal_masuk'] ?? now(),
+                    'status'          => $data_pasien['status'] ?? 'Result Review',
                 ]
             );
-        }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Hasil pemeriksaan berhasil diterima dan disimpan'
-        ]);
+            // ===== 2. Simpan hasil pemeriksaan =====
+            foreach ($validated['hasil'] as $h) {
+                HasilPemeriksaan::updateOrCreate(
+                    [
+                        'no_lab' => $pasien->no_lab,
+                        'id_parameter' => $h['id_parameter'],
+                    ],
+                    [
+                        'nama_pemeriksaan' => $h['nama_pemeriksaan'],
+                        'hasil'            => $h['hasil'],
+                        'flag'             => $h['flag'] ?? null,
+                        'satuan'           => $h['satuan'] ?? null,
+                        'nilai_rujukan'    => $h['nilai_rujukan'] ?? null,
+                        'tanggal_selesai'  => $h['tanggal_selesai'] ?? now(),
+                        'note'             => $h['catatan'] ?? null,
+                    ]
+                );
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => '✅ Data pasien & hasil berhasil diterima dan disimpan.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => '❌ Terjadi kesalahan saat menyimpan data.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function getDataHasil(Request $request, $lab)
@@ -129,9 +159,6 @@ class HasilController extends Controller
 
         // Dispatch job ke LIS
         SendHasilToLis::dispatch($payload);
-
-        // Update status pasien di Muslimat
-        $pasien->update(['status' => 'Result Review']);
 
         return back()->with('success', 'Data pasien & hasil berhasil dikirim ke LIS.');
     }
