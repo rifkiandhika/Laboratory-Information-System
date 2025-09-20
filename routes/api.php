@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\analyst\QcController;
+use App\Http\Controllers\analyst\resultController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\loket\pasienController;
@@ -52,3 +53,5 @@ Route::get('/qc/{id}', [QcController::class, 'getQcUnified']);
 Route::get('/get-parameters/{qcId}', [QcController::class, 'getParameters']);
 
 Route::middleware('verify.api.token')->post('/pasien/sync', [PasienController::class, 'syncFromExternal']);
+
+Route::middleware('verify.api.token')->post('/hasil/sync', [resultController::class, 'syncFromExternal']);
