@@ -46,19 +46,32 @@ class HasilController extends Controller
             foreach ($validated['hasil'] as $h) {
                 HasilPemeriksaan::updateOrCreate(
                     [
-                        'no_lab' => $pasien->no_lab,
+                        'no_lab'           => $h['no_lab'],
+                        'nama_pemeriksaan' => $h['nama_pemeriksaan'],
                     ],
                     [
-                        'nama_pemeriksaan' => $h['nama_pemeriksaan'],
-                        'hasil'            => $h['hasil'],
-                        'flag'             => $h['flag'] ?? null,
-                        'satuan'           => $h['satuan'] ?? null,
-                        'nilai_rujukan'    => $h['nilai_rujukan'] ?? null,
-                        'tanggal_selesai'  => $h['tanggal_selesai'] ?? now(),
-                        'note'             => $h['catatan'] ?? null,
+                        'no_rm'        => $h['no_rm'] ?? null,
+                        'nama'         => $h['nama'] ?? null,
+                        'ruangan'      => $h['ruangan'] ?? null,
+                        'nama_dokter'  => $h['nama_dokter'] ?? null,
+                        'department'   => $h['department'] ?? null,
+                        'judul'        => $h['judul'] ?? null,
+                        'hasil'        => $h['hasil'] ?? null,
+                        'note'         => $h['note'] ?? null,
+                        'kesimpulan'   => $h['kesimpulan'] ?? null,
+                        'saran'        => $h['saran'] ?? null,
+                        'duplo_dx'     => $h['duplo_dx'] ?? null,
+                        'duplo_d1'     => $h['duplo_d1'] ?? null,
+                        'duplo_d2'     => $h['duplo_d2'] ?? null,
+                        'duplo_d3'     => $h['duplo_d3'] ?? null,
+                        'flag'         => $h['flag'] ?? null,
+                        'satuan'       => $h['satuan'] ?? null,
+                        'range'        => $h['range'] ?? null,
+                        'tanggal_selesai' => $h['tanggal_selesai'] ?? now(),
                     ]
                 );
             }
+
 
             DB::commit();
 
@@ -115,49 +128,64 @@ class HasilController extends Controller
 
     public function kirimHasil($no_lab)
     {
-        $pasien = pasien::with(['hasil_pemeriksaan', 'dokter'])->where('no_lab', $no_lab)->firstOrFail();
+        $pasien = pasien::with(['hasil_pemeriksaan', 'dokter'])
+            ->where('no_lab', $no_lab)
+            ->firstOrFail();
 
-        // Buat data pasien
+        // === Data pasien ===
         $data_pasien = [
-            'no_lab'        => $pasien->no_lab,
-            'no_rm'         => $pasien->no_rm,
-            'nama'          => $pasien->nama,
-            'nik'           => $pasien->nik,
-            'lahir'         => $pasien->lahir,
-            'umur'          => \Carbon\Carbon::parse($pasien->lahir)->age,
-            'jenis_kelamin' => $pasien->jenis_kelamin,
-            'alamat'        => $pasien->alamat,
-            'no_telp'       => $pasien->no_telp,
-            'asal_ruangan'  => $pasien->asal_ruangan,
+            'no_lab'          => $pasien->no_lab,
+            'no_rm'           => $pasien->no_rm,
+            'nama'            => $pasien->nama,
+            'nik'             => $pasien->nik,
+            'lahir'           => $pasien->lahir,
+            'umur'            => \Carbon\Carbon::parse($pasien->lahir)->age,
+            'jenis_kelamin'   => $pasien->jenis_kelamin,
+            'alamat'          => $pasien->alamat,
+            'no_telp'         => $pasien->no_telp,
+            'asal_ruangan'    => $pasien->asal_ruangan,
             'jenis_pelayanan' => $pasien->jenis_pelayanan,
-            'kode_dokter' => $pasien->kode_dokter,
+            'kode_dokter'     => $pasien->kode_dokter,
             'dokter_external' => $pasien->dokter_external,
-            'tanggal_masuk' => $pasien->tanggal_masuk,
-            'status'        => $pasien->status,
+            'tanggal_masuk'   => $pasien->tanggal_masuk,
+            'status'          => $pasien->status,
         ];
 
-        // Buat data hasil pemeriksaan
+        // === Data hasil pemeriksaan ===
         $data_hasil = $pasien->hasil_pemeriksaan->map(function ($h) {
             return [
+                'no_lab'          => $h->no_lab,
+                'no_rm'           => $h->no_rm,
+                'nama'            => $h->nama,
+                'ruangan'         => $h->ruangan,
+                'nama_dokter'     => $h->nama_dokter,
+                'department'      => $h->department,
+                'judul'           => $h->judul,
                 'nama_pemeriksaan' => $h->nama_pemeriksaan,
-                'hasil'          => $h->hasil,
-                'flag'           => $h->flag,
-                'satuan'         => $h->satuan,
-                'nilai_rujukan'  => $h->range,
+                'hasil'           => $h->hasil,
+                'note'            => $h->note,
+                'kesimpulan'      => $h->kesimpulan,
+                'saran'           => $h->saran,
+                'duplo_dx'        => $h->duplo_dx,
+                'duplo_d1'        => $h->duplo_d1,
+                'duplo_d2'        => $h->duplo_d2,
+                'duplo_d3'        => $h->duplo_d3,
+                'flag'            => $h->flag,
+                'satuan'          => $h->satuan,
+                'range'           => $h->range,
                 'tanggal_selesai' => $h->tanggal_selesai,
-                'catatan'        => $h->note,
             ];
         })->toArray();
 
-        // Gabungkan jadi payload
+        // === Gabungkan payload ===
         $payload = [
             'pasien' => $data_pasien,
             'hasil'  => $data_hasil,
         ];
 
-        // Dispatch job ke LIS
+        // Kirim via queue
         SendHasilToLis::dispatch($payload);
 
-        return back()->with('success', 'Data pasien & hasil berhasil dikirim ke LIS.');
+        return back()->with('success', '✅ Data pasien & semua hasil berhasil dikirim ke LIS.');
     }
 }
