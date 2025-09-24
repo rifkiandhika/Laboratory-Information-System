@@ -98,7 +98,7 @@ Dashboard|Admin
                         <div class="card-header py-3">
                             <div class="d-flex justify-content-between">
                                 <h6 class="m-0 font-weight-bold" style="color: #96B6C5;">New User</h6>
-                                <a href="/demo/adminlist" class="btn btn-xs btn-primary">view all</a>
+                                {{-- <a href="#" class="btn btn-xs btn-primary">view all</a> --}}
                             </div>
                         </div>
                         <div class="card-body">
@@ -110,9 +110,6 @@ Dashboard|Admin
                                             <th scope="col">Name</th>
                                             <th scope="col">Username</th>
                                             <th scope="col">Email</th>
-                                            <th scope="col">Role</th>
-                                            <th scope="col">Access</th>
-                                            <th scope="col">Joined At</th>
                                         </tr>
                                     </thead>
                                     <tbody style="font-size: 14px">
@@ -122,14 +119,6 @@ Dashboard|Admin
                                                 <td>{{ $User->name }}</td>
                                                 <td>{{ $User->username }}</td>
                                                 <td>{{ $User->email }}</td>
-                                                <td>{{ $User->role }}</td>
-                                                <td>
-                                                    <span class="badge bg-info">admin</span>
-                                                    <span class="badge bg-primary">loket</span>
-                                                    <span class="badge bg-warning">lab</span>
-                                                    <span class="badge bg-success">dokter</span>
-                                                </td>
-                                                <td>{{ $User->created_at }}</td>
 
                                             </tr>
                                         @endforeach
