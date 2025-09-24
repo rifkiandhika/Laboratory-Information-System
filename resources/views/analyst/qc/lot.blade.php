@@ -502,9 +502,9 @@
                 <div class="lot-header ${editHeaderClass}">
                     <div class="d-flex gap-2 align-items-center">
                         ${editIndicator}
-                        <button class="btn btn-info btn-action" onclick="editLot('${lotId}')">
+                        {{-- <button class="btn btn-info btn-action" onclick="editLot('${lotId}')">
                             Edit
-                        </button>
+                        </button> --}}
                         <button class="btn btn-warning btn-action" onclick="printLot('${lotId}')">
                             Print  
                         </button>

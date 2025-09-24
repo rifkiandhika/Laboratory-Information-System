@@ -75,26 +75,14 @@ class resultController extends Controller
             }
         }
 
-        // Cari user dokter / dokter external
-        // Cari user dokter / dokter external
+        // Ambil dokter internal saja
         $userDokter = null;
         $dokterName = null;
 
-        if (!empty($data_pasien->dokter_external)) {
-            // Kalau ada dokter_external
-            $dokterName = $data_pasien->dokter_external;
-            $userDokter = User::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($dokterName))])->first();
-
-            // Jika tidak ditemukan di tabel users, abaikan dokter_external
-            if (!$userDokter) {
-                $dokterName = null;
-            }
-        } elseif ($data_pasien->dokter) {
-            // Kalau tidak ada dokter_external, pakai dokter dari relasi
+        if ($data_pasien->dokter) {
             $dokterName = $data_pasien->dokter->nama_dokter;
             $userDokter = User::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($dokterName))])->first();
         }
-
 
         return view('print-view.print-pasien', compact(
             'data_pasien',
@@ -105,6 +93,7 @@ class resultController extends Controller
             'dokterName'
         ));
     }
+
 
 
 

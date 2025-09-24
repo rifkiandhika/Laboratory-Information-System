@@ -627,9 +627,13 @@
                     </td>
                     <td class="flag">
                         @if(strtolower($hasil->flag) === 'high')
-                            <i class="ti ti-arrow-up text-danger"></i> H
+                            <i class="ti ti-arrow-up text-danger"></i>
                         @elseif(strtolower($hasil->flag) === 'low')
-                            <i class="ti ti-arrow-down text-primary"></i> L
+                            <i class="ti ti-arrow-down text-primary"></i>
+                        @elseif(strtolower($hasil->flag) === 'high*')
+                            <i class="ti ti-arrow-up text-danger">*</i>
+                        @elseif(strtolower($hasil->flag) === 'low*')
+                            <i class="ti ti-arrow-down text-primary">*</i>
                         @endif
                     </td>
                     <td class="text-center">{{ $hasil->satuan ?? '-' }}</td>
@@ -645,78 +649,87 @@
         </div>
         
         @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->note)
-            <table class="note-section">
-                <tr>
-                    <td><b>Catatan :</b></td>
-                    <td class="courier-new"> - {{ $hasil_pemeriksaans->first()->note }}</td> {{-- dinamis --}}
-                </tr>
-                <tr>
-                    <td></td>
-                    <td class="courier-new"> - Kesimpulan di atas ini hanya berdasarkan dari pemeriksaan laboratorium pada saat ini 
-   dan dari keterangan klinis yang dicantumkan</td> {{-- statis --}}
-                </tr>
-            </table>
-        @endif
+        <table class="note-section">
+        <tr>
+            <td><b>Catatan :</b></td>
+            <td class="courier-new">- {{ $hasil_pemeriksaans->first()->note }}</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td class="courier-new">- Hasil di atas merupakan interpretasi berdasarkan pemeriksaan laboratorium saat ini 
+                dan dari keterangan klinis yang dicantumkan.</td>
+        </tr>
+    @else
+        <tr>
+            <td><b>Catatan :</b></td>
+            <td class="courier-new">- Hasil di atas merupakan interpretasi berdasarkan pemeriksaan laboratorium saat ini 
+                dan dari keterangan klinis yang dicantumkan.</td>
+        </tr>
+    @endif
+</table>
+
+        
         <div class="footer-container d-flex justify-content-between">
-   @if($dokterName)
-    <!-- KIRI: Analyst -->
-    <div class="user-info">
-        <h6 style="margin-left: 15px">Analis Pemeriksa</h6>
-        @if(auth()->user()->signature)
-            <img src="{{ asset('signatures/' . auth()->user()->signature) }}"
-                alt="Signature"
-                style="max-height:80px; display:block;">
-        @endif
-        <div style="padding-left: 20px">
-            <span style="border-bottom:1px solid #000; padding:0 5px;">
-                {{ auth()->user()->name }}
-            </span>
-            <div style="margin-top:2px;">
-                NIK. {{ auth()->user()->nik }}
-            </div>
-        </div>
-    </div>
-
-    <!-- KANAN: Dokter (internal / external) -->
-    <div class="doctor-info text-end">
-        <h6 style="margin-right: 55px">Dokter Pemeriksa</h6>
-        <div class="text-center" style="display:inline-block; margin-right: 40px">
-            @if($userDokter && $userDokter->signature)
-                <img src="{{ asset('signatures/' . $userDokter->signature) }}"
-                    alt="Signature"
-                    style="max-height:80px; display:block; margin:0 auto;">
-            @endif
-            <span style="display:inline-block; border-bottom:1px solid #000; padding:0 5px;">
-                {{ $dokterName }}
-            </span>
-            <div style="margin-top:2px;">
-                {{-- Kalau external biasanya tidak ada nip, jadi kosongkan --}}
-                NIK. {{ $data_pasien->dokter->nip ?? '' }}
-            </div>
-        </div>
-    </div>
-@else
-    <!-- Kalau tidak ada dokter sama sekali -->
-    <div class="doctor-info text-end w-100">
-        <h6 style="margin-right: 55px">Analis Pemeriksa</h6>
-        @if(auth()->user()->signature)
-            <img class="text-end"
-                src="{{ asset('signatures/' . auth()->user()->signature) }}"
-                alt="Signature"
-                style="max-height:80px; display:block; margin-left:78%;">
-        @endif
-        <div style="padding-right: 25px; margin-top:5px; text-align:right; margin-right: 50px">
-            <div style="display: inline-block; text-align: center;">
-                <div style="padding-top: 2px; min-width: 65px;">
-                    <div style="font-weight: bold;">{{ auth()->user()->name }}</div>
-                    <div style="border-top: 1px solid #000;">NIK. {{ auth()->user()->nik }}</div>
+            @if($dokterName && $userDokter && $userDokter->signature && $userDokter->status === 'active')
+                <!-- KIRI: Dokter Internal -->
+                <div>
+                    <h6 style="margin-left: 15px">Dokter Pemeriksa</h6>
+                    <div>
+                        <img src="{{ asset('signatures/' . $userDokter->signature) }}"
+                            alt="Signature"
+                            style="max-height:80px; display:block;">
+                        <span style="border-bottom:1px solid #000; padding:0 5px; margin-left: 20px">
+                            {{ $dokterName }}
+                        </span>
+                        <div style="margin-top:2px; margin-left: 20px">
+                            NIK. {{ $data_pasien->dokter->nip ?? '' }}
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
-@endif
 
-</div>
+                <!-- KANAN: Analis -->
+                
+                @if(auth()->user()->status === 'active')
+                <div class="user-info text-end">
+                    <h6 style="margin-right: 55px">Analis Pemeriksa</h6>
+                    @if(auth()->user()->signature && auth()->user()->status === 'active')
+                        <img src="{{ asset('signatures/' . auth()->user()->signature) }}"
+                            alt="Signature"
+                            style="max-height:80px; display:block; margin-left:auto; margin-right:0;">
+                    @endif
+                    <div style="padding-right: 25px; margin-top:5px; text-align:right; margin-right: 50px">
+                        <div style="display: inline-block; text-align: center;">
+                            <div style="padding-top: 2px; min-width: 65px;">
+                                <div style="font-weight: bold;">{{ auth()->user()->name }}</div>
+                                <div style="border-top: 1px solid #000;">NIK. {{ auth()->user()->nik }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+            @else
+                <!-- Kalau tidak ada dokter/signature -->
+                @if(auth()->user()->status === 'active')
+                <div class="doctor-info text-end w-100">
+                    <h6 style="margin-right: 55px">Analis Pemeriksa</h6>
+                    @if(auth()->user()->signature)
+                        <img class="text-end"
+                            src="{{ asset('signatures/' . auth()->user()->signature) }}"
+                            alt="Signature"
+                            style="max-height:80px; display:block; margin-left:78%;">
+                    @endif
+                    <div style="padding-right: 25px; margin-top:5px; text-align:right; margin-right: 50px">
+                        <div style="display: inline-block; text-align: center;">
+                            <div style="padding-top: 2px; min-width: 65px;">
+                                <div style="font-weight: bold;">{{ auth()->user()->name }}</div>
+                                <div style="border-top: 1px solid #000;">NIK. {{ auth()->user()->nik }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+            @endif
+        </div>
         <table class="note-section calibri">
             @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->kesimpulan)
                 <tr>

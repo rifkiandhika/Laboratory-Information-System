@@ -277,7 +277,7 @@
                                                         </li>
                                                         <li>
                                                             <button type="button" data-bs-target="#modalPembayaran"
-                                                                data-bs-toggle="modal" class="dropdown-item btn-payment disabled btn-secondary"
+                                                                data-bs-toggle="modal" class="dropdown-item btn-payment btn-secondary"
                                                                 data-payment="{{ $pm->id }}">
                                                                 <i class="ti ti-cash-banknote me-2"></i> Payment
                                                             </button>
@@ -1038,11 +1038,11 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <label>Disc</label>
-                            <input class="form-control " id="diskon" name="diskon" type="number" placeholder="Enter discount if any" value="0" min="0">
+                            <input class="form-control " id="diskon" name="diskon" type="number" placeholder="Enter discount if any" value="" min="0">
                         </div>
                         <div class="col-12 col-md-6">
                             <label>Payment Amount</label>
-                            <input class="form-control " id="jumlah_bayar" name="jumlah_bayar" type="number" value="0" min="0">
+                            <input class="form-control " id="jumlah_bayar" name="jumlah_bayar" type="number" value="" min="0">
                         </div>
                         <div class="col-12 col-md-6">
                             <label>Total Payment Disc</label>

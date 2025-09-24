@@ -62,6 +62,23 @@
   </div>
 
   <div class="mb-3">
+  <label for="status" class="form-label is-required">Status TTD<span class="text-danger">*</span></label>
+  <select name="status" id="status" class="form-select @error('status') is-invalid @enderror">
+    <option value="" hidden>Select Status</option>
+    <option value="active" {{ old('status', isset($user) ? $user->status : '') == 'active' ? 'selected' : '' }}>
+      Active
+    </option>
+    <option value="inactive" {{ old('status', isset($user) ? $user->status : '') == 'inactive' ? 'selected' : '' }}>
+      Inactive
+    </option>
+  </select>
+  @error('status')
+    <div class="invalid-feedback">{{ $message }}</div>
+  @enderror
+</div>
+
+
+  <div class="mb-3">
     <label for="feemcu" class="form-label">Fee MCU (%)</label>
     <div class="input-group">
       <input type="number" name="feemcu" id="feemcu" min="0" max="100" step="0.01"
@@ -74,6 +91,7 @@
       <div class="invalid-feedback">{{ $message }}</div>
     @enderror
   </div>
+  
 
   <div class="mb-3">
     <label for="nik" class="form-label">NIK</label>

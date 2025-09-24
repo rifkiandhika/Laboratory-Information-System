@@ -473,6 +473,9 @@ class pasienController extends Controller
         $no_pasien = $request->no_pasien ?? null;
         $diskon = $request->diskon ?? 0;
 
+        pemeriksaan_pasien::where('no_lab', $pasien->no_lab)
+            ->update(['status' => 'lama']);
+
         // Simpan pembayaran
         DB::table('pembayarans')->insert([
             'no_lab' => $request->no_lab,

@@ -290,6 +290,17 @@
                                                 @endif
                                             @endhasanyrole
 
+                                           @hasanyrole('Superadmin')
+                                                <li>
+                                                    <form action="{{ route('hasil.kirim', $dpc->no_lab) }}" method="POST">
+                                                        @csrf
+                                                        <button type="submit" class="dropdown-item">
+                                                            <i class="ti ti-notes me-2"></i> Kirim Hasil
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            @endhasanyrole
+
                                         </ul>
                                     </div>
                                 </td>
@@ -493,6 +504,7 @@
                 <textarea id="patientNote" class="form-control" rows="4" placeholder="Enter your note here..."></textarea>
                 <input type="hidden" id="currentNoLab">
             </div>
+            
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" onclick="submitNote()">Print with Note</button>
@@ -1172,54 +1184,54 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const duploStatus = checkDuploColumns();
 
-    function updateFlag(value, flagCell, parameter = null, isHematologi = false, isWidal = false, isUrine = false) {
-        const nilaiHasil = parseFloat(value);
-        let flagIcon = '';
+    // function updateFlag(value, flagCell, parameter = null, isHematologi = false, isWidal = false, isUrine = false) {
+    //     const nilaiHasil = parseFloat(value);
+    //     let flagIcon = '';
         
-        // Untuk Widal, tidak ada flag karena tidak ada nilai normal/abnormal
-        if (isWidal) {
-            return '';
-        }
+    //     // Untuk Widal, tidak ada flag karena tidak ada nilai normal/abnormal
+    //     if (isWidal) {
+    //         return '';
+    //     }
         
-        if (!isNaN(nilaiHasil)) {
-            if (isHematologi && parameter) {
-                // range normal untuk parameter hematologi
-                const paramData = hematologiParams.find(p => p.nama === parameter);
-                if (paramData) {
-                    if (nilaiHasil < paramData.normal_min) {
-                        flagIcon = `<i class="ti ti-arrow-down text-primary"></i> L`;
-                    } else if (nilaiHasil > paramData.normal_max) {
-                        flagIcon = `<i class="ti ti-arrow-up text-danger"></i> H`;
-                    } else {
-                        flagIcon = ``;
-                    }
-                }
-            } else if (isUrine && parameter) {
-                // range normal untuk parameter urine (hanya untuk parameter numerik)
-                const paramData = UrineParams.find(p => p.nama === parameter);
-                if (paramData && typeof paramData.normal_min === 'number' && typeof paramData.normal_max === 'number') {
-                    if (nilaiHasil < paramData.normal_min) {
-                        flagIcon = `<i class="ti ti-arrow-down text-primary"></i> L`;
-                    } else if (nilaiHasil > paramData.normal_max) {
-                        flagIcon = `<i class="ti ti-arrow-up text-danger"></i> H`;
-                    } else {
-                        flagIcon = ``;
-                    }
-                }
-            } else {
-                // Flag logic untuk non-hematologi
-                if (nilaiHasil < 5) {
-                    flagIcon = `<i class="ti ti-arrow-down text-primary"></i>`;
-                } else if (nilaiHasil > 10) {
-                    flagIcon = `<i class="ti ti-arrow-up text-danger"></i>`;
-                }
-            }
-        }
-        if (flagCell && flagCell.innerHTML !== undefined) {
-            flagCell.innerHTML = flagIcon;
-        }
-        return flagIcon;
-    }
+    //     if (!isNaN(nilaiHasil)) {
+    //         if (isHematologi && parameter) {
+    //             // range normal untuk parameter hematologi
+    //             const paramData = hematologiParams.find(p => p.nama === parameter);
+    //             if (paramData) {
+    //                 if (nilaiHasil < paramData.normal_min) {
+    //                     flagIcon = `<i class="ti ti-arrow-down text-primary"></i> L`;
+    //                 } else if (nilaiHasil > paramData.normal_max) {
+    //                     flagIcon = `<i class="ti ti-arrow-up text-danger"></i> H`;
+    //                 } else {
+    //                     flagIcon = ``;
+    //                 }
+    //             }
+    //         } else if (isUrine && parameter) {
+    //             // range normal untuk parameter urine (hanya untuk parameter numerik)
+    //             const paramData = UrineParams.find(p => p.nama === parameter);
+    //             if (paramData && typeof paramData.normal_min === 'number' && typeof paramData.normal_max === 'number') {
+    //                 if (nilaiHasil < paramData.normal_min) {
+    //                     flagIcon = `<i class="ti ti-arrow-down text-primary"></i> L`;
+    //                 } else if (nilaiHasil > paramData.normal_max) {
+    //                     flagIcon = `<i class="ti ti-arrow-up text-danger"></i> H`;
+    //                 } else {
+    //                     flagIcon = ``;
+    //                 }
+    //             }
+    //         } else {
+    //             // Flag logic untuk non-hematologi
+    //             if (nilaiHasil < 5) {
+    //                 flagIcon = `<i class="ti ti-arrow-down text-primary"></i>`;
+    //             } else if (nilaiHasil > 10) {
+    //                 flagIcon = `<i class="ti ti-arrow-up text-danger"></i>`;
+    //             }
+    //         }
+    //     }
+    //     if (flagCell && flagCell.innerHTML !== undefined) {
+    //         flagCell.innerHTML = flagIcon;
+    //     }
+    //     return flagIcon;
+    // }
     function renderFlag(flag) {
         if (!flag) return '';
 
@@ -1227,10 +1239,16 @@ document.addEventListener('DOMContentLoaded', function() {
             return ``;
         }
         if (flag.toLowerCase() === 'high') {
-            return `<i class="ti ti-arrow-up text-danger"></i>H`;
+            return `<i class="ti ti-arrow-up text-danger"></i>`;
         }
         if (flag.toLowerCase() === 'low') {
-            return `<i class="ti ti-arrow-down text-primary"></i>L`;
+            return `<i class="ti ti-arrow-down text-primary"></i>`;
+        }
+        if (flag.toLowerCase() === 'low*') {
+            return `<i class="ti ti-arrow-down text-primary">*</i>`;
+        }
+        if (flag.toLowerCase() === 'high*') {
+            return `<i class="ti ti-arrow-up text-danger">*</i>`;
         }
         return flag;
     }
@@ -1274,7 +1292,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         <tr>
                             <th class="col-2">PARAMETER</th>
                             <th class="col-2">HASIL</th>
-                            <th class="col-1"></th>
+                            <th class="col-1">
+                                <!-- Master Switch All Button -->
+                                <button type="button" class="btn btn-outline-primary btn-sm master-switch-all-btn" 
+                                        id="masterSwitchAllBtn" title="Switch All: HASIL ↔ DX">
+                                    <i class="ti ti-arrows-exchange"></i>
+                                </button>
+                            </th>
                             <th class="col-2 duplo dx-column">DX</th>
                             <th class="col-2 duplo d1-column" style="display: ${duploStatus.hasD1 ? 'table-cell' : 'none'};">D1</th>
                             <th class="col-2 duplo d2-column" style="display: ${duploStatus.hasD2 ? 'table-cell' : 'none'};">D2</th>
@@ -1359,7 +1383,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                             html += hematologiParams.map((param, paramIdx) => {
                                                 const dataValues = getDataValues(param.nama, param.nama);
                                                 const rowId = `hematologi_${idx}_${paramIdx}`;
-                                                const flagContent = updateFlag(
+                                                const flagContent = renderFlag(
                                                     dataValues.hasilUtama,
                                                     { innerHTML: '' },
                                                     param.nama,
@@ -1410,7 +1434,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                 value="${dataValues.duplo_d3}" step="0.01" readonly />
                                                         </td>
                                                         <td class="col-3 flag-cell">
-                                                            ${flagContent}
+                                                            ${renderFlag(dataValues.flag || flagContent(dataValues.hasilUtama, {innerHTML: ''}, p.data_pemeriksaan.nama_parameter))}
                                                         </td>
                                                         <td>
                                                             <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
@@ -1552,7 +1576,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     html += UrineParams.map((param, paramIdx) => {
                                         const obxValues = getDataValues(param.nama);
                                         const rowId = `urine_${idx}_${paramIdx}`;
-                                        const initialFlag = updateFlag(
+                                        const initialFlag = renderFlag(
                                             obxValues.hasilUtama,
                                             param.nama,
                                             false,
@@ -1657,8 +1681,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                     `}
                                                 </td>
                                                 <td class="col-3 flag-cell">
-                                                    ${initialFlag}
-                                                    <input type="hidden" name="" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
+                                                    ${renderFlag(obxValues.flag || flagContent(obxValues.hasilUtama, {innerHTML: ''}, p.data_pemeriksaan.nama_parameter))}
                                                 </td>
                                                 <td>
                                                     <input type="hidden" name="satuan[]" value="${param.satuan}" readonly />
@@ -2042,6 +2065,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Referensi elemen-elemen yang diperlukan
         const kembalikanBtn = document.getElementById('kembalikanBtn');
         const releaseBtn = document.getElementById('releaseBtn');
+        const masterSwitchAllBtn = document.getElementById('masterSwitchAllBtn');
+        
+        if (masterSwitchAllBtn) {
+            masterSwitchAllBtn.addEventListener('click', () => {
+                switchAllHasilToDX();
+            });
+        }
 
         // Event listener untuk tombol kembalikan
         if (kembalikanBtn) {
@@ -2095,55 +2125,108 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
+         function switchAllHasilToDX() {
+                // Ambil semua row yang memiliki data parameter
+                const allRows = document.querySelectorAll('tr[data-parameter]');
+                let switchedCount = 0;
+                
+                allRows.forEach(row => {
+                    const hasilInput = row.querySelector('.manualInput'); // Field HASIL
+                    const dxInput = row.querySelector('.dx, input[name="duplo_dx[]"], select[name="duplo_dx[]"]'); // Field DX
+                    const flagCell = row.querySelector('.flag-cell');
+                    const parameter = row.dataset.parameter;
+
+                    // Pastikan kedua input ada
+                    if (hasilInput && dxInput) {
+                        // Simpan nilai sementara
+                        const tempHasil = hasilInput.value;
+                        const tempDx = dxInput.value;
+                        
+                        // Tukar nilai
+                        hasilInput.value = tempDx;
+                        dxInput.value = tempHasil;
+                        
+                        // Update flag berdasarkan nilai baru di HASIL
+                        if (flagCell && parameter) {
+                            updateFlag(hasilInput.value, flagCell, parameter);
+                        }
+                        
+                        switchedCount++;
+                    }
+                });
+                
+                console.log(`Switched ${switchedCount} parameters between HASIL and DX`);
+                
+                // Visual feedback pada button
+                provideSwitchFeedback();
+            }
+
+            function provideSwitchFeedback() {
+                const button = masterSwitchAllBtn;
+                const icon = button.querySelector('i');
+                
+                // Animasi feedback
+                button.classList.add('btn-success');
+                button.classList.remove('btn-outline-primary');
+                icon.className = 'ti ti-check';
+                
+                // Reset setelah 1 detik
+                setTimeout(() => {
+                    button.classList.remove('btn-success');
+                    button.classList.add('btn-outline-primary');
+                    icon.className = 'ti ti-arrows-exchange';
+                }, 1000);
+            }
+
         // Update function menggunakan form submit seperti worklist.store (tanpa parameter_name)
         document.querySelector('#resultReviewModal .update-btn').addEventListener('click', function () {
-    // SweetAlert konfirmasi sebelum update dengan z-index tinggi
-    Swal.fire({
-        title: 'Konfirmasi Update',
-        text: 'Apakah Anda yakin ingin mengupdate hasil pemeriksaan?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Ya, Update!',
-        cancelButtonText: 'Batal',
-        customClass: {
-            container: 'swal-high-z-index'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const form = document.getElementById('worklistForm');
-            
-            // Show loading alert
+            // SweetAlert konfirmasi sebelum update dengan z-index tinggi
             Swal.fire({
-                title: 'Sedang memproses...',
-                text: 'Mohon tunggu, data sedang diupdate',
-                icon: 'info',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                willOpen: () => {
-                    Swal.showLoading();
+                title: 'Konfirmasi Update',
+                text: 'Apakah Anda yakin ingin mengupdate hasil pemeriksaan?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Update!',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    container: 'swal-high-z-index'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.getElementById('worklistForm');
+                    
+                    // Show loading alert
+                    Swal.fire({
+                        title: 'Sedang memproses...',
+                        text: 'Mohon tunggu, data sedang diupdate',
+                        icon: 'info',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    
+                    // Enable semua input yang disabled agar nilainya bisa terkirim
+                    const disabledInputs = form.querySelectorAll('input[disabled], select[disabled], textarea[disabled]');
+                    disabledInputs.forEach(input => {
+                        input.removeAttribute('disabled');
+                    });
+                    
+                    // Ubah action form ke route update
+                    const noLab = form.querySelector('input[name="no_lab"]').value;
+                    form.action = `/analyst/worklist/update-hasil/${noLab}`;
+                    
+                    // Ubah method form ke POST (jika belum)
+                    form.method = 'POST';
+                    
+                    // Submit form seperti worklist.store
+                    form.submit();
                 }
             });
-            
-            // Enable semua input yang disabled agar nilainya bisa terkirim
-            const disabledInputs = form.querySelectorAll('input[disabled], select[disabled], textarea[disabled]');
-            disabledInputs.forEach(input => {
-                input.removeAttribute('disabled');
-            });
-            
-            // Ubah action form ke route update
-            const noLab = form.querySelector('input[name="no_lab"]').value;
-            form.action = `/analyst/worklist/update-hasil/${noLab}`;
-            
-            // Ubah method form ke POST (jika belum)
-            form.method = 'POST';
-            
-            // Submit form seperti worklist.store
-            form.submit();
-        }
-    });
-});
+        });
     }, 0);
 
     return content;

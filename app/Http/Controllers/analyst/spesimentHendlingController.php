@@ -309,7 +309,7 @@ class spesimentHendlingController extends Controller
         $pasien = pasien::find($id);
 
         // Update status pasien
-        $pasien->update(['status' => 'Dikembalikan AnalystS']);
+        $pasien->update(['status' => 'Dikembalikan Analyst']);
 
         pemeriksaan_pasien::where('no_lab', $pasien->no_lab)
             ->update(['status' => 'lama']);

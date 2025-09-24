@@ -180,35 +180,71 @@
                                     </div>
                                 </div>
                                 <hr>
-                                <div class="row" id="inspectionList" onload="checkpemeriksaan()">
-                                    {{-- @dd($selectedInspections) --}}
+                                <div class="row" id="inspectionList">
                                     @foreach ($departments as $departement)
                                         <div class="col-xl-3 inspection-item">
-                                            <!-- Parent Pemeriksaan -->
                                             <div class="parent-pemeriksaan">
                                                 <div class="heading heading-color btn-block mb-3">
                                                     <strong>{{ $departement->nama_department }}</strong>
                                                 </div>
-                                                <!-- Child pemeriksaan -->
-                                                <div class="child-pemeriksaan">
-                                                    @foreach ($departement->detailDepartments as $x => $pemeriksaan)
-                                                        <div class="form-check">
-                                                            <input style="cursor: pointer" class="form-check-input child-pemeriksaan"
-                                                                type="checkbox" name="pemeriksaan[]"
-                                                                value="{{ $pemeriksaan->id }}"
-                                                                id="{{ $pemeriksaan->id_departement . '-' . $x }}"
-                                                                onclick="checkpemeriksaan({{ $pemeriksaan->harga }})"
-                                                                data-harga="{{ $pemeriksaan->harga }}"
-                                                                {{ in_array($pemeriksaan->id, $selectedInspections) ? 'checked' : '' }}
-                                                                >
-                                                            <label class="form-check-label"
-                                                                for="{{ $pemeriksaan->id_departement . '-' . $x }}">
-                                                                {{ $pemeriksaan->nama_pemeriksaan }}
-                                                                Rp.{{ number_format($pemeriksaan->harga, 0, ',', '.') }}
-                                                            </label>
+
+                                                @if($departement->statusdep === 'single')
+                                                    {{-- SINGLE → langsung pakai judul --}}
+                                                    @foreach ($departement->detailDepartments as $pemeriksaan)
+                                                        @if ($pemeriksaan->status === 'active')
+                                                            <div class="form-check">
+                                                                <input style="cursor: pointer"
+                                                                    class="form-check-input child-pemeriksaan"
+                                                                    type="checkbox"
+                                                                    name="pemeriksaan[]"
+                                                                    value="{{ $pemeriksaan->id }}"
+                                                                    id="pemeriksaan-{{ $pemeriksaan->id_departement }}-{{ $pemeriksaan->id }}"
+                                                                    onclick="checkpemeriksaan({{ $pemeriksaan->harga }})"
+                                                                    data-harga="{{ $pemeriksaan->harga }}"
+                                                                    {{ in_array($pemeriksaan->id, $selectedInspections) ? 'checked' : '' }}>
+                                                                <label class="form-check-label"
+                                                                    for="pemeriksaan-{{ $pemeriksaan->id_departement }}-{{ $pemeriksaan->id }}">
+                                                                    {{ $pemeriksaan->judul }}
+                                                                    Rp.{{ number_format($pemeriksaan->harga, 0, ',', '.') }}
+                                                                </label>
+                                                            </div>
+                                                        @endif
+                                                    @endforeach
+
+                                                @elseif($departement->statusdep === 'multi')
+                                                    {{-- MULTI → group by judul --}}
+                                                    @php
+                                                        $grouped = $departement->detailDepartments
+                                                            ->where('status', 'active')
+                                                            ->groupBy('judul');
+                                                    @endphp
+
+                                                    @foreach ($grouped as $judul => $listPemeriksaan)
+                                                        <div class="mb-2">
+                                                            <div style="margin-left: 12px">
+                                                                <strong>{{ $judul }}</strong>
+                                                            </div>
+                                                            @foreach ($listPemeriksaan as $pemeriksaan)
+                                                                <div class="form-check ms-3">
+                                                                    <input style="cursor: pointer"
+                                                                        class="form-check-input child-pemeriksaan"
+                                                                        type="checkbox"
+                                                                        name="pemeriksaan[]"
+                                                                        value="{{ $pemeriksaan->id }}"
+                                                                        id="pemeriksaan-{{ $pemeriksaan->id_departement }}-{{ $pemeriksaan->id }}"
+                                                                        onclick="checkpemeriksaan({{ $pemeriksaan->harga }})"
+                                                                        data-harga="{{ $pemeriksaan->harga }}"
+                                                                        {{ in_array($pemeriksaan->id, $selectedInspections) ? 'checked' : '' }}>
+                                                                    <label class="form-check-label"
+                                                                        for="pemeriksaan-{{ $pemeriksaan->id_departement }}-{{ $pemeriksaan->id }}">
+                                                                        {{ $pemeriksaan->nama_pemeriksaan }}
+                                                                        Rp.{{ number_format($pemeriksaan->harga, 0, ',', '.') }}
+                                                                    </label>
+                                                                </div>
+                                                            @endforeach
                                                         </div>
                                                     @endforeach
-                                                </div>
+                                                @endif
                                             </div>
                                             <hr>
                                         </div>

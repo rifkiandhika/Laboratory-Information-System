@@ -116,9 +116,9 @@ Dashboard|Admin
                                         </tr>
                                     </thead>
                                     <tbody style="font-size: 14px">
-                                        @foreach ($users as $User)
+                                        @foreach ($users as $x => $User)
                                             <tr>
-                                                <th scope="row">{{ $User->id }}</th>
+                                                <th scope="row">{{ $x+1 }}</th>
                                                 <td>{{ $User->name }}</td>
                                                 <td>{{ $User->username }}</td>
                                                 <td>{{ $User->email }}</td>

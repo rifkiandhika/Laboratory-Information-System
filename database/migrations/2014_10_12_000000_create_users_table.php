@@ -22,6 +22,7 @@ return new class extends Migration
             $table->decimal('feemcu', 12, 2)->default(0)->nullable();
             $table->string('nik')->nullable();
             $table->string('signature')->nullable();
+            $table->string('status')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

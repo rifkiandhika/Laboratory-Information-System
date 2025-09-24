@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('no_lot');
             $table->string('name_control');
-            $table->enum('level',['low','normal','high']);
-            $table->date('exp_date');
-            $table->date('use_qc');
-            $table->date('last_qc');
+            $table->enum('level', ['low', 'normal', 'high']);
+            $table->date('exp_date')->nullable();
+            $table->date('use_qc')->nullable();
+            $table->date('last_qc')->nullable();
             $table->string('department_id');
             $table->timestamps();
         });

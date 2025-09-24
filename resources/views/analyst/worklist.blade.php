@@ -1768,7 +1768,6 @@
                         }
 
 
-
                         function getInitialFlagContent(value, parameter = null, isHematologi = false, isUrine = false, nilaiRujukan = null, jenisKelamin = null) {
                             const nilaiHasil = parseFloat(value);
                             let flagIcon = '';
@@ -1780,12 +1779,22 @@
                                     if (paramData) {
                                         const normalValues = getNormalValues(paramData, jenisKelamin);
                                         
+                                        let flagText = '';
                                         if (nilaiHasil < normalValues.min) {
-                                            flagIcon = `<i class="ti ti-arrow-down text-primary"></i> Low`;
+                                            flagText = 'Low';
+                                            flagIcon = `<i class="ti ti-arrow-down text-primary"></i> ${flagText}`;
                                         } else if (nilaiHasil > normalValues.max) {
-                                            flagIcon = `<i class="ti ti-arrow-up text-danger"></i> High`;
+                                            flagText = 'High';
+                                            flagIcon = `<i class="ti ti-arrow-up text-danger"></i> ${flagText}`;
                                         } else {
-                                            flagIcon = `<i class="ti ti-check text-success"></i> Normal`;
+                                            flagText = 'Normal';
+                                            flagIcon = `<i class="ti ti-check text-success"></i> ${flagText}`;
+                                        }
+                                        
+                                        // Cek threshold bintang untuk hematologi
+                                        const starIndicator = checkStarThresholdHematologi(nilaiHasil, parameter, jenisKelamin);
+                                        if (starIndicator) {
+                                            flagIcon += ' *';
                                         }
                                     }
                                 } else if (isUrine && parameter) {
@@ -1794,12 +1803,22 @@
                                     if (paramData && paramData.normal_min_l !== '-' && paramData.normal_max_l !== '-') {
                                         const normalValues = getNormalValues(paramData, jenisKelamin);
                                         
+                                        let flagText = '';
                                         if (nilaiHasil < normalValues.min) {
-                                            flagIcon = `<i class="ti ti-arrow-down text-primary"></i> Low`;
+                                            flagText = 'Low';
+                                            flagIcon = `<i class="ti ti-arrow-down text-primary"></i> ${flagText}`;
                                         } else if (nilaiHasil > normalValues.max) {
-                                            flagIcon = `<i class="ti ti-arrow-up text-danger"></i> High`;
+                                            flagText = 'High';
+                                            flagIcon = `<i class="ti ti-arrow-up text-danger"></i> ${flagText}`;
                                         } else {
-                                            flagIcon = `<i class="ti ti-check text-success"></i> Normal`;
+                                            flagText = 'Normal';
+                                            flagIcon = `<i class="ti ti-check text-success"></i> ${flagText}`;
+                                        }
+                                        
+                                        // Cek threshold bintang untuk urine
+                                        const starIndicator = checkStarThresholdUrine(nilaiHasil, parameter, jenisKelamin);
+                                        if (starIndicator) {
+                                            flagIcon += ' *';
                                         }
                                     }
                                 } else {
@@ -1808,12 +1827,22 @@
                                         const normalRange = parseNilaiRujukan(nilaiRujukan, jenisKelamin);
                                         
                                         if (normalRange) {
+                                            let flagText = '';
                                             if (nilaiHasil < normalRange.min) {
-                                                flagIcon = `<i class="ti ti-arrow-down text-primary"></i> Low`;
+                                                flagText = 'Low';
+                                                flagIcon = `<i class="ti ti-arrow-down text-primary"></i> ${flagText}`;
                                             } else if (nilaiHasil > normalRange.max) {
-                                                flagIcon = `<i class="ti ti-arrow-up text-danger"></i> High`;
+                                                flagText = 'High';
+                                                flagIcon = `<i class="ti ti-arrow-up text-danger"></i> ${flagText}`;
                                             } else {
-                                                flagIcon = `<i class="ti ti-check text-success"></i> Normal`;
+                                                flagText = 'Normal';
+                                                flagIcon = `<i class="ti ti-check text-success"></i> ${flagText}`;
+                                            }
+                                            
+                                            // Cek apakah perlu menambahkan bintang berdasarkan nilai threshold dalam kurung
+                                            const starIndicator = checkStarThreshold(nilaiHasil, nilaiRujukan, jenisKelamin);
+                                            if (starIndicator) {
+                                                flagIcon += ' *';
                                             }
                                         }
                                     }
@@ -1823,8 +1852,128 @@
                             return flagIcon;
                         }
 
+                        function checkStarThresholdHematologi(nilaiHasil, parameter, jenisKelamin) {
+                            // Definisi threshold untuk parameter hematologi (format: low;high)
+                            const hematologiThreshold = {
+                                'WBC': { L: '3.0;15.0', P: '3.0;15.0' },           // threshold low: 3.0, high: 15.0
+                                'LYM#': { L: '0.8;5.0', P: '0.8;5.0' },            // threshold low: 0.8, high: 5.0
+                                'MID#': { L: '0.1;1.0', P: '0.1;1.0' },            // threshold low: 0.1, high: 1.0
+                                'GRAN#': { L: '1.5;8.0', P: '1.5;8.0' },           // threshold low: 1.5, high: 8.0
+                                'LYM%': { L: '15;45', P: '15;45' },                 // threshold low: 15%, high: 45%
+                                'MID%': { L: '2;20', P: '2;20' },                   // threshold low: 2%, high: 20%
+                                'GRAN%': { L: '45;80', P: '45;80' },                // threshold low: 45%, high: 80%
+                                'RBC': { L: '3.5;7.0', P: '2.5;6.5' },             // threshold low: 3.5/2.5, high: 7.0/6.5
+                                'HGB': { L: '12.0;18.0', P: '10.0;16.0' },         // threshold low: 12.0/10.0, high: 18.0/16.0
+                                'HCT': { L: '30;50', P: '30;50' },                  // threshold low: 30%, high: 50%
+                                'MCV': { L: '75;105', P: '75;105' },                // threshold low: 75 fL, high: 105 fL
+                                'MCH': { L: '25;35', P: '25;35' },                  // threshold low: 25 pg, high: 35 pg
+                                'MCHC': { L: '30;38', P: '30;38' },                 // threshold low: 30 g/dL, high: 38 g/dL
+                                'RDW-CV': { L: '10.0;16.0', P: '10.0;16.0' },      // threshold low: 10.0%, high: 16.0%
+                                'RDW-SD': { L: '35;50', P: '35;50' },               // threshold low: 35 fL, high: 50 fL
+                                'PLT': { L: '100;450', P: '100;450' },              // threshold low: 100, high: 450
+                                'MPV': { L: '6;12', P: '6;12' },                    // threshold low: 6 fL, high: 12 fL
+                                'PDW': { L: '8;20', P: '8;20' },                    // threshold low: 8 fL, high: 20 fL
+                                'PCT': { L: '0.10;0.60', P: '0.10;0.60' },         // threshold low: 0.10%, high: 0.60%
+                                'P-LCC': { L: '25;100', P: '25;100' },              // threshold low: 25, high: 100
+                                'P-LCR': { L: '10;50', P: '10;50' }                 // threshold low: 10%, high: 50%
+                            };
+                            
+                            if (!hematologiThreshold[parameter]) return false;
+                            
+                            let genderCode = '';
+                            if (jenisKelamin.toLowerCase().includes('laki') || jenisKelamin === 'L') {
+                                genderCode = 'L';
+                            } else if (jenisKelamin.toLowerCase().includes('perempuan') || jenisKelamin === 'P') {
+                                genderCode = 'P';
+                            }
+                            
+                            if (!genderCode || !hematologiThreshold[parameter][genderCode]) return false;
+                            
+                            const thresholdValues = hematologiThreshold[parameter][genderCode].split(';');
+                            const lowThreshold = parseFloat(thresholdValues[0]);
+                            const highThreshold = parseFloat(thresholdValues[1]);
+                            
+                            // Return true jika nilai di bawah low threshold atau di atas high threshold
+                            return nilaiHasil < lowThreshold || nilaiHasil > highThreshold;
+                        }
+
+                        // Fungsi untuk mengecek threshold bintang urine
+                        function checkStarThresholdUrine(nilaiHasil, parameter, jenisKelamin) {
+                            // Definisi threshold untuk parameter urine (format: low;high)
+                            const urineThreshold = {
+                                'Berat Jenis': { L: '1.005;1.040', P: '1.005;1.040' },  // threshold low: 1.005, high: 1.040
+                                'PH': { L: '5.0;8.5', P: '5.0;8.5' }                    // threshold low: 5.0, high: 8.5
+                            };
+                            
+                            if (!urineThreshold[parameter]) return false;
+                            
+                            let genderCode = '';
+                            if (jenisKelamin.toLowerCase().includes('laki') || jenisKelamin === 'L') {
+                                genderCode = 'L';
+                            } else if (jenisKelamin.toLowerCase().includes('perempuan') || jenisKelamin === 'P') {
+                                genderCode = 'P';
+                            }
+                            
+                            if (!genderCode || !urineThreshold[parameter][genderCode]) return false;
+                            
+                            const thresholdValues = urineThreshold[parameter][genderCode].split(';');
+                            const lowThreshold = parseFloat(thresholdValues[0]);
+                            const highThreshold = parseFloat(thresholdValues[1]);
+                            
+                            // Return true jika nilai di bawah low threshold atau di atas high threshold
+                            return nilaiHasil < lowThreshold || nilaiHasil > highThreshold;
+                        }
+
+                        function checkStarThreshold(nilaiHasil, nilaiRujukan, jenisKelamin) {
+                            if (!nilaiRujukan || !jenisKelamin) return false;
+                            
+                            // Cari nilai dalam kurung, contoh: (L.30;220 P.30;220)
+                            const thresholdMatch = nilaiRujukan.match(/\(([^)]+)\)/);
+                            if (!thresholdMatch) return false;
+                            
+                            const thresholdString = thresholdMatch[1]; // Ambil isi dalam kurung
+                            const parts = thresholdString.split(' ');
+                            
+                            let genderCode = '';
+                            if (jenisKelamin.toLowerCase().includes('laki') || jenisKelamin === 'L') {
+                                genderCode = 'L';
+                            } else if (jenisKelamin.toLowerCase().includes('perempuan') || jenisKelamin === 'P') {
+                                genderCode = 'P';
+                            }
+                            
+                            if (!genderCode) return false;
+                            
+                            // Cari threshold untuk jenis kelamin yang sesuai
+                            for (const part of parts) {
+                                if (part.startsWith(genderCode + '.')) {
+                                    const thresholdData = part.substring(2); // Hapus prefix "L." atau "P."
+                                    
+                                    // Cek apakah menggunakan format low;high
+                                    if (thresholdData.includes(';')) {
+                                        const thresholdValues = thresholdData.split(';');
+                                        const lowThreshold = parseFloat(thresholdValues[0].replace(',', '.'));
+                                        const highThreshold = parseFloat(thresholdValues[1].replace(',', '.'));
+                                        
+                                        if (!isNaN(lowThreshold) && !isNaN(highThreshold)) {
+                                            // Return true jika nilai di bawah low threshold atau di atas high threshold
+                                            return nilaiHasil < lowThreshold || nilaiHasil > highThreshold;
+                                        }
+                                    } else {
+                                        // Format lama, hanya low threshold
+                                        const thresholdValue = parseFloat(thresholdData.replace(',', '.'));
+                                        if (!isNaN(thresholdValue)) {
+                                            // Return true jika nilai hasil di bawah threshold
+                                            return nilaiHasil < thresholdValue;
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            return false;
+                        }
+
                         // Fungsi untuk mendapatkan display nilai rujukan (tanpa prefix L/P)
-                        function getNilaiRujukanDisplay(nilaiRujukan, jenisKelamin) {
+                       function getNilaiRujukanDisplay(nilaiRujukan, jenisKelamin) {
                             if (!nilaiRujukan || !jenisKelamin) return '';
                             
                             const normalRange = parseNilaiRujukan(nilaiRujukan, jenisKelamin);
@@ -1848,8 +1997,11 @@
                         function parseNilaiRujukan(nilaiRujukan, jenisKelamin) {
                             if (!nilaiRujukan) return null;
                             
+                            // Hapus bagian dalam kurung untuk parsing normal range
+                            const cleanNilaiRujukan = nilaiRujukan.replace(/\([^)]*\)/, '').trim();
+                            
                             // Format: L.120-200 P.120-200 atau L.3,4-7,0 P.2,4-6,0
-                            const parts = nilaiRujukan.split(' ');
+                            const parts = cleanNilaiRujukan.split(' ');
                             let targetRange = null;
                             
                             // Cari range yang sesuai dengan jenis kelamin
@@ -1911,7 +2063,13 @@
                                             <tr>
                                                 <th class="col-2">PARAMETER</th>
                                                 <th class="col-2">HASIL</th>
-                                                <th class="col-1"></th>
+                                                <th class="col-1">
+                                                    <!-- Master Switch Button -->
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm master-switch-btn" 
+                                                            id="masterSwitchBtn" title="Switch All Parameters">
+                                                        <i class="ti ti-switch-2"></i>
+                                                    </button>
+                                                </th>
                                                 <th class="col-2 duplo d1-column" style="display: none;">D1</th>
                                                 <th class="col-2 duplo d2-column" style="display: none;">D2</th>
                                                 <th class="col-2 duplo d3-column" style="display: none;">D3</th>
@@ -2446,6 +2604,9 @@
                                                                 
                                                                 // Tentukan apakah ada header judul
                                                                 const hasHeader = judul && judul !== p.data_pemeriksaan.nama_pemeriksaan;
+
+                                                                // console.log('initialFlag RAW:', initialFlag);
+                                                                // console.log('initialFlag contains *:', initialFlag.includes('*'));
                                                                 
                                                                 html += `
                                                                     <tr data-id="${rowId}" data-parameter="${p.data_pemeriksaan.nama_parameter}">
@@ -2555,7 +2716,9 @@
                                                                         </td>
                                                                         <td class="col-3 flag-cell">
                                                                             ${initialFlag}
-                                                                            <input type="hidden" name="flag[]" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
+                                                                            
+                                                                                <input type="hidden" name="flag[]" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
+
                                                                         </td>
                                                                         <td>
                                                                             <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
@@ -2640,6 +2803,14 @@
                             const manualButton = document.getElementById('manualButton');
                             const duploButton = document.getElementById('duploButton');
                             let currentDuploStage = 0;
+                            const masterSwitchBtn = document.getElementById('masterSwitchBtn');
+                            let masterSwitchState = 0;
+
+                            if (masterSwitchBtn) {
+                                masterSwitchBtn.addEventListener('click', () => {
+                                    switchAllParameters();
+                                });
+                            }
 
                             // Update fungsi updateFlag untuk mendukung hematologi, urine dan jenis kelamin
                             function updateFlag(value, flagCell, parameter = null) {
@@ -2650,10 +2821,11 @@
                                 const isUrine = row && row.classList.contains('urine-row');
 
                                 let flagText = ''; // untuk simpan teks flag (Normal / Low / High)
+                                let showStar = false; // untuk menentukan apakah perlu bintang
 
                                 if (isWidal) {
                                     // Widal tidak ada flag
-                                    flagCell.innerHTML = '';
+                                    flagCell.innerHTML = `<input type="hidden" name="flag[]" value="" />`;
                                     return;
                                 }
 
@@ -2670,6 +2842,9 @@
                                             } else {
                                                 flagText = 'Normal';
                                             }
+                                            
+                                            // Cek threshold bintang untuk hematologi
+                                            showStar = checkStarThresholdHematologi(numValue, parameter, data_pasien.jenis_kelamin);
                                         }
                                     } else if (isUrine && parameter) {
                                         const paramData = UrineParams.find(p => p.nama === parameter);
@@ -2683,6 +2858,9 @@
                                             } else {
                                                 flagText = 'Normal';
                                             }
+                                            
+                                            // Cek threshold bintang untuk urine
+                                            showStar = checkStarThresholdUrine(numValue, parameter, data_pasien.jenis_kelamin);
                                         }
                                     } else {
                                         // Umum (non-hematologi/urine)
@@ -2700,7 +2878,9 @@
                                             }
 
                                             if (genderCode) {
-                                                const parts = nilaiRujukan.split(' ');
+                                                // Hapus bagian dalam kurung untuk parsing normal range
+                                                const cleanNilaiRujukan = nilaiRujukan.replace(/\([^)]*\)/, '').trim();
+                                                const parts = cleanNilaiRujukan.split(' ');
                                                 let targetRange = null;
 
                                                 for (const part of parts) {
@@ -2745,6 +2925,9 @@
                                                 } else {
                                                     flagText = 'Normal';
                                                 }
+                                                
+                                                // Cek apakah perlu bintang untuk kasus umum
+                                                showStar = checkStarThreshold(numValue, nilaiRujukan, genderCode);
                                             }
                                         }
                                     }
@@ -2761,9 +2944,12 @@
                                         icon = '<i class="ti ti-check text-success"></i>';
                                     }
 
+                                    const starSymbol = showStar ? '*' : '';
+                                    const flagWithStar = `${flagText}${starSymbol}`;
+                                    
                                     flagCell.innerHTML = `
-                                        ${icon} ${flagText}
-                                        <input type="hidden" name="flag[]" value="${flagText}">
+                                        ${icon} ${flagWithStar}
+                                        <input type="hidden" name="flag[]" value="${flagWithStar}">
                                     `;
                                 } else {
                                     flagCell.innerHTML = `
@@ -2773,22 +2959,33 @@
                             }
 
                             function setupFlagEventListeners() {
+                                // Hapus event listener dari semua input terlebih dahulu
                                 const allInputs = document.querySelectorAll('.manualInput, .d1, .d2, .d3');
                                 allInputs.forEach(input => {
                                     input.removeEventListener('input', inputHandler);
                                     input.removeEventListener('change', inputHandler);
+                                });
+
+                                // HANYA tambahkan event listener untuk field HASIL (.manualInput)
+                                const hasilInputs = document.querySelectorAll('.manualInput');
+                                hasilInputs.forEach(input => {
                                     input.addEventListener('input', inputHandler);
                                     input.addEventListener('change', inputHandler); // Untuk select elements
                                 });
-                                // console.log(`Setup flag event listeners for ${allInputs.length} inputs`);
+                                
+                                console.log(`Setup flag event listeners ONLY for ${hasilInputs.length} HASIL inputs`);
                             }
+
 
                             function inputHandler() {
                                 const row = this.closest('tr');
                                 const flagCell = row.querySelector('.flag-cell');
                                 const parameter = row.dataset.parameter;
 
-                                updateFlag(this.value, flagCell, parameter);
+                                // Pastikan ini adalah input HASIL
+                                if (this.classList.contains('manualInput')) {
+                                    updateFlag(this.value, flagCell, parameter);
+                                }
                             }
 
                             function hideAllDuploColumns() {
@@ -2860,6 +3057,127 @@
 
                             // Setup initial flag event listeners
                             setupFlagEventListeners();
+
+                            function switchAllParameters() {
+                            // Tentukan target kolom berdasarkan state saat ini
+                            let sourceClass, targetClass;
+                            
+                            switch (masterSwitchState) {
+                                case 0: // dari hasil ke d1
+                                    if (currentDuploStage >= 1) {
+                                        sourceClass = 'manualInput';
+                                        targetClass = 'd1';
+                                        masterSwitchState = 1;
+                                    } else {
+                                        // console.log('D1 belum aktif');
+                                        return;
+                                    }
+                                    break;
+                                case 1: // dari d1 ke d2
+                                    if (currentDuploStage >= 2) {
+                                        sourceClass = 'd1';
+                                        targetClass = 'd2';
+                                        masterSwitchState = 2;
+                                    } else {
+                                        // console.log('D2 belum aktif');
+                                        return;
+                                    }
+                                    break;
+                                case 2: // dari d2 ke d3
+                                    if (currentDuploStage >= 3) {
+                                        sourceClass = 'd2';
+                                        targetClass = 'd3';
+                                        masterSwitchState = 3;
+                                    } else {
+                                        // console.log('D3 belum aktif');
+                                        return;
+                                    }
+                                    break;
+                                case 3: // dari d3 kembali ke hasil
+                                    sourceClass = 'd3';
+                                    targetClass = 'manualInput';
+                                    masterSwitchState = 0;
+                                    break;
+                            }
+
+                            // Lakukan switching untuk semua parameter
+                            performMasterSwitch(sourceClass, targetClass);
+                            
+                            // Update visual indicator
+                            updateMasterSwitchIndicator();
+                        }
+
+                        function performMasterSwitch(sourceClass, targetClass) {
+                            const allRows = document.querySelectorAll('tr[data-parameter]');
+                            
+                            allRows.forEach(row => {
+                                const sourceInput = row.querySelector(`.${sourceClass}`);
+                                const targetInput = row.querySelector(`.${targetClass}`);
+                                
+                                if (sourceInput && targetInput) {
+                                    // Simpan nilai sumber
+                                    const sourceValue = sourceInput.value;
+                                    
+                                    // Tukar nilai
+                                    sourceInput.value = targetInput.value;
+                                    targetInput.value = sourceValue;
+                                    
+                                    // Update flag untuk input yang aktif (yang ditampilkan di kolom HASIL)
+                                    const flagCell = row.querySelector('.flag-cell');
+                                    const parameter = row.dataset.parameter;
+                                    
+                                    // Tentukan input mana yang sekarang aktif di kolom HASIL
+                                    const currentActiveInput = row.querySelector('.manualInput');
+                                    if (currentActiveInput && flagCell) {
+                                        updateFlag(currentActiveInput.value, flagCell, parameter);
+                                    }
+                                }
+                            });
+                            
+                            // console.log(`Switched all parameters from ${sourceClass} to ${targetClass}`);
+                        }
+
+                        function updateMasterSwitchIndicator() {
+                            const icon = masterSwitchBtn.querySelector('i');
+                            const button = masterSwitchBtn;
+                            
+                            // Update icon dan tooltip berdasarkan state
+                            switch (masterSwitchState) {
+                                case 0:
+                                    icon.className = 'ti ti-switch-horizontal';
+                                    button.title = 'Currently showing: HASIL - Click to switch to D1';
+                                    button.classList.remove('btn-outline-success', 'btn-outline-warning', 'btn-outline-danger');
+                                    button.classList.add('btn-outline-primary');
+                                    break;
+                                case 1:
+                                    icon.className = 'ti ti-switch-horizontal text-success';
+                                    button.title = 'Currently showing: D1 - Click to switch to D2';
+                                    button.classList.remove('btn-outline-primary', 'btn-outline-warning', 'btn-outline-danger');
+                                    button.classList.add('btn-outline-success');
+                                    break;
+                                case 2:
+                                    icon.className = 'ti ti-switch-horizontal text-warning';
+                                    button.title = 'Currently showing: D2 - Click to switch to D3';
+                                    button.classList.remove('btn-outline-primary', 'btn-outline-success', 'btn-outline-danger');
+                                    button.classList.add('btn-outline-warning');
+                                    break;
+                                case 3:
+                                    icon.className = 'ti ti-switch-horizontal text-danger';
+                                    button.title = 'Currently showing: D3 - Click to switch back to HASIL';
+                                    button.classList.remove('btn-outline-primary', 'btn-outline-success', 'btn-outline-warning');
+                                    button.classList.add('btn-outline-danger');
+                                    break;
+                            }
+                        }
+
+                        // Initialize master switch indicator
+                        updateMasterSwitchIndicator();
+
+                        // Modifikasi fungsi existing untuk reset master switch ketika duplo direset
+                        function resetMasterSwitch() {
+                            masterSwitchState = 0;
+                            updateMasterSwitchIndicator();
+                        }
 
                             // Event listener untuk tombol verifikasi
                             if (verifikasiHasilBtn) {

@@ -53,6 +53,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
             'role' => 'required|exists:roles,id',
+            'status' => 'nullable',
             'fee' => 'nullable|numeric|min:0|max:100',
             'feemcu' => 'nullable|numeric|min:0|max:100',
             'nik' => 'nullable|string|max:50',
@@ -60,7 +61,7 @@ class UserController extends Controller
         ]);
 
         // Ambil field yang sesuai tabel
-        $data = $request->only(['name', 'username', 'email', 'fee', 'feemcu', 'nik']);
+        $data = $request->only(['name', 'username', 'email', 'fee', 'feemcu', 'nik', 'status']);
         $data['password'] = bcrypt($request->password);
 
         // Handle signature upload (langsung ke public/signatures)
@@ -115,13 +116,14 @@ class UserController extends Controller
             'password' => 'nullable|min:8|confirmed',
             'role' => 'required|exists:roles,id',
             'fee' => 'nullable|numeric|min:0|max:100',
+            'status' => 'nullable',
             'feemcu' => 'nullable|numeric|min:0|max:100',
             'nik' => 'nullable|string|max:50',
             'signature' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         // Field yang sesuai tabel
-        $data = $request->only(['name', 'username', 'email', 'fee', 'feemcu', 'nik']);
+        $data = $request->only(['name', 'username', 'email', 'fee', 'feemcu', 'nik', 'status']);
 
         // Update password hanya kalau diisi
         if ($request->filled('password')) {
