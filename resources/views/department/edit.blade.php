@@ -77,7 +77,7 @@ Edit Department
                                                                     <label class="mt-2">Harga <span class="text-danger">*</span></label>
                                                                     <input type="number" name="harga[{{ $x }}]" class="form-control" value="{{ $detail->harga }}" placeholder="e.g. 65000" required>
 
-                                                                    <label class="mt-2">Nilai Rujukan (L.13,3-17 P.11,7-15,7) <span class="text-danger">*</span></label>
+                                                                    <label class="mt-2">Nilai Rujukan (L.13,3-17 P.11,7-15,7 (L.30;120 P.30;120)) <span class="text-danger">*</span></label>
                                                                     <input type="text" name="nilai_rujukan[{{ $x }}]" class="form-control" value="{{ $detail->nilai_rujukan }}" placeholder="e.g. L.13,3-17 P.11,7-15,7" required>
 
                                                                     <label class="mt-2">Nilai Satuan <span class="text-danger">*</span></label>
