@@ -26,33 +26,33 @@ use App\Http\Controllers\mcu\McuPackageController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::get('/previewpasien/{lab}', [PasienController::class, 'getDataPasien']);
+
+Route::get('/get-data-pasien/{lab}', [PasienController::class, 'getDataPasien']);
+Route::get('/get-data-diagnosa', [PasienController::class, 'getDataDiagnosa']);
+Route::get('/get-data-qc/{lab}', [QcController::class, 'getDataQc']);
+
+// Endpoint untuk Check data apakah masuk atau belum
+Route::get('/check-data', [ApiController::class, 'checkData']);
+
+// Endpoint untuk Quality Control (QC)
+Route::post('/qc', [ApiController::class, 'qc']);
+
+// Endpoint untuk Kunjungan Pemeriksaan
+Route::post('/kunjunganpemeriksaan', [ApiController::class, 'kunjunganPemeriksaan']);
+
+// Endpoint untuk Hasil Kunjungan Pemeriksaan
+Route::post('/kunjunganpemeriksaanhasil', [ApiController::class, 'kunjunganPemeriksaanHasil']);
+
+// API Edit Setting
+Route::get('/departments', [DepartmentController::class, 'data']);
+
+Route::get('/collection/post', [SpesimentHendlingController::class, 'postCollection']);
+
+Route::get('/qc/{id}', [QcController::class, 'getQcUnified']);
+Route::get('/get-parameters/{qcId}', [QcController::class, 'getParameters']);
+
 Route::middleware('verify.api.token')->group(function () {
-
-    Route::get('/previewpasien/{lab}', [PasienController::class, 'getDataPasien']);
-    Route::get('/get-data-pasien/{lab}', [PasienController::class, 'getDataPasien']);
-    Route::get('/get-data-diagnosa', [PasienController::class, 'getDataDiagnosa']);
-    Route::get('/get-data-qc/{lab}', [QcController::class, 'getDataQc']);
-
-    // Endpoint untuk Check data apakah masuk atau belum
-    Route::get('/check-data', [ApiController::class, 'checkData']);
-
-    // Endpoint untuk Quality Control (QC)
-    Route::post('/qc', [ApiController::class, 'qc']);
-
-    // Endpoint untuk Kunjungan Pemeriksaan
-    Route::post('/kunjunganpemeriksaan', [ApiController::class, 'kunjunganPemeriksaan']);
-
-    // Endpoint untuk Hasil Kunjungan Pemeriksaan
-    Route::post('/kunjunganpemeriksaanhasil', [ApiController::class, 'kunjunganPemeriksaanHasil']);
-
-    // API Edit Setting
-    Route::get('/departments', [DepartmentController::class, 'data']);
-
-    Route::get('/collection/post', [SpesimentHendlingController::class, 'postCollection']);
-
-    Route::get('/qc/{id}', [QcController::class, 'getQcUnified']);
-    Route::get('/get-parameters/{qcId}', [QcController::class, 'getParameters']);
-
     Route::post('/pasien/sync', [PasienController::class, 'syncFromExternal']);
     Route::post('/hasil/sync', [HasilController::class, 'syncFromExternal']);
 
