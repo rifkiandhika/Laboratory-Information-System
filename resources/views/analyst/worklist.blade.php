@@ -1855,120 +1855,116 @@
                         function checkStarThresholdHematologi(nilaiHasil, parameter, jenisKelamin) {
                             // Definisi threshold untuk parameter hematologi (format: low;high)
                             const hematologiThreshold = {
-                                'WBC': { L: '3.0;15.0', P: '3.0;15.0' },           // threshold low: 3.0, high: 15.0
-                                'LYM#': { L: '0.8;5.0', P: '0.8;5.0' },            // threshold low: 0.8, high: 5.0
-                                'MID#': { L: '0.1;1.0', P: '0.1;1.0' },            // threshold low: 0.1, high: 1.0
-                                'GRAN#': { L: '1.5;8.0', P: '1.5;8.0' },           // threshold low: 1.5, high: 8.0
-                                'LYM%': { L: '15;45', P: '15;45' },                 // threshold low: 15%, high: 45%
-                                'MID%': { L: '2;20', P: '2;20' },                   // threshold low: 2%, high: 20%
-                                'GRAN%': { L: '45;80', P: '45;80' },                // threshold low: 45%, high: 80%
-                                'RBC': { L: '3.5;7.0', P: '2.5;6.5' },             // threshold low: 3.5/2.5, high: 7.0/6.5
-                                'HGB': { L: '12.0;18.0', P: '10.0;16.0' },         // threshold low: 12.0/10.0, high: 18.0/16.0
-                                'HCT': { L: '30;50', P: '30;50' },                  // threshold low: 30%, high: 50%
-                                'MCV': { L: '75;105', P: '75;105' },                // threshold low: 75 fL, high: 105 fL
-                                'MCH': { L: '25;35', P: '25;35' },                  // threshold low: 25 pg, high: 35 pg
-                                'MCHC': { L: '30;38', P: '30;38' },                 // threshold low: 30 g/dL, high: 38 g/dL
-                                'RDW-CV': { L: '10.0;16.0', P: '10.0;16.0' },      // threshold low: 10.0%, high: 16.0%
-                                'RDW-SD': { L: '35;50', P: '35;50' },               // threshold low: 35 fL, high: 50 fL
-                                'PLT': { L: '100;450', P: '100;450' },              // threshold low: 100, high: 450
-                                'MPV': { L: '6;12', P: '6;12' },                    // threshold low: 6 fL, high: 12 fL
-                                'PDW': { L: '8;20', P: '8;20' },                    // threshold low: 8 fL, high: 20 fL
-                                'PCT': { L: '0.10;0.60', P: '0.10;0.60' },         // threshold low: 0.10%, high: 0.60%
-                                'P-LCC': { L: '25;100', P: '25;100' },              // threshold low: 25, high: 100
-                                'P-LCR': { L: '10;50', P: '10;50' }                 // threshold low: 10%, high: 50%
+                                'WBC': { L: '3.0;15.0', P: '3.0;15.0' },
+                                'LYM#': { L: '0.8;5.0', P: '0.8;5.0' },
+                                'MID#': { L: '0.1;1.0', P: '0.1;1.0' },
+                                'GRAN#': { L: '1.5;8.0', P: '1.5;8.0' },
+                                'LYM%': { L: '15;45', P: '15;45' },
+                                'MID%': { L: '2;20', P: '2;20' },
+                                'GRAN%': { L: '45;80', P: '45;80' },
+                                'RBC': { L: '3.5;7.0', P: '2.5;6.5' },
+                                'HGB': { L: '12.0;18.0', P: '10.0;16.0' },
+                                'HCT': { L: '30;50', P: '30;50' },
+                                'MCV': { L: '75;105', P: '75;105' },
+                                'MCH': { L: '25;35', P: '25;35' },
+                                'MCHC': { L: '30;38', P: '30;38' },
+                                'RDW-CV': { L: '10.0;16.0', P: '10.0;16.0' },
+                                'RDW-SD': { L: '35;50', P: '35;50' },
+                                'PLT': { L: '100;450', P: '100;450' },
+                                'MPV': { L: '6;12', P: '6;12' },
+                                'PDW': { L: '8;20', P: '8;20' },
+                                'PCT': { L: '0.10;0.60', P: '0.10;0.60' },
+                                'P-LCC': { L: '25;100', P: '25;100' },
+                                'P-LCR': { L: '10;50', P: '10;50' }
                             };
-                            
+
                             if (!hematologiThreshold[parameter]) return false;
-                            
+
                             let genderCode = '';
-                            if (jenisKelamin.toLowerCase().includes('laki') || jenisKelamin === 'L') {
+                            const lowerJenis = jenisKelamin?.toLowerCase() || '';
+
+                            if (lowerJenis.includes('laki') || jenisKelamin === 'L') {
                                 genderCode = 'L';
-                            } else if (jenisKelamin.toLowerCase().includes('perempuan') || jenisKelamin === 'P') {
+                            } else if (lowerJenis.includes('perempuan') || jenisKelamin === 'P') {
                                 genderCode = 'P';
                             }
-                            
+
                             if (!genderCode || !hematologiThreshold[parameter][genderCode]) return false;
-                            
+
                             const thresholdValues = hematologiThreshold[parameter][genderCode].split(';');
                             const lowThreshold = parseFloat(thresholdValues[0]);
                             const highThreshold = parseFloat(thresholdValues[1]);
-                            
-                            // Return true jika nilai di bawah low threshold atau di atas high threshold
+
                             return nilaiHasil < lowThreshold || nilaiHasil > highThreshold;
                         }
 
-                        // Fungsi untuk mengecek threshold bintang urine
                         function checkStarThresholdUrine(nilaiHasil, parameter, jenisKelamin) {
-                            // Definisi threshold untuk parameter urine (format: low;high)
                             const urineThreshold = {
-                                'Berat Jenis': { L: '1.005;1.040', P: '1.005;1.040' },  // threshold low: 1.005, high: 1.040
-                                'PH': { L: '5.0;8.5', P: '5.0;8.5' }                    // threshold low: 5.0, high: 8.5
+                                'Berat Jenis': { L: '1.005;1.040', P: '1.005;1.040' },
+                                'PH': { L: '5.0;8.5', P: '5.0;8.5' }
                             };
-                            
+
                             if (!urineThreshold[parameter]) return false;
-                            
+
                             let genderCode = '';
-                            if (jenisKelamin.toLowerCase().includes('laki') || jenisKelamin === 'L') {
+                            const lowerJenis = jenisKelamin?.toLowerCase() || '';
+
+                            if (lowerJenis.includes('laki') || jenisKelamin === 'L') {
                                 genderCode = 'L';
-                            } else if (jenisKelamin.toLowerCase().includes('perempuan') || jenisKelamin === 'P') {
+                            } else if (lowerJenis.includes('perempuan') || jenisKelamin === 'P') {
                                 genderCode = 'P';
                             }
-                            
+
                             if (!genderCode || !urineThreshold[parameter][genderCode]) return false;
-                            
+
                             const thresholdValues = urineThreshold[parameter][genderCode].split(';');
                             const lowThreshold = parseFloat(thresholdValues[0]);
                             const highThreshold = parseFloat(thresholdValues[1]);
-                            
-                            // Return true jika nilai di bawah low threshold atau di atas high threshold
+
                             return nilaiHasil < lowThreshold || nilaiHasil > highThreshold;
                         }
 
                         function checkStarThreshold(nilaiHasil, nilaiRujukan, jenisKelamin) {
                             if (!nilaiRujukan || !jenisKelamin) return false;
-                            
-                            // Cari nilai dalam kurung, contoh: (L.30;220 P.30;220)
+
                             const thresholdMatch = nilaiRujukan.match(/\(([^)]+)\)/);
                             if (!thresholdMatch) return false;
-                            
-                            const thresholdString = thresholdMatch[1]; // Ambil isi dalam kurung
+
+                            const thresholdString = thresholdMatch[1];
                             const parts = thresholdString.split(' ');
-                            
+
                             let genderCode = '';
-                            if (jenisKelamin.toLowerCase().includes('laki') || jenisKelamin === 'L') {
+                            const lowerJenis = jenisKelamin?.toLowerCase() || '';
+
+                            if (lowerJenis.includes('laki') || jenisKelamin === 'L') {
                                 genderCode = 'L';
-                            } else if (jenisKelamin.toLowerCase().includes('perempuan') || jenisKelamin === 'P') {
+                            } else if (lowerJenis.includes('perempuan') || jenisKelamin === 'P') {
                                 genderCode = 'P';
                             }
-                            
+
                             if (!genderCode) return false;
-                            
-                            // Cari threshold untuk jenis kelamin yang sesuai
+
                             for (const part of parts) {
                                 if (part.startsWith(genderCode + '.')) {
-                                    const thresholdData = part.substring(2); // Hapus prefix "L." atau "P."
-                                    
-                                    // Cek apakah menggunakan format low;high
+                                    const thresholdData = part.substring(2);
+
                                     if (thresholdData.includes(';')) {
                                         const thresholdValues = thresholdData.split(';');
                                         const lowThreshold = parseFloat(thresholdValues[0].replace(',', '.'));
                                         const highThreshold = parseFloat(thresholdValues[1].replace(',', '.'));
-                                        
+
                                         if (!isNaN(lowThreshold) && !isNaN(highThreshold)) {
-                                            // Return true jika nilai di bawah low threshold atau di atas high threshold
                                             return nilaiHasil < lowThreshold || nilaiHasil > highThreshold;
                                         }
                                     } else {
-                                        // Format lama, hanya low threshold
                                         const thresholdValue = parseFloat(thresholdData.replace(',', '.'));
                                         if (!isNaN(thresholdValue)) {
-                                            // Return true jika nilai hasil di bawah threshold
                                             return nilaiHasil < thresholdValue;
                                         }
                                     }
                                 }
                             }
-                            
+
                             return false;
                         }
 
