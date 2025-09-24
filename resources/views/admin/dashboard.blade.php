@@ -5,10 +5,10 @@ Dashboard|Admin
 @endsection
 
 @section('content')
-<div class="content-wrapper">
+<div class="content">
     <!-- Content -->
 
-    <div class="container-xxl flex-grow-1 container-p-y">
+    <div class="container-fluid">
       
             <!-- Content Row -->
             <div class="row mt-3">
