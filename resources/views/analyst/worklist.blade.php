@@ -3211,7 +3211,7 @@
                                     });
 
                                     document.querySelectorAll('.d1, .d2, .d3').forEach(input => {
-                                        input.disabled = true;
+                                        input.disabled = false;
                                     });
 
                                     if (verifikasiHasilBtn) verifikasiHasilBtn.disabled = false;
