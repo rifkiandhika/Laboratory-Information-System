@@ -3071,7 +3071,7 @@
                                     break;
                                 case 1: // dari d1 ke d2
                                     if (currentDuploStage >= 2) {
-                                        sourceClass = 'd1';
+                                        sourceClass = 'manualInput';
                                         targetClass = 'd2';
                                         masterSwitchState = 2;
                                     } else {
@@ -3081,18 +3081,13 @@
                                     break;
                                 case 2: // dari d2 ke d3
                                     if (currentDuploStage >= 3) {
-                                        sourceClass = 'd2';
+                                        sourceClass = 'manualInput';
                                         targetClass = 'd3';
-                                        masterSwitchState = 3;
+                                        masterSwitchState = 0;
                                     } else {
                                         // console.log('D3 belum aktif');
                                         return;
                                     }
-                                    break;
-                                case 3: // dari d3 kembali ke hasil
-                                    sourceClass = 'd3';
-                                    targetClass = 'manualInput';
-                                    masterSwitchState = 0;
                                     break;
                             }
 
