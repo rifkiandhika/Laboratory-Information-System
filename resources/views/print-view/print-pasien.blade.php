@@ -649,24 +649,34 @@
         </div>
         
         @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->note)
-        <table class="note-section">
+    <table class="note-section">
         <tr>
             <td><b>Catatan :</b></td>
             <td class="courier-new">- {{ $hasil_pemeriksaans->first()->note }}</td>
         </tr>
         <tr>
             <td></td>
-            <td class="courier-new">- Hasil di atas merupakan interpretasi berdasarkan pemeriksaan laboratorium saat ini 
-                dan dari keterangan klinis yang dicantumkan.</td>
+            <td class="courier-new">- Hasil di atas merupakan interpretasi berdasarkan pemeriksaan laboratorium saat ini dan dari keterangan klinis yang dicantumkan.</td>
         </tr>
-    @else
+        <tr>
+            <td></td>
+            <td class="courier-new">- *) Nilai Kritis</td>
+        </tr>
+    </table>
+@else
+    <table class="note-section">
         <tr>
             <td><b>Catatan :</b></td>
-            <td class="courier-new">- Hasil di atas merupakan interpretasi berdasarkan pemeriksaan laboratorium saat ini 
-                dan dari keterangan klinis yang dicantumkan.</td>
+            <td class="courier-new">- Hasil di atas merupakan interpretasi berdasarkan pemeriksaan laboratorium saat ini dan dari keterangan klinis yang dicantumkan.</td>
         </tr>
-    @endif
-</table>
+        <tr>
+            <td></td>
+            <td class="courier-new">- *) Nilai Kritis</td>
+        </tr>
+    </table>
+@endif
+
+
 
         
         <div class="footer-container d-flex justify-content-between">
@@ -695,7 +705,7 @@
                     @if(auth()->user()->signature && auth()->user()->status === 'active')
                         <img src="{{ asset('signatures/' . auth()->user()->signature) }}"
                             alt="Signature"
-                            style="max-height:80px; display:block; margin-left:auto; margin-right:0;">
+                            style="max-height:100px; display:block; margin-left:auto; margin-right:0;">
                     @endif
                     <div style="padding-right: 25px; margin-top:5px; text-align:right; margin-right: 50px">
                         <div style="display: inline-block; text-align: center;">

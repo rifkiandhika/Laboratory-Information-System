@@ -154,15 +154,10 @@
                                     </div>
                                 </div>
                                 <hr>
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <h5>Pilih MCU Package</h5>
-                                    </div>
-                                </div>
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <select id="mcuSelect" name="mcu_package_id" class="form-select">
-                                            <option value="" selected hidden>-- Pilih Paket MCU --</option>
+                                            <option value="" hidden>-- Pilih Paket MCU --</option>
                                             @foreach($mcuPackages as $mcu)
                                                 <option value="{{ $mcu->id }}"
                                                         data-harga-normal="{{ $mcu->harga_normal }}"
@@ -174,11 +169,17 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-md-6" id="mcuHarga" style="display:none;">
-                                        <span>Harga: 
+                                    <div class="col-md-4" id="mcuHarga" style="display:none ;">
+                                        <span>
+                                            Harga: 
                                             <del class="text-danger" id="mcuHargaNormal"></del> 
                                             <b class="text-success" id="mcuHargaFinal"></b>
                                         </span>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" id="cancelMcuBtn" class="btn btn-outline-danger" style="display:none;">
+                                            Batal MCU
+                                        </button>
                                     </div>
                                 </div>
                                 <hr>
@@ -312,56 +313,77 @@ document.addEventListener('DOMContentLoaded', function () {
     const hargaNormalEl = document.getElementById('mcuHargaNormal');
     const hargaFinalEl = document.getElementById('mcuHargaFinal');
     const hargaPemeriksaanEl = document.getElementById('harga-pemeriksaan');
+    const cancelMcuBtn = document.getElementById('cancelMcuBtn');
+    const checkboxes = document.querySelectorAll('.child-pemeriksaan');
+    
 
-    if (mcuSelect) {
-        mcuSelect.addEventListener('change', function () {
-            if (this.value) {
-                // Kalau pilih paket MCU
-                noLabInput.value = noLabInput.value.replace(/^LAB/, 'MCU');
-            } else {
-                // Kalau batal pilih paket MCU, balikin ke LAB
-                noLabInput.value = noLabInput.value.replace(/^MCU/, 'LAB');
-            }
-            
-            let selected = this.options[this.selectedIndex];
+    const formatRupiah = (num) => "Rp." + Number(num).toLocaleString('id-ID');
 
-            if (!selected.value) {
-                // Reset jika tidak pilih paket
-                mcuHargaDiv.style.display = 'none';
-                hargaPemeriksaanEl.value = "0";
-                return;
-            }
+    // Saat pilih paket MCU
+    mcuSelect.addEventListener('change', function () {
+        let selected = this.options[this.selectedIndex];
 
-            // Ambil data paket
-            let hargaNormal = parseInt(selected.getAttribute('data-harga-normal'));
-            let hargaFinal = parseInt(selected.getAttribute('data-harga-final'));
-            let diskon = selected.getAttribute('data-diskon');
-            let pemeriksaanIds = JSON.parse(selected.getAttribute('data-pemeriksaan'));
-
-            // Format ke Rp
-            const formatRupiah = (num) => "Rp." + num.toLocaleString('id-ID');
-
-            // Tampilkan harga
-            mcuHargaDiv.style.display = 'block';
-            hargaNormalEl.textContent = formatRupiah(hargaNormal);
-            hargaFinalEl.textContent = formatRupiah(hargaFinal) + ` (-${diskon}%)`;
-
-            // Set harga pemeriksaan ke harga final
-            hargaPemeriksaanEl.value = hargaFinal.toLocaleString('id-ID');
-
-            // Reset semua checkbox pemeriksaan
-            document.querySelectorAll('.child-pemeriksaan').forEach(cb => cb.checked = false);
-
-            // Centang pemeriksaan sesuai paket MCU
-            pemeriksaanIds.forEach(id => {
-                let cb = document.querySelector(`.child-pemeriksaan[value="${id}"]`);
-                if (cb) cb.checked = true;
+        if (!selected.value) {
+            // reset semua kalau tidak ada paket
+            mcuHargaDiv.style.display = 'none';
+            cancelMcuBtn.style.display = 'none';
+            hargaPemeriksaanEl.value = "0";
+            hargaNormalEl.textContent = "";
+            hargaFinalEl.textContent = "";
+            checkboxes.forEach(cb => {
+                cb.checked = false;
+                cb.disabled = false;
             });
-        });
-    }
+            return;
+        }
 
+        // Kalau pilih paket MCU
+        noLabInput.value = noLabInput.value.replace(/^LAB/, 'MCU');
+        cancelMcuBtn.style.display = 'inline-block';
+
+        let hargaNormal = parseInt(selected.getAttribute('data-harga-normal')) || 0;
+        let hargaFinal = parseInt(selected.getAttribute('data-harga-final')) || 0;
+        let diskon = selected.getAttribute('data-diskon') || 0;
+        let pemeriksaanIds = JSON.parse(selected.getAttribute('data-pemeriksaan')) || [];
+
+        // Tampilkan harga
+        mcuHargaDiv.style.display = 'block';
+        hargaNormalEl.textContent = formatRupiah(hargaNormal);
+        hargaFinalEl.textContent = formatRupiah(hargaFinal) + ` (-${diskon}%)`;
+        hargaPemeriksaanEl.value = hargaFinal.toLocaleString('id-ID');
+
+        // Reset dan disable semua checkbox
+        checkboxes.forEach(cb => {
+            cb.checked = false;
+            cb.disabled = true;
+        });
+
+        // Centang pemeriksaan sesuai paket MCU
+        pemeriksaanIds.forEach(id => {
+            let cb = document.querySelector(`.child-pemeriksaan[value="${id}"]`);
+            if (cb) {
+                cb.checked = true;
+                cb.disabled = false; // hanya yang dipilih tetap aktif
+            }
+        });
+    });
+
+    // Saat klik tombol batal MCU
+    cancelMcuBtn.addEventListener('click', function () {
+        // Reset dropdown ke default
+        mcuSelect.value = "";
+        mcuSelect.dispatchEvent(new Event('change')); // trigger ulang supaya logika reset jalan
+
+        // Reset prefix no-lab dari MCU ke LAB
+        noLabInput.value = noLabInput.value.replace(/^MCU/, 'LAB');
+    });
+
+    // ✅ Tambahkan ini supaya kondisi awal langsung sesuai (tombol batal hidden)
+    mcuSelect.dispatchEvent(new Event('change'));
 });
 </script>
+
+
 <script>
     // Menambahkan event listener saat dokumen sudah siap
 document.addEventListener('DOMContentLoaded', function() {

@@ -139,6 +139,9 @@
 
     <!-- Filter Row -->
     <div class="row mb-3">
+        <div class="col-md-1">
+            <a href="{{ route('Qc.index') }}" class="btn btn-outline-primary w-100" title="Back To Qc"><i class="ti ti-arrow-left"></i></a>
+        </div>
         <div class="col-md-2">
             <select class="form-control" id="departmentFilter" onchange="loadLevels()">
                 <option value="" selected hidden>Pilih Department</option>
@@ -157,7 +160,7 @@
         <div class="col-md-2">
             <input type="date" id="testDateFilter" class="form-control" onchange="enableSearch()" disabled>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-1">
             <button class="btn btn-primary w-100" onclick="loadHistoryData()" disabled id="searchBtn">
                 <i class="ti ti-search me-2"></i>Search
             </button>

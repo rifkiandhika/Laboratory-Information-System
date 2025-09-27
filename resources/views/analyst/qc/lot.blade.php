@@ -249,6 +249,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between mt-2">
                         <div>
+                        <a href="{{ route('Qc.index') }}" class="btn btn-outline-primary btn-sm" title="Back To Qc"><i class="ti ti-arrow-left"></i></a>
                             <button class="btn btn-sm btn-outline-success" id="loadExistingLots">
                                Load LOT Existing <i class="ti ti-history ml-1"></i>
                             </button>

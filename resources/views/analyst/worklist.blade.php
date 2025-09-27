@@ -2266,7 +2266,7 @@
                                                                                 <i class="ti ti-switch-2"></i>
                                                                             </button>
                                                                         </td>
-                                                                        <td class="col-2 duplo d1-column text-center" style="display: none;">
+                                                                        <td class="col-2 duplo d1-column text-center" style="display: block;">
                                                                             <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
                                                                                 ${param.opsi_output.split(';').map(opt => `
                                                                                     <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>
@@ -3205,14 +3205,14 @@
                             if (manualButton) {
                                 manualButton.addEventListener('click', () => {
                                     document.querySelectorAll('.manualInput').forEach(el => {
-                                        if (el.style.display !== 'none') {
+                                    if (el.style.display !== 'none') {
                                             el.disabled = false;
                                         }
                                     });
 
-                                    document.querySelectorAll('.d1, .d2, .d3').forEach(input => {
-                                        input.disabled = false;
-                                    });
+                                    // document.querySelectorAll('.d1, .d2, .d3').forEach(input => {
+                                    //     input.disabled = true;
+                                    // });
 
                                     if (verifikasiHasilBtn) verifikasiHasilBtn.disabled = false;
                                     if (verifikasiDokterBtn) verifikasiDokterBtn.disabled = false;
