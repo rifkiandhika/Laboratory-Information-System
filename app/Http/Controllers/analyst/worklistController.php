@@ -259,10 +259,6 @@ class worklistController extends Controller
 
     public function updateHasil(Request $request, $no_lab)
     {
-        // Debug - hapus dd() setelah testing
-        // dd($request->all());
-
-        // Validasi - hapus parameter_name karena tidak ada di form
         $request->validate([
             'no_lab' => 'required',
             'nama_pemeriksaan.*' => 'required',
@@ -271,72 +267,78 @@ class worklistController extends Controller
             'duplo_d2.*' => 'nullable',
             'duplo_d3.*' => 'nullable',
             'duplo_dx.*' => 'nullable',
+            'is_switched.*' => 'nullable|boolean',
         ]);
 
         try {
             $data = $request->all();
 
-            // Log data untuk debugging
-            Log::info('Update data received:', [
+            Log::info('Update hasil pemeriksaan', [
                 'no_lab' => $no_lab,
-                'count_pemeriksaan' => count($data['nama_pemeriksaan']),
-                'data' => $data
+                'total_pemeriksaan' => count($data['nama_pemeriksaan']),
             ]);
 
-            // Loop untuk update setiap pemeriksaan menggunakan model HasilPemeriksaan
+            // 🔹 Hitung jumlah update yang dilakukan
+            $updateCount = 0;
+
             for ($i = 0; $i < count($data['nama_pemeriksaan']); $i++) {
+                $nama = $data['nama_pemeriksaan'][$i] ?? null;
+                if (!$nama) continue;
 
-                // Skip jika nama_pemeriksaan kosong
-                if (empty($data['nama_pemeriksaan'][$i])) {
-                    continue;
-                }
-
-                // Data untuk update
-                $updateData = [
-                    'hasil' => $data['hasil'][$i] ?? null,
-                    'duplo_d1' => $data['duplo_d1'][$i] ?? null,
-                    'duplo_d2' => $data['duplo_d2'][$i] ?? null,
-                    'duplo_d3' => $data['duplo_d3'][$i] ?? null,
-                    'duplo_dx' => $data['duplo_dx'][$i] ?? null,
-                    'updated_at' => now()
-                ];
-
-                // Cari record berdasarkan no_lab dan nama_pemeriksaan
-                $hasilPemeriksaan = HasilPemeriksaan::where('no_lab', $no_lab)
-                    ->where('nama_pemeriksaan', $data['nama_pemeriksaan'][$i])
+                $hasil = HasilPemeriksaan::where('no_lab', $no_lab)
+                    ->where('nama_pemeriksaan', $nama)
                     ->first();
 
-                if ($hasilPemeriksaan) {
-                    // Update jika record ditemukan
-                    $hasilPemeriksaan->update($updateData);
+                if ($hasil) {
+                    $currentSwitch = (int) $hasil->is_switched;
+                    $newSwitch = $currentSwitch === 1 ? 0 : 1;
 
-                    Log::info('Record updated successfully:', [
-                        'id' => $hasilPemeriksaan->id,
-                        'no_lab' => $no_lab,
-                        'nama_pemeriksaan' => $data['nama_pemeriksaan'][$i]
+                    $hasil->update([
+                        'hasil' => $data['hasil'][$i] ?? null,
+                        'duplo_d1' => $data['duplo_d1'][$i] ?? null,
+                        'duplo_d2' => $data['duplo_d2'][$i] ?? null,
+                        'duplo_d3' => $data['duplo_d3'][$i] ?? null,
+                        'duplo_dx' => $data['duplo_dx'][$i] ?? null,
+                        'is_switched' => $newSwitch,
+                        'updated_at' => now(),
                     ]);
-                } else {
-                    // Log jika record tidak ditemukan
-                    Log::warning('Record not found:', [
-                        'no_lab' => $no_lab,
-                        'nama_pemeriksaan' => $data['nama_pemeriksaan'][$i]
-                    ]);
+
+                    $updateCount++;
                 }
             }
 
-            toast('Data berhasil diupdate', 'success');
+            // 🔹 Simpan riwayat update (switch data)
+            if ($updateCount > 0) {
+                // Hitung berapa kali sudah update sebelumnya
+                $totalHistory = HistoryPasien::where('no_lab', $no_lab)
+                    ->where('proses', 'like', '%Update Hasil%')
+                    ->count();
+
+                $updateNumber = $totalHistory + 1;
+
+                HistoryPasien::create([
+                    'no_lab' => $no_lab,
+                    'proses' => "Update Hasil ke-$updateNumber",
+                    'tempat' => 'Result Review',
+                    'waktu_proses' => now(),
+                    'created_at' => now(),
+                ]);
+            }
+
+            toast("Data hasil diperbarui ($updateCount parameter)", 'success');
             return redirect()->back();
         } catch (\Exception $e) {
-            Log::error('Update error:', [
+            Log::error('Gagal update hasil pemeriksaan', [
                 'no_lab' => $no_lab,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
             ]);
 
             toast('Gagal update data: ' . $e->getMessage(), 'error');
             return redirect()->back();
         }
     }
+
+
 
 
 

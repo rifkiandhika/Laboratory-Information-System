@@ -1110,7 +1110,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 range: item.range || '',
                 satuan: item.satuan || '',
                 note: item.note || '',
-                flag: item.flag || ''
+                flag: item.flag || '',
+                switched : item.is_switched || '',
             };
         });
     }
@@ -1126,34 +1127,59 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function getDataValues(parameterName, namaPemeriksaan) {
-        // Prioritas: data dari database, kemudian OBX sebagai fallback
-        if (hasilMap[namaPemeriksaan] || hasilMap[parameterName]) {
-            const data = hasilMap[namaPemeriksaan] || hasilMap[parameterName];
-            return {
-                duplo_d1: data.duplo_d1,
-                duplo_d2: data.duplo_d2,
-                duplo_d3: data.duplo_d3,
-                duplo_dx: data.duplo_dx,
-                hasilUtama: data.hasil,
-                satuan: data.satuan,
-                range: data.range,
-                flag: data.flag
-            };
-        }
-        
-        // Fallback ke OBX jika tidak ada data database
-        const values = obxMap[parameterName] || [];
-        return {
-            duplo_d1: values[0] || '',
-            duplo_d2: values[1] || '',
-            duplo_d3: values[2] || '',
-            hasilUtama: values[0] || '',
-            satuan: '',
-            range: '',
-            flag: '' 
-        };
+    // PERBAIKAN: Fungsi getDataValues yang lebih robust
+function getDataValues(parameterName, namaPemeriksaan) {
+    // Debug: Log apa yang sedang dicari
+    // console.log('🔍 Mencari data untuk:', { parameterName, namaPemeriksaan });
+    // console.log('📊 HasilMap keys:', Object.keys(hasilMap));
+    
+    // Prioritas: data dari database, kemudian OBX sebagai fallback
+    let foundData = null;
+    
+    // Cari berdasarkan nama pemeriksaan dulu
+    if (namaPemeriksaan && hasilMap[namaPemeriksaan]) {
+        foundData = hasilMap[namaPemeriksaan];
+        // console.log('✅ Data ditemukan dengan namaPemeriksaan:', namaPemeriksaan, foundData);
+    } 
+    // Jika tidak ada, cari berdasarkan parameter name
+    else if (parameterName && hasilMap[parameterName]) {
+        foundData = hasilMap[parameterName];
+        // console.log('✅ Data ditemukan dengan parameterName:', parameterName, foundData);
     }
+
+    // Jika data ditemukan dari database
+    if (foundData) {
+        const result = {
+            duplo_d1: foundData.duplo_d1 || '',
+            duplo_d2: foundData.duplo_d2 || '',
+            duplo_d3: foundData.duplo_d3 || '',
+            duplo_dx: foundData.duplo_dx || '',
+            hasilUtama: foundData.hasil || '',
+            satuan: foundData.satuan || '',
+            range: foundData.range || '',
+            flag: foundData.flag || '',
+            switched: foundData.switched || foundData.is_switched || false // PERBAIKAN: Cek kedua field
+        };
+        
+        // console.log('📋 Data hasil:', result);
+        return result;
+    }
+    
+    // Fallback ke OBX jika tidak ada data database
+    // console.log('⚠️ Tidak ada data database, menggunakan OBX fallback');
+    const values = obxMap[parameterName] || [];
+    return {
+        duplo_d1: values[0] || '',
+        duplo_d2: values[1] || '',
+        duplo_d3: values[2] || '',
+        duplo_dx: '',
+        hasilUtama: values[0] || '',
+        satuan: '',
+        range: '',
+        flag: '',
+        switched: false
+    };
+}
 
     // Cek apakah ada data duplo untuk menentukan kolom mana yang perlu ditampilkan
     function checkDuploColumns() {
@@ -1292,13 +1318,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <tr>
                             <th class="col-2">PARAMETER</th>
                             <th class="col-2">HASIL</th>
-                            <th class="col-1">
-                                <!-- Master Switch All Button -->
-                                <button type="button" class="btn btn-outline-primary btn-sm master-switch-all-btn" 
-                                        id="masterSwitchAllBtn" title="Switch All: HASIL ↔ DX">
-                                    <i class="ti ti-arrows-exchange"></i>
-                                </button>
-                            </th>
+                            <th class="col-1"></th>
                             <th class="col-2 duplo dx-column">DX</th>
                             <th class="col-2 duplo d1-column" style="display: ${duploStatus.hasD1 ? 'table-cell' : 'none'};">D1</th>
                             <th class="col-2 duplo d2-column" style="display: ${duploStatus.hasD2 ? 'table-cell' : 'none'};">D2</th>
@@ -1414,9 +1434,26 @@ document.addEventListener('DOMContentLoaded', function() {
                                                             </button>
                                                         </td>
                                                         <td class="col-2 duplo dx-column text-center">
-                                                            <input type="number" name="duplo_dx[]" 
-                                                                class="form-control dx w-60 p-0 text-center" 
-                                                                value="${dataValues.duplo_dx}" step="0.01" />
+                                                            <div class="d-flex align-items-center justify-content-center gap-1">
+                                                                <input type="number" 
+                                                                    name="duplo_dx[]" 
+                                                                    class="form-control dx w-60 p-0 text-center" 
+                                                                    value="${dataValues.duplo_dx ?? ''}" 
+                                                                    step="0.01" />
+
+                                                                <!-- Hidden input untuk simpan status switch -->
+                                                                <input type="hidden" 
+                                                                    name="is_switched[]" 
+                                                                    value="${dataValues.switched ? 1 : 0}">
+
+                                                                <!-- Jika sudah di-switch, tampilkan checkbox R -->
+                                                                ${dataValues.switched ? `
+                                                                    <div class='checkbox-r-container d-flex align-items-center gap-1'>
+                                                                        <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
+                                                                        <span class='text-danger fw-bold'>R</span>
+                                                                    </div>
+                                                                ` : ''}
+                                                            </div>
                                                         </td>
                                                         <td class="col-2 duplo d1-column text-center" style="display: ${duploStatus.hasD1 ? 'table-cell' : 'none'};">
                                                             <input type="number" name="duplo_d1[]" 
@@ -1504,14 +1541,31 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         <i class="ti ti-switch-2"></i>
                                                     </button>
                                                 </td>
-                                                <td class="col-2">
-                                                    <select name="duplo_dx[]" class="form-select dx_column dx w-60 p-0">
-                                                        ${param.opsi_output.split(';').map(opt => `
-                                                            <option value="${opt.trim()}" ${obxValues.duplo_dx === opt.trim() ? 'selected' : ''}>
-                                                                ${opt.trim()}
-                                                            </option>
-                                                        `).join('')}
-                                                    </select>
+                                                <td class="col-2 text-center">
+                                                    <div class="d-flex align-items-center justify-content-center gap-1">
+                                                        <select name="duplo_dx[]" class="form-select dx w-60 p-0">
+                                                            ${param.opsi_output
+                                                                ? param.opsi_output.split(';').map(opt => `
+                                                                    <option value="${opt.trim()}"
+                                                                        ${obxValues.duplo_dx === opt.trim() ? 'selected' : ''}>
+                                                                        ${opt.trim()}
+                                                                    </option>
+                                                                `).join('')
+                                                                : '<option value="">Pilih...</option>'
+                                                            }
+                                                        </select>
+
+                                                        <input type="hidden"
+                                                            name="is_switched[]"
+                                                            value="${obxValues.switched ? 1 : 0}">
+
+                                                        ${obxValues.switched ? `
+                                                            <div class='checkbox-r-container d-flex align-items-center gap-1'>
+                                                                <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
+                                                                <span class='text-danger fw-bold'>R</span>
+                                                            </div>
+                                                        ` : ''}
+                                                    </div>
                                                 </td>
                                                 ${hasDuplo ? `
                                                     <td class="col-2 duplo d1-column text-center" style="display: ${duploStatus.hasD1 ? 'table-cell' : 'none'};">
@@ -1623,21 +1677,39 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         <i class="ti ti-switch-2"></i>
                                                     </button>
                                                 </td>
-                                                <td class="col-2">
+                                                <td class="col-2 text-center">
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
                                                     ${param.tipe_inputan === 'text' ? `
-                                                        <input type="text" name="duplo_dx[]" 
-                                                            class="form-control duplo_dx w-60 p-0 text-center"
-                                                            disabled value="${obxValues.duplo_dx || param.default || ''}" />
+                                                        <input type="text"
+                                                            name="duplo_dx[]"
+                                                            class="form-control dx w-60 p-0 text-center"
+                                                            value="${obxValues.duplo_dx || ''}" />
                                                     ` : `
-                                                        <select name="duplo_dx[]" class="form-select manualInput w-60 p-0" disabled>
-                                                            ${param.opsi_output.split(';').map(opt => `
-                                                                <option value="${opt.trim()}" ${(obxValues.duplo_dx || param.default) === opt.trim() ? 'selected' : ''}>
-                                                                    ${opt.trim()}
-                                                                </option>
-                                                            `).join('')}
+                                                        <select name="duplo_dx[]" class="form-select dx w-60 p-0">
+                                                            ${param.opsi_output
+                                                                ? param.opsi_output.split(';').map(opt => `
+                                                                    <option value="${opt.trim()}"
+                                                                        ${obxValues.duplo_dx === opt.trim() ? 'selected' : ''}>
+                                                                        ${opt.trim()}
+                                                                    </option>
+                                                                `).join('')
+                                                                : '<option value="">Pilih...</option>'
+                                                            }
                                                         </select>
                                                     `}
-                                                </td>
+
+                                                    <input type="hidden"
+                                                        name="is_switched[]"
+                                                        value="${obxValues.switched ? 1 : 0}">
+
+                                                    ${obxValues.switched ? `
+                                                        <div class='checkbox-r-container d-flex align-items-center gap-1'>
+                                                            <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
+                                                            <span class='text-danger fw-bold'>R</span>
+                                                        </div>
+                                                    ` : ''}
+                                                </div>
+                                            </td>
                                                 <td class="col-2 duplo d1-column text-center" style="display:none;">
                                                     ${param.tipe_inputan === 'text' ? `
                                                         <input type="text" name="duplo_d1[]" 
@@ -1735,20 +1807,38 @@ document.addEventListener('DOMContentLoaded', function() {
                                                 <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan ?? '-'}" />
                                                 <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
                                             </td>
-                                            <td class="col-2">
-                                                ${param.tipe_inputan === 'Text' ? `
-                                                    <input type="text" name="hasil[]" 
-                                                        class="form-control manualInput w-60 p-0 text-center" 
-                                                        disabled value="${obxValues.hasilUtama || ''}" />
-                                                ` : `
-                                                    <select name="hasil[]" class="form-select manualInput w-60 p-0" disabled>
-                                                        ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
-                                                            <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>
-                                                                ${opt.trim()}
-                                                            </option>
-                                                        `).join('') : '<option value="">Pilih...</option>'}
-                                                    </select>
-                                                `}
+                                            <td class="col-2 text-center">
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    ${param.tipe_inputan === 'Text' ? `
+                                                        <input type="text"
+                                                            name="duplo_dx[]"
+                                                            class="form-control dx w-60 p-0 text-center"
+                                                            value="${obxValues.duplo_dx || ''}" />
+                                                    ` : `
+                                                        <select name="duplo_dx[]" class="form-select dx w-60 p-0">
+                                                            ${param.opsi_output
+                                                                ? param.opsi_output.split(';').map(opt => `
+                                                                    <option value="${opt.trim()}"
+                                                                        ${obxValues.duplo_dx === opt.trim() ? 'selected' : ''}>
+                                                                        ${opt.trim()}
+                                                                    </option>
+                                                                `).join('')
+                                                                : '<option value="">Pilih...</option>'
+                                                            }
+                                                        </select>
+                                                    `}
+
+                                                    <input type="hidden"
+                                                        name="is_switched[]"
+                                                        value="${obxValues.switched ? 1 : 0}">
+
+                                                    ${obxValues.switched ? `
+                                                        <div class='checkbox-r-container d-flex align-items-center gap-1'>
+                                                            <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
+                                                            <span class='text-danger fw-bold'>R</span>
+                                                        </div>
+                                                    ` : ''}
+                                                </div>
                                             </td>
                                             <td class="col-1">
                                                 <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
@@ -1762,7 +1852,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         class="form-control  w-60 p-0 text-center" 
                                                         disabled value="${obxValues.duplo_dx || ''}" />
                                                 ` : `
-                                                    <select name="duplo_dx[]" class="form-select manualInput w-60 p-0" disabled>
+                                                    <select name="duplo_dx[]" class="form-select dx duplo_dx w-60 p-0" disabled>
                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                             <option value="${opt.trim()}" ${obxValues.duplo_dx === opt.trim() ? 'selected' : ''}>
                                                                 ${opt.trim()}
@@ -1902,7 +1992,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                             ` : `
                                                 <input type="text" name="hasil[]" 
                                                     class="form-control manualInput w-60 p-0 text-center" 
-                                                    value="${obxValues.hasilUtama || ''}" disabled />
+                                                    value="${obxValues.hasilUtama || ''}"  />
                                             `}
                                         </td>
 
@@ -1914,20 +2004,39 @@ document.addEventListener('DOMContentLoaded', function() {
                                             </button>
                                         </td>
 
-                                        <td class="col-2">
-                                            ${p.data_pemeriksaan.tipe_inputan === 'Dropdown' ? `
-                                                <select name="duplo_dx[]" class="form-select manualInput w-60 p-0" disabled>
-                                                    ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
-                                                        <option value="${opt.trim()}" ${obxValues.duplo_dx === opt.trim() ? 'selected' : ''}>
-                                                            ${opt.trim()}
-                                                        </option>
-                                                    `).join('')}
-                                                </select>
-                                            ` : `
-                                                <input type="text" name="duplo_dx[]" 
-                                                    class="form-control manualInput w-60 p-0 text-center" 
-                                                    value="${obxValues.duplo_dx || ''}" disabled />
-                                            `}
+                                        <td class="col-2 text-center">
+                                            <div class="d-flex align-items-center justify-content-center gap-1">
+                                                ${p.data_pemeriksaan.tipe_inputan === 'Dropdown' ? `
+                                                    <select name="duplo_dx[]" class="form-select dx w-60 p-0">
+                                                        ${p.data_pemeriksaan.opsi_output
+                                                            ? p.data_pemeriksaan.opsi_output.split(';').map(opt => `
+                                                                <option value="${opt.trim()}" ${obxValues.duplo_dx === opt.trim() ? 'selected' : ''}>
+                                                                    ${opt.trim()}
+                                                                </option>
+                                                            `).join('')
+                                                            : '<option value="">Pilih...</option>'
+                                                        }
+                                                    </select>
+                                                ` : `
+                                                    <input type="text" 
+                                                        name="duplo_dx[]" 
+                                                        class="form-control dx w-60 p-0 text-center"
+                                                        value="${obxValues.duplo_dx || ''}" />
+                                                `}
+
+                                                <!-- Hidden input untuk kirim status switch -->
+                                                <input type="hidden" 
+                                                    name="is_switched[]" 
+                                                    value="${obxValues.switched ? 1 : 0}">
+
+                                                <!-- Jika sudah di-switch, tampilkan checkbox R -->
+                                                ${obxValues.switched ? `
+                                                    <div class='checkbox-r-container d-flex align-items-center gap-1'>
+                                                        <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
+                                                        <span class='text-danger fw-bold'>R</span>
+                                                    </div>
+                                                ` : ''}
+                                            </div>
                                         </td>
 
                                         <!-- Duplo D1 -->
@@ -2109,24 +2218,141 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        document.querySelectorAll('.switch-btn').forEach((button) => {
-            button.addEventListener('click', function() {
-                const row = this.closest('tr');
-                const hasilInput = row.querySelector('.manualInput');
-                const dxInput = row.querySelector('.dx');
-                const flagCell = row.querySelector('.flag-cell');
-                const parameter = row.dataset.parameter;
+        // Simpan nilai hasil asli dari database ke atribut data-original
+            document.querySelectorAll('.manualInput').forEach(input => {
+                // Ambil nilai dari input dan pastikan ada nilainya
+                const currentValue = input.value?.trim() || '';
+                if (currentValue !== '' && !input.dataset.original) {
+                    input.dataset.original = currentValue;
+                }
+            });
 
-                // Switch hanya antara hasil utama dan dx
-                if (hasilInput && dxInput) {
+            setTimeout(() => {
+                document.querySelectorAll('tr[data-parameter]').forEach(row => {
+                    const hasilInput = row.querySelector('.manualInput');
+                    const dxInput = row.querySelector('.dx, input[name="duplo_dx[]"], select[name="duplo_dx[]"]');
+                    const hiddenSwitch = row.querySelector('input[name="is_switched[]"]');
+
+                    if (!hasilInput || !dxInput || !hiddenSwitch) {
+                        console.log('Element tidak ditemukan untuk row:', row.dataset.parameter);
+                        return;
+                    }
+
+                    // Pastikan data original tersimpan
+                    if (!hasilInput.dataset.original && hasilInput.value?.trim()) {
+                        hasilInput.dataset.original = hasilInput.value.trim();
+                    }
+
+                    console.log('Checking parameter:', row.dataset.parameter, 'is_switched value:', hiddenSwitch.value);
+
+                    // PERBAIKAN: Cek berdasarkan nilai is_switched dari database
+                    if (hiddenSwitch.value === '1' || hiddenSwitch.value === 1) {
+                        // Jika is_switched = 1, berarti sudah di-switch
+                        // Tampilkan checkbox R di kolom DX
+                        const existingCheckbox = dxInput.parentElement.querySelector('.checkbox-r-container');
+                        if (!existingCheckbox) {
+                            addCheckboxR(dxInput);
+                            console.log('✅ Checkbox R ditampilkan untuk parameter:', row.dataset.parameter);
+                        } else {
+                            console.log('Checkbox R sudah ada untuk parameter:', row.dataset.parameter);
+                        }
+                    } else {
+                        // Jika is_switched = 0, pastikan tidak ada checkbox R
+                        removeCheckboxR(dxInput);
+                        console.log('❌ Checkbox R dihapus untuk parameter:', row.dataset.parameter);
+                    }
+                });
+            }, 100);
+
+            // Event klik tombol switch
+            document.querySelectorAll('.switch-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const hasilInput = row.querySelector('.manualInput');
+                    const dxInput = row.querySelector('.dx, input[name="duplo_dx[]"], select[name="duplo_dx[]"]');
+                    const flagCell = row.querySelector('.flag-cell');
+                    const parameter = row.dataset.parameter;
+                    const originalValue = hasilInput.dataset.original?.trim() || '';
+
+                    if (!hasilInput || !dxInput) return;
+
+                    // Tukar nilai
                     const tempHasil = hasilInput.value;
                     hasilInput.value = dxInput.value;
                     dxInput.value = tempHasil;
-                }
 
-                updateFlag(hasilInput.value, flagCell, parameter);
+                    // Cek apakah nilai asli pindah ke DX
+                    if (dxInput.value.trim() === originalValue && originalValue !== '') {
+                        addCheckboxR(dxInput);
+                        setSwitchStatus(row, 1);
+                    } else if (hasilInput.value.trim() === originalValue) {
+                        // Jika nilai asli kembali ke hasil utama
+                        removeCheckboxR(dxInput);
+                        setSwitchStatus(row, 0);
+                    } else {
+                        // Hilangkan R jika tidak ada nilai asli di DX
+                        removeCheckboxR(dxInput);
+                        setSwitchStatus(row, 0);
+                    }
+
+                    // Update flag hasil
+                    if (flagCell && parameter) {
+                        updateFlag(hasilInput.value, flagCell, parameter);
+                    }
+                });
             });
-        });
+
+            // ✅ Tambahkan checkbox R + label teks “R” di sebelah DX
+             function addCheckboxR(dxInput) {
+                // Hapus yang lama jika ada
+                removeCheckboxR(dxInput);
+
+                // Pastikan parent element ada
+                if (!dxInput.parentElement) return;
+
+                const container = document.createElement('div');
+                container.className = 'checkbox-r-container d-flex align-items-center gap-1';
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'checkbox-r form-check-input';
+                checkbox.checked = true;
+                checkbox.title = 'Nilai asli berpindah ke kolom DX';
+                checkbox.disabled = true;
+
+                const label = document.createElement('span');
+                label.className = 'text-danger fw-bold';
+                label.textContent = 'R';
+
+                container.appendChild(checkbox);
+                container.appendChild(label);
+
+                // Tambahkan setelah input DX
+                dxInput.parentElement.appendChild(container);
+                
+                console.log('Checkbox R berhasil ditambahkan');
+            }
+
+            // Fungsi removeCheckboxR tetap sama
+            function removeCheckboxR(dxInput) {
+                const container = dxInput.parentElement?.querySelector('.checkbox-r-container');
+                if (container) {
+                    container.remove();
+                    console.log('Checkbox R berhasil dihapus');
+                }
+            }
+
+            // ✅ Fungsi untuk menambahkan/ubah input hidden is_switched[]
+            function setSwitchStatus(row, value) {
+                let hidden = row.querySelector('input[name="is_switched[]"]');
+                if (!hidden) {
+                    hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = 'is_switched[]';
+                    row.appendChild(hidden);
+                }
+                hidden.value = value;
+            }
 
          function switchAllHasilToDX() {
                 // Ambil semua row yang memiliki data parameter
