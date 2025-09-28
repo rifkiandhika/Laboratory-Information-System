@@ -3055,120 +3055,192 @@
                             setupFlagEventListeners();
 
                             function switchAllParameters() {
-                            // Tentukan target kolom berdasarkan state saat ini
-                            let sourceClass, targetClass;
-                            
-                            switch (masterSwitchState) {
-                                case 0: // dari hasil ke d1
-                                    if (currentDuploStage >= 1) {
+                                // Tentukan target kolom berdasarkan state saat ini
+                                let sourceClass, targetClass;
+                                
+                                switch (masterSwitchState) {
+                                    case 0: // dari hasil ke d1
+                                        if (currentDuploStage >= 1) {
+                                            sourceClass = 'manualInput';
+                                            targetClass = 'd1';
+                                            masterSwitchState = 1;
+                                        } else {
+                                            console.log('D1 belum aktif');
+                                            return;
+                                        }
+                                        break;
+                                        
+                                    case 1: // dari d1 - cek apakah bisa ke d2 atau kembali ke hasil
+                                        if (currentDuploStage >= 2) {
+                                            // Jika D2 tersedia, lanjut ke D2
+                                            sourceClass = 'manualInput';
+                                            targetClass = 'd2';
+                                            masterSwitchState = 2;
+                                        } else {
+                                            // Jika D2 tidak tersedia, kembali ke hasil
+                                            sourceClass = 'd1';
+                                            targetClass = 'manualInput';
+                                            masterSwitchState = 0;
+                                        }
+                                        break;
+                                        
+                                    case 2: // dari d2 - cek apakah bisa ke d3 atau kembali ke hasil
+                                        if (currentDuploStage >= 3) {
+                                            // Jika D3 tersedia, lanjut ke D3
+                                            sourceClass = 'manualInput';
+                                            targetClass = 'd3';
+                                            masterSwitchState = 3;
+                                        } else {
+                                            // Jika D3 tidak tersedia, kembali ke hasil
+                                            sourceClass = 'd2';
+                                            targetClass = 'manualInput';
+                                            masterSwitchState = 0;
+                                        }
+                                        break;
+                                        
+                                    case 3: // dari d3 kembali ke hasil
+                                        sourceClass = 'd3';
+                                        targetClass = 'manualInput';
+                                        masterSwitchState = 0;
+                                        break;
+                                }
+
+                                // Lakukan switching untuk semua parameter
+                                performMasterSwitch(sourceClass, targetClass);
+                                
+                                // Update visual indicator
+                                updateMasterSwitchIndicator();
+                            }
+
+                            function performMasterSwitch(sourceClass, targetClass) {
+                                const allRows = document.querySelectorAll('tr[data-parameter]');
+                                
+                                allRows.forEach(row => {
+                                    const sourceInput = row.querySelector(`.${sourceClass}`);
+                                    const targetInput = row.querySelector(`.${targetClass}`);
+                                    
+                                    if (sourceInput && targetInput) {
+                                        // Simpan nilai sumber
+                                        const sourceValue = sourceInput.value;
+                                        
+                                        // Tukar nilai
+                                        sourceInput.value = targetInput.value;
+                                        targetInput.value = sourceValue;
+                                        
+                                        // Update flag untuk input yang aktif (yang ditampilkan di kolom HASIL)
+                                        const flagCell = row.querySelector('.flag-cell');
+                                        const parameter = row.dataset.parameter;
+                                        
+                                        // Tentukan input mana yang sekarang aktif di kolom HASIL
+                                        const currentActiveInput = row.querySelector('.manualInput');
+                                        if (currentActiveInput && flagCell) {
+                                            updateFlag(currentActiveInput.value, flagCell, parameter);
+                                        }
+                                    }
+                                });
+                                
+                                console.log(`Switched all parameters from ${sourceClass} to ${targetClass}`);
+                            }
+
+                            function updateMasterSwitchIndicator() {
+                                const icon = masterSwitchBtn.querySelector('i');
+                                const button = masterSwitchBtn;
+                                
+                                // Update icon dan tooltip berdasarkan state
+                                switch (masterSwitchState) {
+                                    case 0:
+                                        icon.className = 'ti ti-switch-horizontal';
+                                        if (currentDuploStage >= 1) {
+                                            button.title = 'Currently showing: HASIL - Click to switch to D1';
+                                        } else {
+                                            button.title = 'No duplo stages available';
+                                        }
+                                        button.classList.remove('btn-outline-success', 'btn-outline-warning', 'btn-outline-danger');
+                                        button.classList.add('btn-outline-primary');
+                                        break;
+                                    case 1:
+                                        icon.className = 'ti ti-switch-horizontal text-success';
+                                        if (currentDuploStage >= 2) {
+                                            button.title = 'Currently showing: D1 - Click to switch to D2';
+                                        } else {
+                                            button.title = 'Currently showing: D1 - Click to switch back to HASIL';
+                                        }
+                                        button.classList.remove('btn-outline-primary', 'btn-outline-warning', 'btn-outline-danger');
+                                        button.classList.add('btn-outline-success');
+                                        break;
+                                    case 2:
+                                        icon.className = 'ti ti-switch-horizontal text-warning';
+                                        if (currentDuploStage >= 3) {
+                                            button.title = 'Currently showing: D2 - Click to switch to D3';
+                                        } else {
+                                            button.title = 'Currently showing: D2 - Click to switch back to HASIL';
+                                        }
+                                        button.classList.remove('btn-outline-primary', 'btn-outline-success', 'btn-outline-danger');
+                                        button.classList.add('btn-outline-warning');
+                                        break;
+                                    case 3:
+                                        icon.className = 'ti ti-switch-horizontal text-danger';
+                                        button.title = 'Currently showing: D3 - Click to switch back to HASIL';
+                                        button.classList.remove('btn-outline-primary', 'btn-outline-success', 'btn-outline-warning');
+                                        button.classList.add('btn-outline-danger');
+                                        break;
+                                }
+                            }
+
+                            // Alternative: Jika Anda ingin sistem yang lebih sederhana (hanya toggle antara HASIL dan duplo stage tertinggi)
+                            function switchAllParametersSimple() {
+                                let sourceClass, targetClass;
+                                
+                                if (masterSwitchState === 0) {
+                                    // Dari HASIL ke duplo stage tertinggi yang tersedia
+                                    if (currentDuploStage >= 3) {
+                                        sourceClass = 'manualInput';
+                                        targetClass = 'd3';
+                                        masterSwitchState = 3;
+                                    } else if (currentDuploStage >= 2) {
+                                        sourceClass = 'manualInput';
+                                        targetClass = 'd2';
+                                        masterSwitchState = 2;
+                                    } else if (currentDuploStage >= 1) {
                                         sourceClass = 'manualInput';
                                         targetClass = 'd1';
                                         masterSwitchState = 1;
                                     } else {
-                                        // console.log('D1 belum aktif');
+                                        console.log('Belum ada duplo stage yang aktif');
                                         return;
                                     }
-                                    break;
-                                case 1: // dari d1 ke d2
-                                    if (currentDuploStage >= 2) {
-                                        sourceClass = 'manualInput';
-                                        targetClass = 'd2';
-                                        masterSwitchState = 2;
-                                    } else {
-                                        // console.log('D2 belum aktif');
-                                        return;
+                                } else {
+                                    // Dari duplo stage manapun kembali ke HASIL
+                                    switch (masterSwitchState) {
+                                        case 1:
+                                            sourceClass = 'd1';
+                                            break;
+                                        case 2:
+                                            sourceClass = 'd2';
+                                            break;
+                                        case 3:
+                                            sourceClass = 'd3';
+                                            break;
                                     }
-                                    break;
-                                case 2: // dari d2 ke d3
-                                    if (currentDuploStage >= 3) {
-                                        sourceClass = 'manualInput';
-                                        targetClass = 'd3';
-                                        masterSwitchState = 0;
-                                    } else {
-                                        // console.log('D3 belum aktif');
-                                        return;
-                                    }
-                                    break;
-                            }
-
-                            // Lakukan switching untuk semua parameter
-                            performMasterSwitch(sourceClass, targetClass);
-                            
-                            // Update visual indicator
-                            updateMasterSwitchIndicator();
-                        }
-
-                        function performMasterSwitch(sourceClass, targetClass) {
-                            const allRows = document.querySelectorAll('tr[data-parameter]');
-                            
-                            allRows.forEach(row => {
-                                const sourceInput = row.querySelector(`.${sourceClass}`);
-                                const targetInput = row.querySelector(`.${targetClass}`);
-                                
-                                if (sourceInput && targetInput) {
-                                    // Simpan nilai sumber
-                                    const sourceValue = sourceInput.value;
-                                    
-                                    // Tukar nilai
-                                    sourceInput.value = targetInput.value;
-                                    targetInput.value = sourceValue;
-                                    
-                                    // Update flag untuk input yang aktif (yang ditampilkan di kolom HASIL)
-                                    const flagCell = row.querySelector('.flag-cell');
-                                    const parameter = row.dataset.parameter;
-                                    
-                                    // Tentukan input mana yang sekarang aktif di kolom HASIL
-                                    const currentActiveInput = row.querySelector('.manualInput');
-                                    if (currentActiveInput && flagCell) {
-                                        updateFlag(currentActiveInput.value, flagCell, parameter);
-                                    }
+                                    targetClass = 'manualInput';
+                                    masterSwitchState = 0;
                                 }
-                            });
-                            
-                            // console.log(`Switched all parameters from ${sourceClass} to ${targetClass}`);
-                        }
-
-                        function updateMasterSwitchIndicator() {
-                            const icon = masterSwitchBtn.querySelector('i');
-                            const button = masterSwitchBtn;
-                            
-                            // Update icon dan tooltip berdasarkan state
-                            switch (masterSwitchState) {
-                                case 0:
-                                    icon.className = 'ti ti-switch-horizontal';
-                                    button.title = 'Currently showing: HASIL - Click to switch to D1';
-                                    button.classList.remove('btn-outline-success', 'btn-outline-warning', 'btn-outline-danger');
-                                    button.classList.add('btn-outline-primary');
-                                    break;
-                                case 1:
-                                    icon.className = 'ti ti-switch-horizontal text-success';
-                                    button.title = 'Currently showing: D1 - Click to switch to D2';
-                                    button.classList.remove('btn-outline-primary', 'btn-outline-warning', 'btn-outline-danger');
-                                    button.classList.add('btn-outline-success');
-                                    break;
-                                case 2:
-                                    icon.className = 'ti ti-switch-horizontal text-warning';
-                                    button.title = 'Currently showing: D2 - Click to switch to D3';
-                                    button.classList.remove('btn-outline-primary', 'btn-outline-success', 'btn-outline-danger');
-                                    button.classList.add('btn-outline-warning');
-                                    break;
-                                case 3:
-                                    icon.className = 'ti ti-switch-horizontal text-danger';
-                                    button.title = 'Currently showing: D3 - Click to switch back to HASIL';
-                                    button.classList.remove('btn-outline-primary', 'btn-outline-success', 'btn-outline-warning');
-                                    button.classList.add('btn-outline-danger');
-                                    break;
+                                
+                                // Lakukan switching untuk semua parameter
+                                performMasterSwitch(sourceClass, targetClass);
+                                
+                                // Update visual indicator
+                                updateMasterSwitchIndicator();
                             }
-                        }
 
-                        // Initialize master switch indicator
-                        updateMasterSwitchIndicator();
-
-                        // Modifikasi fungsi existing untuk reset master switch ketika duplo direset
-                        function resetMasterSwitch() {
-                            masterSwitchState = 0;
+                            // Initialize master switch indicator
                             updateMasterSwitchIndicator();
-                        }
+
+                            // Modifikasi fungsi existing untuk reset master switch ketika duplo direset
+                            function resetMasterSwitch() {
+                                masterSwitchState = 0;
+                                updateMasterSwitchIndicator();
+                            }
 
                             // Event listener untuk tombol verifikasi
                             if (verifikasiHasilBtn) {

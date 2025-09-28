@@ -162,6 +162,7 @@ class QcController extends Controller
     public function saveQcResults(Request $request)
     {
         try {
+            // dd($request->all());
             // Validasi - PERBAIKAN DI SINI
             $validator = Validator::make($request->all(), [
                 'results' => 'required|array',

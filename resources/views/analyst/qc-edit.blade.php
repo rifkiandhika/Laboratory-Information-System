@@ -484,6 +484,8 @@ function addManualParameter() {
     }
 }
 
+
+
 function getMeta(parameter) {
     // Cari di parameter hematologi terlebih dahulu
     const hematologyParam = hematologiParams.find(p => p.nama === parameter);
@@ -499,14 +501,34 @@ function getMeta(parameter) {
     };
 }
 
-function getFlag(value, meta) {
-    if (!value || !meta) return "-";
-    let min = meta.normal_min_l || 0; 
-    let max = meta.normal_max_l || 100; 
-    if (value < min) return "↓ Low";
-    if (value > max) return "↑ High";
-    return "✓ Normal";
+function getFlag(value, meta, controlLimits) {
+  if (value === null || value === undefined || !controlLimits) return "-";
+
+  const mean = parseFloat(controlLimits.mean);
+  const range = parseFloat(controlLimits.range);
+
+  if (isNaN(mean) || isNaN(range) || range <= 0) return "Normal";
+
+  const plus1 = mean + range;
+  const plus2 = mean + (range * 2);
+  const plus3 = mean + (range * 3);
+
+  const minus1 = mean - range;
+  const minus2 = mean - (range * 2);
+  const minus3 = mean - (range * 3);
+
+  if (value >= plus3) return "+3SD";
+  if (value >= plus2) return "+2SD";
+  if (value >= plus1) return "+1SD";
+  if (value <= minus3) return "-3SD";
+  if (value <= minus2) return "-2SD";
+  if (value <= minus1) return "-1SD";
+
+  return "Normal";
 }
+
+
+
 
 // ================== FUNGSI DUPLO DENGAN PAGINATION ==================
 function duplicateResults() {
@@ -807,6 +829,7 @@ async function loadQCData() {
 }
 
 // Ambil data QC detail dari API /api/qc/{id}
+// Ambil data QC detail dari API /api/qc/{id}
 async function loadQCDetails(qcId) {
     if (!qcId) {
         clearQCData();
@@ -834,28 +857,20 @@ async function loadQCDetails(qcId) {
             // 🔹 Filter berdasarkan tanggal
             let filteredResults = results;
             if (selectedDate && source !== 'alat') {
-                // Untuk data manual, gunakan test_date
                 filteredResults = results.filter(r => {
                     if (!r.test_date) return false;
-                    
-                    // Handle berbagai format tanggal
+
                     let resultDate;
                     if (r.test_date.includes(' ')) {
-                        // Format: YYYY-MM-DD HH:mm:ss
                         resultDate = r.test_date.split(' ')[0];
                     } else if (r.test_date.includes('T')) {
-                        // Format: YYYY-MM-DDTHH:mm:ss
                         resultDate = r.test_date.split('T')[0];
                     } else {
-                        // Format: YYYY-MM-DD
                         resultDate = r.test_date;
                     }
-                    
-                    console.log(`Comparing: ${resultDate} === ${selectedDate}`);
                     return resultDate === selectedDate;
                 });
             } else if (selectedDate && source === 'alat') {
-                // Untuk data dari alat, gunakan tanggal
                 filteredResults = results.filter(r => {
                     if (!r.tanggal) return false;
                     const resultDate = r.tanggal.substring(0, 10);
@@ -868,24 +883,52 @@ async function loadQCDetails(qcId) {
             console.log('Filtered results:', filteredResults);
 
             if (isHematology) {
+                // 🔹 Hematology mapping
                 currentResults = mapApiResultsToHematology(filteredResults);
-                currentParameters = hematologiParams.map(p => ({ parameter: p.nama }));
+
+                // Gabungkan mean & range dari DetailLot
+                if (data.data.parameters && data.data.parameters.length > 0) {
+                    currentParameters = data.data.parameters.map(p => ({ parameter: p.parameter }));
+
+                    currentResults = currentResults.map(r => {
+                        const detail = data.data.parameters.find(p => p.parameter === r.parameter);
+                        return {
+                            ...r,
+                            mean: detail ? parseFloat(detail.mean) || 0 : 0,
+                            range: detail ? parseFloat(detail.range) || 0 : 0
+                        };
+                    });
+                } else {
+                    currentParameters = hematologiParams.map(p => ({ parameter: p.nama }));
+                }
             } else {
-                // 🔹 Untuk data manual
                 if (source === 'manual') {
-                    currentResults = filteredResults || [];
-                    
+                    // 🔹 Untuk data manual → inject mean & range
+                    currentResults = (filteredResults || []).map(r => ({
+                        parameter: r.parameter,
+                        result: r.result,
+                        duplo: r.duplo || [],
+                        mean: parseFloat(r.mean) || 0,
+                        range: parseFloat(r.range) || 0
+                    }));
+
                     // Ambil parameter dari DetailLot
                     if (data.data.parameters && data.data.parameters.length > 0) {
                         currentParameters = data.data.parameters.map(p => ({ parameter: p.parameter }));
                     } else {
-                        // Fallback: ambil parameter unik dari results
                         const uniqueParams = [...new Set(filteredResults.map(r => r.parameter))];
                         currentParameters = uniqueParams.map(param => ({ parameter: param }));
                     }
                 } else {
-                    // 🔹 Untuk data dari alat
-                    currentResults = filteredResults || [];
+                    // 🔹 Untuk data dari alat → mapping juga dengan mean & range
+                    currentResults = (filteredResults || []).map(r => ({
+                        parameter: r.identifier_name,
+                        result: r.identifier_value,
+                        duplo: [],
+                        mean: parseFloat(r.mean) || 0,
+                        range: parseFloat(r.range) || 0
+                    }));
+
                     const uniqueParams = [...new Set(filteredResults.map(r => r.identifier_name))];
                     currentParameters = uniqueParams.map(param => ({ parameter: param }));
                 }
@@ -1025,12 +1068,19 @@ function displayParameters() {
             const flagCell = document.createElement('td');
             flagCell.className = 'flag-cell';
             const flagValue = result.result ? parseFloat(result.result) : null;
-            const flag = getFlag(flagValue, meta);
+
+            // 🔹 perbaikan utama: kirim mean & range ke getFlag
+            const flag = getFlag(flagValue, meta, {
+                mean: result.mean || 0,
+                range: result.range || 0
+            });
+
             flagCell.innerHTML = flag;
-            
-            if (flag === "✓ Normal") flagCell.classList.add('flag-normal');
-            else if (flag === "↓ Low") flagCell.classList.add('flag-low');
-            else if (flag === "↑ High") flagCell.classList.add('flag-high');
+
+            // Tambahkan styling opsional
+            if (flag === "Normal") flagCell.classList.add('flag-normal');
+            else if (flag.includes("+")) flagCell.classList.add('flag-high');
+            else if (flag.includes("-")) flagCell.classList.add('flag-low');
             
             row.appendChild(flagCell);
             tbody.appendChild(row);
@@ -1044,6 +1094,7 @@ function displayParameters() {
     // Update pagination
     updatePagination();
 }
+
 
 function updateParameterSelector() {
     const selector = document.getElementById('parameterSelector');
@@ -1513,13 +1564,22 @@ async function saveResults() {
         const payload = {
             results: currentResults.map(r => {
                 const duploArray = Array.isArray(r.duplo) ? r.duplo : [];
+                const meta = getMeta(r.parameter);
+                
+                // 🔹 PERBAIKAN UTAMA: Hitung flag dengan controlLimits yang benar
+                const flagValue = r.result ? parseFloat(r.result) : null;
+                const controlLimits = {
+                    mean: r.mean || 0,
+                    range: r.range || 0
+                };
+                const calculatedFlag = getFlag(flagValue, meta, controlLimits);
 
                 return {
                     qc_id: currentQcData.id,
                     parameter: r.parameter,
                     test_date: testDate, // Gunakan tanggal dari input
                     result: r.result || null,
-                    flag: getFlag(r.result, getMeta(r.parameter)),
+                    flag: calculatedFlag, // 🔹 Gunakan flag yang dihitung dengan controlLimits
                     d1: duploArray[0] || null,
                     d2: duploArray[1] || null,
                     d3: duploArray[2] || null,

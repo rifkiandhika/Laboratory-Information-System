@@ -414,7 +414,7 @@
 <script>
     // Data parameter hematologi default
     const hematologyParameters = [
-        'WBC', 'Lym#', 'Mid#', 'Gran#', 'Lym%', 'Mid%', 'Gran%', 
+        'WBC', 'LYM#', 'MID#', 'GRAN#', 'LYM%', 'MID%', 'GRAN%', 
         'RBC', 'HGB', 'HCT', 'MCV', 'MCH', 'MCHC', 'RDW-CV', 
         'RDW-SD', 'PLT', 'MPV', 'PDW', 'PCT', 'P-LCR', 'P-LCC'
     ];
