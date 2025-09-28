@@ -830,6 +830,129 @@ async function loadQCData() {
 
 // Ambil data QC detail dari API /api/qc/{id}
 // Ambil data QC detail dari API /api/qc/{id}
+// async function loadQCDetails(qcId) {
+//     if (!qcId) {
+//         clearQCData();
+//         return;
+//     }
+
+//     try {
+//         isLoading = true;
+//         const tbody = document.getElementById('parametersBody');
+//         tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Loading...</td></tr>';
+
+//         const response = await fetch(`/api/qc/${qcId}`);
+//         const data = await response.json();
+
+//         if (data.status === "success" && data.data) {
+//             const qc = data.data.qc;
+//             const results = data.data.results || [];
+//             const source = data.data.source;
+//             currentQcData = qc;
+
+//             // 🔹 Ambil test date dari input (yyyy-mm-dd)
+//             const testDateInput = document.getElementById("testDate").value;
+//             const selectedDate = testDateInput ? testDateInput : null;
+
+//             // 🔹 Filter berdasarkan tanggal
+//             let filteredResults = results;
+//             if (selectedDate && source !== 'alat') {
+//                 filteredResults = results.filter(r => {
+//                     if (!r.test_date) return false;
+
+//                     let resultDate;
+//                     if (r.test_date.includes(' ')) {
+//                         resultDate = r.test_date.split(' ')[0];
+//                     } else if (r.test_date.includes('T')) {
+//                         resultDate = r.test_date.split('T')[0];
+//                     } else {
+//                         resultDate = r.test_date;
+//                     }
+//                     return resultDate === selectedDate;
+//                 });
+//             } else if (selectedDate && source === 'alat') {
+//                 filteredResults = results.filter(r => {
+//                     if (!r.tanggal) return false;
+//                     const resultDate = r.tanggal.substring(0, 10);
+//                     return resultDate === selectedDate;
+//                 });
+//             }
+
+//             console.log('Source:', source);
+//             console.log('All results:', results);
+//             console.log('Filtered results:', filteredResults);
+
+//             if (isHematology) {
+//                 // 🔹 Hematology mapping
+//                 currentResults = mapApiResultsToHematology(filteredResults);
+
+//                 // Gabungkan mean & range dari DetailLot
+//                 if (data.data.parameters && data.data.parameters.length > 0) {
+//                     currentParameters = data.data.parameters.map(p => ({ parameter: p.parameter }));
+
+//                     currentResults = currentResults.map(r => {
+//                         const detail = data.data.parameters.find(p => p.parameter === r.parameter);
+//                         return {
+//                             ...r,
+//                             mean: detail ? parseFloat(detail.mean) || 0 : 0,
+//                             range: detail ? parseFloat(detail.range) || 0 : 0
+//                         };
+//                     });
+//                 } else {
+//                     currentParameters = hematologiParams.map(p => ({ parameter: p.nama }));
+//                 }
+//             } else {
+//                 if (source === 'manual') {
+//                     // 🔹 Untuk data manual → inject mean & range
+//                     currentResults = (filteredResults || []).map(r => ({
+//                         parameter: r.parameter,
+//                         result: r.result,
+//                         duplo: r.duplo || [],
+//                         mean: parseFloat(r.mean) || 0,
+//                         range: parseFloat(r.range) || 0
+//                     }));
+
+//                     // Ambil parameter dari DetailLot
+//                     if (data.data.parameters && data.data.parameters.length > 0) {
+//                         currentParameters = data.data.parameters.map(p => ({ parameter: p.parameter }));
+//                     } else {
+//                         const uniqueParams = [...new Set(filteredResults.map(r => r.parameter))];
+//                         currentParameters = uniqueParams.map(param => ({ parameter: param }));
+//                     }
+//                 } else {
+//                     // 🔹 Untuk data dari alat → mapping juga dengan mean & range
+//                     currentResults = (filteredResults || []).map(r => ({
+//                         parameter: r.identifier_name,
+//                         result: r.identifier_value,
+//                         duplo: [],
+//                         mean: parseFloat(r.mean) || 0,
+//                         range: parseFloat(r.range) || 0
+//                     }));
+
+//                     const uniqueParams = [...new Set(filteredResults.map(r => r.identifier_name))];
+//                     currentParameters = uniqueParams.map(param => ({ parameter: param }));
+//                 }
+//             }
+
+//             console.log('Current Parameters:', currentParameters);
+//             console.log('Current Results:', currentResults);
+
+//             displayQCInfo();
+//             displayParameters();
+//             updateParameterSelector();
+//             showElements();
+//         } else {
+//             console.error('Failed to load QC details:', data.msg);
+//             clearQCData();
+//         }
+//     } catch (error) {
+//         console.error('Error loading QC details:', error);
+//         clearQCData();
+//     } finally {
+//         isLoading = false;
+//     }
+// }
+
 async function loadQCDetails(qcId) {
     if (!qcId) {
         clearQCData();
@@ -920,13 +1043,13 @@ async function loadQCDetails(qcId) {
                         currentParameters = uniqueParams.map(param => ({ parameter: param }));
                     }
                 } else {
-                    // 🔹 Untuk data dari alat → mapping juga dengan mean & range
+                    // 🔹 PERBAIKAN UTAMA: Untuk data dari alat → mapping juga dengan mean & range
                     currentResults = (filteredResults || []).map(r => ({
                         parameter: r.identifier_name,
                         result: r.identifier_value,
                         duplo: [],
-                        mean: parseFloat(r.mean) || 0,
-                        range: parseFloat(r.range) || 0
+                        mean: parseFloat(r.mean) || 0,  // 🔹 TAMBAHKAN INI
+                        range: parseFloat(r.range) || 0 // 🔹 TAMBAHKAN INI
                     }));
 
                     const uniqueParams = [...new Set(filteredResults.map(r => r.identifier_name))];
@@ -952,7 +1075,6 @@ async function loadQCDetails(qcId) {
         isLoading = false;
     }
 }
-
 
 
 function clearQCData() {
