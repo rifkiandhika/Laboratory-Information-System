@@ -2092,7 +2092,7 @@ function getDataValues(parameterName, namaPemeriksaan) {
 
                                         <!-- Flag -->
                                         <td class="col-3 flag-cell">
-                                            ${renderFlag(obxValues.flag || updateFlag(obxValues.hasilUtama, {innerHTML: ''}, p.data_pemeriksaan.nama_parameter))}
+                                            ${renderFlag(obxValues.flag || initialFlag(obxValues.hasilUtama, {innerHTML: ''}, p.data_pemeriksaan.nama_parameter))}
                                         </td>
 
                                         <!-- Satuan -->
