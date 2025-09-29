@@ -2226,8 +2226,6 @@ function getDataValues(parameterName, namaPemeriksaan) {
                     input.dataset.original = currentValue;
                 }
             });
-
-            setTimeout(() => {
                 document.querySelectorAll('tr[data-parameter]').forEach(row => {
                     const hasilInput = row.querySelector('.manualInput');
                     const dxInput = row.querySelector('.dx, input[name="duplo_dx[]"], select[name="duplo_dx[]"]');
@@ -2262,7 +2260,6 @@ function getDataValues(parameterName, namaPemeriksaan) {
                         console.log('❌ Checkbox R dihapus untuk parameter:', row.dataset.parameter);
                     }
                 });
-            }, 100);
 
             // Event klik tombol switch
             document.querySelectorAll('.switch-btn').forEach(button => {
