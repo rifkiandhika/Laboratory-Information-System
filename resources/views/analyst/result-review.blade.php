@@ -1097,7 +1097,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     ];
 
-    // Buat map dari data hasil pemeriksaan yang ada di database
+   // Buat map dari data hasil pemeriksaan yang ada di database
     const hasilMap = {};
     if (hasil && hasil.length > 0) {
         hasil.forEach(item => {
@@ -1111,7 +1111,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 satuan: item.satuan || '',
                 note: item.note || '',
                 flag: item.flag || '',
-                switched : item.is_switched || '',
+                is_switched: item.is_switched
             };
         });
     }
@@ -1127,59 +1127,35 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // PERBAIKAN: Fungsi getDataValues yang lebih robust
-function getDataValues(parameterName, namaPemeriksaan) {
-    // Debug: Log apa yang sedang dicari
-    // console.log('🔍 Mencari data untuk:', { parameterName, namaPemeriksaan });
-    // console.log('📊 HasilMap keys:', Object.keys(hasilMap));
-    
-    // Prioritas: data dari database, kemudian OBX sebagai fallback
-    let foundData = null;
-    
-    // Cari berdasarkan nama pemeriksaan dulu
-    if (namaPemeriksaan && hasilMap[namaPemeriksaan]) {
-        foundData = hasilMap[namaPemeriksaan];
-        // console.log('✅ Data ditemukan dengan namaPemeriksaan:', namaPemeriksaan, foundData);
-    } 
-    // Jika tidak ada, cari berdasarkan parameter name
-    else if (parameterName && hasilMap[parameterName]) {
-        foundData = hasilMap[parameterName];
-        // console.log('✅ Data ditemukan dengan parameterName:', parameterName, foundData);
-    }
-
-    // Jika data ditemukan dari database
-    if (foundData) {
-        const result = {
-            duplo_d1: foundData.duplo_d1 || '',
-            duplo_d2: foundData.duplo_d2 || '',
-            duplo_d3: foundData.duplo_d3 || '',
-            duplo_dx: foundData.duplo_dx || '',
-            hasilUtama: foundData.hasil || '',
-            satuan: foundData.satuan || '',
-            range: foundData.range || '',
-            flag: foundData.flag || '',
-            switched: foundData.switched || foundData.is_switched || false // PERBAIKAN: Cek kedua field
-        };
+    function getDataValues(parameterName, namaPemeriksaan) {
+        // Prioritas: data dari database, kemudian OBX sebagai fallback
+        if (hasilMap[namaPemeriksaan] || hasilMap[parameterName]) {
+            const data = hasilMap[namaPemeriksaan] || hasilMap[parameterName];
+            return {
+                duplo_d1: data.duplo_d1,
+                duplo_d2: data.duplo_d2,
+                duplo_d3: data.duplo_d3,
+                duplo_dx: data.duplo_dx,
+                hasilUtama: data.hasil,
+                satuan: data.satuan,
+                range: data.range,
+                flag: data.flag,
+                switched: data.is_switched
+            };
+        }
         
-        // console.log('📋 Data hasil:', result);
-        return result;
+        // Fallback ke OBX jika tidak ada data database
+        const values = obxMap[parameterName] || [];
+        return {
+            duplo_d1: values[0] || '',
+            duplo_d2: values[1] || '',
+            duplo_d3: values[2] || '',
+            hasilUtama: values[0] || '',
+            satuan: '',
+            range: '',
+            flag: '' 
+        };
     }
-    
-    // Fallback ke OBX jika tidak ada data database
-    // console.log('⚠️ Tidak ada data database, menggunakan OBX fallback');
-    const values = obxMap[parameterName] || [];
-    return {
-        duplo_d1: values[0] || '',
-        duplo_d2: values[1] || '',
-        duplo_d3: values[2] || '',
-        duplo_dx: '',
-        hasilUtama: values[0] || '',
-        satuan: '',
-        range: '',
-        flag: '',
-        switched: false
-    };
-}
 
     // Cek apakah ada data duplo untuk menentukan kolom mana yang perlu ditampilkan
     function checkDuploColumns() {
@@ -2226,6 +2202,7 @@ function getDataValues(parameterName, namaPemeriksaan) {
                     input.dataset.original = currentValue;
                 }
             });
+
                 document.querySelectorAll('tr[data-parameter]').forEach(row => {
                     const hasilInput = row.querySelector('.manualInput');
                     const dxInput = row.querySelector('.dx, input[name="duplo_dx[]"], select[name="duplo_dx[]"]');
