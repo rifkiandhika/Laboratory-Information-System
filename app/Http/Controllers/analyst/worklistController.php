@@ -278,7 +278,6 @@ class worklistController extends Controller
                 'total_pemeriksaan' => count($data['nama_pemeriksaan']),
             ]);
 
-            // 🔹 Hitung jumlah update yang dilakukan
             $updateCount = 0;
 
             for ($i = 0; $i < count($data['nama_pemeriksaan']); $i++) {
@@ -290,15 +289,43 @@ class worklistController extends Controller
                     ->first();
 
                 if ($hasil) {
-                    $currentSwitch = (int) $hasil->is_switched;
-                    $newSwitch = $currentSwitch === 1 ? 0 : 1;
+                    $oldHasil = $hasil->hasil;
+                    $oldDx = $hasil->duplo_dx;
+                    $oldSwitch = (int) $hasil->is_switched;
 
+                    $newHasil = $data['hasil'][$i] ?? null;
+                    $newDx = $data['duplo_dx'][$i] ?? null;
+
+                    $newSwitch = $oldSwitch; // default: tidak berubah
+
+                    // 🔹 Hanya proses jika DX ada nilai
+                    if (!is_null($newDx) && $newDx !== '') {
+
+                        // 🟢 Kondisi 1: Jika DX sebelumnya kosong tapi sekarang terisi (dan nilainya sama dengan hasil lama)
+                        if ((is_null($oldDx) || $oldDx === '') && $newDx === $oldHasil && $oldHasil !== null) {
+                            $newSwitch = 1;
+                            Log::info("DX baru diisi untuk $nama → is_switched = 1");
+                        }
+
+                        // 🟡 Kondisi 2: Jika hasil & dx saling tertukar dari sebelumnya
+                        elseif (($newHasil === $oldDx && $newDx === $oldHasil) &&
+                            ($oldHasil !== null || $oldDx !== null)
+                        ) {
+                            $newSwitch = $oldSwitch === 1 ? 0 : 1;
+                            Log::info("Terjadi pertukaran hasil-DX untuk $nama → is_switched toggle {$oldSwitch} → {$newSwitch}");
+                        }
+                    } else {
+                        // 🚫 Jika DX masih kosong, jangan ubah is_switched
+                        Log::info("Lewati update is_switched untuk $nama (DX kosong)");
+                    }
+
+                    // 🔹 Lanjut update semua kolom
                     $hasil->update([
-                        'hasil' => $data['hasil'][$i] ?? null,
+                        'hasil' => $newHasil,
                         'duplo_d1' => $data['duplo_d1'][$i] ?? null,
                         'duplo_d2' => $data['duplo_d2'][$i] ?? null,
                         'duplo_d3' => $data['duplo_d3'][$i] ?? null,
-                        'duplo_dx' => $data['duplo_dx'][$i] ?? null,
+                        'duplo_dx' => $newDx,
                         'is_switched' => $newSwitch,
                         'updated_at' => now(),
                     ]);
@@ -307,9 +334,8 @@ class worklistController extends Controller
                 }
             }
 
-            // 🔹 Simpan riwayat update (switch data)
+            // 🔹 Simpan ke riwayat jika ada perubahan
             if ($updateCount > 0) {
-                // Hitung berapa kali sudah update sebelumnya
                 $totalHistory = HistoryPasien::where('no_lab', $no_lab)
                     ->where('proses', 'like', '%Update Hasil%')
                     ->count();
@@ -337,9 +363,6 @@ class worklistController extends Controller
             return redirect()->back();
         }
     }
-
-
-
 
 
     /**
