@@ -1111,7 +1111,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 satuan: item.satuan || '',
                 note: item.note || '',
                 flag: item.flag || '',
-                is_switched: item.is_switched
+                is_switched: Number(item.is_switched) || 0
             };
         });
     }
@@ -1140,7 +1140,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 satuan: data.satuan,
                 range: data.range,
                 flag: data.flag,
-                switched: data.is_switched
+                switched: Number(data.is_switched) || 0
             };
         }
         
@@ -1418,9 +1418,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                     step="0.01" />
 
                                                                 <!-- Hidden input untuk simpan status switch -->
-                                                                <input type="hidden" 
-                                                                    name="is_switched[]" 
-                                                                    value="${dataValues.switched ? 1 : 0}">
+                                                                <input type="hidden" name="is_switched[]" value="${Number(dataValues.switched) === 1 ? 1 : 0}">
 
                                                                 <!-- Jika sudah di-switch, tampilkan checkbox R -->
                                                                 ${dataValues.switched ? `
@@ -1531,9 +1529,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                             }
                                                         </select>
 
-                                                        <input type="hidden"
-                                                            name="is_switched[]"
-                                                            value="${obxValues.switched ? 1 : 0}">
+                                                        <input type="hidden" name="is_switched[]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
 
                                                         ${obxValues.switched ? `
                                                             <div class='checkbox-r-container d-flex align-items-center gap-1'>
@@ -1674,9 +1670,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         </select>
                                                     `}
 
-                                                    <input type="hidden"
-                                                        name="is_switched[]"
-                                                        value="${obxValues.switched ? 1 : 0}">
+                                                    <input type="hidden" name="is_switched[]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
 
                                                     ${obxValues.switched ? `
                                                         <div class='checkbox-r-container d-flex align-items-center gap-1'>
@@ -1804,9 +1798,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         </select>
                                                     `}
 
-                                                    <input type="hidden"
-                                                        name="is_switched[]"
-                                                        value="${obxValues.switched ? 1 : 0}">
+                                                    <input type="hidden" name="is_switched[]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
 
                                                     ${obxValues.switched ? `
                                                         <div class='checkbox-r-container d-flex align-items-center gap-1'>
@@ -2001,9 +1993,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                 `}
 
                                                 <!-- Hidden input untuk kirim status switch -->
-                                                <input type="hidden" 
-                                                    name="is_switched[]" 
-                                                    value="${obxValues.switched ? 1 : 0}">
+                                                <input type="hidden" name="is_switched[]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
 
                                                 <!-- Jika sudah di-switch, tampilkan checkbox R -->
                                                 ${obxValues.switched ? `
@@ -2221,7 +2211,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log('Checking parameter:', row.dataset.parameter, 'is_switched value:', hiddenSwitch.value);
 
                     // PERBAIKAN: Cek berdasarkan nilai is_switched dari database
-                    if (hiddenSwitch.value === '1' || hiddenSwitch.value === 1) {
+                    if (Number(hiddenSwitch.value) === 1) {
                         // Jika is_switched = 1, berarti sudah di-switch
                         // Tampilkan checkbox R di kolom DX
                         const existingCheckbox = dxInput.parentElement.querySelector('.checkbox-r-container');
