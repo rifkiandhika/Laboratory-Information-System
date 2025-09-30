@@ -538,43 +538,31 @@ class pasienController extends Controller
             ->get();
 
         foreach ($pasiens as $pasien) {
-            $has_permission_active = false;
-            $has_handling_active   = false;
-            $has_full_active       = false;
+            $has_permission = false;
+            $has_handling   = false;
 
             foreach ($pasien->data_pemeriksaan_pasien as $pemeriksaan) {
                 $detail = $pemeriksaan->data_pemeriksaan;
                 if (!$detail) continue;
 
-                $permission = strtolower(trim((string) $detail->permission)) === 'active';
-                $handling   = strtolower(trim((string) $detail->handling)) === 'active';
-
-                if ($permission && $handling) {
-                    $has_full_active = true;
+                if (strtolower(trim((string) $detail->permission)) === 'active') {
+                    $has_permission = true;
                 }
 
-                if ($handling) {
-                    $has_handling_active = true;
-                }
-
-                if ($permission) {
-                    $has_permission_active = true;
+                if (strtolower(trim((string) $detail->handling)) === 'active') {
+                    $has_handling = true;
                 }
             }
 
-            // Urutan prioritas status
-            if ($has_full_active) {
+            // Urutan prioritas status (harus melewati tahap sebelumnya)
+            if ($has_permission) {
                 $status = 'Telah Dikirim ke Lab';
                 $proses = 'Dikirim ke dashboard';
                 $tempat = 'Laboratorium';
-            } elseif ($has_handling_active) {
+            } elseif ($has_handling) {
                 $status = 'Acc Collection';
                 $proses = 'Spesimen Diterima';
                 $tempat = 'Spesiment Handling';
-            } elseif ($has_permission_active) {
-                $status = 'Telah Dikirim ke Lab';
-                $proses = 'Dikirim ke dashboard';
-                $tempat = 'Laboratorium';
             } else {
                 $status = 'Check In Spesiment';
                 $proses = 'Check in Spesiment';
@@ -586,17 +574,18 @@ class pasienController extends Controller
 
             // Simpan history
             historyPasien::create([
-                'no_lab'      => $pasien->no_lab,
-                'proses'      => $proses,
-                'tempat'      => $tempat,
+                'no_lab'       => $pasien->no_lab,
+                'proses'       => $proses,
+                'tempat'       => $tempat,
                 'waktu_proses' => now(),
-                'created_at'  => now(),
+                'created_at'   => now(),
             ]);
         }
 
         toast('Pasien telah diproses', 'success');
         return response()->json(['success' => 'Data berhasil dikonfirmasi!']);
     }
+
 
     public function previewPrint($lab)
     {

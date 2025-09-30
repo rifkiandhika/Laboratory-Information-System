@@ -259,6 +259,7 @@ class worklistController extends Controller
 
     public function updateHasil(Request $request, $no_lab)
     {
+        // dd($request->all());
         $request->validate([
             'no_lab' => 'required',
             'nama_pemeriksaan.*' => 'required',

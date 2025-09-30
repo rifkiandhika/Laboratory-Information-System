@@ -57,7 +57,6 @@ class analystDasboard extends Controller
     public function store(Request $request)
     {
         // Validasi input
-        // dd($request->all());
         $request->validate([
             'no_lab' => 'required',
             'kapasitas' => 'nullable|array',
@@ -70,79 +69,92 @@ class analystDasboard extends Controller
         // Ambil input dari request
         $no_lab = $request->input('no_lab');
         $kapasitas = $request->input('kapasitas', []);
-        $serumh = $request->input('serumh', []);
-        $clotact = $request->input('clotact', []);
-        $notes = $request->input('note', []);
-        $status = $request->input('status', 'Acc Collection');
-        $kode = $request->input('kode', []);
-
+        $serumh   = $request->input('serumh', []);
+        $clotact  = $request->input('clotact', []);
+        $notes    = $request->input('note', []);
+        $kode     = $request->input('kode', []);
 
         // Hapus data lama sebelum memasukkan data baru
         spesimentCollection::where('no_lab', $no_lab)->delete();
-        // historyPasien::where('no_lab', $no_lab)->delete(); // Jika memang ingin hapus histori sebelumnya
 
         // Simpan data baru untuk kapasitas (tabung K3-EDTA)
         foreach ($kapasitas as $i => $kap) {
             spesimentCollection::create([
-                'no_lab' => $no_lab,
-                'kode' => $kode[$i] ?? null,
-                'tabung' => 'K3-EDTA',
+                'no_lab'    => $no_lab,
+                'kode'      => $kode[$i] ?? null,
+                'tabung'    => 'K3-EDTA',
                 'kapasitas' => $kap,
-                'status' => 'Acc',
-                'note' => $notes[$i] ?? null,
-                'tanggal' => now(),
+                'status'    => 'Acc',
+                'note'      => $notes[$i] ?? null,
+                'tanggal'   => now(),
             ]);
 
             historyPasien::create([
-                'no_lab' => $no_lab,
-                'proses' => 'Acc Collection',
-                'tempat' => 'Laboratorium',
+                'no_lab'       => $no_lab,
+                'proses'       => 'Acc Collection',
+                'tempat'       => 'Laboratorium',
                 'waktu_proses' => now(),
             ]);
         }
 
-        // Simpan data baru untuk serumh (tabung EDTA)
+        // Simpan data baru untuk serumh (tabung CLOTH-ACTIVATOR)
         foreach ($serumh as $j => $ser) {
             spesimentCollection::create([
-                'no_lab' => $no_lab,
-                'kode' => $kode[$j] ?? null,
-                'tabung' => 'CLOTH-ACTIVATOR',
-                'serumh' => $ser, // gunakan field 'kapasitas' jika 'serumh' tidak ada di database
-                'status' => 'Acc',
-                'note' => $notes[$j] ?? null,
-                'tanggal' => now(),
+                'no_lab'   => $no_lab,
+                'kode'     => $kode[$j] ?? null,
+                'tabung'   => 'CLOTH-ACTIVATOR',
+                'serumh'   => $ser,
+                'status'   => 'Acc',
+                'note'     => $notes[$j] ?? null,
+                'tanggal'  => now(),
             ]);
 
             historyPasien::create([
-                'no_lab' => $no_lab,
-                'proses' => 'Acc Collection',
-                'tempat' => 'Laboratorium',
+                'no_lab'       => $no_lab,
+                'proses'       => 'Acc Collection',
+                'tempat'       => 'Laboratorium',
                 'waktu_proses' => now(),
             ]);
         }
-        // Simpan data baru untuk clotact (tabung IMUNOLOGY)
-        // foreach ($clotact as $c => $clot) {
-        //     spesimentCollection::create([
-        //         'no_lab' => $no_lab,
-        //         'tabung' => 'CLOTH-ACT',
-        //         'clotact' => $clot, // gunakan field 'kapasitas' jika 'serumh' tidak ada di database
-        //         'status' => 'Acc',
-        //         'note' => $notes[$c] ?? null,
-        //         'tanggal' => now(),
-        //     ]);
 
-        //     historyPasien::create([
-        //         'no_lab' => $no_lab,
-        //         'proses' => 'Acc Collection',
-        //         'tempat' => 'Laboratorium',
-        //         'waktu_proses' => now(),
-        //     ]);
-        // }
+        // (opsional) clotact kalau mau dipakai nanti
 
-        // Update status pasien
-        $pasien = pasien::where('no_lab', $no_lab)->first();
+        // Update status pasien berdasarkan handling active
+        $pasien = pasien::where('no_lab', $no_lab)
+            ->with('data_pemeriksaan_pasien.data_pemeriksaan')
+            ->first();
+
         if ($pasien) {
-            $pasien->status = 'Acc Collection';
+            $has_handling_active = false;
+
+            foreach ($pasien->data_pemeriksaan_pasien as $pemeriksaan) {
+                $detail = $pemeriksaan->data_pemeriksaan;
+                if (!$detail) continue;
+
+                if (strtolower(trim((string) $detail->handling)) === 'active') {
+                    $has_handling_active = true;
+                    break;
+                }
+            }
+
+            if ($has_handling_active) {
+                $pasien->status = 'Check In';
+                historyPasien::create([
+                    'no_lab'       => $no_lab,
+                    'proses'       => 'Pasien Check In',
+                    'tempat'       => 'Laboratorium',
+                    'waktu_proses' => now(),
+                ]);
+            } else {
+                $pasien->status = 'Check In Spesiment';
+                historyPasien::create([
+                    'no_lab'       => $no_lab,
+                    'proses'       => 'Check In Spesiment',
+                    'tempat'       => 'Worklist',
+                    'waktu_proses' => now(),
+                ]);
+            }
+
             $pasien->save();
         }
 
@@ -150,6 +162,7 @@ class analystDasboard extends Controller
         toast('Berhasil Approve Spesimen', 'success');
         return redirect()->route('analyst.index');
     }
+
 
 
     /**
@@ -261,20 +274,49 @@ class analystDasboard extends Controller
     public function checkinall(Request $request)
     {
         $ids = $request->ids;
-        pasien::whereIn('id', $ids)->update(['status' => 'Check In']);
-        $pasien = pasien::whereIn('id', $ids)->get();
+        $pasiens = pasien::whereIn('id', $ids)
+            ->with('data_pemeriksaan_pasien.data_pemeriksaan')
+            ->get();
 
-        foreach ($pasien as $pasiens) {
+        foreach ($pasiens as $pasien) {
+            $has_handling_active = false;
 
+            foreach ($pasien->data_pemeriksaan_pasien as $pemeriksaan) {
+                $detail = $pemeriksaan->data_pemeriksaan;
+                if (!$detail) continue;
+
+                $handling = strtolower(trim((string) $detail->handling)) === 'active';
+
+                if ($handling) {
+                    $has_handling_active = true;
+                    break; // cukup satu yang active, langsung true
+                }
+            }
+
+            if ($has_handling_active) {
+                $status = 'Check In';
+                $proses = 'Pasien Check In';
+                $tempat = 'Laboratorium';
+            } else {
+                $status = 'Check In Spesiment';
+                $proses = 'Check In Spesiment';
+                $tempat = 'Worklist';
+            }
+
+            // Update status pasien
+            $pasien->update(['status' => $status]);
+
+            // Simpan history
             historyPasien::create([
-                'no_lab' => $pasiens->no_lab,
-                'proses' => 'Dikirim ke spesiment',
-                'tempat' => 'Laboratorium',
+                'no_lab'       => $pasien->no_lab,
+                'proses'       => $proses,
+                'tempat'       => $tempat,
                 'waktu_proses' => now(),
-                'created_at' => now(),
+                'created_at'   => now(),
             ]);
         }
+
         toast('Pasien telah Check in', 'success');
-        return response()->json(['success' => 'Data berhasil Dikonfirmasi!']);
+        return response()->json(['success' => 'Data berhasil dikonfirmasi!']);
     }
 }
