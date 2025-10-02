@@ -989,7 +989,7 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_max: 'L.- P.-',
             nilai_rujukan: '-',
             tipe_inputan : 'Dropdown',
-            opsi_output : 'Tidak Ditemukan Kuman;Ditemukan Kuman' 
+            opsi_output : 'Ditemukan Kuman;Tidak Ditemukan Kuman' 
         },
         {
             judul: '',
@@ -1000,7 +1000,7 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_max: 'L.- P.-',
             nilai_rujukan: '-',
             tipe_inputan : 'Dropdown',
-            opsi_output : '-;Negatif +;Negatif ++;Negatif +++;Negatif ++++' 
+            opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
         },
         {
             judul: '',
@@ -1022,7 +1022,7 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_max: 'L.- P.-',
             nilai_rujukan: '-',
             tipe_inputan : 'Dropdown',
-            opsi_output : '-;Negatif +;Negatif ++;Negatif +++;Negatif ++++'
+            opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++'
         },
         {
             judul: '',
