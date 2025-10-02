@@ -697,43 +697,67 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Tambahkan parameter Widal
     const WidalParams = [
-        {
-            nama: 'Salmonella Typhi H',
-            display_name: 'Salmonella Typhi H',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;1/80;1/160;1/320;1/640'
-        },
-        {
-            nama: 'Salmonella Typhi O',
-            display_name: 'Salmonella Typhi O',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;1/80;1/160;1/320;1/640'
-        },
-        {
-            nama: 'Salmonella Paratyphi AO',
-            display_name: 'Salmonella Paratyphi AO',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;1/80;1/160;1/320;1/640'
-        },
-        {
-            nama: 'Salmonella Paratyphi BO',
-            display_name: 'Salmonella Paratyphi BO',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;1/80;1/160;1/320;1/640'
-        }
-    ];
+            {
+                nama: 'Salmonella Typhi H',
+                display_name: 'Salmonella Typhi H',
+                satuan: '-',
+                normal_min_l: '-',
+                normal_max_l: '-',
+                normal_min_p: '-',
+                normal_max_p: '-',
+                nilai_rujukan_l: '-',
+                nilai_rujukan_p: '-',
+                nilai_kritis: 'L.- P.-',
+                metode: '-',
+                tipe_inputan: 'Dropdown',
+                opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
+            },
+            {
+                nama: 'Salmonella Typhi O',
+                display_name: 'Salmonella Typhi O',
+                satuan: '-',
+                normal_min_l: '-',
+                normal_max_l: '-',
+                normal_min_p: '-',
+                normal_max_p: '-',
+                nilai_rujukan_l: '-',
+                nilai_rujukan_p: '-',
+                nilai_kritis: 'L.- P.-',
+                metode: '-',
+                tipe_inputan: 'Dropdown',
+                opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
+            },
+            {
+                nama: 'Salmonella Paratyphi AO',
+                display_name: 'Salmonella Paratyphi AO',
+                satuan: '-',
+                normal_min_l: '-',
+                normal_max_l: '-',
+                normal_min_p: '-',
+                normal_max_p: '-',
+                nilai_rujukan_l: '-',
+                nilai_rujukan_p: '-',
+                nilai_kritis: 'L.- P.-',
+                metode: '-',
+                tipe_inputan: 'Dropdown',
+                opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
+            },
+            {
+                nama: 'Salmonella Paratyphi BO',
+                display_name: 'Salmonella Paratyphi BO',
+                satuan: '-',
+                normal_min_l: '-',
+                normal_max_l: '-',
+                normal_min_p: '-',
+                normal_max_p: '-',
+                nilai_rujukan_l: '-',
+                nilai_rujukan_p: '-',
+                nilai_kritis: 'L.- P.-',
+                metode: '-',
+                tipe_inputan: 'Dropdown',
+                opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
+            }
+        ];
 
     // Tambahkan parameter Urine
     const UrineParams = [
@@ -988,6 +1012,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: '-',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : 'Ditemukan Kuman;Tidak Ditemukan Kuman' 
         },
@@ -999,6 +1025,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: '-',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
         },
@@ -1010,6 +1038,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: '-',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
         },
@@ -1021,6 +1051,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: '-',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++'
         },
@@ -1032,6 +1064,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: '-',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
         }
