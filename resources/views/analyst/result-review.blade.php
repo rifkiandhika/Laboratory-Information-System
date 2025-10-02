@@ -736,207 +736,9 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
 
     // Tambahkan parameter Urine
-    // const UrineParams = [
-    //     {
-    //         nama: 'Warna',
-    //         display_name: 'Warna',
-    //         satuan: '-',
-    //         normal_min: '-',
-    //         normal_max: '-',
-    //         tipe_inputan: 'Dropdown',
-    //         opsi_output: 'Kuning;Kuning Pucat;Kuning Tua;Kuning kecokelatan;Orange;Merah;Coklat',
-    //         default: 'Kuning'
-    //     },
-    //     {
-    //         nama: 'Kekeruhan',
-    //         display_name: 'Kekeruhan',
-    //         satuan: '-',
-    //         normal_min: '-',
-    //         normal_max: '-',
-    //         tipe_inputan: 'Dropdown',
-    //         opsi_output: 'Jernih;Agak Keruh;Keruh;Sangat keruh',
-    //         default: 'Jernih'
-    //     },
-    //     {
-    //         nama: 'Berat Jenis',
-    //         display_name: 'Berat Jenis',
-    //         satuan: '-',
-    //         normal_min: 1.003,
-    //         normal_max: 1.035,
-    //         tipe_inputan: 'Dropdown',
-    //         opsi_output: '<1.005;1.005;1.010;1.015;1.020;1.025;1.030',
-    //         default: '1.015'
-    //     },
-    //     {
-    //         nama: 'PH',
-    //         display_name: 'pH',
-    //         satuan: '-',
-    //         normal_min: 4.5,
-    //         normal_max: 8.0,
-    //         tipe_inputan: 'Dropdown',
-    //         opsi_output: '4.5;5.0;5.5;6.0;6.5;7.0;7.5;8.0;8.5;9.0',
-    //         default: '6.0'
-    //     },
-    //     {
-    //         nama: 'Leukosit',
-    //         display_name: 'Leukosit',
-    //         satuan: '-',
-    //         normal_min: '-',
-    //         normal_max: '-',
-    //         tipe_inputan: 'Dropdown',
-    //         opsi_output: 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
-    //         default: 'Negatif'
-    //     },
-    //     {
-    //         nama: 'Nitrit',
-    //         display_name: 'Nitrit',
-    //         satuan: '-',
-    //         normal_min: '-',
-    //         normal_max: '-',
-    //         tipe_inputan: 'Dropdown',
-    //         opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
-    //         default: 'Negatif'
-    //     },
-    //     {
-    //         nama: 'Protein',
-    //         display_name: 'Protein',
-    //         satuan: '-',
-    //         normal_min: '-',
-    //         normal_max: '-',
-    //         tipe_inputan: 'Dropdown',
-    //         opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
-    //         default: 'Negatif'
-    //     },
-    //     {
-    //         nama: 'Glukosa',
-    //         display_name: 'Glukosa',
-    //         satuan: '-',
-    //         normal_min: '-',
-    //         normal_max: '-',
-    //         tipe_inputan: 'Dropdown',
-    //         opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
-    //         default: 'Negatif'
-    //     },
-    //     {
-    //         nama: 'Keton',
-    //         display_name: 'Keton',
-    //         satuan: '-',
-    //         normal_min: '-',
-    //         normal_max: '-',
-    //         tipe_inputan: 'Dropdown',
-    //         opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
-    //         default: 'Negatif'
-    //     },
-    //     {
-    //         nama: 'Urobilinogen',
-    //         display_name: 'Urobilinogen',
-    //         satuan: '-',
-    //         normal_min: '-',
-    //         normal_max: '-',
-    //         tipe_inputan: 'Dropdown',
-    //         opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
-    //         default: 'Negatif'
-    //     },
-    //     {
-    //         nama: 'Bilirubin',
-    //         display_name: 'Bilirubin',
-    //         satuan: '-',
-    //         normal_min: '-',
-    //         normal_max: '-',
-    //         tipe_inputan: 'Dropdown',
-    //         opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
-    //         default: 'Negatif'
-    //     },
-    //     {
-    //         nama: 'Blood',
-    //         display_name: 'Blood',
-    //         satuan: '-',
-    //         normal_min: '-',
-    //         normal_max: '-',
-    //         tipe_inputan: 'Dropdown',
-    //         opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++)',
-    //         default: 'Negatif'
-    //     },
-    //     {
-    //         nama: 'Eritrosit',
-    //         display_name: '- Eritrosit',
-    //         satuan: '',
-    //         normal_min: 0,
-    //         normal_max: 2,
-    //         tipe_inputan: 'Text',
-    //         default: 'Negatif'
-    //     },
-    //     {
-    //         nama: 'Leukosit_sedimen',
-    //         display_name: '- Leukosit',
-    //         satuan: '',
-    //         normal_min: 0,
-    //         normal_max: 5,
-    //         tipe_inputan: 'Text',
-    //         default: 'Negatif'
-    //     },
-    //     {
-    //         nama: 'Epithel',
-    //         display_name: '- Epithel',
-    //         satuan: '-',
-    //         normal_min: '-',
-    //         normal_max: '-',
-    //         tipe_inputan: 'Text',
-    //         default: 'Negatif'
-    //     },
-    //     {
-    //         nama: 'Silinder',
-    //         display_name: '- Silinder',
-    //         satuan: '-',
-    //         normal_min: '-',
-    //         normal_max: '-',
-    //         tipe_inputan: 'Dropdown',
-    //         opsi_output: 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
-    //         default: 'Negatif'
-    //     },
-    //     {
-    //         nama: 'Kristal',
-    //         display_name: '- Kristal',
-    //         satuan: '-',
-    //         normal_min: '-',
-    //         normal_max: '-',
-    //         tipe_inputan: 'Dropdown',
-    //         opsi_output: 'Tidak ada;Asam urat;Kalsium oksalat;Fosfat amorf;Lainnya',
-    //         default: 'Negatif'
-    //     },
-    //     {
-    //         nama: 'Bakteri',
-    //         display_name: '- Bakteri',
-    //         satuan: '-',
-    //         normal_min: '-',
-    //         normal_max: '-',
-    //         tipe_inputan: 'Dropdown',
-    //         opsi_output: 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
-    //         default: 'Negatif'
-    //     },
-    //     {
-    //         nama: 'Jamur',
-    //         display_name: '- Jamur',
-    //         satuan: '-',
-    //         normal_min: '-',
-    //         normal_max: '-',
-    //         tipe_inputan: 'Dropdown',
-    //         opsi_output: 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
-    //         default: 'Negatif'
-    //     },
-    //     {
-    //         nama: 'Lain-lain',
-    //         display_name: '- Lain-lain',
-    //         satuan: '-',
-    //         normal_min: '',
-    //         normal_max: '',
-    //         tipe_inputan: 'Text',
-    //         default: ''
-    //     }
-    // ];
     const UrineParams = [
         {
-            judul: 'Makroskopis',
+            judul: 'Urine Lengkap',
             nama: 'Warna',
             display_name: 'Warna',
             satuan: '-',
@@ -948,7 +750,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default: 'Kuning' 
         },
         {
-            judul: 'Makroskopis',
+            judul: 'Urine Lengkap',
             nama: 'Kekeruhan',
             display_name: 'Kekeruhan',
             satuan: '-',
@@ -960,7 +762,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default: 'Jernih' 
         },
         {
-            judul: 'Kimia',
+            judul: 'Urine Lengkap',
             nama: 'Berat Jenis',
             display_name: 'Berat Jenis',
             satuan: '-',
@@ -972,7 +774,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default: '1.015' 
         },
         {
-            judul: 'Kimia',
+            judul: 'Urine Lengkap',
             nama: 'PH',
             display_name: 'pH',
             satuan: '-',
@@ -984,7 +786,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default: '6.0' 
         },
         {
-            judul: 'Kimia',
+            judul: 'Urine Lengkap',
             nama: 'Leukosit',
             display_name: 'Leukosit',
             satuan: '-',
@@ -996,7 +798,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default: 'Negatif' 
         },
         {
-            judul: 'Kimia',
+            judul: 'Urine Lengkap',
             nama: 'Nitrit',
             display_name: 'Nitrit',
             satuan: '-',
@@ -1008,7 +810,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default: 'Negatif' 
         },
         {
-            judul: 'Kimia',
+            judul: 'Urine Lengkap',
             nama: 'Protein',
             display_name: 'Protein',
             satuan: '-',
@@ -1020,7 +822,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default: 'Negatif' 
         },
         {
-            judul: 'Kimia',
+            judul: 'Urine Lengkap',
             nama: 'Glukosa',
             display_name: 'Glukosa',
             satuan: '-',
@@ -1032,7 +834,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default: 'Negatif' 
         },
         {
-            judul: 'Kimia',
+            judul: 'Urine Lengkap',
             nama: 'Keton',
             display_name: 'Keton',
             satuan: '-',
@@ -1044,7 +846,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default: 'Negatif'  
         },
         {
-            judul: 'Kimia',
+            judul: 'Urine Lengkap',
             nama: 'Urobilinogen',
             display_name: 'Urobilinogen',
             satuan: '-',
@@ -1056,7 +858,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default: 'Negatif' 
         },
         {
-            judul: 'Kimia',
+            judul: 'Urine Lengkap',
             nama: 'Bilirubin',
             display_name: 'Bilirubin',
             satuan: '-',
@@ -1068,7 +870,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default: 'Negatif' 
         },
         {
-            judul: 'Kimia',
+            judul: 'Urine Lengkap',
             nama: 'Blood',
             display_name: 'Blood',
             satuan: '-',
@@ -1080,7 +882,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default: 'Negatif' 
         },
         {
-            judul: 'Sedimen Urine',
+            judul: 'Sedimen',
             nama: 'Eritrosit',
             display_name: '- Eritrosit',
             satuan: '',
@@ -1092,7 +894,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default: 'Negatif'
         },
         {
-            judul: 'Sedimen Urine',
+            judul: 'Sedimen',
             nama: 'Leukosit_sedimen',
             display_name: '- Leukosit',
             satuan: '',
@@ -1104,7 +906,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default: 'Negatif'
         },
         {
-            judul: 'Sedimen Urine',
+            judul: 'Sedimen',
             nama: 'Epithel',
             display_name: '- Epithel',
             satuan: '-',
@@ -1116,7 +918,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default: 'Negatif'
         },
         {
-            judul: 'Sedimen Urine',
+            judul: 'Sedimen',
             nama: 'Silinder',
             display_name: '- Silinder',
             satuan: '-',
@@ -1128,7 +930,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default: 'Negatif'
         },
         {
-            judul: 'Sedimen Urine',
+            judul: 'Sedimen',
             nama: 'Kristal',
             display_name: '- Kristal',
             satuan: '-',
@@ -1140,7 +942,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default: 'Negatif'
         },
         {
-            judul: 'Sedimen Urine',
+            judul: 'Sedimen',
             nama: 'Bakteri',
             display_name: '- Bakteri',
             satuan: '-',
@@ -1152,7 +954,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default: 'Negatif'
         },
         {
-            judul: 'Sedimen Urine',
+            judul: 'Sedimen',
             nama: 'Jamur',
             display_name: '- Jamur',
             satuan: '-',
@@ -1164,7 +966,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default: 'Negatif'
         },
         {
-            judul: 'Sedimen Urine',
+            judul: 'Sedimen',
             nama: 'Lain-lain',
             display_name: '- Lain-lain',
             satuan: '-',
@@ -1177,7 +979,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     ];
     // Parameter Miccrobiologi
-        const MicrobiologiParams = [
+    const MicrobiologiParams = [
         {
             judul: '',
             nama: 'Preparat Gram',
@@ -1233,6 +1035,254 @@ document.addEventListener('DOMContentLoaded', function() {
             tipe_inputan : 'Dropdown',
             opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
         }
+    ];
+    const DengueParams =  [
+        {
+            judul: 'Dengue_IgG/IgM',
+            nama: 'Dengue_IgG',
+            display_name: 'Dengue IgG',
+            satuan: '-',
+            normal_min: '—',
+            normal_max: '—',
+            nilai_rujukan: 'Negatif',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif(+)',
+            default: 'Negatif'
+        },
+        {
+            judul: 'Dengue_IgG/IgM',
+            nama: 'Dengue_IgM',
+            display_name: 'Dengue IgM',
+            satuan: '-',
+            normal_min: '—',
+            normal_max: '—',
+            nilai_rujukan: 'Negatif',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif(+)',
+            default: 'Negatif'
+        },
+        {
+            judul: 'Dengue_IgG/IgM',
+            nama: 'COI_IgG',
+            display_name: 'Cutoff Index IgG (COI)',
+            satuan: '',
+            normal_min: '0.00',
+            normal_max: '∞',
+            nilai_rujukan: '< 1.00',
+            tipe_inputan: 'Text',
+            opsi_output: '',
+            default: ''
+        },
+        {
+            judul: 'Dengue_IgG/IgM',
+            nama: 'COI_IgM',
+            display_name: 'Cutoff Index IgM (COI)',
+            satuan: '',
+            normal_min: '0.00',
+            normal_max: '∞',
+            nilai_rujukan: '< 1.00',
+            tipe_inputan: 'Text',
+            opsi_output: '',
+            default: ''
+        }
+    ];
+    const NS1Params =  [
+        {
+            judul: 'Dengue_Ns1',
+            nama: 'Dengue_Ns1',
+            display_name: 'Dengue_Ns1',
+            satuan: '-',
+            normal_min: '—',
+            normal_max: '—',
+            nilai_rujukan: 'Negatif',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif(+)',
+            default: 'Negatif'
+        },
+        {
+            judul: 'Dengue_Ns1',
+            nama: 'COI_Ns1',
+            display_name: 'Cutoff Index (COI)',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            nilai_rujukan: '<1.00',
+            tipe_inputan: 'Text',
+            opsi_output: '-',
+            default: ''
+        }
+    ];
+    const TifoidParams = [
+        {
+            judul: 'Typhoid_IgG/IgM',
+            nama: 'Typhoid_IgM',
+            display_name: 'Typhoid IgM',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            nilai_rujukan: 'Negatif',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif(+)',
+            default: 'Negatif'
+        },
+        {
+            judul: 'Typhoid_IgG/IgM',
+            nama: 'Typhoid_IgG',
+            display_name: 'Typhoid IgG',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            nilai_rujukan: 'Negatif',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif(+)',
+            default: 'Negatif'
+        }
+    ];
+    const FesesParams = [
+        {
+            judul: 'Feses',
+            nama: 'Konsistensi',
+            display_name: 'Konsistensi',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            nilai_rujukan: 'Lunak',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Lunak;Padat;Setengah cair;Cair',
+            default: 'Lunak'
+        },
+        {
+            judul: 'Feses',
+            nama: 'Warna',
+            display_name: 'Warna',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            nilai_rujukan: 'Coklat',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Coklat;Coklat kekuningan;Coklat kehijauan;Hitam;Pucat;Merah',
+            default: 'Coklat'
+        },
+        {
+            judul: 'Feses',
+            nama: 'Lendir',
+            display_name: 'Lendir',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            nilai_rujukan: 'Negatif',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+            default: 'Negatif'
+        },
+        {
+            judul: 'Feses',
+            nama: 'Darah',
+            display_name: 'Darah',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            nilai_rujukan: 'Negatif',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+            default: 'Negatif'
+        },
+        {
+            judul: 'Feses',
+            nama: 'Telur Cacing',
+            display_name: 'Telur Cacing',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            nilai_rujukan: 'Tidak ditemukan',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Tidak ditemukan;Ascaris;Trichuris;Hookworm;Oxyuris;Lainnya',
+            default: 'Tidak ditemukan'
+        },
+        {
+            judul: 'Feses',
+            nama: 'Kista Protozoa',
+            display_name: 'Kista Protozoa',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            nilai_rujukan: 'Tidak ditemukan',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Tidak ditemukan;Entamoeba histolytica;Entamoeba coli;Giardia lamblia;Lainnya',
+            default: 'Tidak ditemukan'
+        },
+        {
+            judul: 'Feses',
+            nama: 'Trofozoit',
+            display_name: 'Trofozoit',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            nilai_rujukan: 'Tidak ditemukan',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Tidak ditemukan;Entamoeba histolytica;Giardia lamblia;Lainnya',
+            default: 'Tidak ditemukan'
+        },
+        {
+            judul: 'Feses',
+            nama: 'Leukosit',
+            display_name: 'Leukosit',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            nilai_rujukan: '0-1/lpb',
+            tipe_inputan: 'Text',
+            opsi_output: '',
+            default: '0-1/lpb'
+        },
+        {
+            judul: 'Feses',
+            nama: 'Eritrosit',
+            display_name: 'Eritrosit',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            nilai_rujukan: '0/lpb',
+            tipe_inputan: 'Text',
+            opsi_output: '',
+            default: '0/lpb'
+        },
+        {
+            judul: 'Feses',
+            nama: 'Lemak',
+            display_name: 'Lemak',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            nilai_rujukan: 'Negatif',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+            default: 'Negatif'
+        },
+        {
+            judul: 'Feses',
+            nama: 'Sisa Makanan',
+            display_name: 'Sisa Makanan',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            nilai_rujukan: 'Negatif',
+            tipe_inputan: 'Dropdown',
+            opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+            default: 'Negatif'
+        },
+        {
+            judul: 'Feses',
+            nama: 'Lain-lain',
+            display_name: 'Lain-lain',
+            satuan: '-',
+            normal_min: '-',
+            normal_max: '-',
+            nilai_rujukan: '',
+            tipe_inputan: 'Text',
+            opsi_output: '',
+            default: ''
+        },
     ];
 
    // Buat map dari data hasil pemeriksaan yang ada di database
@@ -1495,6 +1545,128 @@ document.addEventListener('DOMContentLoaded', function() {
                                                 return isMikrobiologi;
                                                 // console.log('Nama pemeriksaan:', p.data_pemeriksaan.nama_pemeriksaan.toLowerCase());
                                             });
+
+
+                                            const hasFeses = e.pasiens.some(p => p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('feses'));
+                                            const hasDengue = e.pasiens.some(p => p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('dengue_igg/igm'));
+                                            const hasNS1 = e.pasiens.some(p => p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('dengue_ns1'));
+                                            const hasTifoid = e.pasiens.some(p => p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('tifoid igm/igg'));
+
+                                            function renderSerologiSection({ e, idx, flag, params, judul, warna, defaultName }) {
+                                                if (!flag) return '';
+
+                                                const pemeriksaan = e.pasiens.find(p =>
+                                                    p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes(judul.toLowerCase().split('_')[0])
+                                                );
+
+                                                const namaPemeriksaan = pemeriksaan
+                                                    ? pemeriksaan.data_pemeriksaan.nama_pemeriksaan
+                                                    : defaultName;
+
+                                                let html = `
+                                                    <tr class="section-title-header">
+                                                        <td colspan="8" class="fw-bold text-secondary ps-3"
+                                                            style="background-color: #f8f9fa; border-left: 4px solid ${warna}; padding: 10px;">
+                                                            ${judul}
+                                                        </td>
+                                                    </tr>
+                                                `;
+
+                                                html += params.map((param, paramIdx) => {
+                                                    const obxValues = getDataValues(param.nama);
+                                                    const rowId = `${judul}_${idx}_${paramIdx}`;
+                                                    const label = param.display_name || param.nama || '-';
+
+                                                    const renderField = (name, value, className) => {
+                                                        if (param.tipe_inputan === 'Dropdown') {
+                                                            return `
+                                                                <select name="${name}[]" class="form-select ${className} w-60 p-0">
+                                                                    <option value="" hidden>Pilih...</option>
+                                                                    ${param.opsi_output.split(';').map(opt => `
+                                                                        <option value="${opt.trim()}" ${value === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
+                                                                    `).join('')}
+                                                                </select>
+                                                            `;
+                                                        } else {
+                                                            return `
+                                                                <input type="text" name="${name}[]" 
+                                                                    class="form-control ${className} w-60 p-0 text-center" 
+                                                                     value="${value || ''}" />
+                                                            `;
+                                                        }
+                                                    };
+
+                                                    return `
+                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" class="serologi-row">
+                                                            <!-- Nama parameter -->
+                                                            <td class="col-2 ps-4">
+                                                                <strong>${label}</strong>
+                                                                ${param.nilai_rujukan ? `<small class="text-muted d-block">${param.nilai_rujukan}</small>` : ''}
+                                                                <input type="hidden" name="nama_pemeriksaan[]" value="${param.nama}" />
+                                                                <input type="hidden" name="judul[]" value="${judul}" />
+                                                                <input type="hidden" name="parameter_name[]" value="${param.nama}" />
+                                                                <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan}" />
+                                                                <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                            </td>
+
+                                                            <!-- Hasil utama -->
+                                                            <td class="col-2 text-center">
+                                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                                    ${renderField('hasil', obxValues.hasilUtama || param.default, 'manualInput')}
+                                                                </div>
+                                                            </td>
+
+                                                            <!-- Tombol switch -->
+                                                            <td class="col-1">
+                                                                <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
+                                                                        data-index="${paramIdx}" data-switch-index="0">
+                                                                    <i class="ti ti-switch-2"></i>
+                                                                </button>
+                                                            </td>
+
+                                                            <!-- Duplo DX -->
+                                                            <td class="col-2 text-center">
+                                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                                    ${renderField('duplo_dx', obxValues.duplo_dx, 'dx')}
+                                                                    <input type="hidden" name="is_switched[]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
+                                                                    ${obxValues.switched ? `
+                                                                        <div class='checkbox-r-container d-flex align-items-center gap-1'>
+                                                                            <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
+                                                                            <span class='text-danger fw-bold'>R</span>
+                                                                        </div>
+                                                                    ` : ''}
+                                                                </div>
+                                                            </td>
+
+                                                            <!-- Duplo D1 -->
+                                                            <td class="col-2 duplo d1-column text-center" style="display:none;">
+                                                                ${renderField('duplo_d1', obxValues.duplo_d1, 'd1')}
+                                                            </td>
+
+                                                            <!-- Duplo D2 -->
+                                                            <td class="col-2 duplo d2-column text-center" style="display:none;">
+                                                                ${renderField('duplo_d2', obxValues.duplo_d2, 'd2')}
+                                                            </td>
+
+                                                            <!-- Duplo D3 -->
+                                                            <td class="col-2 duplo d3-column text-center" style="display:none;">
+                                                                ${renderField('duplo_d3', obxValues.duplo_d3, 'd3')}
+                                                            </td>
+
+                                                            <!-- Flag -->
+                                                            <td class="col-3 flag-cell"></td>
+
+                                                            <!-- Satuan -->
+                                                            <td>
+                                                                <input type="hidden" name="satuan[]" value="${param.satuan || ''}" />
+                                                                ${param.satuan || ''}
+                                                            </td>
+                                                        </tr>
+                                                    `;
+                                                }).join('');
+
+                                                return html;
+                                            }
                                             
                                            if (hasHematologi) {
                                             const judulHematologi = e.pasiens.find(p => p.data_pemeriksaan?.judul)?.data_pemeriksaan?.judul || '';
@@ -2061,6 +2233,158 @@ document.addEventListener('DOMContentLoaded', function() {
                                         </tr>
                                     `;
                                 }).join('');
+
+                                return html;
+                            } else if (hasFeses) {
+                                const fesesPemeriksaan = e.pasiens.find(p =>
+                                    p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('feses')
+                                );
+                                const judulFeses = 'Feses';
+                                const namaPemeriksaanFeses = fesesPemeriksaan 
+                                    ? fesesPemeriksaan.data_pemeriksaan.nama_pemeriksaan 
+                                    : 'Pemeriksaan Feses';
+
+                                let html = `
+                                    <tr class="feses-title-header">
+                                        <td colspan="8" class="fw-bold text-secondary ps-3"
+                                            style="background-color: #f8f9fa; border-left: 4px solid #ffc107; padding: 10px;">
+                                            ${judulFeses}
+                                        </td>
+                                    </tr>
+                                `;
+
+                                html += FesesParams.map((param, paramIdx) => {
+                                    const obxValues = getDataValues(param.nama); // ambil hasil dari backend
+                                    const rowId = `feses_${idx}_${paramIdx}`;
+                                    const label = param.display_name || param.nama || '-';
+
+                                    const renderField = (name, value, className = '') => {
+                                        if (param.tipe_inputan === 'Dropdown') {
+                                            return `
+                                                <select name="${name}[]" class="form-select ${className} w-60 p-0">
+                                                    <option value="" hidden>Pilih...</option>
+                                                    ${param.opsi_output.split(';').map(opt => `
+                                                        <option value="${opt.trim()}" ${value === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
+                                                    `).join('')}
+                                                </select>
+                                            `;
+                                        } else {
+                                            return `
+                                                <input type="text" name="${name}[]" 
+                                                    class="form-control ${className} w-60 p-0 text-center" 
+                                                     value="${value || ''}" />
+                                            `;
+                                        }
+                                    };
+
+                                    return `
+                                        <tr data-id="${rowId}" data-parameter="${param.nama}" class="feses-row">
+                                            <!-- Nama parameter -->
+                                            <td class="col-2 ps-4">
+                                                <strong>${label}</strong>
+                                                ${param.nilai_rujukan ? `<small class="text-muted d-block">${param.nilai_rujukan}</small>` : ''}
+                                                <input type="hidden" name="nama_pemeriksaan[]" value="${param.nama}" />
+                                                <input type="hidden" name="judul[]" value="${judulFeses}" />
+                                                <input type="hidden" name="parameter_name[]" value="${param.nama}" />
+                                                <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan}" />
+                                                <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                            </td>
+
+                                            <!-- Hasil utama -->
+                                            <td class="col-2 text-center">
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    ${renderField('hasil', obxValues.hasilUtama || param.default, 'manualInput')}
+                                                </div>
+                                            </td>
+
+                                            <!-- Tombol switch -->
+                                            <td class="col-1">
+                                                <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
+                                                        data-index="${paramIdx}" data-switch-index="0">
+                                                    <i class="ti ti-switch-2"></i>
+                                                </button>
+                                            </td>
+
+                                            <!-- Duplo DX -->
+                                            <td class="col-2 text-center">
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    ${renderField('duplo_dx', obxValues.duplo_dx, 'dx')}
+                                                    <input type="hidden" name="is_switched[]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
+                                                    ${obxValues.switched ? `
+                                                        <div class='checkbox-r-container d-flex align-items-center gap-1'>
+                                                            <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
+                                                            <span class='text-danger fw-bold'>R</span>
+                                                        </div>
+                                                    ` : ''}
+                                                </div>
+                                            </td>
+
+                                            <!-- Duplo D1 -->
+                                            <td class="col-2 duplo d1-column text-center" style="display:none;">
+                                                ${renderField('duplo_d1', obxValues.duplo_d1, 'd1')}
+                                            </td>
+
+                                            <!-- Duplo D2 -->
+                                            <td class="col-2 duplo d2-column text-center" style="display:none;">
+                                                ${renderField('duplo_d2', obxValues.duplo_d2, 'd2')}
+                                            </td>
+
+                                            <!-- Duplo D3 -->
+                                            <td class="col-2 duplo d3-column text-center" style="display:none;">
+                                                ${renderField('duplo_d3', obxValues.duplo_d3, 'd3')}
+                                            </td>
+
+                                            <!-- Flag -->
+                                            <td class="col-3 flag-cell"></td>
+
+                                            <!-- Satuan -->
+                                            <td>
+                                                <input type="hidden" name="satuan[]" value="${param.satuan || ''}" />
+                                                ${param.satuan || ''}
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('');
+
+                                return html;
+                            } else if (hasDengue || hasNS1 || hasTifoid) {
+                                let html = '';
+
+                                if (hasDengue) {
+                                    html += renderSerologiSection({
+                                        e,
+                                        idx,
+                                        flag: hasDengue,
+                                        params: DengueParams,
+                                        judul: 'Dengue_IgG/IgM',
+                                        warna: '#dc3545', // merah
+                                        defaultName: 'Dengue IgG/IgM'
+                                    });
+                                }
+
+                                if (hasNS1) {
+                                    html += renderSerologiSection({
+                                        e,
+                                        idx,
+                                        flag: hasNS1,
+                                        params: NS1Params,
+                                        judul: 'Dengue_NS1',
+                                        warna: '#17a2b8', // biru
+                                        defaultName: 'Dengue NS1'
+                                    });
+                                }
+
+                                if (hasTifoid) {
+                                    html += renderSerologiSection({
+                                        e,
+                                        idx,
+                                        flag: hasTifoid,
+                                        params: TifoidParams,
+                                        judul: 'Typhoid_IgG/IgM',
+                                        warna: '#28a745', // hijau
+                                        defaultName: 'Tifoid IgG/IgM'
+                                    });
+                                }
 
                                 return html;
                             } else {
