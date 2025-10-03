@@ -1598,7 +1598,7 @@
                                 opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
                             }
                         ];
-                        const MicrobiologiParams = [
+                        const PreparatBasahParams = [
                             {
                                 judul: '',
                                 nama: 'Preparat Basah',
