@@ -1598,6 +1598,47 @@
                                 opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
                             }
                         ];
+                        const MicrobiologiParams = [
+                            {
+                                judul: '',
+                                nama: 'Preparat Basah',
+                                display_name: 'Preparat Basah',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: '-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : 'Tidak Ditemukan Jamur;Ditemukan Jamur Berbentuk Hifa' 
+                            },
+                            {
+                                judul: '',
+                                nama: 'Leukosit',
+                                display_name: 'Leukosit',
+                                satuan: '/LP',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: '-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Text',
+                                opsi_output : '',
+                            },
+                            {
+                                judul: '',
+                                nama: 'Epithel',
+                                display_name: 'Epithel',
+                                satuan: '/LP',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: '-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Text',
+                                opsi_output : '',
+                            }
+                        ];
                         const DengueParams =  [
                             {
                                 judul: 'Dengue_IgG/IgM',
