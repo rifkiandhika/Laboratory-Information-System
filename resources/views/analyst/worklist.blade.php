@@ -1600,7 +1600,7 @@
                         ];
                         const PreparatBasahParams = [
                             {
-                                judul: '',
+                                judul: 'Preparat Basah',
                                 nama: 'Preparat Basah',
                                 display_name: 'Preparat Basah',
                                 satuan: '-',
@@ -2418,6 +2418,13 @@
                                                             return isMikrobiologi;
                                                             // console.log('Nama pemeriksaan:', p.data_pemeriksaan.nama_pemeriksaan.toLowerCase());
                                                         });
+                                                        const hasPreparatBasah = e.pasiens.some(p => {
+                                                            return (
+                                                                p.data_pemeriksaan.nama_pemeriksaan?.toLowerCase().includes('preparat basah') ||
+                                                                p.data_pemeriksaan.nama_parameter?.toLowerCase().includes('preparat_basah')
+                                                            );
+                                                        });
+
 
                                                         const hasFeses = e.pasiens.some(p => p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('feses'));
                                                         const hasDengue = e.pasiens.some(p => p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('dengue_igg/igm'));
@@ -2847,124 +2854,203 @@
                                                             });
 
                                                             return html;
-                                                        } else if (hasMikrobiologi) {
-                                                            const mikrobiologiPemeriksaan = e.pasiens.find(p => 
-                                                                p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('mikrobiologi')
-                                                            );
-                                                            const judulMikrobiologi = e.pasiens.find(p => p.data_pemeriksaan?.judul)?.data_pemeriksaan?.judul || '';
-                                                            const namaPemeriksaanMikrobiologi = mikrobiologiPemeriksaan ? mikrobiologiPemeriksaan.data_pemeriksaan.nama_pemeriksaan : 'Mikrobiologi';
-                                                            
+                                                        } if (hasMikrobiologi || hasPreparatBasah) {
                                                             let html = '';
-                                                            
-                                                            if (judulMikrobiologi) {
-                                                                html += `
-                                                                    <tr class="mikrobiologi-title-header">
-                                                                        <td colspan="8" class="fw-bold text-secondary ps-3" style="background-color: #f8f9fa; border-left: 4px solid #28a745; padding: 10px;">
-                                                                            ${judulMikrobiologi}
-                                                                        </td>
-                                                                    </tr>
-                                                                `;
-                                                            }
-                                                            
-                                                            html += MicrobiologiParams.map((param, paramIdx) => {
-                                                                const obxValues = getObxValues(param.nama);
-                                                                const rowId = `mikrobiologi_${idx}_${paramIdx}`;
-                                                                const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
 
-                                                                // gunakan judul > display_name > nama
-                                                                const label = param.judul || param.display_name || param.nama || '-';
-                                                                
-                                                                return `
-                                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" class="mikrobiologi-row">
-                                                                        <td class="col-2 ps-4" style="border-left: 2px solid #e9ecef;">
-                                                                            <strong>${label}</strong>
-                                                                            ${param.nilai_rujukan !== '-' && param.nilai_rujukan !== '' ? 
-                                                                                `<small class="text-muted d-block">${param.nilai_rujukan ?? ''}</small>` : ''}
-                                                                            <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanMikrobiologi}" />
-                                                                            <input type="hidden" name="judul[]" value="${judulMikrobiologi}" />
-                                                                            <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                                            <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan ?? '-'}" />
-                                                                            <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
-                                                                        </td>
-                                                                        <td class="col-2">
-                                                                            ${param.tipe_inputan === 'Text' ? `
-                                                                                <input type="text" name="hasil[]" 
-                                                                                    class="form-control manualInput w-60 p-0 text-center" 
-                                                                                    disabled value="${obxValues.hasilUtama || ''}" />
-                                                                            ` : `
-                                                                                <select name="hasil[]" 
-                                                                                    class="form-select manualInput w-60 p-0" 
-                                                                                    disabled>
-                                                                                    ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
-                                                                                        <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>
-                                                                                            ${opt.trim()}
-                                                                                        </option>
-                                                                                    `).join('') : '<option value="">Pilih...</option>'}
-                                                                                </select>
-                                                                            `}
-                                                                        </td>
-                                                                        <td class="col-1">
-                                                                            <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
-                                                                                    data-index="${paramIdx}" data-switch-index="0">
-                                                                                <i class="ti ti-switch-2"></i>
-                                                                            </button>
-                                                                        </td>
-                                                                        <td class="col-2 duplo d1-column text-center" style="display: none;">
-                                                                            ${param.tipe_inputan === 'Text' ? `
-                                                                                <input type="text" name="duplo_d1[]" 
-                                                                                    class="form-control d1 w-60 p-0 text-center" 
-                                                                                    disabled value="${obxValues.duplo_d1 || ''}" />
-                                                                            ` : `
-                                                                                <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
-                                                                                    ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
-                                                                                        <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>
-                                                                                            ${opt.trim()}
-                                                                                        </option>
-                                                                                    `).join('') : '<option value="">Pilih...</option>'}
-                                                                                </select>
-                                                                            `}
-                                                                        </td>
-                                                                        <td class="col-2 duplo d2-column" style="display: none;">
-                                                                            ${param.tipe_inputan === 'Text' ? `
-                                                                                <input type="text" name="duplo_d2[]" 
-                                                                                    class="form-control d2 w-60 p-0 text-center" 
-                                                                                    disabled value="${obxValues.duplo_d2 || ''}" />
-                                                                            ` : `
-                                                                                <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
-                                                                                    ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
-                                                                                        <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>
-                                                                                            ${opt.trim()}
-                                                                                        </option>
-                                                                                    `).join('') : '<option value="">Pilih...</option>'}
-                                                                                </select>
-                                                                            `}
-                                                                        </td>
-                                                                        <td class="col-2 duplo d3-column" style="display: none;">
-                                                                            ${param.tipe_inputan === 'Text' ? `
-                                                                                <input type="text" name="duplo_d3[]" 
-                                                                                    class="form-control d3 w-50 p-0 text-center" 
-                                                                                    disabled value="${obxValues.duplo_d3 || ''}" />
-                                                                            ` : `
-                                                                                <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
-                                                                                    ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
-                                                                                        <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>
-                                                                                            ${opt.trim()}
-                                                                                        </option>
-                                                                                    `).join('') : '<option value="">Pilih...</option>'}
-                                                                                </select>
-                                                                            `}
-                                                                        </td>
-                                                                        <td class="col-3 flag-cell">
-                                                                        </td>
-                                                                        <td>
-                                                                            <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
-                                                                                value="${param.satuan || ''}" readonly />
-                                                                            ${param.satuan || ''}
-                                                                        </td>
-                                                                    </tr>
-                                                                `;
-                                                            }).join('');
-                                                            
+                                                            // ================== MICROBIOLOGI ==================
+                                                            if (hasMikrobiologi) {
+                                                                const mikrobiologiPemeriksaan = e.pasiens.find(p =>
+                                                                    p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('mikrobiologi')
+                                                                );
+                                                                const judulMikrobiologi = e.pasiens.find(p => 
+                                                                    p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('mikrobiologi') && p.data_pemeriksaan?.judul
+                                                                )?.data_pemeriksaan?.judul || '';
+                                                                const namaPemeriksaanMikrobiologi = mikrobiologiPemeriksaan ? mikrobiologiPemeriksaan.data_pemeriksaan.nama_pemeriksaan : 'Mikrobiologi';
+
+                                                                if (judulMikrobiologi) {
+                                                                    html += `
+                                                                        <tr class="mikrobiologi-title-header">
+                                                                            <td colspan="8" class="fw-bold text-secondary ps-3" style="background-color: #f8f9fa; border-left: 4px solid #28a745; padding: 10px;">
+                                                                                ${judulMikrobiologi}
+                                                                            </td>
+                                                                        </tr>
+                                                                    `;
+                                                                }
+
+                                                                html += MicrobiologiParams.map((param, paramIdx) => {
+                                                                    const obxValues = getObxValues(param.nama);
+                                                                    const rowId = `mikrobiologi_${idx}_${paramIdx}`;
+                                                                    const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
+                                                                    const label = param.judul || param.display_name || param.nama || '-';
+
+                                                                    return `
+                                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" class="mikrobiologi-row">
+                                                                            <td class="col-2 ps-4" style="border-left: 2px solid #e9ecef;">
+                                                                                <strong>${label}</strong>
+                                                                                ${param.nilai_rujukan !== '-' && param.nilai_rujukan !== '' ? 
+                                                                                    `<small class="text-muted d-block">${param.nilai_rujukan ?? ''}</small>` : ''}
+                                                                                <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanMikrobiologi}" />
+                                                                                <input type="hidden" name="judul[]" value="${judulMikrobiologi}" />
+                                                                                <input type="hidden" name="parameter_name[]" value="${param.nama}" />
+                                                                                <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan ?? '-'}" />
+                                                                                <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                                            </td>
+                                                                            <td class="col-2">
+                                                                                ${param.tipe_inputan === 'Text' ? `
+                                                                                    <input type="text" name="hasil[]" class="form-control manualInput w-60 p-0 text-center" disabled value="${obxValues.hasilUtama || ''}" />
+                                                                                ` : `
+                                                                                    <select name="hasil[]" class="form-select manualInput w-60 p-0" disabled>
+                                                                                        ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
+                                                                                            <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
+                                                                                        `).join('') : '<option value="">Pilih...</option>'}
+                                                                                    </select>
+                                                                                `}
+                                                                            </td>
+                                                                            <td class="col-1">
+                                                                                <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" data-index="${paramIdx}" data-switch-index="0">
+                                                                                    <i class="ti ti-switch-2"></i>
+                                                                                </button>
+                                                                            </td>
+                                                                            <td class="col-2 duplo d1-column text-center" style="display: none;">
+                                                                                ${param.tipe_inputan === 'Text' ? `
+                                                                                    <input type="text" name="duplo_d1[]" class="form-control d1 w-60 p-0 text-center" disabled value="${obxValues.duplo_d1 || ''}" />
+                                                                                ` : `
+                                                                                    <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                                        ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
+                                                                                            <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
+                                                                                        `).join('') : '<option value="">Pilih...</option>'}
+                                                                                    </select>
+                                                                                `}
+                                                                            </td>
+                                                                            <td class="col-2 duplo d2-column" style="display: none;">
+                                                                                ${param.tipe_inputan === 'Text' ? `
+                                                                                    <input type="text" name="duplo_d2[]" class="form-control d2 w-60 p-0 text-center" disabled value="${obxValues.duplo_d2 || ''}" />
+                                                                                ` : `
+                                                                                    <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                                                        ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
+                                                                                            <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
+                                                                                        `).join('') : '<option value="">Pilih...</option>'}
+                                                                                    </select>
+                                                                                `}
+                                                                            </td>
+                                                                            <td class="col-2 duplo d3-column" style="display: none;">
+                                                                                ${param.tipe_inputan === 'Text' ? `
+                                                                                    <input type="text" name="duplo_d3[]" class="form-control d3 w-50 p-0 text-center" disabled value="${obxValues.duplo_d3 || ''}" />
+                                                                                ` : `
+                                                                                    <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                                        ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
+                                                                                            <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
+                                                                                        `).join('') : '<option value="">Pilih...</option>'}
+                                                                                    </select>
+                                                                                `}
+                                                                            </td>
+                                                                            <td class="col-3 flag-cell"></td>
+                                                                            <td>
+                                                                                <input type="hidden" name="satuan[]" value="${param.satuan || ''}" readonly />
+                                                                                ${param.satuan || ''}
+                                                                            </td>
+                                                                        </tr>
+                                                                    `;
+                                                                }).join('');
+                                                            }
+
+                                                            // ================== PREPARAT BASAH ==================
+                                                            if (hasPreparatBasah) {
+                                                                const preparatBasahPemeriksaan = e.pasiens.find(p =>
+                                                                    p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('preparat basah')
+                                                                );
+                                                                const judulPreparatBasah = e.pasiens.find(p => 
+                                                                    p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('preparat basah') && p.data_pemeriksaan?.judul
+                                                                )?.data_pemeriksaan?.judul || '';
+                                                                const namaPemeriksaanPreparatBasah = preparatBasahPemeriksaan ? preparatBasahPemeriksaan.data_pemeriksaan.nama_pemeriksaan : 'Preparat Basah';
+
+                                                                if (judulPreparatBasah) {
+                                                                    html += `
+                                                                        <tr class="preparatbasah-title-header">
+                                                                            <td colspan="8" class="fw-bold text-secondary ps-3" style="background-color: #f8f9fa; border-left: 4px solid #17a2b8; padding: 10px;">
+                                                                                ${judulPreparatBasah}
+                                                                            </td>
+                                                                        </tr>
+                                                                    `;
+                                                                }
+
+                                                                html += PreparatBasahParams.map((param, paramIdx) => {
+                                                                    const obxValues = getObxValues(param.nama);
+                                                                    const rowId = `preparatbasah_${idx}_${paramIdx}`;
+                                                                    const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
+                                                                    const label = param.judul || param.display_name || param.nama || '-';
+
+                                                                    return `
+                                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" class="preparatbasah-row">
+                                                                            <td class="col-2 ps-4" style="border-left: 2px solid #e9ecef;">
+                                                                                <strong>${label}</strong>
+                                                                                ${param.nilai_rujukan !== '-' && param.nilai_rujukan !== '' ? 
+                                                                                    `<small class="text-muted d-block">${param.nilai_rujukan ?? ''}</small>` : ''}
+                                                                                <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanPreparatBasah}" />
+                                                                                <input type="hidden" name="judul[]" value="${judulPreparatBasah}" />
+                                                                                <input type="hidden" name="parameter_name[]" value="${param.nama}" />
+                                                                                <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan ?? '-'}" />
+                                                                                <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                                            </td>
+                                                                            <td class="col-2">
+                                                                                ${param.tipe_inputan === 'Text' ? `
+                                                                                    <input type="text" name="hasil[]" class="form-control manualInput w-60 p-0 text-center" disabled value="${obxValues.hasilUtama || ''}" />
+                                                                                ` : `
+                                                                                    <select name="hasil[]" class="form-select manualInput w-60 p-0" disabled>
+                                                                                        ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
+                                                                                            <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
+                                                                                        `).join('') : '<option value="">Pilih...</option>'}
+                                                                                    </select>
+                                                                                `}
+                                                                            </td>
+                                                                            <td class="col-1">
+                                                                                <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" data-index="${paramIdx}" data-switch-index="0">
+                                                                                    <i class="ti ti-switch-2"></i>
+                                                                                </button>
+                                                                            </td>
+                                                                            <td class="col-2 duplo d1-column text-center" style="display: none;">
+                                                                                ${param.tipe_inputan === 'Text' ? `
+                                                                                    <input type="text" name="duplo_d1[]" class="form-control d1 w-60 p-0 text-center" disabled value="${obxValues.duplo_d1 || ''}" />
+                                                                                ` : `
+                                                                                    <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                                        ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
+                                                                                            <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
+                                                                                        `).join('') : '<option value="">Pilih...</option>'}
+                                                                                    </select>
+                                                                                `}
+                                                                            </td>
+                                                                            <td class="col-2 duplo d2-column" style="display: none;">
+                                                                                ${param.tipe_inputan === 'Text' ? `
+                                                                                    <input type="text" name="duplo_d2[]" class="form-control d2 w-60 p-0 text-center" disabled value="${obxValues.duplo_d2 || ''}" />
+                                                                                ` : `
+                                                                                    <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                                                        ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
+                                                                                            <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
+                                                                                        `).join('') : '<option value="">Pilih...</option>'}
+                                                                                    </select>
+                                                                                `}
+                                                                            </td>
+                                                                            <td class="col-2 duplo d3-column" style="display: none;">
+                                                                                ${param.tipe_inputan === 'Text' ? `
+                                                                                    <input type="text" name="duplo_d3[]" class="form-control d3 w-50 p-0 text-center" disabled value="${obxValues.duplo_d3 || ''}" />
+                                                                                ` : `
+                                                                                    <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                                        ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
+                                                                                            <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
+                                                                                        `).join('') : '<option value="">Pilih...</option>'}
+                                                                                    </select>
+                                                                                `}
+                                                                            </td>
+                                                                            <td class="col-3 flag-cell"></td>
+                                                                            <td>
+                                                                                <input type="hidden" name="satuan[]" value="${param.satuan || ''}" readonly />
+                                                                                ${param.satuan || ''}
+                                                                            </td>
+                                                                        </tr>
+                                                                    `;
+                                                                }).join('');
+                                                            }
+
                                                             return html;
                                                         } else if (hasFeses) {
                                                             const fesesPemeriksaan = e.pasiens.find(p => 
