@@ -1108,9 +1108,7 @@ document.addEventListener('DOMContentLoaded', function() {
             metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
-        }
-    ];
-    const MicrobiologiParams = [
+        },
         {
             judul: '',
             nama: 'Preparat Basah',
