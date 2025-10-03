@@ -769,6 +769,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: '-',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : 'Kuning;Kuning Pucat;Kuning Tua;Kuning kecokelatan;Orange;Merah;Coklat',
             default: 'Kuning' 
@@ -781,6 +783,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: 'L.- P.-',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : 'Jernih;Agak Keruh;Keruh;Sangat keruh',
             default: 'Jernih' 
@@ -793,6 +797,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.1,003 P.1,003',
             normal_max: 'L.1,035 P.1,035',
             nilai_rujukan: 'L.1,003-1,035 P.1,003-1,035',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : '<1.005;1.005;1.010;1.015;1.020;1.025;1.030',
             default: '1.015' 
@@ -805,6 +811,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.4,5 P.4,5',
             normal_max: 'L.8,0 P.8,0',
             nilai_rujukan: 'L.4,5-8,0 P.4,5-8,0',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : '4.5;5.0;5.5;6.0;6.5;7.0;7.5;8.0;8.5;9.0',
             default: '6.0' 
@@ -817,6 +825,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: 'L.- P.-',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
             default: 'Negatif' 
@@ -829,6 +839,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: 'L.- P.-',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
             default: 'Negatif' 
@@ -841,6 +853,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: 'L.- P.-',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
             default: 'Negatif' 
@@ -853,6 +867,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: 'L.- P.-',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
             default: 'Negatif' 
@@ -865,6 +881,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: 'L.- P.-',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
             default: 'Negatif'  
@@ -877,6 +895,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: 'L.- P.-',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++)',
             default: 'Negatif' 
@@ -889,6 +909,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: 'L.- P.-',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
             default: 'Negatif' 
@@ -901,6 +923,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: 'L.- P.-',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
             default: 'Negatif' 
@@ -913,6 +937,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.0 P.0',
             normal_max: 'L.2 P.2',
             nilai_rujukan: 'L.0-2 P.0-2',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Text',
             opsi_output : '',
             default: 'Negatif'
@@ -925,6 +951,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.0 P.0',
             normal_max: 'L.5 P.5',
             nilai_rujukan: 'L.0-5 P.0-5',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Text',
             opsi_output : '',
             default: 'Negatif'
@@ -937,6 +965,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: 'Tidak ada - Sedikit',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Text',
             opsi_output : 'Tidak ada;Sedikit;Sedang;Banyak',
             default: 'Negatif'
@@ -949,6 +979,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: 'Tidak ada',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
             default: 'Negatif'
@@ -961,6 +993,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: 'Tidak ada',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : 'Tidak ada;Asam urat;Kalsium oksalat;Fosfat amorf;Lainnya',
             default: 'Negatif'
@@ -973,6 +1007,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: 'Tidak ada',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
             default: 'Negatif'
@@ -985,6 +1021,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: 'L.- P.-',
             normal_max: 'L.- P.-',
             nilai_rujukan: 'Tidak ada',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Dropdown',
             opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
             default: 'Negatif'
@@ -997,6 +1035,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '',
             normal_max: '',
             nilai_rujukan: '',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan : 'Text',
             opsi_output : '',
             default: ''
@@ -1079,6 +1119,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '—',
             normal_max: '—',
             nilai_rujukan: 'Negatif',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan: 'Dropdown',
             opsi_output: 'Negatif;Positif(+)',
             default: 'Negatif'
@@ -1091,6 +1133,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '—',
             normal_max: '—',
             nilai_rujukan: 'Negatif',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan: 'Dropdown',
             opsi_output: 'Negatif;Positif(+)',
             default: 'Negatif'
@@ -1103,6 +1147,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '0.00',
             normal_max: '∞',
             nilai_rujukan: '< 1.00',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan: 'Text',
             opsi_output: '',
             default: ''
@@ -1115,6 +1161,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '0.00',
             normal_max: '∞',
             nilai_rujukan: '< 1.00',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan: 'Text',
             opsi_output: '',
             default: ''
@@ -1129,6 +1177,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '—',
             normal_max: '—',
             nilai_rujukan: 'Negatif',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan: 'Dropdown',
             opsi_output: 'Negatif;Positif(+)',
             default: 'Negatif'
@@ -1141,6 +1191,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '-',
             normal_max: '-',
             nilai_rujukan: '<1.00',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan: 'Text',
             opsi_output: '-',
             default: ''
@@ -1155,6 +1207,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '-',
             normal_max: '-',
             nilai_rujukan: 'Negatif',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan: 'Dropdown',
             opsi_output: 'Negatif;Positif(+)',
             default: 'Negatif'
@@ -1167,6 +1221,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '-',
             normal_max: '-',
             nilai_rujukan: 'Negatif',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan: 'Dropdown',
             opsi_output: 'Negatif;Positif(+)',
             default: 'Negatif'
@@ -1181,6 +1237,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '-',
             normal_max: '-',
             nilai_rujukan: 'Lunak',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan: 'Dropdown',
             opsi_output: 'Lunak;Padat;Setengah cair;Cair',
             default: 'Lunak'
@@ -1193,6 +1251,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '-',
             normal_max: '-',
             nilai_rujukan: 'Coklat',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan: 'Dropdown',
             opsi_output: 'Coklat;Coklat kekuningan;Coklat kehijauan;Hitam;Pucat;Merah',
             default: 'Coklat'
@@ -1205,6 +1265,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '-',
             normal_max: '-',
             nilai_rujukan: 'Negatif',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan: 'Dropdown',
             opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
             default: 'Negatif'
@@ -1217,6 +1279,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '-',
             normal_max: '-',
             nilai_rujukan: 'Negatif',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan: 'Dropdown',
             opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
             default: 'Negatif'
@@ -1229,6 +1293,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '-',
             normal_max: '-',
             nilai_rujukan: 'Tidak ditemukan',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan: 'Dropdown',
             opsi_output: 'Tidak ditemukan;Ascaris;Trichuris;Hookworm;Oxyuris;Lainnya',
             default: 'Tidak ditemukan'
@@ -1241,6 +1307,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '-',
             normal_max: '-',
             nilai_rujukan: 'Tidak ditemukan',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan: 'Dropdown',
             opsi_output: 'Tidak ditemukan;Entamoeba histolytica;Entamoeba coli;Giardia lamblia;Lainnya',
             default: 'Tidak ditemukan'
@@ -1254,6 +1322,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_max: '-',
             nilai_rujukan: 'Tidak ditemukan',
             tipe_inputan: 'Dropdown',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             opsi_output: 'Tidak ditemukan;Entamoeba histolytica;Giardia lamblia;Lainnya',
             default: 'Tidak ditemukan'
         },
@@ -1265,6 +1335,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '-',
             normal_max: '-',
             nilai_rujukan: '0-1/lpb',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan: 'Text',
             opsi_output: '',
             default: '0-1/lpb'
@@ -1277,6 +1349,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '-',
             normal_max: '-',
             nilai_rujukan: '0/lpb',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan: 'Text',
             opsi_output: '',
             default: '0/lpb'
@@ -1289,6 +1363,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '-',
             normal_max: '-',
             nilai_rujukan: 'Negatif',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan: 'Dropdown',
             opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
             default: 'Negatif'
@@ -1301,6 +1377,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '-',
             normal_max: '-',
             nilai_rujukan: 'Negatif',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan: 'Dropdown',
             opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
             default: 'Negatif'
@@ -1313,6 +1391,8 @@ document.addEventListener('DOMContentLoaded', function() {
             normal_min: '-',
             normal_max: '-',
             nilai_rujukan: '',
+            nilai_kritis: 'L.- P.-',
+            metode: '-',
             tipe_inputan: 'Text',
             opsi_output: '',
             default: ''
