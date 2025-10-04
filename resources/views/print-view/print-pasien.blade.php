@@ -33,7 +33,7 @@
             border-top: 1px solid black;
         }
         .data-pasien table {
-            font-size: 8px !important;
+            font-size: 12px !important;
         }
         .hasil-pemeriksaan {
             position: relative;
@@ -41,14 +41,14 @@
             padding-bottom: 0;  /* buang jarak ekstra */
         }
         #tabel-pemeriksaan table {
-            font-size: 8px !important;
+            font-size: 9px !important;
         }
         #tabel-pemeriksaan th, 
         #tabel-pemeriksaan td {
             padding: 2px 3px !important;
         }
         .note-section {
-            font-size: 8px !important;
+            font-size: 10px !important;
             margin-top: 8px;
         }
         .footer {
@@ -82,11 +82,15 @@
                 display: block;
             }
             .header h5, .header p,
-            .data-pasien table,
             #tabel-pemeriksaan table,
             .note-section,
             .footer-container h6 {
-                font-size: 8pt !important;
+                font-size: 12pt !important;
+            }
+            .table-borderless th,
+            .table-borderless td {
+                padding: 1px 0;
+                font-size: 16px !important;
             }
             .footer-container {
                 padding: 15px;
@@ -103,6 +107,7 @@
             }
             .flag i, .flag .printable-icon {
                 display: inline-block !important;
+                font-size: 12px !important;
             }
             .text-primary {
                 color: #206bc4 !important;
@@ -112,14 +117,14 @@
             }
             .printable-icon {
                 font-weight: bold;
-                font-size: 8px !important;
+                font-size: 12px !important;
             }
         }
 
         .flag i {
             font-family: 'tabler-icons' !important;
             font-style: normal;
-            font-size: 8px !important;
+            font-size: 12px !important;
         }
 
         .address-container {
@@ -225,6 +230,31 @@
             font-family: "Courier New", Courier, monospace;
             white-space: pre;
         }
+
+    .content {
+      padding: 20px;
+      height: 1200px; /* contoh konten panjang untuk uji scroll */
+    }
+
+    .footer-en {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 60px;
+      padding: 15px;
+    }
+
+    .footer-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #555;
+      font-size: 14px;
+    }
 
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
@@ -386,103 +416,110 @@
     </script>
 
     <div>
-        <div class="header text-sm pb-1 mb-2">
-            <div class="d-flex justify-content-between align-items-center">
-                <!-- Logo -->
-                <div style="width:120px;">
-                    <img src="{{ asset('image/KRIMS.png') }}" width="100" alt="Logo">
+        <div class="header text-sm pb-1 mb-2" style="margin-bottom: 10px;">
+            <div class="d-flex justify-content-between align-items-center" style="width: 100%; text-align: center;">
+
+                <!-- Logo Yayasan (kiri) -->
+                <div style="flex: 1; text-align: left;">
+                <img src="{{ asset('image/YKU.png') }}" alt="Yayasan" style="width: 70px; opacity: 65%;">
                 </div>
 
-                <!-- Teks Header -->
-                <div class="text-end" style="color:#0b980b; line-height:1.2; flex:1;">
-                    <p class="m-0 p-0 fw-bolder" style="font-size:15px !important;">LABORATORIUM</p>
-                    <p class="m-0 p-0 fw-bolder" style="font-size:15px !important; ">KLINIK RAWAT INAP MUSLIMAT SINGOSARI</p>
-                    <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif; font-size:12px !important;">Ijin Operasional No. 12120003102510002</p>
-                    <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif; font-size:12px !important; ">Jalan Ronggolawe No.24, Pangetan, Kec. Singosari, Kab. Malang</p>
-                    <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif; font-size:12px !important;">Telp. (0341) 458344 e-mail : rs.muslimatsingosari@gmail.com</p>
-                    {{-- <p class="m-0 p-0" style="font-family: 'Times New Roman', Times, serif; font-size:12px !important;">Pelayanan 24 Jam</p> --}}
+                <!-- Logo Klinik (tengah) -->
+                <div style="flex: 1; text-align: center;">
+                <img src="{{ asset('image/KRIMS.png') }}" alt="Klinik Utama Muslimat Singosari" style="width: 100px; opacity: 80%;">
                 </div>
+
+                <!-- Logo Laskesi (kanan) -->
+                <div style="flex: 1; text-align: right;">
+                <img src="{{ asset('image/LASKESI.png') }}" alt="Laskesi" style="width: 70px; opacity: 65%;">
+                </div>
+
             </div>
-        </div>
-        <hr style="border-top: 1px solid black;">
-        
-        <div class="data-pasien mb-2">
-            <div class="row">
-                <div class="col-12">
-                   <table class="table table-borderless table-sm mb-0" style="font-size:14px; width:100%;">
-                        <tr>
-                            <td style="width:120px;">No. RM</td>
-                            <td style="width:10px;">:</td>
-                            <td style="width:250px;">{{ $data_pasien->no_rm ?? '-'}}</td>
-                            <td style="width:150px;">No. Laboratorium</td>
-                            <td style="width:10px;">:</td>
-                            <td>{{ $data_pasien->no_lab ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <td>Nama Pasien</td>
-                            <td>:</td>
-                            <td><b>{{ $data_pasien->nama ?? '-'}}</b></td>
-                            <td>Tanggal Transaksi</td>
-                            <td>:</td>
-                            <td>{{ $data_pasien->tanggal_masuk ?? '-'}}</td>
-                        </tr>
-                        <tr>
-                            <td>Umur</td>
-                            <td>:</td>
-                            <td>{{ \Carbon\Carbon::parse($data_pasien->lahir)->age ?? '-' }} tahun</td>
-                            <td>Tanggal Diterima</td>
-                            <td>:</td>
-                            <td>{{ $data_pasien->created_at ?? '-'}}</td>
-                        </tr>
-                        <tr>
-                            <td>Jenis Kelamin</td>
-                            <td>:</td>
-                            <td>{{ $data_pasien->jenis_kelamin ?? '-'}}</td>
-                            <td>Tanggal Selesai</td>
-                            <td>:</td>
-                            <td>{{ $data_pasien->updated_at ?? '-'}}</td>
-                        </tr>
-                        <tr>
-                            <td>Asal Pasien</td>
-                            <td>:</td>
-                            <td>{{ $data_pasien->asal_ruangan }}</td>
-                            <td>Dokter External / Pengirim</td>
-                            <td>:</td>
-                            <td>{{ $data_pasien->dokter_external ?? '-'}}</td>
-                        </tr>
-                        <tr>
-                            <td>Dokter Internal / Pengirim</td>
-                            <td>:</td>
-                            <td colspan="4">{{ $data_pasien->kode_dokter ?? '-'}}</td>
-                        </tr>
-                        <tr>
-                            <td>Alamat Pasien</td>
-                            <td>:</td>
-                            <td colspan="4">{{ $data_pasien->alamat ?? '-'}}</td>
-                        </tr>
-                    </table>
 
-                </div>
-                </div>
+            <!-- Garis bawah header -->
+            <hr style="border-top: 1px solid black; margin-top: 5px;">
+            </div>
+    
+        <div class="data-pasien mb-2"> 
+            <div class="row"> 
+                <div class="col-12"> 
+                <table class="table table-borderless table-sm mb-0" style="width:100%;"> 
+                        <tr> 
+                            <td style="width:120px;">No. RM</td> 
+                            <td style="width:10px;">:</td> 
+                            <td style="width:200px;">{{ $data_pasien->no_rm ?? '-'}}</td> 
+                            <td style="width:150px;">No. Laboratorium</td> 
+                            <td style="width:10px;">:</td> 
+                            <td style="width:150px;">{{ $data_pasien->no_lab ?? '-' }}</td> 
+                        </tr> 
+                        <tr> 
+                            <td>Nama Pasien</td> 
+                            <td>:</td> 
+                            <td><b>{{ $data_pasien->nama ?? '-'}}</b></td> 
+                            <td>Tanggal Transaksi</td> 
+                            <td>:</td> 
+                            <td>{{ $data_pasien->tanggal_masuk ?? '-'}}</td> 
+                        </tr> 
+                        <tr> 
+                            <td>Umur</td> 
+                            <td>:</td> 
+                            <td>{{ \Carbon\Carbon::parse($data_pasien->lahir)->age ?? '-' }} tahun</td> 
+                            <td>Tanggal Diterima</td> 
+                            <td>:</td> 
+                            <td>{{ $data_pasien->created_at ?? '-'}}</td> 
+                        </tr> 
+                        <tr> 
+                            <td>Jenis Kelamin</td> 
+                            <td>:</td> 
+                            <td>{{ $data_pasien->jenis_kelamin ?? '-'}}</td> 
+                            <td>Tanggal Selesai</td> 
+                            <td>:</td> 
+                            <td>{{ $data_pasien->updated_at ?? '-'}}</td> 
+                        </tr> 
+                        <tr> 
+                            <td>Asal Pasien</td> 
+                            <td>:</td> 
+                            <td>{{ $data_pasien->asal_ruangan }}</td> 
+                            <td>Dokter External / Pengirim</td> 
+                            <td>:</td> 
+                            <td>{{ $data_pasien->dokter_external ?? '-'}}</td> 
+                        </tr> 
+                        <tr> 
+                            <td>Dokter Internal / Pengirim</td> 
+                            <td>:</td> 
+                            <td colspan="4">{{ $data_pasien->kode_dokter ?? '-'}}</td> 
+                        </tr> 
+                        <tr> 
+                            <td>Alamat Pasien</td> 
+                            <td>:</td> 
+                            <td colspan="4">{{ $data_pasien->alamat ?? '-'}}</td> 
+                        </tr> 
+                    </table> 
+
+                </div> 
+            </div> 
         </div>
         
         <div class="hasil-pemeriksaan p-0">
+            
+                <p class="calibri m-0 p-0 text-center" style="font-size: 18px"><b>HASIL LABORATORIUM</b></p>
             <div id="tabel-pemeriksaan" class="table-responsive">
-        <table class="table table-sm" id="worklistTable">
+        <table class="table table-sm table-borderless table-striped" id="worklistTable">
         <thead style="border-top: 1px solid black; border-bottom: 1px solid black">
             <tr>
-                <th style="width: 35%; padding: 3px; font-size: 10px">Jenis Pemeriksaan</th>
-                <th style="width: 20%; padding: 3px; font-size: 10px">Hasil</th>
-                <th style="width: 10%; padding: 3px; font-size: 10px">Flag</th>
-                <th class="text-center" style="width: 15%; padding: 3px; font-size: 10px">Satuan</th>
-                <th class="text-center" style="width: 20%; padding: 3px; font-size: 10px">Nilai Rujukan</th>
+                <th style="width: 30%; padding: 3px; font-size: 14px">Jenis Pemeriksaan</th>
+                <th style="width: 20%; padding: 3px; font-size: 14px">Hasil</th>
+                <th style="width: 10%; padding: 3px; font-size: 14px">Flag</th>
+                <th class="text-center" style="width: 10%; padding: 3px; font-size: 14px">Satuan</th>
+                <th class="text-center" style="width: 15%; padding: 3px; font-size: 14px">Nilai Rujukan</th>
+                <th class="text-center" style="width: 15%; padding: 3px; font-size: 14px">Metode</th>
             </tr>
         </thead>
          <tbody id="hasil-tbody">
     @foreach ($hasil_pemeriksaans->groupBy('department') as $department => $hasil_group)
         {{-- Judul Department --}}
         <tr>
-            <th colspan="5" style="font-size: 9px; font-weight: 900;">
+            <th colspan="5" style="font-size: 14px; font-weight: 900;">
                 <b><strong>{{ strtoupper($department) }}</strong></b>
             </th>
         </tr>
@@ -491,7 +528,7 @@
         @foreach ($hasil_group->groupBy('judul') as $judul => $group_by_judul)
             @if($judul)
                 <tr>
-                    <td style="font-size: 9px;" colspan="5"><b>‎ ‎{{ $judul ?? '' }}</b></td>
+                    <td style="font-size: 14px;" colspan="6"><b>‎ ‎{{ $judul ?? '' }}</b></td>
                 </tr>
             @endif
 
@@ -625,7 +662,7 @@
                             {{ $hasil->hasil ?? 'Tidak ada hasil' }}
                         @endif
                     </td>
-                    <td class="flag">
+                    <td class="flag" style="font-weight: 900">
                         @if(strtolower($hasil->flag) === 'high')
                             <i class="ti ti-arrow-up text-danger"></i>
                         @elseif(strtolower($hasil->flag) === 'low')
@@ -638,6 +675,7 @@
                     </td>
                     <td class="text-center">{{ $hasil->satuan ?? '-' }}</td>
                     <td class="text-center">{{ $nilai_rujukan ?? '-' }}</td>
+                    <td class="text-center">{{ $hasil->metode ?? '-' }}</td>
                 </tr>
             @endforeach
         @endforeach
@@ -651,12 +689,13 @@
         @if($hasil_pemeriksaans->first() && $hasil_pemeriksaans->first()->note)
     <table class="note-section">
         <tr>
-            <td><b>Catatan :</b></td>
+            <td valign="top" style="white-space: nowrap;"><b>Catatan :</b></td>
             <td class="courier-new">- {{ $hasil_pemeriksaans->first()->note }}</td>
         </tr>
         <tr>
             <td></td>
-            <td class="courier-new">- Hasil di atas merupakan interpretasi berdasarkan pemeriksaan laboratorium saat ini dan dari keterangan klinis yang dicantumkan.</td>
+            <td class="courier-new">- Hasil di atas merupakan interpretasi berdasarkan pemeriksaan laboratorium saat ini dan dari keterangan 
+klinis yang dicantumkan.</td>
         </tr>
         <tr>
             <td></td>
@@ -666,8 +705,9 @@
 @else
     <table class="note-section">
         <tr>
-            <td><b>Catatan :</b></td>
-            <td class="courier-new">- Hasil di atas merupakan interpretasi berdasarkan pemeriksaan laboratorium saat ini dan dari keterangan klinis yang dicantumkan.</td>
+            <td valign="top" style="white-space: nowrap;"><b>Catatan :</b></td>
+            <td class="courier-new">- Hasil di atas merupakan interpretasi berdasarkan pemeriksaan laboratorium saat ini dan dari keterangan 
+klinis yang dicantumkan.</td>
         </tr>
         <tr>
             <td></td>
@@ -679,35 +719,34 @@
 
 
         
-        <div class="footer-container d-flex justify-content-between">
+        <div class="footer-container d-flex justify-content-between align-items-start">
             @if($dokterName && $userDokter && $userDokter->signature && $userDokter->status === 'active')
                 <!-- KIRI: Dokter Internal -->
-                <div>
-                    <h6 style="margin-left: 15px">Dokter Pemeriksa</h6>
-                    <div>
+                <div class="doctor-info">
+                    <h6 style="margin-left: 15px;">Dokter Pemeriksa</h6>
+                    <div style="text-align: left; margin-left: 15px;">
                         <img src="{{ asset('signatures/' . $userDokter->signature) }}"
                             alt="Signature"
-                            style="max-height:80px; display:block;">
-                        <span style="border-bottom:1px solid #000; padding:0 5px; margin-left: 20px">
+                            style="display:block; height:150px; width:auto; object-fit:contain; margin-left:auto;">
+                        <span style="border-bottom:1px solid #000; padding:0 5px;">
                             {{ $dokterName }}
                         </span>
-                        <div style="margin-top:2px; margin-left: 20px">
+                        <div style="margin-top:2px;">
                             NIK. {{ $data_pasien->dokter->nip ?? '' }}
                         </div>
                     </div>
                 </div>
 
                 <!-- KANAN: Analis -->
-                
                 @if(auth()->user()->status === 'active')
                 <div class="user-info text-end">
-                    <h6 style="margin-right: 55px">Analis Pemeriksa</h6>
+                    <h6 style="margin-right: 55px;">Analis Pemeriksa</h6>
                     @if(auth()->user()->signature && auth()->user()->status === 'active')
                         <img src="{{ asset('signatures/' . auth()->user()->signature) }}"
                             alt="Signature"
-                            style="max-height:100px; display:block; margin-left:auto; margin-right:0;">
+                            style="display:block; height:150px; width:auto; object-fit:contain; margin-left:auto;">
                     @endif
-                    <div style="padding-right: 25px; margin-top:5px; text-align:right; margin-right: 50px">
+                    <div style="padding-right: 25px; margin-top:5px; text-align:right; margin-right: 70px;">
                         <div style="display: inline-block; text-align: center;">
                             <div style="padding-top: 2px; min-width: 65px;">
                                 <div style="font-weight: bold;">{{ auth()->user()->name }}</div>
@@ -721,14 +760,13 @@
                 <!-- Kalau tidak ada dokter/signature -->
                 @if(auth()->user()->status === 'active')
                 <div class="doctor-info text-end w-100">
-                    <h6 style="margin-right: 55px">Analis Pemeriksa</h6>
+                    <h6 style="margin-right: 55px;">Analis Pemeriksa</h6>
                     @if(auth()->user()->signature)
-                        <img class="text-end"
-                            src="{{ asset('signatures/' . auth()->user()->signature) }}"
+                        <img src="{{ asset('signatures/' . auth()->user()->signature) }}"
                             alt="Signature"
-                            style="max-height:80px; display:block; margin-left:78%;">
+                            style="display:block; height:150px; width:auto; object-fit:contain; margin-left:auto;">
                     @endif
-                    <div style="padding-right: 25px; margin-top:5px; text-align:right; margin-right: 50px">
+                    <div style="padding-right: 25px; margin-top:5px; text-align:right; margin-right: 70px;">
                         <div style="display: inline-block; text-align: center;">
                             <div style="padding-top: 2px; min-width: 65px;">
                                 <div style="font-weight: bold;">{{ auth()->user()->name }}</div>
@@ -754,6 +792,22 @@
                 </tr>
             @endif
         </table>
+
+    </div>
+
+    <div class="footer-en">
+        <div class="footer-item">
+            <span class="icon"><i class="ti ti-mail"></i></span>
+            <span class="text">rs.muslimatsingosari@gmail.com</span>
+        </div>
+        <div class="footer-item">
+            <span class="icon"><i class="ti ti-map-pin"></i></span>
+            <span class="text">Jl. Ronggolawe 24 Singosari Malang, 65153</span>
+        </div>
+        <div class="footer-item">
+            <span class="icon"><i class="ti ti-phone"></i></span>
+            <span class="text">+62 341 458344</span>
+        </div>
     </div>
 
     <script>

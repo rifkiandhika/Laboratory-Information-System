@@ -731,16 +731,23 @@ function mapApiResultsToHematology(apiResults) {
             mappedResults.push({
                 parameter: param.nama,
                 result: match.identifier_value,
+                duplo: match.duplo || [], // 🔹 Tambahkan duplo dari backend
                 unit: match.identifier_unit || param.satuan,
                 range: match.identifier_range,
                 flag: match.identifier_flags,
                 normal_min_l: min,
-                normal_max_l: max
+                normal_max_l: max,
+                // 🔹 Tambahkan field tambahan untuk kompatibilitas
+                identifier_value: match.identifier_value,
+                identifier_unit: match.identifier_unit,
+                identifier_flags: match.identifier_flags,
+                tanggal_only: match.tanggal_only
             });
         } else {
             mappedResults.push({
                 parameter: param.nama,
                 result: null,
+                duplo: [], // 🔹 Array kosong untuk parameter tanpa data
                 unit: param.satuan,
                 range: null,
                 flag: null,
@@ -829,7 +836,6 @@ async function loadQCData() {
 }
 
 // Ambil data QC detail dari API /api/qc/{id}
-// Ambil data QC detail dari API /api/qc/{id}
 async function loadQCDetails(qcId) {
     if (!qcId) {
         clearQCData();
@@ -854,81 +860,66 @@ async function loadQCDetails(qcId) {
             const testDateInput = document.getElementById("testDate").value;
             const selectedDate = testDateInput ? testDateInput : null;
 
-            // 🔹 Filter berdasarkan tanggal
-            let filteredResults = results;
-            if (selectedDate && source !== 'alat') {
-                filteredResults = results.filter(r => {
-                    if (!r.test_date) return false;
-
-                    let resultDate;
-                    if (r.test_date.includes(' ')) {
-                        resultDate = r.test_date.split(' ')[0];
-                    } else if (r.test_date.includes('T')) {
-                        resultDate = r.test_date.split('T')[0];
-                    } else {
-                        resultDate = r.test_date;
-                    }
-                    return resultDate === selectedDate;
-                });
-            } else if (selectedDate && source === 'alat') {
-                filteredResults = results.filter(r => {
-                    if (!r.tanggal) return false;
-                    const resultDate = r.tanggal.substring(0, 10);
-                    return resultDate === selectedDate;
-                });
-            }
-
+            console.log('Selected Date:', selectedDate);
             console.log('Source:', source);
             console.log('All results:', results);
-            console.log('Filtered results:', filteredResults);
 
+            // 🔹 Filter berdasarkan tanggal
+            let filteredResults = results;
+
+            if (selectedDate) {
+                filteredResults = results.filter(r => {
+                    // Tentukan kolom tanggal yang akan dipakai
+                    const rawDate = r.tanggal_only || r.tanggal || r.test_date_only || r.test_date;
+                    if (!rawDate) return false;
+
+                    // Normalisasi format tanggal
+                    let resultDate = '';
+                    try {
+                        resultDate = new Date(rawDate).toISOString().split('T')[0];
+                    } catch (e) {
+                        resultDate = (rawDate || '').substring(0, 10);
+                    }
+
+                    const isMatch = resultDate === selectedDate;
+                    console.log(`Compare: ${resultDate} === ${selectedDate} -> ${isMatch}`);
+                    return isMatch;
+                });
+
+                console.log(`Filter applied: Found ${filteredResults.length} records matching date ${selectedDate}`);
+            }
+
+            // 🔹 Mapping data hasil
             if (isHematology) {
-                // 🔹 Hematology mapping
                 currentResults = mapApiResultsToHematology(filteredResults);
-
-                // Gabungkan mean & range dari DetailLot
-                if (data.data.parameters && data.data.parameters.length > 0) {
-                    currentParameters = data.data.parameters.map(p => ({ parameter: p.parameter }));
-
-                    currentResults = currentResults.map(r => {
-                        const detail = data.data.parameters.find(p => p.parameter === r.parameter);
-                        return {
-                            ...r,
-                            mean: detail ? parseFloat(detail.mean) || 0 : 0,
-                            range: detail ? parseFloat(detail.range) || 0 : 0
-                        };
-                    });
-                } else {
-                    currentParameters = hematologiParams.map(p => ({ parameter: p.nama }));
-                }
+                currentParameters = hematologiParams.map(p => ({ parameter: p.nama }));
             } else {
                 if (source === 'manual') {
-                    // 🔹 Untuk data manual → inject mean & range
-                    currentResults = (filteredResults || []).map(r => ({
-                        parameter: r.parameter,
-                        result: r.result,
-                        duplo: r.duplo || [],
-                        mean: parseFloat(r.mean) || 0,
-                        range: parseFloat(r.range) || 0
+                    // Data manual: pastikan ada field duplo
+                    currentResults = filteredResults.map(r => ({
+                        ...r,
+                        duplo: r.duplo || []
                     }));
-
-                    // Ambil parameter dari DetailLot
-                    if (data.data.parameters && data.data.parameters.length > 0) {
+                    
+                    if (data.data.parameters?.length) {
                         currentParameters = data.data.parameters.map(p => ({ parameter: p.parameter }));
                     } else {
                         const uniqueParams = [...new Set(filteredResults.map(r => r.parameter))];
                         currentParameters = uniqueParams.map(param => ({ parameter: param }));
                     }
                 } else {
-                    // 🔹 Untuk data dari alat → mapping juga dengan mean & range
-                    currentResults = (filteredResults || []).map(r => ({
+                    // Data dari alat: sudah ada grouping dan duplo dari backend
+                    currentResults = filteredResults.map(r => ({
                         parameter: r.identifier_name,
-                        result: r.identifier_value,
-                        duplo: [],
-                        mean: parseFloat(r.mean) || 0,
-                        range: parseFloat(r.range) || 0
+                        result: r.identifier_value || r.result,
+                        duplo: r.duplo || [], // Array of duplo values
+                        identifier_value: r.identifier_value,
+                        identifier_unit: r.identifier_unit,
+                        identifier_range: r.identifier_range,
+                        identifier_flags: r.identifier_flags,
+                        tanggal_only: r.tanggal_only
                     }));
-
+                    
                     const uniqueParams = [...new Set(filteredResults.map(r => r.identifier_name))];
                     currentParameters = uniqueParams.map(param => ({ parameter: param }));
                 }
@@ -936,6 +927,12 @@ async function loadQCDetails(qcId) {
 
             console.log('Current Parameters:', currentParameters);
             console.log('Current Results:', currentResults);
+            console.log('Duplo data check:', currentResults.map(r => ({ 
+                param: r.parameter, 
+                result: r.result, 
+                duploCount: r.duplo?.length || 0,
+                duploValues: r.duplo 
+            })));
 
             displayQCInfo();
             displayParameters();
@@ -952,6 +949,8 @@ async function loadQCDetails(qcId) {
         isLoading = false;
     }
 }
+
+   
 
 
 
@@ -1016,6 +1015,7 @@ function displayParameters() {
     // Isi data parameter
     if (currentParameters && currentParameters.length > 0) {
         currentParameters.forEach(param => {
+            // Cari result berdasarkan parameter
             const result = currentResults.find(r => r.parameter === param.parameter) || {};
             const meta = getMeta(param.parameter);
             
@@ -1051,13 +1051,22 @@ function displayParameters() {
             `;
             row.appendChild(switchCell);
             
+            // 🔹 Ambil array duplo dari result
+            const duploArray = result.duplo || [];
+            
+            console.log(`Parameter ${param.parameter} - Duplo:`, duploArray); // Debug
+            
             // Kolom Duplo (hanya yang terlihat)
             for (let i = startIndex; i < endIndex; i++) {
                 const duploCell = document.createElement('td');
                 duploCell.className = 'duplo-cell';
+                
+                // 🔹 Ambil nilai duplo dari array
+                const duploValue = duploArray[i] || '';
+                
                 duploCell.innerHTML = `
                     <input type="number" step="0.01"
-                        value="${result.duplo && result.duplo[i] ? result.duplo[i] : ''}"
+                        value="${duploValue}"
                         class="form-control form-control-sm text-center result-input"
                         onchange="updateResult('${param.parameter}', this.value, ${i + 1})" />
                 `;
@@ -1069,7 +1078,7 @@ function displayParameters() {
             flagCell.className = 'flag-cell';
             const flagValue = result.result ? parseFloat(result.result) : null;
 
-            // 🔹 perbaikan utama: kirim mean & range ke getFlag
+            // 🔹 Gunakan getFlag seperti versi original Anda
             const flag = getFlag(flagValue, meta, {
                 mean: result.mean || 0,
                 range: result.range || 0
@@ -1093,6 +1102,39 @@ function displayParameters() {
     
     // Update pagination
     updatePagination();
+}
+
+// 🔹 Fungsi untuk update result (termasuk duplo)
+function updateResult(parameter, value, duploIndex) {
+    const resultIndex = currentResults.findIndex(r => r.parameter === parameter);
+    
+    if (resultIndex === -1) {
+        // Jika belum ada, buat entry baru
+        currentResults.push({
+            parameter: parameter,
+            result: duploIndex === 0 ? value : null,
+            duplo: duploIndex === 0 ? [] : []
+        });
+    }
+    
+    const result = currentResults[resultIndex >= 0 ? resultIndex : currentResults.length - 1];
+    
+    if (duploIndex === 0) {
+        // Update hasil utama
+        result.result = value;
+    } else {
+        // Update duplo
+        if (!result.duplo) {
+            result.duplo = [];
+        }
+        // Pastikan array duplo cukup panjang
+        while (result.duplo.length < duploIndex) {
+            result.duplo.push(null);
+        }
+        result.duplo[duploIndex - 1] = value;
+    }
+    
+    console.log('Updated result:', result);
 }
 
 

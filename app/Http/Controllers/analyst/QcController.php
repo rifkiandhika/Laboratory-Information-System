@@ -420,28 +420,66 @@ class QcController extends Controller
     public function getQcUnified($qcId)
     {
         try {
-            // Ambil QC beserta department
             $qc = Qc::with('department')->findOrFail($qcId);
 
-            // Cek apakah ada order dari alat (pakai obrs)
-            $order = obr::where('order_number', $qc->name_control)->first();
+            $orders = obr::where('order_number', $qc->name_control)
+                ->pluck('message_control_id');
 
-            if ($order) {
-                // 🔹 Data dari alat (obx)
-                $obxes = obx::where('message_control_id', $order->message_control_id)->get();
+            if ($orders->isNotEmpty()) {
+                // Ambil semua hasil dari alat
+                $obxes = obx::whereIn('message_control_id', $orders)
+                    ->orderBy('tanggal', 'asc')
+                    ->orderBy('created_at', 'asc')
+                    ->get()
+                    ->map(function ($obx) {
+                        if ($obx->tanggal) {
+                            $obx->tanggal_only = \Carbon\Carbon::parse($obx->tanggal)->format('Y-m-d');
+                        } else {
+                            $obx->tanggal_only = \Carbon\Carbon::parse($obx->created_at)->format('Y-m-d');
+                        }
+                        return $obx;
+                    });
+
+                // Group by tanggal dan parameter
+                $groupedResults = $obxes->groupBy(function ($item) {
+                    return $item->tanggal_only . '|' . $item->identifier_name;
+                });
+
+                // Restructure data: pertama jadi result, sisanya jadi duplo
+                $restructuredResults = [];
+                foreach ($groupedResults as $key => $group) {
+                    list($date, $parameter) = explode('|', $key);
+
+                    $firstItem = $group->first();
+
+                    // Ambil semua nilai untuk duplo (tanpa yang pertama)
+                    $duploValues = $group->skip(1)->pluck('identifier_value')->values()->toArray();
+
+                    $restructuredResults[] = [
+                        'parameter' => $parameter,
+                        'identifier_name' => $parameter,
+                        'identifier_value' => $firstItem->identifier_value,
+                        'result' => $firstItem->identifier_value, // Tambahkan field 'result' untuk konsistensi
+                        'identifier_unit' => $firstItem->identifier_unit,
+                        'identifier_range' => $firstItem->identifier_range,
+                        'identifier_flags' => $firstItem->identifier_flags,
+                        'tanggal' => $firstItem->tanggal, // Tambahkan tanggal lengkap
+                        'tanggal_only' => $date,
+                        'duplo' => $duploValues
+                    ];
+                }
 
                 return response()->json([
                     'status' => 'success',
                     'msg'    => 'Data QC dari alat ditemukan',
                     'data'   => [
                         'qc'      => $qc,
-                        'order'   => $order,
-                        'results' => $obxes,
+                        'results' => $restructuredResults,
                         'source'  => 'alat'
                     ]
                 ]);
             } else {
-                // 🔹 Data manual
+                // Data manual (tidak berubah)
                 $parameters = DetailLot::where('quality_control_id', $qcId)
                     ->select('parameter', 'mean', 'range', 'bts_atas', 'bts_bawah', 'standart')
                     ->get();
@@ -451,12 +489,11 @@ class QcController extends Controller
                     ->orderBy('test_date', 'desc')
                     ->get()
                     ->map(function ($result) {
-                        // Konversi ke format tanggal saja tanpa timezone
                         if ($result->test_date) {
-                            $result->test_date_original = $result->test_date;
-                            // Ambil tanggal saja, abaikan waktu dan timezone
-                            $result->test_date = \Carbon\Carbon::parse($result->test_date)->format('Y-m-d');
+                            $result->test_date_only = \Carbon\Carbon::parse($result->test_date)->format('Y-m-d');
                         }
+                        // Tambahkan field duplo kosong untuk konsistensi
+                        $result->duplo = [];
                         return $result;
                     });
 
@@ -479,6 +516,7 @@ class QcController extends Controller
             ]);
         }
     }
+
 
     public function getParameters($qcId)
     {

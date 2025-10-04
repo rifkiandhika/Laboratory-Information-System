@@ -57,6 +57,7 @@ class DepartmentController extends Controller
             'jasa_perawat.*' => 'nullable',
             'nilai_rujukan.*' => 'required',
             'nilai_satuan.*' => 'required',
+            'metode.*' => 'nullable',
             'tipe_inputan.*' => 'required',
             'status.*' => 'required',
             'permission.*' => 'required',
@@ -86,6 +87,7 @@ class DepartmentController extends Controller
                 isset($request->harga[$x]) &&
                 isset($request->nilai_rujukan[$x]) &&
                 isset($request->nilai_satuan[$x]) &&
+                isset($request->metode[$x]) &&
                 isset($request->tipe_inputan[$x]) &&
                 isset($request->status[$x]) &&
                 isset($request->permission[$x]) &&
@@ -107,6 +109,7 @@ class DepartmentController extends Controller
                         'jasa_perawat' => $request->jasa_perawat[$x] ?? 0,
                         'nilai_rujukan' => $request->nilai_rujukan[$x],
                         'nilai_satuan' => $request->nilai_satuan[$x],
+                        'metode' => $request->metode[$x],
                         'status' => $request->status[$x],
                         'permission' => $request->permission[$x],
                         'barcode' => $request->barcode[$x],
@@ -189,6 +192,7 @@ class DepartmentController extends Controller
                                 'harga' => $request->harga[$index] ?? 0,
                                 'nilai_rujukan' => $request->nilai_rujukan[$index] ?? '',
                                 'nilai_satuan' => $request->nilai_satuan[$index] ?? '',
+                                'metode' => $request->metode[$index] ?? '',
                                 'jasa_sarana' => $request->jasa_sarana[$index] ?? 0,
                                 'jasa_pelayanan' => $request->jasa_pelayanan[$index] ?? 0,
                                 'jasa_dokter' => $request->jasa_dokter[$index] ?? 0,
@@ -222,6 +226,7 @@ class DepartmentController extends Controller
                         'harga' => $request->harga[$i] ?? 0,
                         'nilai_rujukan' => $request->nilai_rujukan[$i] ?? '',
                         'nilai_satuan' => $request->nilai_satuan[$i] ?? '',
+                        'metode' => $request->metode[$i] ?? '',
                         'jasa_sarana' => $request->jasa_sarana[$i] ?? 0,
                         'jasa_pelayanan' => $request->jasa_pelayanan[$i] ?? 0,
                         'jasa_dokter' => $request->jasa_dokter[$i] ?? 0,

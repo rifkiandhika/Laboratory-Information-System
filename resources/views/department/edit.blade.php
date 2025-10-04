@@ -82,6 +82,9 @@ Edit Department
 
                                                                     <label class="mt-2">Nilai Satuan <span class="text-danger">*</span></label>
                                                                     <input type="text" name="nilai_satuan[{{ $x }}]" class="form-control" value="{{ $detail->nilai_satuan }}" placeholder="e.g. % mg/dL" required>
+                                                                    
+                                                                    <label class="mt-2">Metode</label>
+                                                                    <input type="text" name="metode[{{ $x }}]" class="form-control" value="{{ $detail->metode }}" placeholder="e.g. SLS Hemoglobin">
                                                                 </div>
 
                                                                 <!-- Kolom Kanan -->
@@ -412,6 +415,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
                             <label class="mt-2">Nilai Satuan <span class="text-danger">*</span></label>
                             <input type="text" name="nilai_satuan[]" class="form-control" placeholder="e.g. % mg/dL" required>
+
+                            <label class="mt-2">Metode</label>
+                            <input type="text" name="metode[]" class="form-control" placeholder="e.g. SLS Hemoglobin">
                         </div>
 
                         <!-- Kolom Kanan -->

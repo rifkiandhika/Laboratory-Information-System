@@ -81,6 +81,7 @@ class worklistController extends Controller
             'duplo_d3.*' => 'nullable',
             'nilai_rujukan.*' => 'nullable',
             'satuan.*' => 'nullable',
+            'metode.*' => 'nullable',
             'department.*' => 'required',
             'flag.*' => 'nullable', // ⬅️ tambahan
             'judul.*' => 'nullable', // ⬅️ tambahan
@@ -104,6 +105,7 @@ class worklistController extends Controller
         $d3 = $request->input('duplo_d3', []);
         $nilai_rujukan = $request->input('nilai_rujukan', []);
         $satuans = $request->input('satuan', []);
+        $metodes = $request->input('metode', []);
         $judul = $request->input('judul', []);
         $flags = $request->input('flag', []);
         $departments = $request->input('department', []);
@@ -188,6 +190,7 @@ class worklistController extends Controller
                     'duplo_d3' => $d3[$index] ?? null,
                     'range' => $nilai_rujukan[$index] ?? null, // Gunakan field range yang sudah ada
                     'satuan' => $satuans[$index] ?? null,
+                    'metode' => $metodes[$index] ?? null,
                     'flag' => $flags[$index] ?? null,
                     'judul' => $judul[$index] ?? null,
                     'department' => $departments[$index] ?? null,
@@ -376,137 +379,129 @@ class worklistController extends Controller
 
     public function checkin(Request $request, $id)
     {
-        // Validasi input - disesuaikan dengan function store
+        // Validasi input - disamakan dengan store
         $request->validate([
             'no_lab' => 'required',
             'no_rm' => 'required',
             'nama' => 'required',
             'ruangan' => 'required',
             'nama_dokter' => 'required',
-            'parameter_name.*' => 'required', // Sama seperti store
+            'parameter_name.*' => 'required',
             'nama_pemeriksaan.*' => 'required',
-            'hasil.*' => 'required', // Untuk checkin wajib isi hasil
-            'duplo_d1.*' => 'nullable|numeric',
-            'duplo_d2.*' => 'nullable|numeric',
-            'duplo_d3.*' => 'nullable|numeric',
+            'hasil.*' => 'nullable',   // ⬅️ sama dengan store (tidak wajib)
+            'duplo_d1.*' => 'nullable',
+            'duplo_d2.*' => 'nullable',
+            'duplo_d3.*' => 'nullable',
             'nilai_rujukan.*' => 'nullable',
             'satuan.*' => 'nullable',
+            'metode.*' => 'nullable',
             'department.*' => 'required',
+            'flag.*' => 'nullable',
+            'judul.*' => 'nullable',
             'note' => 'nullable',
         ]);
 
-        DB::beginTransaction();
-        try {
-            // Ambil data dari request - disamakan dengan store
-            $no_lab = $request->input('no_lab');
-            $no_rm = $request->input('no_rm');
-            $nama = $request->input('nama');
-            $ruangan = $request->input('ruangan');
-            $nama_dokter = $request->input('nama_dokter');
-            $parameter_names = $request->input('parameter_name', []);
-            $nama_pemeriksaan = $request->input('nama_pemeriksaan', []);
-            $hasils = $request->input('hasil', []);
-            $d1 = $request->input('duplo_d1', []);
-            $d2 = $request->input('duplo_d2', []);
-            $d3 = $request->input('duplo_d3', []);
-            $nilai_rujukan = $request->input('nilai_rujukan', []);
-            $satuans = $request->input('satuan', []);
-            $departments = $request->input('department', []);
-            $note = $request->input('note');
+        // Ambil data dari request
+        $no_lab = $request->input('no_lab');
+        $no_rm = $request->input('no_rm');
+        $nama = $request->input('nama');
+        $ruangan = $request->input('ruangan');
+        $nama_dokter = $request->input('nama_dokter');
 
-            // Debug array length
-            $expectedLength = count($parameter_names);
-            if (
-                count($nama_pemeriksaan) !== $expectedLength ||
-                count($hasils) !== $expectedLength ||
-                count($departments) !== $expectedLength
-            ) {
-                return redirect()->back()->withErrors([
-                    'message' => 'Data tidak valid - panjang array tidak sama'
-                ]);
-            }
+        $parameter_names = $request->input('parameter_name', []);
+        $nama_pemeriksaan = $request->input('nama_pemeriksaan', []);
+        $hasils = $request->input('hasil', []);
+        $d1 = $request->input('duplo_d1', []);
+        $d2 = $request->input('duplo_d2', []);
+        $d3 = $request->input('duplo_d3', []);
+        $nilai_rujukan = $request->input('nilai_rujukan', []);
+        $satuans = $request->input('satuan', []);
+        $metodes = $request->input('metode', []);
+        $judul = $request->input('judul', []);
+        $flags = $request->input('flag', []);
+        $departments = $request->input('department', []);
+        $note = $request->input('note');
 
-            // Cari pasien
-            $pasien = Pasien::findOrFail($id);
-
-            // Kalau status "Dikembalikan", hapus hasil lama
-            if ($pasien->status === 'Dikembalikan') {
-                HasilPemeriksaan::where('no_lab', $no_lab)->delete();
-            }
-
-            $savedCount = 0;
-            $errorCount = 0;
-
-            foreach ($parameter_names as $index => $parameter_name) {
-                if (empty($parameter_name)) {
-                    continue;
-                }
-
-                try {
-                    $existingHasil = HasilPemeriksaan::where('no_lab', $no_lab)
-                        ->where('nama_pemeriksaan', $parameter_name)
-                        ->first();
-
-                    $data = [
-                        'no_lab' => $no_lab,
-                        'no_rm' => $no_rm,
-                        'nama' => $nama,
-                        'ruangan' => $ruangan,
-                        'nama_dokter' => $nama_dokter,
-                        'nama_pemeriksaan' => $parameter_name,
-                        'hasil' => $hasils[$index] ?? '',
-                        'duplo_d1' => $d1[$index] ?? null,
-                        'duplo_d2' => $d2[$index] ?? null,
-                        'duplo_d3' => $d3[$index] ?? null,
-                        'range' => $nilai_rujukan[$index] ?? null,
-                        'satuan' => $satuans[$index] ?? null,
-                        'department' => $departments[$index] ?? null,
-                        'note' => $note,
-                    ];
-
-                    if ($existingHasil) {
-                        $existingHasil->update($data);
-                    } else {
-                        HasilPemeriksaan::create($data);
-                    }
-
-                    $savedCount++;
-                } catch (\Exception $e) {
-                    $errorCount++;
-                    Log::error("Failed to save parameter {$parameter_name}: " . $e->getMessage());
-                }
-            }
-
-            // Update status pasien
-            $newStatus = $pasien->status === 'Dikembalikan'
-                ? 'Diverifikasi Ulang'
-                : 'Verifikasi Dokter';
-            $pasien->update(['status' => $newStatus]);
-
-            // Simpan history
-            HistoryPasien::create([
-                'no_lab' => $pasien->no_lab,
-                'proses' => $newStatus,
-                'tempat' => 'Laboratorium',
-                'waktu_proses' => now(),
-                'created_at' => now(),
-            ]);
-
-            DB::commit();
-
-            if ($errorCount > 0) {
-                toast("Data berhasil disimpan ({$savedCount} parameter), tapi ada {$errorCount} error", 'warning');
-            } else {
-                toast("Data berhasil disimpan ({$savedCount} parameter)", 'success');
-            }
-
-            return redirect()->route('worklist.index');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            toast('Terjadi kesalahan: ' . $e->getMessage(), 'error');
-            return redirect()->back()->withInput();
+        // Validasi panjang data
+        $expectedLength = count($parameter_names);
+        if (
+            count($nama_pemeriksaan) !== $expectedLength ||
+            count($hasils) !== $expectedLength ||
+            count($departments) !== $expectedLength
+        ) {
+            return redirect()->back()->withErrors(['message' => 'Data tidak valid - panjang array tidak sama']);
         }
+
+        $savedCount = 0;
+        $errorCount = 0;
+
+        foreach ($parameter_names as $index => $parameter_name) {
+            if (empty($parameter_name)) continue;
+
+            try {
+                $existingHasil = HasilPemeriksaan::where('no_lab', $no_lab)
+                    ->where('nama_pemeriksaan', $parameter_name)
+                    ->first();
+
+                $data = [
+                    'no_lab' => $no_lab,
+                    'no_rm' => $no_rm,
+                    'nama' => $nama,
+                    'ruangan' => $ruangan,
+                    'nama_dokter' => $nama_dokter,
+                    'nama_pemeriksaan' => $parameter_name,
+                    'hasil' => $hasils[$index] ?? '',
+                    'duplo_d1' => $d1[$index] ?? null,
+                    'duplo_d2' => $d2[$index] ?? null,
+                    'duplo_d3' => $d3[$index] ?? null,
+                    'range' => $nilai_rujukan[$index] ?? null,
+                    'satuan' => $satuans[$index] ?? null,
+                    'metode' => $metodes[$index] ?? null,
+                    'flag' => $flags[$index] ?? null,
+                    'judul' => $judul[$index] ?? null,
+                    'department' => $departments[$index] ?? null,
+                    'note' => $note ?? null,
+                ];
+
+                if ($existingHasil) {
+                    $existingHasil->update($data);
+                } else {
+                    HasilPemeriksaan::create($data);
+                }
+
+                $savedCount++;
+            } catch (\Exception $e) {
+                $errorCount++;
+                Log::error("Failed to save parameter {$parameter_name}: " . $e->getMessage());
+            }
+        }
+
+        // Update status pasien (⬅️ hanya bagian ini yang beda dengan store)
+        $pasien = Pasien::findOrFail($id);
+        $newStatus = $pasien->status === 'Dikembalikan'
+            ? 'Diverifikasi Ulang'
+            : 'Verifikasi Dokter';
+
+        $pasien->update(['status' => $newStatus]);
+
+        HistoryPasien::create([
+            'no_lab' => $pasien->no_lab,
+            'proses' => $newStatus,
+            'tempat' => 'Laboratorium',
+            'note' => $note ?? null,
+            'waktu_proses' => now(),
+            'created_at' => now(),
+        ]);
+
+        if ($errorCount > 0) {
+            toast("Data berhasil disimpan ({$savedCount} parameter), tapi ada {$errorCount} error", 'warning');
+        } else {
+            toast("Data berhasil disimpan ({$savedCount} parameter)", 'success');
+        }
+
+        return redirect()->route('worklist.index');
     }
+
 
 
 

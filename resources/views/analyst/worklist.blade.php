@@ -2485,6 +2485,7 @@
                                                                         <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaan}" />
                                                                         <input type="hidden" name="judul[]" value="${judul}" />
                                                                         <input type="hidden" name="parameter_name[]" value="${param.nama}" />
+                                                                        <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
                                                                         <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan}" />
                                                                         <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
                                                                     </td>
@@ -2565,6 +2566,7 @@
                                                                             <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanHematologi}" />
                                                                             ${judulHematologi ? `<input type="hidden" name="judul[]" value="${judulHematologi}" />` : ''}
                                                                             <input type="hidden" name="parameter_name[]" value="${param.nama}" />
+                                                                            <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
                                                                             <input type="hidden" name="nilai_rujukan[]" value="${normalValues.rujukan}" />
                                                                             <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
                                                                         </td>
@@ -2643,6 +2645,7 @@
                                                                             <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanWidal}" />
                                                                             ${judulWidal ? `<input type="hidden" name="judul[]" value="${judulWidal}" />` : ''}
                                                                             <input type="hidden" name="parameter_name[]" value="${param.nama}" />
+                                                                            <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
                                                                             <input type="hidden" name="nilai_rujukan[]" value="${normalValues.rujukan}" />
                                                                             <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
                                                                         </td>
@@ -2761,6 +2764,7 @@
                                                                                 <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanUrine}" />
                                                                                 <input type="hidden" name="judul[]" value="${param.judul}" />
                                                                                 <input type="hidden" name="parameter_name[]" value="${param.nama}" />
+                                                                                <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
                                                                                 <input type="hidden" name="nilai_rujukan[]" value="${displayRujukan}" />
                                                                                 <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
                                                                             </td>
@@ -2892,6 +2896,7 @@
                                                                                 <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanMikrobiologi}" />
                                                                                 <input type="hidden" name="judul[]" value="${judulMikrobiologi}" />
                                                                                 <input type="hidden" name="parameter_name[]" value="${param.nama}" />
+                                                                                <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
                                                                                 <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan ?? '-'}" />
                                                                                 <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
                                                                             </td>
@@ -2989,6 +2994,7 @@
                                                                                 <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanPreparatBasah}" />
                                                                                 <input type="hidden" name="judul[]" value="${judulPreparatBasah}" />
                                                                                 <input type="hidden" name="parameter_name[]" value="${param.nama}" />
+                                                                                <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
                                                                                 <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan ?? '-'}" />
                                                                                 <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
                                                                             </td>
@@ -3089,6 +3095,7 @@
                                                                             <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanFeses}" />
                                                                             <input type="hidden" name="judul[]" value="${judulFeses}" />
                                                                             <input type="hidden" name="parameter_name[]" value="${param.nama}" />
+                                                                            <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
                                                                             <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan ?? '-'}" />
                                                                             <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
                                                                         </td>
@@ -3273,6 +3280,7 @@
                                                                                 value="${p.data_pemeriksaan.nama_parameter}" />
                                                                             <input type="hidden" name="nilai_rujukan[]" value="${p.data_pemeriksaan.nilai_rujukan || ''}" />
                                                                             <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                                            <input type="hidden" name="metode[]" value="${p.data_pemeriksaan.metode ?? ''}" />
                                                                         </td>
                                                                         <td class="col-2">
                                                                             <!-- Input Text -->
