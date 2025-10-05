@@ -7,7 +7,7 @@
             <!-- Page Heading -->
             <div class="d-sm-flex mb-3">
                 <div class="row">
-                    <h1 class="h3 mb-0 text-gray-600">Doctor Data</h1>
+                    <h1 class="h3 mb-0 text-gray-600">Data</h1>
                 </div>
             </div>
 
@@ -19,7 +19,7 @@
                                 <!-- Button trigger modal -->
                                 <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
                                     data-bs-target="#exampleModal">
-                                    + Add Doctor
+                                    + Tambah
                                 </button>
 
                                 <!-- Modal Add -->
@@ -28,7 +28,7 @@
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">Doctor</h5>
+                                                <h5 class="modal-title" id="exampleModalLabel">Dokter / Pengirim</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                             </div>
@@ -36,7 +36,7 @@
                                                 @csrf
                                                 <div class="modal-body">
                                                     <div class="form-group">
-                                                        <label><b>Doctor Code</b></label>
+                                                        <label><b>Code</b></label>
                                                         <input class="form-control" placeholder="D01094" type="text"
                                                             name="kode_dokter" required>
                                                     </div>
@@ -46,7 +46,7 @@
                                                             name="nip" required>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label><b>Doctor Name</b></label>
+                                                        <label><b>Name</b></label>
                                                         <input class="form-control" placeholder="Abdul Mughni"
                                                             type="text" name="nama_dokter" required>
                                                     </div>
@@ -68,11 +68,13 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <label><b>Jabatan</b></label>
-                                                        <select name="jabatan" class="form-control" required>
+                                                        <select class="form-control" name="jabatan" id="Jabatan" required>
                                                             <option value="" selected hidden>Pilih Jabatan</option>
-                                                            <option value="Dokter Umum">Dokter Umum</option>
-                                                            <option value="Dokter Spesialis">Dokter Spesialis</option>
-                                                            <option value="Dokter Tamu">Dokter Tamu</option>
+                                                            <option value="dokter">Dokter</option>
+                                                            <option value="bidan">Bidan</option>
+                                                            <option value="perawat">Perawat</option>
+                                                            <option value="pelayanan">Pelayanan</option>
+                                                            <option value="sarana">Sarana</option>
                                                         </select>
                                                     </div>
                                                     <div class="form-group">
@@ -113,9 +115,9 @@
                                     <thead style="font-size: 12px;">
                                         <tr>
                                             <th scope="col">No.</th>
-                                            <th scope="col">Doctor Code</th>
+                                            <th scope="col">Code</th>
                                             <th scope="col">Nip/Nik</th>
-                                            <th scope="col">Doctor Name</th>
+                                            <th scope="col">Name</th>
                                             <th scope="col">Room</th>
                                             <th scope="col">Poli</th>
                                             <th scope="col">Jabatan</th>
@@ -225,6 +227,8 @@
                                                             <option value="dokter">Dokter</option>
                                                             <option value="bidan">Bidan</option>
                                                             <option value="perawat">Perawat</option>
+                                                            <option value="pelayanan">Pelayanan</option>
+                                                            <option value="sarana">Sarana</option>
                                                         </select>
                                                     </div>
                                                     <div class="form-group">

@@ -157,7 +157,7 @@
             @canany(['read_dokter','create_dokter','update_dokter','delete_dokter'])
                 <li class="menu-item {{ Request::is('dokter') ? 'active' : '' }}">
                     <a href="{{ route('dokter.index') }}" class="menu-link">
-                        <div data-i18n="Doctor">Doctor</div>
+                        <div data-i18n="Doctor">Doctor / Send</div>
                     </a>
                 </li>
             @endcanany
