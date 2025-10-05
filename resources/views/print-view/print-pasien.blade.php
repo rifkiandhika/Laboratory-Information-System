@@ -426,7 +426,7 @@
 
                 <!-- Logo Klinik (tengah) -->
                 <div style="flex: 1; text-align: center;">
-                <img src="{{ asset('image/KRIMS.png') }}" alt="Klinik Utama Muslimat Singosari" style="width: 100px; opacity: 80%;">
+                <img src="{{ asset('image/KRIMS-1.png') }}" alt="Klinik Utama Muslimat Singosari" style="width: 100px; opacity: 80%;">
                 </div>
 
                 <!-- Logo Laskesi (kanan) -->
