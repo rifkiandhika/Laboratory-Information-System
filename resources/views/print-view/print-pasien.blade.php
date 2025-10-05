@@ -421,17 +421,17 @@
 
                 <!-- Logo Yayasan (kiri) -->
                 <div style="flex: 1; text-align: left;">
-                <img src="{{ asset('image/YKU.png') }}" alt="Yayasan" style="width: 70px; opacity: 65%;">
+                <img src="{{ asset('image/YKU.png') }}" alt="Yayasan" style="width: 180px; opacity: 65%;">
                 </div>
 
                 <!-- Logo Klinik (tengah) -->
                 <div style="flex: 1; text-align: center;">
-                <img src="{{ asset('image/KRIMS-1.png') }}" alt="Klinik Utama Muslimat Singosari" style="width: 100px; opacity: 80%;">
+                <img src="{{ asset('image/KRIMS-1.png') }}" alt="Klinik Utama Muslimat Singosari" style="width: 250px; opacity: 80%;">
                 </div>
 
                 <!-- Logo Laskesi (kanan) -->
                 <div style="flex: 1; text-align: right;">
-                <img src="{{ asset('image/LASKESI.png') }}" alt="Laskesi" style="width: 70px; opacity: 65%;">
+                <img src="{{ asset('image/LASKESI.png') }}" alt="Laskesi" style="width: 180px; opacity: 65%;">
                 </div>
 
             </div>
