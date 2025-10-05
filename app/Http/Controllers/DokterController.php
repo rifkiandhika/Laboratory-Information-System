@@ -107,7 +107,7 @@ class DokterController extends Controller
         $dokters = dokter::findOrFail($id);
         if ($dokters->pasien()->count() > 0) {
             Alert::error('Error', 'Tidak bisa menghapus dokter yang masih memiliki pemeriksaan.');
-            return redirect()->route('department.index');
+            return redirect()->route('dokter.index');
         }
 
         $dokters->delete();

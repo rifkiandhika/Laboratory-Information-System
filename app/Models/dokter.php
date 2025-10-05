@@ -12,7 +12,7 @@ class dokter extends Model
 
     public function pasien()
     {
-        return $this->hasMany(Pasien::class, 'kode_dokter', 'nama_dokter');
+        return $this->hasMany(pasien::class, 'kode_dokter', 'nama_dokter');
         // foreignKey (di pasien), ownerKey (di dokter)
     }
 
