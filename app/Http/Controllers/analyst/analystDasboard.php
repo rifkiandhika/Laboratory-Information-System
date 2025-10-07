@@ -138,7 +138,7 @@ class analystDasboard extends Controller
             }
 
             if ($has_handling_active) {
-                $pasien->status = 'Check In';
+                $pasien->status = 'Acc Collection';
                 historyPasien::create([
                     'no_lab'       => $no_lab,
                     'proses'       => 'Pasien Check In',

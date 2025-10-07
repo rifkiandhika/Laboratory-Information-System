@@ -746,7 +746,7 @@ klinis yang dicantumkan.</td>
                             alt="Signature"
                             style="display:block; height:150px; width:auto; object-fit:contain; margin-left:auto;">
                     @endif
-                    <div style="padding-right: 25px; margin-top:5px; text-align:right; margin-right: 70px;">
+                    <div style="padding-right: 25px; margin-top:5px; text-align:right; margin-right: 20px;">
                         <div style="display: inline-block; text-align: center;">
                             <div style="padding-top: 2px; min-width: 65px;">
                                 <div style="font-weight: bold;">{{ auth()->user()->name }}</div>
@@ -766,7 +766,7 @@ klinis yang dicantumkan.</td>
                             alt="Signature"
                             style="display:block; height:150px; width:auto; object-fit:contain; margin-left:auto;">
                     @endif
-                    <div style="padding-right: 25px; margin-top:5px; text-align:right; margin-right: 70px;">
+                    <div style="padding-right: 25px; margin-top:5px; text-align:right; margin-right: 20px;">
                         <div style="display: inline-block; text-align: center;">
                             <div style="padding-top: 2px; min-width: 65px;">
                                 <div style="font-weight: bold;">{{ auth()->user()->name }}</div>

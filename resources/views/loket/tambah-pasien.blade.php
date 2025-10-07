@@ -102,14 +102,14 @@
                                     </div>
                                                                         
                                     <div class="col-md-6 mb-6">
-                                        <label for="asal_ruangan" class="fw-bold">Room</label>
-                                        <select class="form-select" id="asal_ruangan" name="asal_ruangan">
-                                            <option value="" hidden>Choose...</option>
-                                            @foreach ($poliInternal as $poli)
-                                                <option value="{{ $poli->nama_poli }}">{{ $poli->nama_poli }}</option>
-                                            @endforeach
-                                            <option value="lainnya">Lainnya...</option>
-                                        </select>
+                                    <label for="asal_ruangan" class="fw-bold">Room</label>
+                                    <select class="form-select" id="asal_ruangan" name="asal_ruangan">
+                                        <option value="" hidden>Choose...</option>
+                                        @foreach ($poliInternal as $poli)
+                                        <option value="{{ $poli->nama_poli }}">{{ $poli->nama_poli }}</option>
+                                        @endforeach
+                                        <option value="lainnya">Lainnya...</option>
+                                    </select>
                                     </div>
                                     <div class="col-md-6 mb-6">
                                         <label for="name" class="fw-bold">Diagnosis</label>
@@ -482,19 +482,62 @@ document.addEventListener('DOMContentLoaded', function() {
 });
     </script>
 <script>
-    document.getElementById('doctorSelect').addEventListener('change', function () {
-        var externalContainer = document.getElementById('externalDoctorContainer');
-        var externalInput = document.getElementById('external_doctor');
+document.addEventListener('DOMContentLoaded', function () {
+  const asalRuangan = document.getElementById('asal_ruangan');
 
-        if (this.value === 'external') {
-            externalContainer.style.display = 'block';
-            externalInput.setAttribute('required', 'true'); // Buat wajib diisi jika memilih "Lainnya..."
-        } else {
-            externalContainer.style.display = 'none';
-            externalInput.removeAttribute('required');
-        }
-    });
+  // Simpan daftar poli internal & external dalam array
+  const poliInternal = [
+    @foreach ($poliInternal as $poli)
+      "{{ $poli->nama_poli }}",
+    @endforeach
+  ];
+
+  const poliExternal = [
+    @foreach ($poliExternal as $poli)
+      "{{ $poli->nama_poli }}",
+    @endforeach
+  ];
+
+  // Saat value berubah
+  asalRuangan.addEventListener('change', function () {
+    if (this.value === 'lainnya') {
+      // Hapus semua opsi lama
+      asalRuangan.innerHTML = '<option value="" hidden>Choose...</option>';
+
+      // Tambahkan poli external
+      poliExternal.forEach(nama => {
+        const opt = document.createElement('option');
+        opt.value = nama;
+        opt.textContent = nama;
+        asalRuangan.appendChild(opt);
+      });
+
+      // Tambahkan opsi "Kembali ke internal"
+      const kembali = document.createElement('option');
+      kembali.value = 'kembali';
+      kembali.textContent = '← Kembali ke Internal';
+      asalRuangan.appendChild(kembali);
+    }
+
+    // Jika user ingin kembali ke internal
+    if (this.value === 'kembali') {
+      asalRuangan.innerHTML = '<option value="" hidden>Choose...</option>';
+      poliInternal.forEach(nama => {
+        const opt = document.createElement('option');
+        opt.value = nama;
+        opt.textContent = nama;
+        asalRuangan.appendChild(opt);
+      });
+      const lainnya = document.createElement('option');
+      lainnya.value = 'lainnya';
+      lainnya.textContent = 'Lainnya...';
+      asalRuangan.appendChild(lainnya);
+    }
+  });
+});
 </script>
+
+
     <script>
         $(document).ready(function() {
         $('#searchInspection').on('keyup', function() {
