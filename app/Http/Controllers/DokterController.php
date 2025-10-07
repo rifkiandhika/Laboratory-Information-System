@@ -35,14 +35,14 @@ class DokterController extends Controller
     {
         $request->validate([
             'kode_dokter' => 'required',
-            'nama_dokter' => 'required',
+            'nama_dokter' => 'required|unique:dokters,nama_dokter',
             'nip' => 'required',
             'id_poli' => 'required',
             'poli' => 'required',
             'status' => 'required',
             'jabatan' => 'required',
-            'no_telp' => 'required',
-            'email' => 'required'
+            'no_telp' => 'required|unique:dokters,no_telp',
+            'email' => 'required|unique:dokters,email'
         ]);
         dokter::create($request->all());
         toast('Berhasil Menambahkan Data Dokter', 'success');
