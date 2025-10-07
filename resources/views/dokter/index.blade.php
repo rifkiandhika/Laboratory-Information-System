@@ -273,7 +273,7 @@
 @push('script')
 <script>
     $(function() {
-        $('.btn-edit').on('click', function() {
+        $(document).on('click', '.btn-edit', function() {
             let id = $(this).data('id');
             let kode = $(this).data('kode');
             let nama = $(this).data('nama');

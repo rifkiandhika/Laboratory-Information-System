@@ -34,15 +34,15 @@ class DokterController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'kode_dokter' => 'required|unique:dokters,kode_dokter',
-            'nama_dokter' => 'required|unique:dokters,nama_dokter',
+            'kode_dokter' => 'required',
+            'nama_dokter' => 'required',
             'nip' => 'required',
             'id_poli' => 'required',
             'poli' => 'required',
             'status' => 'required',
             'jabatan' => 'required',
-            'no_telp' => 'required|unique:dokters,no_telp',
-            'email' => 'required|unique:dokters,email'
+            'no_telp' => 'required',
+            'email' => 'required'
         ]);
         dokter::create($request->all());
         toast('Berhasil Menambahkan Data Dokter', 'success');
@@ -71,15 +71,15 @@ class DokterController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'kode_dokter' => ['required', Rule::unique('dokters')->ignore($id)],
+            'kode_dokter' => 'required',
             'nip' => 'required',
             'nama_dokter' => 'required',
             'id_poli' => 'required',
             'poli' => 'required',
             'status' => 'required',
             'jabatan' => 'required',
-            'no_telp' => ['required', Rule::unique('dokters')->ignore($id)],
-            'email' => ['required', Rule::unique('dokters')->ignore($id)],
+            'no_telp' => 'required',
+            'email' => 'required',
         ]);
 
         $dokters = dokter::findOrfail($id);
