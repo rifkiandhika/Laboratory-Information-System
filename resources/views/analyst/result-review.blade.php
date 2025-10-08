@@ -1650,7 +1650,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                             );
 
                                             const hasMikrobiologi = e.pasiens.some(p => {
-                                                const isMikrobiologi = p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('microbiologi');
+                                                const isMikrobiologi = p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('preparat gram');
                                                 return isMikrobiologi;
                                                 // console.log('Nama pemeriksaan:', p.data_pemeriksaan.nama_pemeriksaan.toLowerCase());
                                             });
@@ -2196,12 +2196,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                             // ================== MICROBIOLOGI ==================
                                             if (hasMikrobiologi) {
                                                 const mikrobiologiPemeriksaan = e.pasiens.find(p =>
-                                                    p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('mikrobiologi')
+                                                    p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('preparat gram')
                                                 );
                                                 const judulMikrobiologi = e.pasiens.find(p => 
-                                                    p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('mikrobiologi') && p.data_pemeriksaan?.judul
+                                                    p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('preparat gram') && p.data_pemeriksaan?.judul
                                                 )?.data_pemeriksaan?.judul || '';
-                                                const namaPemeriksaanMikrobiologi = mikrobiologiPemeriksaan ? mikrobiologiPemeriksaan.data_pemeriksaan.nama_pemeriksaan : 'Mikrobiologi';
+                                                const namaPemeriksaanMikrobiologi = mikrobiologiPemeriksaan ? mikrobiologiPemeriksaan.data_pemeriksaan.nama_pemeriksaan : 'Preparat Gram';
 
                                                 if (judulMikrobiologi) {
                                                     html += `
