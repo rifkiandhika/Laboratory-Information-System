@@ -179,7 +179,9 @@ class pasienController extends Controller
             'dokter_external' => $request->dokter_external,
             'asal_ruangan'    => $request->asal_ruangan,
             'diagnosa'        => $request->diagnosa,
-            'tanggal_masuk'   => now(),
+            'tanggal_masuk' => $request->filled('tanggal_masuk')
+                ? Carbon::parse($request->tanggal_masuk)->setTimeFrom(Carbon::now())
+                : now(),
             'alamat'          => $request->alamat,
             'tanggal'         => Carbon::today(),
         ]);
@@ -213,7 +215,7 @@ class pasienController extends Controller
                 $existingReport->update([
                     'nama_dokter'   => $request->dokter_internal,
                     'dokter_external' => $request->dokter_external,
-                    'mcu_package_id' => $request->mcu_package_id, // 👈 update kalau sudah ada
+                    'mcu_package_id' => $request->mcu_package_id,
                 ]);
             } else {
                 Report::create([
@@ -224,7 +226,7 @@ class pasienController extends Controller
                     'nama_parameter' => $data->nama_parameter,
                     'nama_dokter'    => $request->dokter_internal,
                     'dokter_external' => $request->dokter_external,
-                    'mcu_package_id' => $request->mcu_package_id, // 👈 simpan saat create
+                    'mcu_package_id' => $request->mcu_package_id,
                     'quantity'       => 1,
                     'tanggal'        => now(),
                 ]);
@@ -261,8 +263,6 @@ class pasienController extends Controller
      */
     public function edit($no_lab)
     {
-
-        // $pasien = pasien::findOrFail($no_lab);
         $data_pasien = pasien::where('no_lab', $no_lab)->with([
             'dpp.pasiens' => function ($query) use ($no_lab) {
                 $query->where('no_lab', $no_lab)->with('data_pemeriksaan');
@@ -276,27 +276,38 @@ class pasienController extends Controller
         ])->first();
 
         if (!$data_pasien) {
-            // Jika pasien tidak ditemukan, redirect ke halaman daftar pasien dengan pesan error
             return redirect()->route('pasien.index')->with('error', 'Data pasien tidak ditemukan.');
         }
 
-        $dokters = dokter::all();
+        // ✅ Dokter internal
+        $dokterInternal = Dokter::where('status', 'internal')->get();
 
+        // ✅ Dokter eksternal
+        $dokterExternal = Dokter::where('status', 'external')->get();
+
+        // ✅ Poli internal
+        $poliInternal = Poli::where('status', 'internal')->get();
+
+        // Dokter umum
+        $dokters = Dokter::all();
+
+        // Departemen
         $departments = Department::with('detailDepartments')->get();
 
-        // Ambil ID pemeriksaan yang sudah dipilih dari tabel pemeriksaan_pasien
+        // Pemeriksaan yang sudah dipilih
         $selectedInspections = $data_pasien->pemeriksaan_pasien->pluck('id_parameter')->toArray();
 
-        // dd($data_pasien->pembayaran);
-
-
-        // Menghitung total harga pemeriksaan yang sudah dipilih
-        // $totalHarga = $data_pasien->dpp->sum('pasiens.harga');
-
-
-        // return response()->json($data_pasien);
-        return view('loket.edit', compact('data_pasien', 'dokters', 'departments', 'selectedInspections'));
+        return view('loket.edit', compact(
+            'data_pasien',
+            'dokters',
+            'departments',
+            'selectedInspections',
+            'dokterInternal',
+            'dokterExternal',
+            'poliInternal'
+        ));
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -326,6 +337,10 @@ class pasienController extends Controller
             'asal_ruangan' => $request->asal_ruangan,
             'diagnosa' => $request->diagnosa,
             'alamat' => $request->alamat,
+            'tanggal_masuk' => $request->filled('tanggal_masuk')
+                ? \Carbon\Carbon::parse($request->tanggal_masuk)->setTimeFrom(\Carbon\Carbon::now())
+                : ($pasien->tanggal_masuk ?? now()),
+
         ]);
 
         if ($request->filled('no_pasien')) {

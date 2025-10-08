@@ -192,14 +192,17 @@
                   </thead>
                   <tbody>
                         @foreach ( $dataPasien as $x => $dpc )
+                            @php
+                                $lahir = \Carbon\Carbon::parse($dpc->lahir);
+                                $sekarang = \Carbon\Carbon::now();
+                                $umur = $lahir->diff($sekarang);
+                            @endphp
                             <tr>
                                 <th class="text-center" scope="row">{{ $x + 1 }}</th>
                                 <td>
-                                    @foreach ($dataHistory as $dh)
-                                    @if ($dh->no_lab == $dpc->no_lab)
-                                    {{ date('d-m-Y', strtotime($dh->waktu_proses)) }}/{{ date('H:i', strtotime($dh->waktu_proses)) }}
+                                    @if ($dpc->no_lab == $dpc->no_lab)
+                                    {{ date('d-m-Y', strtotime($dpc->tanggal_masuk)) }}/{{ date('H:i', strtotime($dpc->tanggal_masuk)) }}
                                     @endif
-                                    @endforeach
                                 </td>
                                 <td class="text-center">{{ $dpc->no_rm }}</td>
                                 <td>{{ $dpc->no_lab }}</td>
@@ -209,7 +212,7 @@
                                     <i class='ti ti-bell-filled {{ $dpc->cito == '1' ? 'text-danger' : 'text-secondary' }}' style="font-size: 23px;"></i>
                                 </td>
                                 <td>
-                                    {{ \Carbon\Carbon::parse($dpc->lahir)->age }} Tahun
+                                     {{ $umur->y }} Tahun {{ $umur->m }} Bulan {{ $umur->d }} Hari
                                 </td>
                                 <td>{{ $dpc->alamat }}</td>
                                 <td>

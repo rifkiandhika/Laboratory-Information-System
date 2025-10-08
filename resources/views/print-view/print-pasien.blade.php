@@ -461,9 +461,14 @@
                             <td>{{ $data_pasien->tanggal_masuk ?? '-'}}</td> 
                         </tr> 
                         <tr> 
+                            @php
+                                $lahir = \Carbon\Carbon::parse($data_pasien->lahir);
+                                $sekarang = \Carbon\Carbon::now();
+                                $umur = $lahir->diff($sekarang);
+                            @endphp
                             <td>Umur</td> 
                             <td>:</td> 
-                            <td>{{ \Carbon\Carbon::parse($data_pasien->lahir)->age ?? '-' }} tahun</td> 
+                            <td> {{ $umur->y }} Tahun {{ $umur->m }} Bulan {{ $umur->d }} Hari  </td> 
                             <td>Tanggal Diterima</td> 
                             <td>:</td> 
                             <td>{{ $data_pasien->created_at ?? '-'}}</td> 

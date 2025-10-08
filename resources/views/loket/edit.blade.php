@@ -34,7 +34,7 @@
                                 </div>
                                 <hr>
                                 <div class="row">
-                                    <div class="form-group col-12">
+                                    <div class="form-group col-6">
                                         <label for="basic-url" class="fw-bold">Cito</label>
                                         <div class="form-check">
                                             <input style="cursor: pointer" class="form-check-input child-pemeriksaan-hematologi" type="checkbox"
@@ -42,6 +42,16 @@
                                             <label class="form-check-label fw-bold" for="cito">
                                                 Patient Cito
                                             </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-6">
+                                        <label for="basic-url" class="fw-bold">Tanggal Order</label>
+                                        <div class="input-group mb-6">
+                                            <input 
+                                            type="date" 
+                                            class="form-control" 
+                                            name="tanggal_masuk"
+                                            value="{{ old('tanggal_masuk', $data_pasien->tanggal_masuk ? \Carbon\Carbon::parse($data_pasien->tanggal_masuk)->format('Y-m-d') : '') }}">
                                         </div>
                                     </div>
                                     <div class="col-6 col-md-6">
@@ -83,25 +93,45 @@
                                             <input type="number" class="form-control" name="notelepon" placeholder="Add Phone Number" value="{{ $data_pasien->no_telp }}">
                                     </div>
                                     <div class="col-md-6 mb-6">
-                                        <label for="exampleFormControlSelect1" class="fw-bold">Doctor Internal</label>
-                                        <select class="form-select" id="exampleFormControlSelect1" name="dokter_internal">
-                                            <option selected hidden value="{{ $data_pasien->kode_dokter }}">{{ $data_pasien->dokter ? $data_pasien->dokter->nama_dokter : '' }}</option>
-                                            {{-- <option value="1">Permintaan Sendiri</option> --}}
-                                            @foreach ($dokters as $dokter)
-                                                <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }}
+                                        <label for="doctorSelect" class="fw-bold">Doctor Internal / Pengirim</label>
+                                        <select class="form-select" id="doctorSelect" name="dokter_internal">
+                                            <option value="" hidden>Choose...</option>
+                                            @foreach ($dokterInternal as $dokter)
+                                                <option value="{{ $dokter->nama_dokter }}"
+                                                    {{ $data_pasien->dokter_internal == $dokter->nama_dokter ? 'selected' : '' }}>
+                                                    {{ $dokter->nama_dokter }} ({{ $dokter->jabatan }})
                                                 </option>
                                             @endforeach
                                         </select>
                                     </div>
+
                                     <div class="col-md-6 mb-6">
-                                        <label for="name" class="fw-bold">Pengirim</label>
-                                        <input type="text " class="form-control"
-                                            name="dokter_external" placeholder="External Doctor" value="{{ $data_pasien->dokter_external }}">
+                                        <label for="externalDoctorSelect" class="fw-bold">Doctor External / Pengirim</label>
+                                        <select class="form-select" id="externalDoctorSelect" name="dokter_external">
+                                            <option value="" hidden>Choose...</option>
+                                            @foreach ($dokterExternal as $dokter)
+                                                <option value="{{ $dokter->nama_dokter }}"
+                                                    {{ $data_pasien->dokter_external == $dokter->nama_dokter ? 'selected' : '' }}>
+                                                    {{ $dokter->nama_dokter }} ({{ $dokter->jabatan }})
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </div>
+
                                     <div class="col-md-6 mb-6">
-                                        <label for="name" class="fw-bold">Room</label>
-                                        <input type="text " class="form-control"
-                                            name="asal_ruangan" placeholder="Add Room" value="{{ $data_pasien->asal_ruangan }}">
+                                        <label for="asal_ruangan" class="fw-bold">Room</label>
+                                        <select class="form-select" id="asal_ruangan" name="asal_ruangan">
+                                            <option value="" hidden>Choose...</option>
+                                            @foreach ($poliInternal as $poli)
+                                                <option value="{{ $poli->nama_poli }}"
+                                                    {{ $data_pasien->asal_ruangan == $poli->nama_poli ? 'selected' : '' }}>
+                                                    {{ $poli->nama_poli }}
+                                                </option>
+                                            @endforeach
+                                            <option value="lainnya" {{ $data_pasien->asal_ruangan && !in_array($data_pasien->asal_ruangan, $poliInternal->pluck('nama_poli')->toArray()) ? 'selected' : '' }}>
+                                                Lainnya...
+                                            </option>
+                                        </select>
                                     </div>
                                     <div class="col-md-6 mb-6">
                                         <label for="name" class="fw-bold">Diagnosis</label>

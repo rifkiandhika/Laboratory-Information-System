@@ -361,398 +361,6 @@
     </section>
 
 @endsection
-{{-- @section('modal')
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">History Sampling</h5>
-        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body py-0" style="max-height: 700px; overflow-y: auto;">
-       <hr>
-           <form action="#" class="row">
-              <div class="detail_pemeriksaan col-12">
-                  <div class="d-flex justify-content-between">
-                      <p class="h6 text-gray-800">Detail Sampling</p>
-                      <p class="h6 text-gray-600">Senin, 12 Jan 2023 / 19.50</p>
-                  </div>
-                  <hr>
-                  <div class="row">
-                   <div class="col-lg-5">
-                    <div class="d-flex justify-content-between">
-                      <p class="h6 text-gray-800 col-12 ml-0">Darah Lengkap</p>
-                      <p class="h6 text-gray-800 col-12">Tabung K3 EDTA</p>
-                    </div>
-                    <div class="sub-detail"">
-                      <p class="text-gray-600 offset-md-3">Leukosit</p>
-                      <p class="text-gray-600 offset-md-3" style="margin-top: -10px;">Eritrosit</p>
-                      <p class="text-gray-600 offset-md-3" style="margin-top: -10px;">Hemoglobin</p>
-                      <p class="text-gray-600 offset-md-3" style="margin-top: -10px;">more...</p>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                      <p class="h6 text-gray-800 col-12">Creatinin</p>
-                      <p class="h6 text-gray-800 col-12">Tabung Merah</p>
-                    </div>
-                    <div class="sub-detail"">
-                      <p class="text-gray-600 offset-md-3">Leukosit</p>
-                      <p class="text-gray-600 offset-md-3" style="margin-top: -10px;">Eritrosit</p>
-                      <p class="text-gray-600 offset-md-3" style="margin-top: -10px;">Hemoglobin</p>
-                      <p class="text-gray-600 offset-md-3" style="margin-top: -10px;">more...</p>
-                     </div>
-                     <div class="d-flex justify-content-between">
-                      <p class="h6 text-gray-800 col-12">Urea (Bun)</p>
-                      <p class="h6 text-gray-800 col-12">Tabung Hijau</p>
-                     </div>
-                     <div class="sub-detail"">
-                     </div>
-                   </div>
-                  </div>
-                  <div class="row mt-2">
-                   <div class="form-group col-12">
-                      <label for="exampleFormControlTextarea1">Note</label>
-                      <textarea class="form-control txt-area" style="resize: none; height: 130px; outline: none; border: none;" id="note-2" rows="3" name="note-2" placeholder="Kimia Klinik tidak dapat diambil sampel dikarenakan pembuluh darah kembut kembut" readonly></textarea>
-                   </div>
-                  </div>
-                  <div class="d-flex justify-content-between">
-                   <p class="h6 text-gray-800 mt-3">Spesimen Collection</p>
-                   <p class="h6 text-gray-600 mt-3">Senin, 12 Jan 2023 / 20.00</p>
-                  </div>
-                  <hr>
-                  <div class="row">
-                      <div class="akordion col-12">
-                          <div class="akordion-content">
-                              <header>
-                                  <span class="judul-ak">Tabung K3 EDTA</span>
-                                  <i class="bx bx-plus" style="color: #D0BFFF;"></i>
-                              </header>
-                              <div class="deskripsi-ak">
-                                  <div class="d-flex justify-content-around text-center">
-                                      <div class="sampling-bar">
-                                          <h2>Low</h2>
-                                          <div class="prog-sampling" style="background: #FF6868;">
-                                          <div class="low"></div>
-                                          </div>
-                                          <input type="radio" name="prog" value="low">
-                                      </div>
-                                      <div class="sampling-bar">
-                                          <h2>Normal</h2>
-                                          <div class="prog-sampling" style="margin-left: 12px; background:#FFBB64;">
-                                          <div class="normal"></div>
-                                          </div>
-                                          <input type="radio" name="prog" value="normal">
-                                      </div>
-                                      <div class="sampling-bar">
-                                          <h2>High</h2>
-                                          <div class="prog-sampling" style="background: #8fd48e;">
-                                          <div class="high"></div>
-                                          </div>
-                                          <input type="radio" name="prog" value="high">
-                                      </div>
-                                      <div class="row">
-                                          <div class="form-group col-12">
-                                          <label for="exampleFormControlTextarea1">Note</label>
-                                          <textarea class="form-control txt-area" style="resize: none; height: 160px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="akordion-content">
-                              <header>
-                                  <span class="judul-ak">Tabung Clot Act</span>
-                                  <i class="bx bx-plus" style="color: #FF8080;"></i>
-                              </header>
-                              <div class="deskripsi-ak">
-                                  <div class="d-flex justify-content-around text-center">
-                                      <div class="sampling-bar">
-                                          <h2>Low</h2>
-                                          <div class="prog-sampling" style="background: #FF6868;">
-                                          <div class="low"></div>
-                                          </div>
-                                          <input type="radio" name="prog" value="low">
-                                      </div>
-                                      <div class="sampling-bar">
-                                          <h2>Normal</h2>
-                                          <div class="prog-sampling" style="margin-left: 12px; background:#FFBB64;">
-                                          <div class="normal"></div>
-                                          </div>
-                                          <input type="radio" name="prog" value="normal">
-                                      </div>
-                                      <div class="sampling-bar">
-                                          <h2>High</h2>
-                                          <div class="prog-sampling" style="background: #8fd48e;">
-                                          <div class="high"></div>
-                                          </div>
-                                          <input type="radio" name="prog" value="high">
-                                      </div>
-                                      <div class="row">
-                                          <div class="form-group col-12">
-                                          <label for="exampleFormControlTextarea1">Note</label>
-                                          <textarea class="form-control txt-area" style="resize: none; height: 160px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="akordion-content">
-                              <header>
-                                  <span class="judul-ak">Tabung Urine</span>
-                                  <i class="bx bx-plus" style="color: #F2BED1;"></i>
-                              </header>
-                              <div class="deskripsi-ak">
-                                  <div class="d-flex justify-content-around text-center">
-                                      <div class="sampling-bar">
-                                          <h2>Low</h2>
-                                          <div class="prog-sampling" style="background: #FF6868;">
-                                          <div class="low"></div>
-                                          </div>
-                                          <input type="radio" name="prog" value="low">
-                                      </div>
-                                      <div class="sampling-bar">
-                                          <h2>Normal</h2>
-                                          <div class="prog-sampling" style="margin-left: 12px; background:#FFBB64;">
-                                          <div class="normal"></div>
-                                          </div>
-                                          <input type="radio" name="prog" value="normal">
-                                      </div>
-                                      <div class="sampling-bar">
-                                          <h2>High</h2>
-                                          <div class="prog-sampling" style="background: #8fd48e;">
-                                          <div class="high"></div>
-                                          </div>
-                                          <input type="radio" name="prog" value="high">
-                                      </div>
-                                      <div class="row">
-                                          <div class="form-group col-12">
-                                          <label for="exampleFormControlTextarea1">Note</label>
-                                          <textarea class="form-control txt-area" style="resize: none; height: 160px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="akordion-content">
-                              <header>
-                                  <span class="judul-ak">Litium Heparin</span>
-                                  <i class="bx bx-plus" style="color: #A1EEBD;"></i>
-                              </header>
-                              <div class="deskripsi-ak">
-                                  <div class="d-flex justify-content-around text-center">
-                                      <div class="sampling-bar">
-                                          <h2>Low</h2>
-                                          <div class="prog-sampling" style="background: #FF6868;">
-                                          <div class="low"></div>
-                                          </div>
-                                          <input type="radio" name="prog" value="low">
-                                      </div>
-                                      <div class="sampling-bar">
-                                          <h2>Normal</h2>
-                                          <div class="prog-sampling" style="margin-left: 12px; background:#FFBB64;">
-                                          <div class="normal"></div>
-                                          </div>
-                                          <input type="radio" name="prog" value="normal">
-                                      </div>
-                                      <div class="sampling-bar">
-                                          <h2>High</h2>
-                                          <div class="prog-sampling" style="background: #8fd48e;">
-                                          <div class="high"></div>
-                                          </div>
-                                          <input type="radio" name="prog" value="high">
-                                      </div>
-                                      <div class="row">
-                                          <div class="form-group col-12">
-                                          <label for="exampleFormControlTextarea1">Note</label>
-                                          <textarea class="form-control txt-area" style="resize: none; height: 160px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                      </div>
-                      <hr>
-                      <div class="d-flex justify-content-between">
-                          <p class="h6 text-gray-800 mt-3">Spesimen Handling</p>
-                          <p class="h6 text-gray-600 mt-3">Senin, 12 Jan 2023 / 20.50</p>
-                      </div>
-                      <hr>
-                      <div class="row">
-                          <div class="akordion col-12">
-                              <div class="akordion-content">
-                                  <header>
-                                      <span class="judul-ak">Tabung K3 EDTA</span>
-                                      <i class="bx bx-plus" style="color: #D0BFFF;"></i>
-                                  </header>
-                                  <div class="deskripsi-ak">
-                                      <p class="h6 font-weight-bold text-center">Serum</p>
-                                          <div class="d-flex justify-content-around text-center">
-                                              <div class="sampling-bar">
-                                                  <h2>Normal</h2>
-                                                  <div class="serum my-2">
-                                                  <img src="../image/Group 150.png" alt="">
-                                                  </div>
-                                                  <input type="radio" name="serum" value="normal">
-                                              </div>
-                                              <div class="sampling-bar">
-                                                  <h2>Hemolytic</h2>
-                                                  <div class="serum my-2">
-                                                  <img src="../image/Group 151.png" alt="">
-                                                  </div>
-                                                  <input type="radio" name="serum" value="hemolytic">
-                                              </div>
-                                              <div class="sampling-bar">
-                                                  <h2>Iteric</h2>
-                                                  <div class="serum my-2">
-                                                  <img src="../image/Group 152.png" alt="">
-                                                  </div>
-                                                  <input type="radio" name="serum" value="iteric">
-                                              </div>
-                                              <div class="sampling-bar">
-                                                  <h2>Lipemic</h2>
-                                                  <div class="serum my-2">
-                                                  <img src="../image/Group 153.png" alt="">
-                                                  </div>
-                                                  <input type="radio" name="serum" value="lipemic">
-                                              </div>
-                                          </div>
-                                      <div class="row">
-                                          <div class="form-group col-12">
-                                              <label for="exampleFormControlTextarea1">Note</label>
-                                              <textarea class="form-control txt-area" style="resize: none; height: 100px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
-                          <div class="akordion-content">
-                          <header>
-                              <span class="judul-ak">Tabung Clot Act</span>
-                              <i class="bx bx-plus" style="color: #FF8080;"></i>
-                          </header>
-                          <div class="akordion-content">
-                          <header>
-                              <span class="judul-ak">Tabung Urine</span>
-                              <i class="bx bx-plus" style="color: #F2BED1;"></i>
-                          </header>
-                          <div class="deskripsi-ak">
-                              <p class="h6 font-weight-bold text-center">Serum</p>
-                              <div class="d-flex justify-content-around text-center">
-                              <div class="sampling-bar">
-                                  <h2>Normal</h2>
-                                  <div class="serum mb-2">
-                                  <img src="../image/Group 150.png" alt="">
-                                  </div>
-                                  <input type="radio" name="serum" value="normal">
-                              </div>
-                              <div class="sampling-bar">
-                                  <h2>Hemolytic</h2>
-                                  <div class="serum my-2">
-                                  <img src="../image/Group 151.png" alt="">
-                                  </div>
-                                  <input type="radio" name="serum" value="hemolytic">
-                              </div>
-                              <div class="sampling-bar">
-                                  <h2>Iteric</h2>
-                                  <div class="serum my-2">
-                                  <img src="../image/Group 152.png" alt="">
-                                  </div>
-                                  <input type="radio" name="serum" value="iteric">
-                              </div>
-                              <div class="sampling-bar">
-                                  <h2>Lipemic</h2>
-                                  <div class="serum my-2">
-                                  <img src="../image/Group 153.png" alt="">
-                                  </div>
-                                  <input type="radio" name="serum" value="lipemic">
-                              </div>
-                              </div>
-                              <div class="row">
-                              <div class="form-group col-12">
-                                  <label for="exampleFormControlTextarea1">Note</label>
-                                  <textarea class="form-control txt-area" style="resize: none; height: 100px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                              </div>
-                              </div>
-                          </div>
-                          </div>
-                          <div class="akordion-content">
-                          <header>
-                              <span class="judul-ak">Litium Heparin</span>
-                              <i class="bx bx-plus" style="color: #A1EEBD;"></i>
-                          </header>
-                          <div class="deskripsi-ak">
-                              <p class="h6 font-weight-bold text-center">Serum</p>
-                              <div class="d-flex justify-content-around text-center">
-                              <div class="sampling-bar">
-                                  <h2>Normal</h2>
-                                  <div class="serum my-2">
-                                  <img src="../image/Group 150.png" alt="">
-                                  </div>
-                                  <input type="radio" name="serum" value="normal">
-                              </div>
-                              <div class="sampling-bar">
-                                  <h2>Hemolytic</h2>
-                                  <div class="serum my-2">
-                                  <img src="../image/Group 151.png" alt="">
-                                  </div>
-                                  <input type="radio" name="serum" value="hemolytic">
-                              </div>
-                              <div class="sampling-bar">
-                                  <h2>Iteric</h2>
-                                  <div class="serum my-2">
-                                  <img src="../image/Group 152.png" alt="">
-                                  </div>
-                                  <input type="radio" name="serum" value="iteric">
-                              </div>
-                              <div class="sampling-bar">
-                                  <h2>Lipemic</h2>
-                                  <div class="serum my-2">
-                                  <img src="../image/Group 153.png" alt="">
-                                  </div>
-                                  <input type="radio" name="serum" value="lipemic">
-                              </div>
-                              </div>
-                              <div class="row">
-                              <div class="form-group col-12">
-                                  <label for="exampleFormControlTextarea1">Note</label>
-                                  <textarea class="form-control txt-area" style="resize: none; height: 100px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                              </div>
-                              </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <hr>
-                    <div class="d-flex justify-content-between">
-                      <div class="flex-row">
-                          <p class="h6 text-gray-800 my-3">Tanggal Verifikasi</p>
-                          <div class="form-group col-sm-12 px-1">
-                              <label for="exampleFormControlTextarea1">Note</label>
-                              <textarea class="form-control txt-area" style="resize: none; height: 100px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                          </div>
-                          <p class="h6 font-weight-bold text-center mt-3">Analyst</p>
-                      </div>
-                      <div class="flex-row">
-                          <p class="h6 text-gray-800 my-3">Senin, 12 Jan 2023 / 22.00</p>
-                          <div class="form-group col-sm-12 px-1">
-                              <label for="exampleFormControlTextarea1">Note</label>
-                              <textarea class="form-control txt-area" style="resize: none; height: 100px;" id="note-1" rows="3" name="note-2" placeholder="tulis note disini"></textarea>
-                          </div>
-                          <p class="h6 font-weight-bold text-center mt-3">Dokter PK</p>
-                      </div>
-                    </div>
-                  </div>
-              </form>
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-    </div>
-  </div>
-</div>
-@endsection --}}
 
 <!-- Preview Pasien -->
 @push('script')
@@ -773,6 +381,7 @@
 
                         return age;
                     }
+                    
                     // fungsi preview
 
                     $('.preview').on('click', function(event) {
@@ -3217,8 +2826,7 @@
 
                                                             return html;
                                                         } else {
-                                                            // Untuk pemeriksaan individual/lainnya - setiap parameter dengan judulnya masing-masing
-                                                            // Fungsi untuk display nilai rujukan
+                                                        
                                                             function getNilaiRujukanDisplay(nilaiRujukan, jenisKelamin) {
                                                                 if (!nilaiRujukan) return '';
                                                                 const parts = nilaiRujukan.split(' ');
@@ -3226,6 +2834,212 @@
                                                                 let match = parts.find(part => part.startsWith(prefix));
                                                                 return match ? `${match.replace(prefix, '')}` : '';
                                                             }
+                                                            
+                                                            
+                                                            if (!window.currentActiveLab) {
+                                                                window.currentActiveLab = null;
+                                                            }
+                                                            
+                                                            
+                                                            window.saveTempData = function(noLab, forceAll = false) {
+                                                                if (!noLab) {
+                                                                    
+                                                                    return;
+                                                                }
+                                                                
+                                                                const data = [];
+                                                                
+                                                                document.querySelectorAll('[data-id][data-parameter]').forEach(row => {
+                                                                    const hasilInput = row.querySelector('.hasil-input');
+                                                                    const hasilSelect = row.querySelector('.hasil-select');
+                                                                    const d1 = row.querySelector('.d1');
+                                                                    const d2 = row.querySelector('.d2');
+                                                                    const d3 = row.querySelector('.d3');
+                                                                    const flagInput = row.querySelector('input[name="flag[]"]');
+                                                                    
+                                                                    
+                                                                    let hasil = '';
+                                                                    if (hasilInput) {
+                                                                        hasil = hasilInput.value || '';
+                                                                    } else if (hasilSelect) {
+                                                                        hasil = hasilSelect.value || '';
+                                                                    }
+                                                                    
+                                                                    const d1Val = d1?.value || '';
+                                                                    const d2Val = d2?.value || '';
+                                                                    const d3Val = d3?.value || '';
+                                                                
+                                                                    
+                                                                
+                                                                    if (forceAll || hasil || d1Val || d2Val || d3Val) {
+                                                                        const rowData = {
+                                                                            id: row.getAttribute('data-id'),
+                                                                            parameter: row.getAttribute('data-parameter'),
+                                                                            hasil: hasil,
+                                                                            duplo_d1: d1Val,
+                                                                            duplo_d2: d2Val,
+                                                                            duplo_d3: d3Val
+                                                                
+                                                                        };
+                                                                        data.push(rowData);
+                                                                    }
+                                                                });
+                                                                
+                                                                
+                                                                if (data.length > 0) {
+                                                                    sessionStorage.setItem(`temp_lab_${noLab}`, JSON.stringify(data));
+                                                                
+                                                                } else {
+                                                                    
+                                                                    const prevData = sessionStorage.getItem(`temp_lab_${noLab}`);
+                                                                    if (prevData) {
+                                                            
+                                                                        
+                                                                    } else {
+                                                            
+                                                                    }
+                                                                }
+                                                            };
+                                                            
+                                                            
+                                                            window.loadTempData = function(noLab) {
+                                                                if (!noLab) {
+                                                                    
+                                                                    return;
+                                                                }
+                                                                
+                                                                const saved = sessionStorage.getItem(`temp_lab_${noLab}`);
+                                                                if (!saved) {
+                                                                    
+                                                                    return;
+                                                                }
+                                                                
+                                                                try {
+                                                                    const data = JSON.parse(saved);
+                                                                    
+                                                                    
+                                                                    
+                                                                    setTimeout(() => {
+                                                                        let loadedCount = 0;
+                                                                        let notFoundCount = 0;
+                                                                        
+                                                                        
+                                                                        const currentRows = new Map();
+                                                                        document.querySelectorAll('[data-id][data-parameter]').forEach(row => {
+                                                                            const key = `${row.getAttribute('data-id')}-${row.getAttribute('data-parameter')}`;
+                                                                            currentRows.set(key, row);
+                                                                        });
+                                                                        
+                                                                        
+                                                                        
+                                                                        data.forEach((savedRow, idx) => {
+                                                                            const key = `${savedRow.id}-${savedRow.parameter}`;
+                                                                            const row = currentRows.get(key);
+                                                                            
+                                                                            if (!row) {
+                                                                                notFoundCount++;
+                                                                                if (idx === 0) {
+                                                                        
+                                                                                }
+                                                                                return;
+                                                                            }
+                                                                            
+                                                                            const hasilInput = row.querySelector('.hasil-input');
+                                                                            const hasilSelect = row.querySelector('.hasil-select');
+                                                                            
+                                                                            if (hasilInput && hasilInput.style.display !== 'none' && savedRow.hasil !== '') {
+                                                                                hasilInput.value = savedRow.hasil;
+                                                                                loadedCount++;
+                                                                                
+                                                                                hasilInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                                                            }
+                                                                            if (hasilSelect && hasilSelect.style.display !== 'none' && savedRow.hasil !== '') {
+                                                                                hasilSelect.value = savedRow.hasil;
+                                                                                loadedCount++;
+                                                                                
+                                                                                hasilSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                                                                            }
+                                                                            
+                                                                            const d1 = row.querySelector('.d1');
+                                                                            const d2 = row.querySelector('.d2');
+                                                                            const d3 = row.querySelector('.d3');
+                                                                            if (d1 && savedRow.duplo_d1 !== '') {
+                                                                                d1.value = savedRow.duplo_d1;
+                                                                        
+                                                                            }
+                                                                            if (d2 && savedRow.duplo_d2 !== '') {
+                                                                                d2.value = savedRow.duplo_d2;
+                                                                        
+                                                                            }
+                                                                            if (d3 && savedRow.duplo_d3 !== '') {
+                                                                                d3.value = savedRow.duplo_d3;
+                                                                        
+                                                                            }
+                                                                        });
+                                                                        
+                                                                        if (loadedCount > 0) {
+                                                                        
+                                                                        } else {
+                                                                        
+                                                                        }
+                                                                        
+                                                                        if (notFoundCount > 0) {
+                                                                        }
+                                                                    }, 300);
+                                                                } catch (error) {
+                                                                    console.error('Error loading temp data:', error);
+                                                                }
+                                                            };
+                                                            
+                                                            if (!window.autoSaveSetupDone) {
+                                                                
+                                                                let autoSaveTimer;
+                                                                
+                                                                $(document).on('input change', '.hasil-input, .hasil-select, .d1, .d2, .d3', function(e) {
+                                                                    
+                                                                    if (!window.currentActiveLab) {
+                                                                        return;
+                                                                    }
+                                                                    
+                                                                    clearTimeout(autoSaveTimer);
+                                                                    autoSaveTimer = setTimeout(() => {
+                                                                        window.saveTempData(window.currentActiveLab);
+                                                                    }, 600);
+                                                                });
+                                                                
+                                                                window.autoSaveSetupDone = true;
+                                                            }
+                                                            
+                                                            window.clearTempData = function(noLab) {
+                                                                if (!noLab) return;
+                                                                sessionStorage.removeItem(`temp_lab_${noLab}`);
+                                                            };
+                                                            
+                                                            window.clearAllTempData = function() {
+                                                                const keys = Object.keys(sessionStorage);
+                                                                let count = 0;
+                                                                keys.forEach(key => {
+                                                                    if (key.startsWith('temp_lab_')) {
+                                                                        sessionStorage.removeItem(key);
+                                                                        count++;
+                                                                    }
+                                                                });
+                                                            };
+                                                            
+                                                            window.viewAllTempData = function() {
+                                                                const keys = Object.keys(sessionStorage);
+                                                                const tempData = {};
+                                                                keys.forEach(key => {
+                                                                    if (key.startsWith('temp_lab_')) {
+                                                                        const noLab = key.replace('temp_lab_', '');
+                                                                        const data = JSON.parse(sessionStorage.getItem(key));
+                                                                        const filledParams = data.filter(d => d.hasil || d.duplo_d1 || d.duplo_d2 || d.duplo_d3);
+                                                                        tempData[noLab] = `${filledParams.length}/${data.length} terisi`;
+                                                                    }
+                                                                });
+                                                                return tempData;
+                                                            };
+                                                            
                                                             
                                                             let html = '';
                                                             
@@ -3264,9 +3078,6 @@
                                                                 
                                                                 // Tentukan apakah ada header judul
                                                                 const hasHeader = judul && judul !== p.data_pemeriksaan.nama_pemeriksaan;
-
-                                                                // console.log('initialFlag RAW:', initialFlag);
-                                                                // console.log('initialFlag contains *:', initialFlag.includes('*'));
                                                                 
                                                                 html += `
                                                                     <tr data-id="${rowId}" data-parameter="${p.data_pemeriksaan.nama_parameter}">
@@ -3377,9 +3188,7 @@
                                                                         </td>
                                                                         <td class="col-3 flag-cell">
                                                                             ${initialFlag}
-                                                                            
-                                                                                <input type="hidden" name="flag[]" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
-
+                                                                            <input type="hidden" name="flag[]" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
                                                                         </td>
                                                                         <td>
                                                                             <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
@@ -3389,6 +3198,24 @@
                                                                     </tr>
                                                                 `;
                                                             });
+                                                            
+                                                            // Setup auto-save dan load data setelah HTML di-render
+                                                            setTimeout(() => {
+                                                                const currentNoLab = data_pasien.no_lab;
+                                                                
+                                                                
+                                                                // PENTING: Simpan data pasien sebelumnya jika ada DAN berbeda
+                                                                if (window.currentActiveLab && window.currentActiveLab !== currentNoLab) {
+                                                                    window.saveTempData(window.currentActiveLab);
+                                                                }
+                                                                
+                                                                // Update current active lab KE PASIEN BARU
+                                                                window.currentActiveLab = currentNoLab;
+                                                                
+                                                                // Load temp data untuk pasien saat ini jika ada
+                                                                window.loadTempData(currentNoLab);
+                                                                
+                                                            }, 250);
                                                             
                                                             return html;
                                                         }

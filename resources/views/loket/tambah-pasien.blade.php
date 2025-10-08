@@ -33,7 +33,7 @@
                                 </div>
                                 <hr>
                                 <div class="row">
-                                    <div class="form-group col-12">
+                                    <div class="form-group col-6">
                                         <label for="basic-url" class="fw-bold">Cito</label>
                                         <div class="form-check">
                                             <input style="cursor: pointer" class="form-check-input child-pemeriksaan-hematologi" type="checkbox"
@@ -43,6 +43,14 @@
                                             </label>
                                         </div>
                                     </div>
+
+                                    <div class="col-6 col-md-6">
+                                        <label for="basic-url" class="fw-bold">Tanggal Order</label>
+                                        <div class="input-group mb-6">
+                                            <input type="date" class="form-control" name="tanggal_masuk">
+                                        </div>
+                                    </div>
+
                                     <div class="col-6 col-md-6">
                                         <label for="basic-url" class="fw-bold">No RM</label>
                                         <div class="input-group mb-6">
