@@ -180,7 +180,7 @@ class pasienController extends Controller
             'asal_ruangan'    => $request->asal_ruangan,
             'diagnosa'        => $request->diagnosa,
             'tanggal_masuk' => $request->filled('tanggal_masuk')
-                ? Carbon::parse($request->tanggal_masuk)->setTimeFrom(Carbon::now())
+                ? \Carbon\Carbon::parse($request->tanggal_masuk)
                 : now(),
             'alamat'          => $request->alamat,
             'tanggal'         => Carbon::today(),
@@ -196,7 +196,7 @@ class pasienController extends Controller
                 'id_departement'  => $data->department_id,
                 'nama_parameter'  => $data->nama_parameter,
                 'harga'           => $harga,
-                'mcu_package_id'  => $request->mcu_package_id ?? null, // 👈 tambahkan ini
+                'mcu_package_id'  => $request->mcu_package_id ?? null,
                 'created_at'      => now(),
                 'updated_at'      => now(),
             ]);
@@ -279,13 +279,10 @@ class pasienController extends Controller
             return redirect()->route('pasien.index')->with('error', 'Data pasien tidak ditemukan.');
         }
 
-        // ✅ Dokter internal
         $dokterInternal = Dokter::where('status', 'internal')->get();
 
-        // ✅ Dokter eksternal
         $dokterExternal = Dokter::where('status', 'external')->get();
 
-        // ✅ Poli internal
         $poliInternal = Poli::where('status', 'internal')->get();
 
         // Dokter umum
@@ -338,7 +335,7 @@ class pasienController extends Controller
             'diagnosa' => $request->diagnosa,
             'alamat' => $request->alamat,
             'tanggal_masuk' => $request->filled('tanggal_masuk')
-                ? \Carbon\Carbon::parse($request->tanggal_masuk)->setTimeFrom(\Carbon\Carbon::now())
+                ? \Carbon\Carbon::parse($request->tanggal_masuk)
                 : ($pasien->tanggal_masuk ?? now()),
 
         ]);

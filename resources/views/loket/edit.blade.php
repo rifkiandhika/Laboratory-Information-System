@@ -48,10 +48,10 @@
                                         <label for="basic-url" class="fw-bold">Tanggal Order</label>
                                         <div class="input-group mb-6">
                                             <input 
-                                            type="date" 
-                                            class="form-control" 
-                                            name="tanggal_masuk"
-                                            value="{{ old('tanggal_masuk', $data_pasien->tanggal_masuk ? \Carbon\Carbon::parse($data_pasien->tanggal_masuk)->format('Y-m-d') : '') }}">
+                                                type="datetime-local" 
+                                                class="form-control" 
+                                                name="tanggal_masuk"
+                                                value="{{ old('tanggal_masuk', $data_pasien->tanggal_masuk ? \Carbon\Carbon::parse($data_pasien->tanggal_masuk)->format('Y-m-d\TH:i') : '') }}">
                                         </div>
                                     </div>
                                     <div class="col-6 col-md-6">
