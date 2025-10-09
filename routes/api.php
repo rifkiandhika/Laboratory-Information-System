@@ -28,6 +28,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::get('/previewpasien/{lab}', [PasienController::class, 'getDataPasien']);
 
+Route::get('/data-pasien', [PasienController::class, 'DataPasien']);
+
 Route::get('/get-data-pasien/{lab}', [PasienController::class, 'getDataPasien']);
 Route::get('/get-data-diagnosa', [PasienController::class, 'getDataDiagnosa']);
 Route::get('/get-data-qc/{lab}', [QcController::class, 'getDataQc']);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\loket;
 
 use App\Http\Controllers\Controller;
+use App\Models\DataPasien;
 use App\Models\historyPasien;
 use App\Models\pasien;
 use App\Models\pemeriksaan_pasien;
@@ -15,22 +16,11 @@ class DataPasienController extends Controller
      */
     public function index()
     {
-         // $data_pasien = pasien::where('status', '!=', 'Belum Dilayani')->get();
-        // $data_pasien = DB::table('pasiens')
-        // ->select('nik', 
-        // 'no_lab',
-        //      DB::raw('MIN(nama) as nama'), 
-        //      DB::raw('MIN(lahir) as lahir'), 
-        //      DB::raw('MIN(jenis_kelamin) as jenis_kelamin'), 
-        //      DB::raw('MIN(no_telp) as no_telp'), 
-        //      DB::raw('MIN(alamat) as alamat'))
-        // ->groupBy('nik')
-        // ->get();
-
-        $data_pasien = pasien::orderBy('created_at', 'asc')->groupBy('nik')->get();
+        $data_pasien = DataPasien::paginate(10);
 
         return view('loket.data-pasien', compact('data_pasien'));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -61,8 +51,10 @@ class DataPasienController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $data = DataPasien::findOrFail($id);
+        return response()->json($data);
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -79,7 +71,7 @@ class DataPasienController extends Controller
             'alamat' => 'required',
         ]);
 
-        $data_pasien = Pasien::findOrFail($id);
+        $data_pasien = DataPasien::findOrFail($id);
         $data_pasien->nik = $request->nik;
         $data_pasien->nama = $request->nama;
         $data_pasien->lahir = $request->lahir;
@@ -91,7 +83,7 @@ class DataPasienController extends Controller
         toast('Data berhasil diperbarui!', 'success');
         return redirect()->route('data-pasien.index');
     }
-       
+
 
     /**
      * Remove the specified resource from storage.

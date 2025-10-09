@@ -21,6 +21,7 @@ use App\Models\pemeriksaan_pasien;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Jobs\SendPasienToLis;
+use App\Models\DataPasien;
 use App\Models\Department;
 use App\Models\DetailDepartment;
 use App\Models\dokter;
@@ -87,6 +88,31 @@ class pasienController extends Controller
 
         return view('loket.tambah-pasien', $data);
     }
+
+    public function DataPasien(Request $request)
+    {
+        $keyword = $request->keyword;
+
+        if (!$keyword || strlen($keyword) < 3) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => 'Minimal 3 karakter'
+            ]);
+        }
+
+        $pasiens = DataPasien::where('nik', 'LIKE', "%{$keyword}%")
+            ->orWhere('nama', 'LIKE', "%{$keyword}%")
+            ->orWhere('no_rm', 'LIKE', "%{$keyword}%")
+            ->limit(10)
+            ->get(['id', 'nik', 'no_rm', 'nama', 'lahir', 'jenis_kelamin', 'no_telp', 'alamat']);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $pasiens
+        ]);
+    }
+
+
 
 
     public function syncFromExternal(Request $request)
@@ -184,6 +210,16 @@ class pasienController extends Controller
                 : now(),
             'alamat'          => $request->alamat,
             'tanggal'         => Carbon::today(),
+        ]);
+
+        DataPasien::create([
+            'no_rm'           => $request->norm,
+            'nik'             => $request->nik,
+            'nama'            => $request->nama,
+            'lahir'           => $request->tanggallahir,
+            'jenis_kelamin'   => $request->jeniskelamin,
+            'no_telp'         => $request->notelepon,
+            'alamat'          => $request->alamat,
         ]);
 
         // Simpan pemeriksaan pasien

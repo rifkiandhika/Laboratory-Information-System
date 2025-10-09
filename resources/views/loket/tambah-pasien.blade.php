@@ -54,36 +54,37 @@
                                                 value="{{ old('tanggal_masuk', now()->format('Y-m-d\TH:i')) }}">
                                         </div>
                                     </div>
+                                    
+                                    <div class="col-6 col-md-6">
+                                        <label for="basic-url" class="fw-bold">Nomor Induk Kewarganegaraan</label>
+                                        <div class="input-group mb-6">
+                                            <select id="nik" name="nik" class="form-control" style="width: 100%;">
+                                                <option value=""></option>
+                                            </select>
+                                        </div>
+                                    </div>
 
                                     <div class="col-6 col-md-6">
                                         <label for="basic-url" class="fw-bold">No RM</label>
                                         <div class="input-group mb-6">
-                                            <input type="number" class="form-control" name="norm" aria-label=""
-                                                placeholder="Masukan No RM">
-                                        </div>
-                                    </div>
-                                    <div class="col-6 col-md-6">
-                                        <label for="basic-url" class="fw-bold">Nomor Induk Kewarganegaraan</label>
-                                        <div class="input-group mb-6">
-                                            <input type="number" class="form-control" name="nik" aria-label=""
-                                                placeholder="Add NIK">
+                                            <input type="text" class="form-control" id="norm" name="norm" aria-label="" placeholder="Masukan No RM">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="basic-url" class="fw-bold">Full Name <strong class="text-danger">*</strong></label>
                                         <div class="input-group mb-6">
-                                            <input type="text" class="form-control" name="nama" aria-label=""
+                                            <input type="text" class="form-control" id="nama" name="nama" aria-label=""
                                                 placeholder="Add Full Name" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6 mb-6">
                                         <!-- <label for="name" class="">Date</label> -->
                                         <label for="startDate" class="fw-bold">Date Of Birth<strong class="text-danger"> *</strong></label>
-                                        <input id="startDate" class="form-control" type="date" name="tanggallahir" required />
+                                        <input class="form-control" type="date" id="tanggallahir" name="tanggallahir" required />
                                     </div>
                                     <div class="col-md-6 mb-6">
                                         <label for="exampleFormControlSelect1" class="fw-bold">Gender<strong class="text-danger"> *</strong></label>
-                                        <select class="form-select" id="exampleFormControlSelect1" name="jeniskelamin">
+                                        <select class="form-select" id="jeniskelamin"  name="jeniskelamin">
                                             <option selected>Choose Gender</option>
                                             <option value="Laki-Laki">Laki-Laki</option>
                                             <option value="Perempuan">Perempuan</option>
@@ -91,8 +92,25 @@
                                     </div>
                                     <div class="col-md-6 mb-6">
                                         <label for="phonenumber" class="fw-bold">Phone Number<strong class="text-danger"> *</strong></label>
-                                            <input type="number" class="form-control" name="notelepon" placeholder="Add Phone Number" required>
+                                            <input type="number" class="form-control" id="notelepon" name="notelepon" placeholder="Add Phone Number" required>
                                     </div>
+                                    
+                                    <div class="col-md-6 mb-6">
+                                        <label for="alamat" class="fw-bold">Full Address <strong class="text-danger"> *</strong></label>
+                                        <textarea class="form-control ml-1" cols="119" rows="1" id="alamat" name="alamat" placeholder="Enter Address"></textarea>
+                                    </div>
+                                                                  
+                                    <div class="col-md-6 mb-6">
+                                        <label for="asal_ruangan" class="fw-bold">Room</label>
+                                            <select class="form-select" id="asal_ruangan" name="asal_ruangan">
+                                                <option value="" hidden>Choose...</option>
+                                                @foreach ($poliInternal as $poli)
+                                                <option value="{{ $poli->nama_poli }}">{{ $poli->nama_poli }}</option>
+                                                @endforeach
+                                                <option value="lainnya">Lainnya...</option>
+                                            </select>
+                                    </div>
+
                                     <div class="col-md-6 mb-6">
                                         <label for="doctorSelect" class="fw-bold">Doctor Internal / Pengirim</label>
                                         <select class="form-select" id="doctorSelect" name="dokter_internal">
@@ -112,17 +130,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                                                        
-                                    <div class="col-md-6 mb-6">
-                                    <label for="asal_ruangan" class="fw-bold">Room</label>
-                                    <select class="form-select" id="asal_ruangan" name="asal_ruangan">
-                                        <option value="" hidden>Choose...</option>
-                                        @foreach ($poliInternal as $poli)
-                                        <option value="{{ $poli->nama_poli }}">{{ $poli->nama_poli }}</option>
-                                        @endforeach
-                                        <option value="lainnya">Lainnya...</option>
-                                    </select>
-                                    </div>
+                                          
                                     <div class="col-md-6 mb-6">
                                         <label for="name" class="fw-bold">Diagnosis</label>
                                         <select name="diagnosa" id="diagnosa" class="form-control diagnosa">
@@ -132,10 +140,6 @@
                                     <div class="col-md-6 mb-6">
                                         <label for="name" class="fw-bold">Diagnosis</label>
                                         <input type="text" name="diagnosa" class="form-control" placeholder="Choose Diagnosis">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="alamat" class="fw-bold">Full Address <strong class="text-danger"> *</strong></label>
-                                        <textarea class="form-control ml-1" cols="119" rows="1" id="alamat" name="alamat" placeholder="Enter Address"></textarea>
                                     </div>
                                     <div class="col-md-6 mb-6">
                                         <label for="basic-url">Kind Of Service</label>
@@ -317,6 +321,180 @@
 
 
 @push('script')
+<script>
+$(document).ready(function() {
+    console.log('Memulai inisialisasi Select2 NIK...');
+    
+    // Pastikan element ada
+    if ($('#nik').length === 0) {
+        console.error('Element #nik tidak ditemukan!');
+        return;
+    }
+    
+    // Inisialisasi Select2 untuk NIK
+    $("#nik").select2({
+        placeholder: 'Ketik NIK, Nama, atau No RM (min 3 karakter)',
+        allowClear: true,
+        minimumInputLength: 3,
+        tags: true, // Izinkan input manual
+        language: {
+            inputTooShort: function() {
+                return "Ketik minimal 3 karakter";
+            },
+            searching: function() {
+                return "Mencari data pasien...";
+            },
+            noResults: function() {
+                return "Data tidak ditemukan. Tekan Enter untuk input NIK baru";
+            }
+        },
+        createTag: function(params) {
+            var term = $.trim(params.term);
+            
+            // Izinkan semua input angka (tidak harus 16 digit saat mengetik)
+            if (!/^\d+$/.test(term)) {
+                return null; // Hanya tolak jika bukan angka
+            }
+            
+            // Tampilkan sebagai NIK baru
+            if (term.length >= 3) {
+                return {
+                    id: term,
+                    text: term + ' (NIK Baru)',
+                    newTag: true
+                };
+            }
+            
+            return null;
+        },
+        ajax: {
+            url: '/api/data-pasien',
+            dataType: 'json',
+            delay: 300,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: function(params) {
+                console.log('Mengirim keyword:', params.term);
+                return {
+                    keyword: params.term
+                };
+            },
+            processResults: function(data) {
+                console.log('Data diterima dari server:', data);
+                
+                if (data.status !== 'success') {
+                    console.log('Status bukan success');
+                    return { results: [] };
+                }
+                
+                if (!data.data || data.data.length === 0) {
+                    console.log('Tidak ada data pasien ditemukan');
+                    return { results: [] };
+                }
+                
+                let results = data.data.map(function(pasien) {
+                    return {
+                        id: pasien.nik,
+                        text: pasien.nik + ' - ' + pasien.nama + ' (RM: ' + pasien.no_rm + ')',
+                        pasienData: pasien
+                    };
+                });
+                
+                console.log('Results yang akan ditampilkan:', results);
+                return { results: results };
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', error);
+                console.error('Status:', status);
+                console.error('Response:', xhr.responseText);
+            },
+            cache: true
+        }
+    });
+    
+    // Event ketika NIK dipilih dari dropdown
+    $("#nik").on('select2:select', function(e) {
+        var data = e.params.data;
+        console.log('Data dipilih:', data);
+        
+        // Jika ini NIK baru (input manual)
+        if (data.newTag) {
+            console.log('NIK Baru - Input Manual');
+            clearFormFields();
+            
+            // Optional: Tampilkan notifikasi
+            if (typeof toastr !== 'undefined') {
+                toastr.info('Silakan isi data pasien baru', 'NIK Baru');
+            }
+            return;
+        }
+        
+        // Jika ini pasien lama dari database
+        if (data.pasienData) {
+            console.log('Pasien ditemukan, mengisi form...');
+            fillFormWithPasienData(data.pasienData);
+            
+            // Optional: Tampilkan notifikasi
+            if (typeof toastr !== 'undefined') {
+                toastr.success('Data pasien berhasil dimuat', 'Pasien Ditemukan');
+            }
+        }
+    });
+    
+    // Event ketika NIK di-clear
+    $("#nik").on('select2:clear', function() {
+        console.log('NIK di-clear, mengosongkan form');
+        clearFormFields();
+    });
+    
+    // Fungsi untuk mengisi form dengan data pasien
+    function fillFormWithPasienData(pasien) {
+        console.log('Mengisi form dengan data:', pasien);
+        
+        // Isi semua field
+        $('#norm').val(pasien.no_rm || '');
+        $('#nama').val(pasien.nama || '');
+        $('#tanggallahir').val(pasien.lahir || '');
+        $('#jeniskelamin').val(pasien.jenis_kelamin || 'Choose Gender');
+        $('#notelepon').val(pasien.no_telp || '');
+        $('#alamat').val(pasien.alamat || '');
+        
+        // Disable field yang tidak boleh diubah untuk pasien lama
+        $('#norm').prop('readonly', true);
+        $('#nama').prop('readonly', true);
+        $('#tanggallahir').prop('readonly', true);
+        $('#jeniskelamin').prop('disabled', true);
+        $('#notelepon').prop('readonly', true);
+        $('#alamat').prop('readonly', true);
+        
+        console.log('Form berhasil diisi');
+    }
+    
+    // Fungsi untuk mengosongkan form
+    function clearFormFields() {
+        console.log('Mengosongkan form');
+        
+        $('#norm').val('');
+        $('#nama').val('');
+        $('#tanggallahir').val('');
+        $('#jeniskelamin').val('Choose Gender');
+        $('#notelepon').val('');
+        $('#alamat').val('');
+        
+        // Enable semua field untuk pasien baru
+        $('#norm').prop('readonly', false);
+        $('#nama').prop('readonly', false);
+        $('#tanggallahir').prop('readonly', false);
+        $('#jeniskelamin').prop('disabled', false);
+        $('#notelepon').prop('readonly', false);
+        $('#alamat').prop('readonly', false);
+    }
+    
+    console.log('Select2 NIK berhasil diinisialisasi');
+});
+</script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const mcuSelect = document.getElementById('mcuSelect');
@@ -610,4 +788,5 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     </script>
+    
 @endpush

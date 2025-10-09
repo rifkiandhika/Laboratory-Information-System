@@ -227,7 +227,12 @@ class worklistController extends Controller
         // Cek apakah pasien ditemukan
         if ($pasien) {
             // Update status pasien jika ditemukan
-            $pasien->update(['status' => 'Result Review']);
+
+            $analystName = Auth::user()->name;
+            $pasien->update([
+                'status' => 'Result Review',
+                'analyst' => $analystName,
+            ]);
 
             // Menyimpan riwayat pasien
             historyPasien::create([
@@ -237,8 +242,7 @@ class worklistController extends Controller
                 'note' => $note ?? null,
                 'waktu_proses' => now(),
                 'created_at' => now(),
-            ]);
-            $analystName = Auth::user()->name; // ambil nama user yang login
+            ]); // ambil nama user yang login
             Report::where('nolab', $no_lab)
                 ->update([
                     'analyst' => $analystName,

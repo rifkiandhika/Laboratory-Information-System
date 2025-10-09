@@ -417,28 +417,52 @@
 
     <div>
         <div class="header text-sm pb-1 mb-2" style="margin-bottom: 10px;">
-            <div class="d-flex justify-content-between align-items-center" style="width: 100%; text-align: center;">
 
-                <!-- Logo Yayasan (kiri) -->
-                <div style="flex: 1; text-align: left;">
-                <img src="{{ asset('image/YKU.png') }}" alt="Yayasan" style="width: 180px; opacity: 65%;">
-                </div>
+    <!-- Baris logo -->
+    <div class="d-flex justify-content-between align-items-center" style="width: 100%; text-align: center;">
 
-                <!-- Logo Klinik (tengah) -->
-                <div style="flex: 1; text-align: center;">
-                <img src="{{ asset('image/KRIMS-1.png') }}" alt="Klinik Utama Muslimat Singosari" style="width: 250px; opacity: 80%;">
-                </div>
+        <!-- Logo Yayasan (kiri) -->
+        <div style="flex: 1; text-align: left;">
+            <img src="{{ asset('image/YKU.png') }}" alt="Yayasan" style="width: 180px; opacity: 65%;">
+        </div>
 
-                <!-- Logo Laskesi (kanan) -->
-                <div style="flex: 1; text-align: right;">
-                <img src="{{ asset('image/LASKESI.png') }}" alt="Laskesi" style="width: 180px; opacity: 65%;">
-                </div>
+        <!-- Logo Klinik (tengah) -->
+        <div style="flex: 1; text-align: center;">
+            <img src="{{ asset('image/KRIMS-1.png') }}" alt="Klinik Utama Muslimat Singosari" style="width: 250px; opacity: 80%;">
+        </div>
 
-            </div>
+        <!-- Logo Laskesi (kanan) -->
+        <div style="flex: 1; text-align: right;">
+            <img src="{{ asset('image/LASKESI.png') }}" alt="Laskesi" style="width: 180px; opacity: 65%;">
+        </div>
 
-            <!-- Garis bawah header -->
-            <hr style="border-top: 1px solid black; margin-top: 5px;">
-            </div>
+    </div>
+
+    <!-- Kontak di bawah logo -->
+    <div style="margin-top: 8px;">
+        <table style="width: 100%; text-align: center;">
+            <tr>
+                <th style="padding: 0 10px;">
+                    <span class="icon"><i class="ti ti-mail"></i></span>
+                    <span class="text">rs.muslimatsingosari@gmail.com</span>
+                </th>
+                <th style="padding: 0 10px;">
+                    <span class="icon"><i class="ti ti-map-pin"></i></span>
+                    <span class="text">Jl. Ronggolawe 24 Singosari Malang, 65153</span>
+                </th>
+                <th style="padding: 0 10px;">
+                    <span class="icon"><i class="ti ti-phone"></i></span>
+                    <span class="text">+62 341 458344</span>
+                </th>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Garis bawah header -->
+    <hr style="border-top: 1px solid black; margin-top: 5px;">
+
+</div>
+
     
         <div class="data-pasien mb-2"> 
             <div class="row"> 
@@ -524,7 +548,7 @@
     @foreach ($hasil_pemeriksaans->groupBy('department') as $department => $hasil_group)
         {{-- Judul Department --}}
         <tr>
-            <th colspan="5" style="font-size: 14px; font-weight: 900;">
+            <th colspan="6" style="font-size: 14px; font-weight: 900;">
                 <b><strong>{{ strtoupper($department) }}</strong></b>
             </th>
         </tr>
@@ -800,20 +824,6 @@ klinis yang dicantumkan.</td>
 
     </div>
 
-    <div class="footer-en">
-        <div class="footer-item">
-            <span class="icon"><i class="ti ti-mail"></i></span>
-            <span class="text">rs.muslimatsingosari@gmail.com</span>
-        </div>
-        <div class="footer-item">
-            <span class="icon"><i class="ti ti-map-pin"></i></span>
-            <span class="text">Jl. Ronggolawe 24 Singosari Malang, 65153</span>
-        </div>
-        <div class="footer-item">
-            <span class="icon"><i class="ti ti-phone"></i></span>
-            <span class="text">+62 341 458344</span>
-        </div>
-    </div>
 
     <script>
         function renderPemeriksaan(data) {

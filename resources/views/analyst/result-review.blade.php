@@ -186,6 +186,7 @@
                       <th scope="col">Cito</th>
                       <th scope="col">Umur</th>
                       <th scope="col">Alamat</th>
+                      <th scope="col">Analyst</th>
                       <th scope="col">Status</th>
                       <th scope="col">Action</th>
                     </tr>
@@ -215,6 +216,7 @@
                                      {{ $umur->y }} Tahun {{ $umur->m }} Bulan {{ $umur->d }} Hari
                                 </td>
                                 <td>{{ $dpc->alamat }}</td>
+                                <td>{{ $dpc->analyst }}</td>
                                 <td>
                                     @if($dpc->status == "Result Review")
                                     <span class="badge bg-danger text-white">Waiting...</span>
