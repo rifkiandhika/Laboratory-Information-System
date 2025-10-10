@@ -1551,47 +1551,58 @@
                             };
                         }
 
-                        // Create a comprehensive map of OBX data from obrs relationship
                         const obxMap = {};
 
-                        data_pasien.obrs.forEach(obr => {
-                        if (!Array.isArray(obr.obx)) return;
-                        obr.obx.forEach(obx => {
-                            const name = (obx.identifier_name || '').toLowerCase().trim();
-                            const value = obx.identifier_value ?? obx.observation_value ?? ''; // <-- pake ?? bukan ||
-                            // skip jika kosong
-                            if (value === '' || value === null || value === undefined) return;
+                        if (data_pasien && Array.isArray(data_pasien.obrs)) {
+                            data_pasien.obrs.forEach(obr => {
+                                if (!Array.isArray(obr.obx)) return;
+                                obr.obx.forEach(obx => {
+                                    const name = (obx.identifier_name || '').toLowerCase().trim();
+                                    const value = obx.identifier_value ?? obx.observation_value ?? '';
+                                    
+                                    if (value === '' || value === null || value === undefined) return;
 
-                            if (typeof value === 'string' && /^\^image\^|^data:image/i.test(value)) return;
+                                    if (typeof value === 'string' && /^\^image\^|^data:image/i.test(value)) return;
 
-                            if (!obxMap[name]) obxMap[name] = [];
-                            obxMap[name].push({
-                            value,
-                            unit: obx.identifier_unit,
-                            flags: obx.identifier_flags,
-                            id: obx.id,
-                            tanggal: obx.tanggal,
-                            raw: obx
+                                    if (!obxMap[name]) obxMap[name] = [];
+                                    obxMap[name].push({
+                                        value,
+                                        unit: obx.identifier_unit,
+                                        flags: obx.identifier_flags,
+                                        id: obx.id,
+                                        tanggal: obx.tanggal,
+                                        raw: obx
+                                    });
+                                });
                             });
-                        });
-                        });
 
-                        // sort tiap grup berdasarkan tanggal (fallback id) supaya urutan deterministik
-                        Object.keys(obxMap).forEach(k => {
-                        obxMap[k].sort((a,b) => {
-                            const ta = a.tanggal ? new Date(a.tanggal) : null;
-                            const tb = b.tanggal ? new Date(b.tanggal) : null;
-                            if (ta && tb) {
-                            const diff = ta - tb;
-                            if (diff !== 0) return diff;
-                            }
-                            return (a.id || 0) - (b.id || 0);
-                        });
-                        });
+                            Object.keys(obxMap).forEach(k => {
+                                obxMap[k].sort((a,b) => {
+                                    const ta = a.tanggal ? new Date(a.tanggal) : null;
+                                    const tb = b.tanggal ? new Date(b.tanggal) : null;
+                                    if (ta && tb) {
+                                        const diff = ta - tb;
+                                        if (diff !== 0) return diff;
+                                    }
+                                    return (a.id || 0) - (b.id || 0);
+                                });
+                            });
+                        }
 
                         function getObxValues(parameterName) {
                             const key = (parameterName || '').toLowerCase().trim();
                             const obxItems = [];
+
+                            // Guard clause: pastikan data_pasien dan obrs ada
+                            if (!data_pasien || !Array.isArray(data_pasien.obrs)) {
+                                console.warn('data_pasien.obrs tidak tersedia atau bukan array');
+                                return {
+                                    duplo_d1: '',
+                                    duplo_d2: '',
+                                    duplo_d3: '',
+                                    hasilUtama: ''
+                                };
+                            }
 
                             data_pasien.obrs.forEach(obr => {
                                 if (Array.isArray(obr.obx)) {
@@ -1603,8 +1614,6 @@
                                     });
                                 }
                             });
-
-                            // console.log('DEBUG', parameterName, obxItems); 
 
                             return {
                                 duplo_d1: obxItems[1] ?? '',
