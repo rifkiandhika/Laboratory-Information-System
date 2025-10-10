@@ -1560,6 +1560,7 @@
                                     const name = (obx.identifier_name || '').toLowerCase().trim();
                                     const value = obx.identifier_value ?? obx.observation_value ?? '';
                                     
+                                    // skip jika kosong
                                     if (value === '' || value === null || value === undefined) return;
 
                                     if (typeof value === 'string' && /^\^image\^|^data:image/i.test(value)) return;
@@ -1576,6 +1577,7 @@
                                 });
                             });
 
+                            // sort tiap grup berdasarkan tanggal (fallback id) supaya urutan deterministik
                             Object.keys(obxMap).forEach(k => {
                                 obxMap[k].sort((a,b) => {
                                     const ta = a.tanggal ? new Date(a.tanggal) : null;

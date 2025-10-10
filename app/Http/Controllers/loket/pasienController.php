@@ -492,44 +492,42 @@ class pasienController extends Controller
     public function getDataPasien(Request $request, $lab)
     {
         try {
-            $no_lab = Pasien::where('id', $lab)->value('no_lab');
+            // $data_pasien = pasien::with('dokter')->findOrFail($id);
+            // $no_lab = pasien::where('id', $lab)->value('no_lab');
+            // $data_pasien = pasien::where('id', $lab)->with(['data_pemeriksaan_pasien.data_departement', 'data_pemeriksaan_pasien.data_pemeriksaan', 'dokter'])->first();
+            $no_lab = pasien::where('id', $lab)->value('no_lab');
+            $data_pasien = pasien::where('id', $lab)->with([
+                'dpp.pasiens' => function ($query) use ($no_lab) {
+                    $query->where('no_lab', $no_lab);
+                    $query->with('data_pemeriksaan');
+                },
+                'dpp.data_departement',
+                'dokter',
+                'pembayaran',
+                'history',
+                'spesiment.details',
+                'spesimentcollection',
+                'spesimenthandling.details',
+                'hasil_pemeriksaan',
+                'mcuPackage',
+                'dataPasien.dataBpjs',
+                'dataPasien.dataAsuransi'
+                // 'obx'
+            ])->first();
 
-            $data_pasien = Pasien::where('id', $lab)
-                ->with([
-                    'dpp.pasiens' => function ($query) use ($no_lab) {
-                        $query->where('no_lab', $no_lab)->with('data_pemeriksaan');
-                    },
-                    'dpp.data_departement',
-                    'dokter',
-                    'pembayaran',
-                    'history',
-                    'spesiment.details',
-                    'spesimentcollection',
-                    'spesimenthandling.details',
-                    'hasil_pemeriksaan',
-                    'mcuPackage',
-                    'dataPasien.dataBpjs',
-                    'dataPasien.dataAsuransi',
-                ])
-                ->first();
+            $data_pasien->obrs = $data_pasien->obrs;
 
-            if (!$data_pasien) {
-                return response()->json([
-                    'status' => 'fail',
-                    'msg' => 'Pasien tidak ditemukan'
-                ], 404);
+            if ($data_pasien && $data_pasien->spesimentcollection) {
+                foreach ($data_pasien->spesimentcollection as $spesimen) {
+                    // Ambil details berdasarkan kapasitas atau serumh
+                    $spesimen->details = $spesimen->getDetailsByCriteria();
+                }
             }
 
-            return response()->json([
-                'status' => 'success',
-                'msg' => 'ok',
-                'data' => $data_pasien,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'fail',
-                'msg' => $e->getMessage(),
-            ], 500);
+            return response()->json(['status' => 'success', 'msg' => 'ok', 'data' => $data_pasien]);
+        } catch (Exception $e) {
+
+            return response()->json(['status' => 'fail', 'msg' => 'Failed to fetch Data']);
         }
     }
 
