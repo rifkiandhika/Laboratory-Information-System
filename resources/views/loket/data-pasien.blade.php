@@ -53,72 +53,15 @@
                     <td>{{ $dp->no_telp }}</td>
                     <td>{{ $dp->alamat }}</td>
                     <td class="text-center">
-                      <button data-bs-toggle="modal" 
-                              data-bs-target="#editDataPasien"
-                              class="btn btn-info btn-edit text-white"
-                              data-id="{{ $dp->id }}">
-                        <i class="ti ti-clipboard"></i>
-                      </button>
+                      <a href="{{ route('data-pasien.show', $dp->id) }}" class="btn btn-outline-info">
+                        <i class="ti ti-eye"></i>
+                      </a>
                     </td>
                   </tr>
                   @endforeach
                 </tbody>
               </table>
             </div>
-
-            <!-- Modal Edit -->
-            <div class="modal fade" id="editDataPasien" tabindex="-1" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title">Patient Edit</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                  </div>
-
-                  <form id="editFormPasien" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <div class="modal-body">
-                      <div class="form-group">
-                        <label for="Nik">Nik</label>
-                        <input type="text" class="form-control" id="Nik" name="nik" required>
-                      </div>
-                      <div class="form-group">
-                        <label for="Name">Name</label>
-                        <input type="text" class="form-control" id="Name" name="nama" required>
-                      </div>
-                      <div class="form-group">
-                        <label for="startDate">Date Of Birth</label>
-                        <input id="startDate" type="date" class="form-control" name="lahir" required>
-                      </div>
-                      <div class="form-group">
-                        <label for="Gender">Gender</label>
-                        <select id="Gender" name="jenis_kelamin" class="form-control" required>
-                          <option value="" disabled hidden>Pilih Jenis Kelamin</option>
-                          <option value="Laki-Laki">Laki-Laki</option>
-                          <option value="Perempuan">Perempuan</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label for="Phone">Phone Number</label>
-                        <input type="text" class="form-control" id="Phone" name="no_telp" required>
-                      </div>
-                      <div class="form-group">
-                        <label for="Address">Address</label>
-                        <input type="text" class="form-control" id="Address" name="alamat" required>
-                      </div>
-                    </div>
-
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                      <button type="submit" class="btn btn-primary">Save</button>
-                    </div>
-                  </form>
-
-                </div>
-              </div>
-            </div>
-            <!-- End Modal -->
 
           </div>
         </div>
@@ -129,7 +72,7 @@
 @endsection
 
 @push('script')
-<script>
+{{-- <script>
 $(document).ready(function() {
     $('.btn-edit').on('click', function() {
         const id = $(this).data('id');
@@ -149,5 +92,5 @@ $(document).ready(function() {
             .catch(err => console.error(err));
     });
 });
-</script>
+</script> --}}
 @endpush

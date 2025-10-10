@@ -105,6 +105,7 @@ route::group(['prefix' => 'loket', 'middleware' => ['auth']], function () {
     });
     Route::resource('report', ReportController::class);
     Route::resource('data-pasien', DataPasienController::class);
+    Route::put('/data_pasien/{id}', [DataPasienController::class, 'updated'])->name('data_pasien.updated');
     Route::get('get-icd10', [icd10Controller::class, 'geticd10'])->name('geticd10');
     Route::get('print/barcode/{no_lab}', [pasienController::class, 'previewPrint'])->name('print.barcode');
     Route::get('/pasien/edit/{no_lab}', [pasienController::class, 'edit'])->name('pasien.viewedit');

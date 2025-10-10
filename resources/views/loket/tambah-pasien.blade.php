@@ -464,7 +464,7 @@ $(document).ready(function() {
         $('#norm').prop('readonly', true);
         $('#nama').prop('readonly', true);
         $('#tanggallahir').prop('readonly', true);
-        $('#jeniskelamin').prop('disabled', true);
+        $('#jeniskelamin').prop('readonly', true);
         $('#notelepon').prop('readonly', true);
         $('#alamat').prop('readonly', true);
         

@@ -11,4 +11,14 @@ class DataPasien extends Model
 
     protected $table = 'data_pasiens';
     protected $guarded = [];
+
+    public function dataBpjs()
+    {
+        return $this->hasOne(DataBpjs::class, 'data_pasiens_id', 'id');
+    }
+
+    public function dataAsuransi()
+    {
+        return $this->hasMany(DataAsuransi::class, 'data_pasiens_id', 'id');
+    }
 }

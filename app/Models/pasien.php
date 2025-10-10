@@ -93,4 +93,9 @@ class pasien extends Model
     {
         return $this->belongsTo(McuPackage::class, 'mcu_package_id');
     }
+
+    public function dataPasien()
+    {
+        return $this->belongsTo(DataPasien::class, 'no_rm', 'no_rm');
+    }
 }
