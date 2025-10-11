@@ -146,7 +146,7 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
     Route::resource('result', resultController::class);
     Route::get('/departments/list', [resultController::class, 'getDepartments'])->name('departments.list');
     Route::get('/doctors/list', [resultController::class, 'getDoctors'])->name('doctors.list');
-    Route::post('/result/data', [resultController::class, 'getReportData'])->name('result.data');
+    // Route::post('/result/data', [resultController::class, 'getReportData'])->name('result.data');
 
 
     Route::get('print/pasien/{no_lab}', [resultController::class, 'print'])->name('print.pasien');
