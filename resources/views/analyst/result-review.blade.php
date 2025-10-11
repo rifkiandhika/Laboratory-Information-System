@@ -1637,7 +1637,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         ${(() => {
                                             // Cek apakah ada pemeriksaan hematologi di grup ini
                                             const hasHematologi = e.pasiens.some(p => 
-                                                p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('hematologi')
+                                                p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('darah lengkap')
                                             );
                                             
                                             // Cek apakah ada pemeriksaan widal di grup ini

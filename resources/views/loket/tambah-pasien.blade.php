@@ -209,16 +209,30 @@
                                 </div>
                                 <hr>
                                 <div class="row" id="inspectionList">
-                                    @foreach ($departments as $departement)
+                                    @php
+                                        // Kelompokkan departments berdasarkan nama_department untuk menghindari duplikasi
+                                        $groupedDepartments = $departments->groupBy('nama_department');
+                                    @endphp
+
+                                    @foreach ($groupedDepartments as $namaDepartment => $deptGroup)
+                                        @php
+                                            // Ambil department pertama dari grup untuk mendapatkan data department
+                                            $departement = $deptGroup->first();
+                                            // Gabungkan semua detailDepartments dari department yang sama
+                                            $allDetails = $deptGroup->flatMap(function($dept) {
+                                                return $dept->detailDepartments;
+                                            });
+                                        @endphp
+                                        
                                         <div class="col-xl-3 inspection-item">
                                             <div class="parent-pemeriksaan">
                                                 <div class="heading heading-color btn-block mb-3">
-                                                    <strong>{{ $departement->nama_department }}</strong>
+                                                    <strong>{{ $namaDepartment }}</strong>
                                                 </div>
 
                                                 @if($departement->statusdep === 'single')
                                                     {{-- SINGLE → langsung pakai judul --}}
-                                                    @foreach ($departement->detailDepartments as $pemeriksaan)
+                                                    @foreach ($allDetails as $pemeriksaan)
                                                         @if ($pemeriksaan->status === 'active')
                                                             <div class="form-check">
                                                                 <input style="cursor: pointer"
@@ -241,7 +255,7 @@
                                                 @elseif($departement->statusdep === 'multi')
                                                     {{-- MULTI → group by judul, tampilkan nama_pemeriksaan --}}
                                                     @php
-                                                        $grouped = $departement->detailDepartments
+                                                        $grouped = $allDetails
                                                             ->where('status', 'active')
                                                             ->groupBy('judul');
                                                     @endphp
@@ -249,7 +263,7 @@
                                                     @foreach ($grouped as $judul => $listPemeriksaan)
                                                         <div class="mb-2">
                                                             <div style="margin-left: 12px">
-                                                            <strong>{{ $judul }}</strong>
+                                                                <strong>{{ $judul }}</strong>
                                                             </div>
                                                             @foreach ($listPemeriksaan as $pemeriksaan)
                                                                 <div class="form-check ms-3">
@@ -275,7 +289,6 @@
                                             <hr>
                                         </div>
                                     @endforeach
-
                                 </div>
                                 <hr>
                                 <div class="row pemeriksaan">

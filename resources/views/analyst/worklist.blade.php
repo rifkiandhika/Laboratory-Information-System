@@ -2016,7 +2016,7 @@
                                                     ${(() => {
                                                         // Cek apakah ada pemeriksaan hematologi di grup ini
                                                         const hasHematologi = e.pasiens.some(p => {
-                                                            const isHematologi = p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('hematologi');
+                                                            const isHematologi = p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('darah lengkap');
                                                             return isHematologi;
                                                         });
 
@@ -2077,7 +2077,6 @@
                                                             const rowId = `${judul}_${idx}_${paramIdx}`;
                                                             const label = param.display_name || param.nama || '-';
 
-                                                            // 🔧 helper untuk membuat field sesuai tipe input
                                                             const renderField = (name, value, extraClass = '') => {
                                                                 if (param.tipe_inputan === 'Dropdown') {
                                                                     return `
@@ -2155,7 +2154,7 @@
                                                         
                                                         if (hasHematologi) {
                                                             const hematologiPemeriksaan = e.pasiens.find(p => 
-                                                                p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('hematologi')
+                                                                p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('darah lengkap')
                                                             );
                                                             const judulHematologi = e.pasiens.find(p => p.data_pemeriksaan?.judul)?.data_pemeriksaan?.judul || '';
                                                             const namaPemeriksaanHematologi = hematologiPemeriksaan ? hematologiPemeriksaan.data_pemeriksaan.nama_pemeriksaan : 'Hematologi Lengkap';
@@ -2173,6 +2172,7 @@
                                                             }
                                                             
                                                             html += hematologiParams.map((param, paramIdx) => {
+                                                                
                                                                 const obxValues = getObxValues(param.nama);
                                                                 const rowId = `hematologi_${idx}_${paramIdx}`;
                                                                 const initialFlag = getInitialFlagContent(obxValues.hasilUtama, param.nama, true, false);
