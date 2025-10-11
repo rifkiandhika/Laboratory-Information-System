@@ -526,8 +526,11 @@ class pasienController extends Controller
 
             return response()->json(['status' => 'success', 'msg' => 'ok', 'data' => $data_pasien]);
         } catch (Exception $e) {
-
-            return response()->json(['status' => 'fail', 'msg' => 'Failed to fetch Data']);
+            return response()->json([
+                'status' => 'fail',
+                'msg' => $e->getMessage(),
+                'line' => $e->getLine()
+            ]);
         }
     }
 
