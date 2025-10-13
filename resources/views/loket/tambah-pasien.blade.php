@@ -84,7 +84,7 @@
                                     </div>
                                     <div class="col-md-6 mb-6">
                                         <label for="exampleFormControlSelect1" class="fw-bold">Gender<strong class="text-danger"> *</strong></label>
-                                        <select class="form-select" id="jeniskelamin"  name="jeniskelamin">
+                                        <select class="form-select" id="jeniskelamin" name="jeniskelamin">
                                             <option selected>Choose Gender</option>
                                             <option value="Laki-Laki">Laki-Laki</option>
                                             <option value="Perempuan">Perempuan</option>
@@ -102,22 +102,19 @@
                                                                   
                                     <div class="col-md-6 mb-6">
                                         <label for="asal_ruangan" class="fw-bold">Room</label>
-                                            <select class="form-select" id="asal_ruangan" name="asal_ruangan">
-                                                <option value="" hidden>Choose...</option>
-                                                @foreach ($poliInternal as $poli)
-                                                <option value="{{ $poli->nama_poli }}">{{ $poli->nama_poli }}</option>
-                                                @endforeach
-                                                <option value="lainnya">Lainnya...</option>
-                                            </select>
+                                        <select class="form-select" id="asal_ruangan" name="asal_ruangan">
+                                            <option value="" hidden>Choose...</option>
+                                            @foreach ($poliInternal as $poli)
+                                            <option value="{{ $poli->nama_poli }}">{{ $poli->nama_poli }}</option>
+                                            @endforeach
+                                            <option value="lainnya">Lainnya...</option>
+                                        </select>
                                     </div>
 
                                     <div class="col-md-6 mb-6">
                                         <label for="doctorSelect" class="fw-bold">Doctor Internal / Pengirim</label>
                                         <select class="form-select" id="doctorSelect" name="dokter_internal">
-                                            <option value="" hidden>Choose...</option>
-                                            @foreach ($dokterInternal as $dokter)
-                                                <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }} ({{ $dokter->jabatan }})</option>
-                                            @endforeach
+                                            <option value="" hidden>Pilih ruangan terlebih dahulu</option>
                                         </select>
                                     </div>
 
@@ -334,6 +331,73 @@
 
 
 @push('script')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Data mapping dokter per ruangan dari server
+    const dokterByRoom = @json($dokterByRoom ?? []);
+    
+    const asalRuangan = document.getElementById('asal_ruangan');
+    const doctorSelect = document.getElementById('doctorSelect');
+    
+    console.log('Dokter by room:', dokterByRoom);
+    
+    // Event ketika ruangan dipilih
+    asalRuangan.addEventListener('change', function() {
+        const selectedRoom = this.value;
+        
+        // Reset dropdown dokter
+        doctorSelect.innerHTML = '<option value="" hidden>Choose...</option>';
+        
+        // Jika pilih "lainnya" atau "kembali", kosongkan dokter
+        if (selectedRoom === 'lainnya' || selectedRoom === 'kembali' || selectedRoom === '') {
+            doctorSelect.innerHTML = '<option value="" hidden>Pilih ruangan terlebih dahulu</option>';
+            return;
+        }
+        
+        // Cek apakah ada dokter di ruangan ini
+        if (dokterByRoom[selectedRoom] && dokterByRoom[selectedRoom].length > 0) {
+            const dokterList = dokterByRoom[selectedRoom];
+            
+            if (dokterList.length === 1) {
+                // Jika hanya 1 dokter, auto select
+                const dokter = dokterList[0];
+                const option = document.createElement('option');
+                option.value = dokter.nama;
+                option.textContent = `${dokter.nama} (${dokter.jabatan})`;
+                option.selected = true;
+                doctorSelect.appendChild(option);
+                
+                // Optional: tampilkan notifikasi
+                if (typeof toastr !== 'undefined') {
+                    toastr.info(`Dokter ${dokter.nama} otomatis terpilih`, 'Info');
+                }
+            } else {
+                // Jika lebih dari 1 dokter, tampilkan pilihan
+                doctorSelect.innerHTML = '<option value="" hidden>Pilih dokter...</option>';
+                
+                dokterList.forEach(dokter => {
+                    const option = document.createElement('option');
+                    option.value = dokter.nama;
+                    option.textContent = `${dokter.nama} (${dokter.jabatan})`;
+                    doctorSelect.appendChild(option);
+                });
+                
+                // Optional: tampilkan notifikasi
+                if (typeof toastr !== 'undefined') {
+                    toastr.info(`${dokterList.length} dokter tersedia di ruangan ini`, 'Info');
+                }
+            }
+        } else {
+            // Tidak ada dokter di ruangan ini
+            doctorSelect.innerHTML = '<option value="" hidden>Tidak ada dokter di ruangan ini</option>';
+            
+            if (typeof toastr !== 'undefined') {
+                toastr.warning('Tidak ada dokter yang terdaftar di ruangan ini', 'Perhatian');
+            }
+        }
+    });
+});
+</script>
 <script>
 $(document).ready(function() {
     console.log('Memulai inisialisasi Select2 NIK...');

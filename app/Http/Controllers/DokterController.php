@@ -15,9 +15,9 @@ class DokterController extends Controller
      */
     public function index()
     {
-        $dokters = dokter::with('polis')->get();
-        $data['polis'] = Poli::all();
-        return view("dokter.index", $data,  compact('dokters'));
+        $dokters = Dokter::all();
+        $polis = Poli::all();
+        return view("dokter.index", compact('dokters', 'polis'));
     }
 
     /**
@@ -37,14 +37,26 @@ class DokterController extends Controller
             'kode_dokter' => 'required',
             'nama_dokter' => 'required|unique:dokters,nama_dokter',
             'nip' => 'required',
-            'id_poli' => 'required',
+            'id_poli' => 'required|array',
             'poli' => 'required',
             'status' => 'required',
             'jabatan' => 'required',
             'no_telp' => 'required|unique:dokters,no_telp',
             'email' => 'required|unique:dokters,email'
         ]);
-        dokter::create($request->all());
+
+        dokter::create([
+            'kode_dokter' => $request->kode_dokter,
+            'nama_dokter' => $request->nama_dokter,
+            'nip' => $request->nip,
+            'id_poli' => json_encode($request->id_poli),
+            'poli' => $request->poli,
+            'status' => $request->status,
+            'jabatan' => $request->jabatan,
+            'no_telp' => $request->no_telp,
+            'email' => $request->email,
+        ]);
+
         toast('Berhasil Menambahkan Data Dokter', 'success');
         return back();
     }
@@ -74,7 +86,7 @@ class DokterController extends Controller
             'kode_dokter' => 'required',
             'nip' => 'required',
             'nama_dokter' => 'required',
-            'id_poli' => 'required',
+            'id_poli' => 'required|array',
             'poli' => 'required',
             'status' => 'required',
             'jabatan' => 'required',
@@ -84,16 +96,17 @@ class DokterController extends Controller
 
         $dokters = dokter::findOrfail($id);
         // dd($id);
-        $dokters->nip = $request->nip;
-        $dokters->kode_dokter = $request->kode_dokter;
-        $dokters->nama_dokter = $request->nama_dokter;
-        $dokters->id_poli = $request->id_poli;
-        $dokters->poli = $request->poli;
-        $dokters->status = $request->status;
-        $dokters->no_telp = $request->no_telp;
-        $dokters->email = $request->email;
-        $dokters->jabatan = $request->jabatan;
-        $dokters->save();
+        $dokters->update([
+            'kode_dokter' => $request->kode_dokter,
+            'nip' => $request->nip,
+            'nama_dokter' => $request->nama_dokter,
+            'id_poli' => json_encode($request->id_poli),
+            'poli' => $request->poli,
+            'status' => $request->status,
+            'jabatan' => $request->jabatan,
+            'no_telp' => $request->no_telp,
+            'email' => $request->email,
+        ]);
 
         toast('Data Berhasil di Update', 'success');
         return redirect()->route('dokter.index');
