@@ -16,8 +16,29 @@ class dokter extends Model
         // foreignKey (di pasien), ownerKey (di dokter)
     }
 
-    public function polis()
+    public function getAllPolis()
     {
-        return $this->belongsTo(Poli::class, 'id_poli', 'id');
+        $poliIds = json_decode($this->id_poli, true);
+        if (is_array($poliIds) && !empty($poliIds)) {
+            return Poli::whereIn('id', $poliIds)->get();
+        }
+        return collect();
+    }
+
+    public function getPoliNamesAttribute()
+    {
+        $poliIds = json_decode($this->id_poli, true);
+        if (is_array($poliIds) && !empty($poliIds)) {
+            return Poli::whereIn('id', $poliIds)
+                ->pluck('nama_poli')
+                ->implode(', ');
+        }
+        return '-';
+    }
+
+    public function getPoliIdsArrayAttribute()
+    {
+        $poliIds = json_decode($this->id_poli, true);
+        return is_array($poliIds) ? $poliIds : [];
     }
 }

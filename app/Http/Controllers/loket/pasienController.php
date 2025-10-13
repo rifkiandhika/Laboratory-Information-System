@@ -63,12 +63,10 @@ class pasienController extends Controller
         $data['departments']  = Department::with('pemeriksaan')->get();
 
         // filter dokter berdasarkan status
-        $data['dokterInternal'] = Dokter::with('polis')
-            ->where('status', 'internal')
+        $data['dokterInternal'] = Dokter::where('status', 'internal')
             ->get();
 
-        $data['dokterExternal'] = Dokter::with('polis')
-            ->where('status', 'external')
+        $data['dokterExternal'] = Dokter::where('status', 'external')
             ->get();
 
         // filter poli berdasarkan status
@@ -87,6 +85,29 @@ class pasienController extends Controller
         } while (Pasien::where('no_lab', $noLab)->exists());
 
         $data['no_lab'] = $noLab;
+
+        $dokterByRoom = [];
+
+        foreach ($data['dokterInternal'] as $dokter) {
+            $poliIds = json_decode($dokter->id_poli, true);
+            if (is_array($poliIds)) {
+                foreach ($poliIds as $poliId) {
+                    $poli = Poli::find($poliId);
+                    if ($poli) {
+                        if (!isset($dokterByRoom[$poli->nama_poli])) {
+                            $dokterByRoom[$poli->nama_poli] = [];
+                        }
+                        $dokterByRoom[$poli->nama_poli][] = [
+                            'id' => $dokter->id,
+                            'nama' => $dokter->nama_dokter,
+                            'jabatan' => $dokter->jabatan
+                        ];
+                    }
+                }
+            }
+        }
+
+        $data['dokterByRoom'] = $dokterByRoom;
 
         return view('loket.tambah-pasien', $data);
     }
@@ -173,6 +194,7 @@ class pasienController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $cito = $request->cito ? 1 : 0;
 
         $harga = (int) str_replace('.', '', $request->hargapemeriksaan);
