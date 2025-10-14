@@ -14,7 +14,7 @@ class ApiController extends Controller
 {
     public function qc(Request $request)
     {
-        $x_data_type = $request->header('X_DATA_TYPE');
+        $x_data_type = $request->header('X-DATA-TYPE');
 
         if ($x_data_type == 'MSH') {
             $validated = $request->validate([
@@ -55,7 +55,7 @@ class ApiController extends Controller
 
     public function kunjunganPemeriksaan(Request $request)
     {
-        $x_data_type = $request->header('X_DATA_TYPE');
+        $x_data_type = $request->header('X-DATA-TYPE');
 
         if ($x_data_type == 'OBR') {
             $validated = $request->validate([
@@ -97,7 +97,7 @@ class ApiController extends Controller
 
     public function kunjunganPemeriksaanHasil(Request $request)
     {
-        $x_data_type = $request->header('X_DATA_TYPE');
+        $x_data_type = $request->header('X-DATA-TYPE');
 
         if ($x_data_type == 'OBX') {
             $validated = $request->validate([
