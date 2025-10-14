@@ -77,7 +77,6 @@ class pasienController extends Controller
             ->where('status', 'active')
             ->get();
 
-        // ✅ Generate nomor lab unik
         $tanggal = date('dmy');
         do {
             $random = str_pad(rand(0, 999), 3, '0', STR_PAD_LEFT);
@@ -86,28 +85,41 @@ class pasienController extends Controller
 
         $data['no_lab'] = $noLab;
 
-        $dokterByRoom = [];
+        $roomByDokter = [];
 
+        // Mapping untuk dokter internal
         foreach ($data['dokterInternal'] as $dokter) {
             $poliIds = json_decode($dokter->id_poli, true);
+            $poliNames = [];
+
             if (is_array($poliIds)) {
                 foreach ($poliIds as $poliId) {
                     $poli = Poli::find($poliId);
                     if ($poli) {
-                        if (!isset($dokterByRoom[$poli->nama_poli])) {
-                            $dokterByRoom[$poli->nama_poli] = [];
-                        }
-                        $dokterByRoom[$poli->nama_poli][] = [
-                            'id' => $dokter->id,
-                            'nama' => $dokter->nama_dokter,
-                            'jabatan' => $dokter->jabatan
-                        ];
+                        $poliNames[] = $poli->nama_poli;
                     }
                 }
             }
+
+            $roomByDokter[$dokter->id] = [
+                'nama' => $dokter->nama_dokter,
+                'jabatan' => $dokter->jabatan,
+                'status' => 'internal',
+                'ruangan' => $poliNames // array ruangan
+            ];
         }
 
-        $data['dokterByRoom'] = $dokterByRoom;
+        // Mapping untuk dokter external (biasanya tidak punya ruangan spesifik)
+        foreach ($data['dokterExternal'] as $dokter) {
+            $roomByDokter[$dokter->id] = [
+                'nama' => $dokter->nama_dokter,
+                'jabatan' => $dokter->jabatan,
+                'status' => 'external',
+                'ruangan' => [] // kosong atau bisa diisi 'External' jika perlu
+            ];
+        }
+
+        $data['roomByDokter'] = $roomByDokter;
 
         return view('loket.tambah-pasien', $data);
     }

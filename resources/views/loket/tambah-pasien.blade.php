@@ -100,31 +100,47 @@
                                         <textarea class="form-control ml-1" cols="119" rows="1" id="alamat" name="alamat" placeholder="Enter Address"></textarea>
                                     </div>
                                                                   
-                                    <div class="col-md-6 mb-6">
-                                        <label for="asal_ruangan" class="fw-bold">Room</label>
-                                        <select class="form-select" id="asal_ruangan" name="asal_ruangan">
-                                            <option value="" hidden>Choose...</option>
-                                            @foreach ($poliInternal as $poli)
-                                            <option value="{{ $poli->nama_poli }}">{{ $poli->nama_poli }}</option>
-                                            @endforeach
-                                            <option value="lainnya">Lainnya...</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="col-md-6 mb-6">
-                                        <label for="doctorSelect" class="fw-bold">Doctor Internal / Pengirim</label>
+                                   <div class="col-md-6 mb-6">
+                                        <label for="doctorSelect" class="fw-bold">Doctor Internal <span class="text-muted">(pilih dokter terlebih dahulu)</span></label>
                                         <select class="form-select" id="doctorSelect" name="dokter_internal">
-                                            <option value="" hidden>Pilih ruangan terlebih dahulu</option>
+                                            <option value="" hidden>Choose Internal Doctor...</option>
+                                            @foreach ($dokterInternal as $dokter)
+                                                <option value="{{ $dokter->nama_dokter }}" data-dokter-id="{{ $dokter->id }}">
+                                                    {{ $dokter->nama_dokter }} ({{ $dokter->jabatan }})
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div>
 
                                     <div class="col-md-6 mb-6">
-                                        <label for="externalDoctorSelect" class="fw-bold">Doctor External / Pengirim</label>
+                                        <label for="externalDoctorSelect" class="fw-bold">Doctor External <span class="text-muted">(pilih dokter terlebih dahulu)</span></label>
                                         <select class="form-select" id="externalDoctorSelect" name="dokter_external">
-                                            <option value="" hidden>Choose...</option>
+                                            <option value="" hidden>Choose External Doctor...</option>
                                             @foreach ($dokterExternal as $dokter)
-                                                <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }} ({{ $dokter->jabatan }})</option>
+                                                <option value="{{ $dokter->nama_dokter }}" data-dokter-id="{{ $dokter->id }}">
+                                                    {{ $dokter->nama_dokter }} ({{ $dokter->jabatan }})
+                                                </option>
                                             @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6 mb-6">
+                                        <label for="asal_ruangan" class="fw-bold">Room <span class="text-muted" id="roomHint">(otomatis terisi)</span></label>
+                                        
+                                        <!-- Input readonly (default) -->
+                                        <input type="text" 
+                                            class="form-control" 
+                                            id="asal_ruangan_input" 
+                                            name="asal_ruangan" 
+                                            readonly 
+                                            placeholder="Pilih dokter terlebih dahulu">
+                                        
+                                        <!-- Dropdown (hidden by default) -->
+                                        <select class="form-select" 
+                                                id="asal_ruangan_select" 
+                                                name="asal_ruangan_select" 
+                                                style="display: none;">
+                                            <option value="" hidden>Pilih salah satu ruangan...</option>
                                         </select>
                                     </div>
                                           
@@ -333,67 +349,141 @@
 @push('script')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Data mapping dokter per ruangan dari server
-    const dokterByRoom = @json($dokterByRoom ?? []);
     
-    const asalRuangan = document.getElementById('asal_ruangan');
-    const doctorSelect = document.getElementById('doctorSelect');
+    const roomByDokter = @json($roomByDokter ?? []);
     
-    console.log('Dokter by room:', dokterByRoom);
+    const doctorSelectInternal = document.getElementById('doctorSelect');
+    const doctorSelectExternal = document.getElementById('externalDoctorSelect');
+    const asalRuanganInput = document.getElementById('asal_ruangan_input');
+    const asalRuanganSelect = document.getElementById('asal_ruangan_select');
+    const roomHint = document.getElementById('roomHint');
     
-    // Event ketika ruangan dipilih
-    asalRuangan.addEventListener('change', function() {
-        const selectedRoom = this.value;
+    console.log('Room by dokter:', roomByDokter);
+    
+    
+    function showInput() {
+        asalRuanganInput.style.display = 'block';
+        asalRuanganSelect.style.display = 'none';
+        asalRuanganInput.removeAttribute('name');
+        asalRuanganInput.setAttribute('name', 'asal_ruangan');
+        asalRuanganSelect.removeAttribute('name');
+    }
+    
+    function showSelect() {
+        asalRuanganInput.style.display = 'none';
+        asalRuanganSelect.style.display = 'block';
+        asalRuanganSelect.removeAttribute('name');
+        asalRuanganSelect.setAttribute('name', 'asal_ruangan');
+        asalRuanganInput.removeAttribute('name');
+    }
+    
+    function resetRoom() {
+        asalRuanganInput.value = '';
+        asalRuanganSelect.innerHTML = '<option value="" hidden>Pilih salah satu ruangan...</option>';
+        showInput();
+        roomHint.textContent = '(otomatis terisi)';
+    }
+    
+    
+    doctorSelectInternal.addEventListener('change', function() {
         
-        // Reset dropdown dokter
-        doctorSelect.innerHTML = '<option value="" hidden>Choose...</option>';
+        doctorSelectExternal.value = '';
         
-        // Jika pilih "lainnya" atau "kembali", kosongkan dokter
-        if (selectedRoom === 'lainnya' || selectedRoom === 'kembali' || selectedRoom === '') {
-            doctorSelect.innerHTML = '<option value="" hidden>Pilih ruangan terlebih dahulu</option>';
+        const selectedOption = this.options[this.selectedIndex];
+        const dokterId = selectedOption.getAttribute('data-dokter-id');
+        
+        if (!dokterId || dokterId === '') {
+            resetRoom();
             return;
         }
         
-        // Cek apakah ada dokter di ruangan ini
-        if (dokterByRoom[selectedRoom] && dokterByRoom[selectedRoom].length > 0) {
-            const dokterList = dokterByRoom[selectedRoom];
+        
+        if (roomByDokter[dokterId]) {
+            const dokterData = roomByDokter[dokterId];
+            const ruanganList = dokterData.ruangan;
             
-            if (dokterList.length === 1) {
-                // Jika hanya 1 dokter, auto select
-                const dokter = dokterList[0];
-                const option = document.createElement('option');
-                option.value = dokter.nama;
-                option.textContent = `${dokter.nama} (${dokter.jabatan})`;
-                option.selected = true;
-                doctorSelect.appendChild(option);
-                
-                // Optional: tampilkan notifikasi
-                if (typeof toastr !== 'undefined') {
-                    toastr.info(`Dokter ${dokter.nama} otomatis terpilih`, 'Info');
+            if (ruanganList && ruanganList.length > 0) {
+                if (ruanganList.length === 1) {
+                    
+                    showInput();
+                    asalRuanganInput.value = ruanganList[0];
+                    roomHint.textContent = '(otomatis terisi)';
+                    
+                    if (typeof toastr !== 'undefined') {
+                        toastr.success(`Ruangan "${ruanganList[0]}" otomatis terisi`, 'Info');
+                    }
+                } else {
+                    
+                    showSelect();
+                    roomHint.textContent = '(pilih salah satu)';
+                    
+                    
+                    asalRuanganSelect.innerHTML = '<option value="" hidden>Pilih salah satu ruangan...</option>';
+                    
+                    ruanganList.forEach(function(namaRuangan) {
+                        const option = document.createElement('option');
+                        option.value = namaRuangan;
+                        option.textContent = namaRuangan;
+                        asalRuanganSelect.appendChild(option);
+                    });
+                    
+                    if (typeof toastr !== 'undefined') {
+                        toastr.info(`Dokter bertugas di ${ruanganList.length} ruangan. Silakan pilih salah satu.`, 'Pilih Ruangan');
+                    }
                 }
             } else {
-                // Jika lebih dari 1 dokter, tampilkan pilihan
-                doctorSelect.innerHTML = '<option value="" hidden>Pilih dokter...</option>';
+                showInput();
+                asalRuanganInput.value = 'Tidak ada ruangan terdaftar';
+                roomHint.textContent = '(tidak ada data)';
                 
-                dokterList.forEach(dokter => {
-                    const option = document.createElement('option');
-                    option.value = dokter.nama;
-                    option.textContent = `${dokter.nama} (${dokter.jabatan})`;
-                    doctorSelect.appendChild(option);
-                });
-                
-                // Optional: tampilkan notifikasi
                 if (typeof toastr !== 'undefined') {
-                    toastr.info(`${dokterList.length} dokter tersedia di ruangan ini`, 'Info');
+                    toastr.warning('Dokter ini belum memiliki ruangan terdaftar', 'Perhatian');
                 }
             }
         } else {
-            // Tidak ada dokter di ruangan ini
-            doctorSelect.innerHTML = '<option value="" hidden>Tidak ada dokter di ruangan ini</option>';
+            resetRoom();
+        }
+    });
+    
+    
+    doctorSelectExternal.addEventListener('change', function() {
+        
+        doctorSelectInternal.value = '';
+        
+        const selectedOption = this.options[this.selectedIndex];
+        const dokterId = selectedOption.getAttribute('data-dokter-id');
+        
+        if (!dokterId || dokterId === '') {
+            resetRoom();
+            return;
+        }
+        
+        
+        if (roomByDokter[dokterId]) {
+            const dokterData = roomByDokter[dokterId];
             
-            if (typeof toastr !== 'undefined') {
-                toastr.warning('Tidak ada dokter yang terdaftar di ruangan ini', 'Perhatian');
+            if (dokterData.status === 'external') {
+                showInput();
+                asalRuanganInput.value = 'External / Luar RS';
+                roomHint.textContent = '(dokter external)';
+                
+                if (typeof toastr !== 'undefined') {
+                    toastr.info('Dokter external dipilih', 'Info');
+                }
             }
+        }
+    });
+    
+    
+    doctorSelectInternal.addEventListener('focus', function() {
+        if (this.value === '') {
+            resetRoom();
+        }
+    });
+    
+    doctorSelectExternal.addEventListener('focus', function() {
+        if (this.value === '') {
+            resetRoom();
         }
     });
 });
