@@ -87,7 +87,7 @@ class pasienController extends Controller
 
         $roomByDokter = [];
 
-        // Mapping untuk dokter internal
+
         foreach ($data['dokterInternal'] as $dokter) {
             $poliIds = json_decode($dokter->id_poli, true);
             $poliNames = [];
@@ -105,17 +105,29 @@ class pasienController extends Controller
                 'nama' => $dokter->nama_dokter,
                 'jabatan' => $dokter->jabatan,
                 'status' => 'internal',
-                'ruangan' => $poliNames // array ruangan
+                'ruangan' => $poliNames
             ];
         }
 
-        // Mapping untuk dokter external (biasanya tidak punya ruangan spesifik)
+
         foreach ($data['dokterExternal'] as $dokter) {
+            $poliIds = json_decode($dokter->id_poli, true);
+            $poliNames = [];
+
+            if (is_array($poliIds)) {
+                foreach ($poliIds as $poliId) {
+                    $poli = Poli::find($poliId);
+                    if ($poli) {
+                        $poliNames[] = $poli->nama_poli;
+                    }
+                }
+            }
+
             $roomByDokter[$dokter->id] = [
                 'nama' => $dokter->nama_dokter,
                 'jabatan' => $dokter->jabatan,
                 'status' => 'external',
-                'ruangan' => [] // kosong atau bisa diisi 'External' jika perlu
+                'ruangan' => $poliNames
             ];
         }
 

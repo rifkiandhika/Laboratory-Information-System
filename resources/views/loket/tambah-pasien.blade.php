@@ -385,13 +385,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     
-    doctorSelectInternal.addEventListener('change', function() {
-        
-        doctorSelectExternal.value = '';
-        
-        const selectedOption = this.options[this.selectedIndex];
-        const dokterId = selectedOption.getAttribute('data-dokter-id');
-        
+    function handleDoctorSelection(dokterId, dokterStatus) {
         if (!dokterId || dokterId === '') {
             resetRoom();
             return;
@@ -407,7 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     showInput();
                     asalRuanganInput.value = ruanganList[0];
-                    roomHint.textContent = '(otomatis terisi)';
+                    roomHint.textContent = `(otomatis terisi - ${dokterStatus})`;
                     
                     if (typeof toastr !== 'undefined') {
                         toastr.success(`Ruangan "${ruanganList[0]}" otomatis terisi`, 'Info');
@@ -415,7 +409,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     
                     showSelect();
-                    roomHint.textContent = '(pilih salah satu)';
+                    roomHint.textContent = `(pilih salah satu - ${dokterStatus})`;
                     
                     
                     asalRuanganSelect.innerHTML = '<option value="" hidden>Pilih salah satu ruangan...</option>';
@@ -432,17 +426,33 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             } else {
+                
                 showInput();
-                asalRuanganInput.value = 'Tidak ada ruangan terdaftar';
-                roomHint.textContent = '(tidak ada data)';
+                asalRuanganInput.value = dokterStatus === 'external' ? 'External / Luar RS' : 'Tidak ada ruangan terdaftar';
+                roomHint.textContent = `(${dokterStatus === 'external' ? 'dokter external' : 'tidak ada data'})`;
                 
                 if (typeof toastr !== 'undefined') {
-                    toastr.warning('Dokter ini belum memiliki ruangan terdaftar', 'Perhatian');
+                    if (dokterStatus === 'external') {
+                        toastr.info('Dokter external tanpa ruangan spesifik', 'Info');
+                    } else {
+                        toastr.warning('Dokter ini belum memiliki ruangan terdaftar', 'Perhatian');
+                    }
                 }
             }
         } else {
             resetRoom();
         }
+    }
+    
+    
+    doctorSelectInternal.addEventListener('change', function() {
+        
+        doctorSelectExternal.value = '';
+        
+        const selectedOption = this.options[this.selectedIndex];
+        const dokterId = selectedOption.getAttribute('data-dokter-id');
+        
+        handleDoctorSelection(dokterId, 'internal');
     });
     
     
@@ -453,25 +463,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedOption = this.options[this.selectedIndex];
         const dokterId = selectedOption.getAttribute('data-dokter-id');
         
-        if (!dokterId || dokterId === '') {
-            resetRoom();
-            return;
-        }
-        
-        
-        if (roomByDokter[dokterId]) {
-            const dokterData = roomByDokter[dokterId];
-            
-            if (dokterData.status === 'external') {
-                showInput();
-                asalRuanganInput.value = 'External / Luar RS';
-                roomHint.textContent = '(dokter external)';
-                
-                if (typeof toastr !== 'undefined') {
-                    toastr.info('Dokter external dipilih', 'Info');
-                }
-            }
-        }
+        handleDoctorSelection(dokterId, 'external');
     });
     
     
