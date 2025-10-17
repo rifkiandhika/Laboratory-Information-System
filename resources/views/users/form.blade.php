@@ -45,7 +45,6 @@
   @enderror
 </div>
 {{-- Input tambahan untuk analyst --}}
-{{-- Input tambahan untuk analyst --}}
 <div id="analyst-extra-fields" style="display: none;">
   <div class="mb-3">
     <label for="fee" class="form-label">Fee (%)</label>
@@ -146,14 +145,14 @@
     const selectedRole = roleSelect.options[roleSelect.selectedIndex].text.toLowerCase();
     
     // hanya analyst yg bisa lihat fee, feemcu, nik
-    if (selectedRole === "analyst") {
+    if (selectedRole === "analyst" || selectedRole === "headanalyst") {
       analystFields.style.display = "block";
     } else {
       analystFields.style.display = "none";
     }
 
     // analyst & dokter bisa tanda tangan
-    if (selectedRole === "analyst" || selectedRole === "doctor") {
+    if (selectedRole === "analyst" || selectedRole === "headanalyst" || selectedRole === "doctor") {
       signatureField.style.display = "block";
     } else {
       signatureField.style.display = "none";
