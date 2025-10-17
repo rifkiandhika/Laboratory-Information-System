@@ -2854,34 +2854,35 @@
                                                             
                                                             window.saveTempData = function(noLab, forceAll = false) {
                                                                 if (!noLab) {
-                                                                    
                                                                     return;
                                                                 }
                                                                 
                                                                 const data = [];
                                                                 
                                                                 document.querySelectorAll('[data-id][data-parameter]').forEach(row => {
+                                                                    // Cari semua kemungkinan input hasil
                                                                     const hasilInput = row.querySelector('.hasil-input');
                                                                     const hasilSelect = row.querySelector('.hasil-select');
+                                                                    const manualInput = row.querySelector('.manualInput'); // Tambahan untuk menangkap semua .manualInput
                                                                     const d1 = row.querySelector('.d1');
                                                                     const d2 = row.querySelector('.d2');
                                                                     const d3 = row.querySelector('.d3');
-                                                                    const flagInput = row.querySelector('input[name="flag[]"]');
                                                                     
-                                                                    
+                                                                    // Ambil nilai hasil dari input yang visible
                                                                     let hasil = '';
-                                                                    if (hasilInput) {
+                                                                    if (hasilInput && hasilInput.style.display !== 'none') {
                                                                         hasil = hasilInput.value || '';
-                                                                    } else if (hasilSelect) {
+                                                                    } else if (hasilSelect && hasilSelect.style.display !== 'none') {
                                                                         hasil = hasilSelect.value || '';
+                                                                    } else if (manualInput && manualInput.style.display !== 'none') {
+                                                                        hasil = manualInput.value || '';
                                                                     }
                                                                     
                                                                     const d1Val = d1?.value || '';
                                                                     const d2Val = d2?.value || '';
                                                                     const d3Val = d3?.value || '';
-                                                                
                                                                     
-                                                                
+                                                                    // Simpan jika ada data terisi
                                                                     if (forceAll || hasil || d1Val || d2Val || d3Val) {
                                                                         const rowData = {
                                                                             id: row.getAttribute('data-id'),
@@ -2890,111 +2891,105 @@
                                                                             duplo_d1: d1Val,
                                                                             duplo_d2: d2Val,
                                                                             duplo_d3: d3Val
-                                                                
                                                                         };
                                                                         data.push(rowData);
                                                                     }
                                                                 });
                                                                 
-                                                                
                                                                 if (data.length > 0) {
                                                                     sessionStorage.setItem(`temp_lab_${noLab}`, JSON.stringify(data));
-                                                                
-                                                                } else {
-                                                                    
-                                                                    const prevData = sessionStorage.getItem(`temp_lab_${noLab}`);
-                                                                    if (prevData) {
-                                                            
-                                                                        
-                                                                    } else {
-                                                            
-                                                                    }
+                                                                    console.log(`Saved ${data.length} rows for ${noLab}`);
                                                                 }
                                                             };
                                                             
                                                             
                                                             window.loadTempData = function(noLab) {
                                                                 if (!noLab) {
-                                                                    
                                                                     return;
                                                                 }
                                                                 
                                                                 const saved = sessionStorage.getItem(`temp_lab_${noLab}`);
                                                                 if (!saved) {
-                                                                    
                                                                     return;
                                                                 }
                                                                 
                                                                 try {
                                                                     const data = JSON.parse(saved);
                                                                     
-                                                                    
-                                                                    
                                                                     setTimeout(() => {
                                                                         let loadedCount = 0;
-                                                                        let notFoundCount = 0;
                                                                         
-                                                                        
+                                                                        // Buat map dari row yang ada saat ini
                                                                         const currentRows = new Map();
                                                                         document.querySelectorAll('[data-id][data-parameter]').forEach(row => {
                                                                             const key = `${row.getAttribute('data-id')}-${row.getAttribute('data-parameter')}`;
                                                                             currentRows.set(key, row);
                                                                         });
                                                                         
-                                                                        
-                                                                        
-                                                                        data.forEach((savedRow, idx) => {
+                                                                        // Load data ke setiap row
+                                                                        data.forEach((savedRow) => {
                                                                             const key = `${savedRow.id}-${savedRow.parameter}`;
                                                                             const row = currentRows.get(key);
                                                                             
                                                                             if (!row) {
-                                                                                notFoundCount++;
-                                                                                if (idx === 0) {
-                                                                        
-                                                                                }
                                                                                 return;
                                                                             }
                                                                             
+                                                                            // Cari semua kemungkinan input hasil
                                                                             const hasilInput = row.querySelector('.hasil-input');
                                                                             const hasilSelect = row.querySelector('.hasil-select');
+                                                                            const manualInput = row.querySelector('.manualInput');
                                                                             
+                                                                            // Load hasil ke input yang visible
                                                                             if (hasilInput && hasilInput.style.display !== 'none' && savedRow.hasil !== '') {
                                                                                 hasilInput.value = savedRow.hasil;
                                                                                 loadedCount++;
-                                                                                
                                                                                 hasilInput.dispatchEvent(new Event('input', { bubbles: true }));
                                                                             }
                                                                             if (hasilSelect && hasilSelect.style.display !== 'none' && savedRow.hasil !== '') {
                                                                                 hasilSelect.value = savedRow.hasil;
                                                                                 loadedCount++;
-                                                                                
                                                                                 hasilSelect.dispatchEvent(new Event('change', { bubbles: true }));
                                                                             }
+                                                                            if (manualInput && manualInput.style.display !== 'none' && savedRow.hasil !== '') {
+                                                                                manualInput.value = savedRow.hasil;
+                                                                                loadedCount++;
+                                                                                
+                                                                                // Trigger event yang sesuai dengan tipe input
+                                                                                if (manualInput.tagName === 'SELECT') {
+                                                                                    manualInput.dispatchEvent(new Event('change', { bubbles: true }));
+                                                                                } else {
+                                                                                    manualInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                                                                }
+                                                                            }
                                                                             
+                                                                            // Load duplo values
                                                                             const d1 = row.querySelector('.d1');
                                                                             const d2 = row.querySelector('.d2');
                                                                             const d3 = row.querySelector('.d3');
+                                                                            
                                                                             if (d1 && savedRow.duplo_d1 !== '') {
                                                                                 d1.value = savedRow.duplo_d1;
-                                                                        
+                                                                                if (d1.tagName === 'SELECT') {
+                                                                                    d1.dispatchEvent(new Event('change', { bubbles: true }));
+                                                                                }
                                                                             }
                                                                             if (d2 && savedRow.duplo_d2 !== '') {
                                                                                 d2.value = savedRow.duplo_d2;
-                                                                        
+                                                                                if (d2.tagName === 'SELECT') {
+                                                                                    d2.dispatchEvent(new Event('change', { bubbles: true }));
+                                                                                }
                                                                             }
                                                                             if (d3 && savedRow.duplo_d3 !== '') {
                                                                                 d3.value = savedRow.duplo_d3;
-                                                                        
+                                                                                if (d3.tagName === 'SELECT') {
+                                                                                    d3.dispatchEvent(new Event('change', { bubbles: true }));
+                                                                                }
                                                                             }
                                                                         });
                                                                         
                                                                         if (loadedCount > 0) {
-                                                                        
-                                                                        } else {
-                                                                        
-                                                                        }
-                                                                        
-                                                                        if (notFoundCount > 0) {
+                                                                            console.log(`Loaded ${loadedCount} values for ${noLab}`);
                                                                         }
                                                                     }, 300);
                                                                 } catch (error) {
@@ -3003,11 +2998,9 @@
                                                             };
                                                             
                                                             if (!window.autoSaveSetupDone) {
-                                                                
                                                                 let autoSaveTimer;
                                                                 
-                                                                $(document).on('input change', '.hasil-input, .hasil-select, .d1, .d2, .d3', function(e) {
-                                                                    
+                                                                $(document).on('input change', '.hasil-input, .hasil-select, .manualInput, .d1, .d2, .d3', function(e) {
                                                                     if (!window.currentActiveLab) {
                                                                         return;
                                                                     }
@@ -3019,6 +3012,7 @@
                                                                 });
                                                                 
                                                                 window.autoSaveSetupDone = true;
+                                                                console.log('Auto-save setup complete for input and select fields');
                                                             }
                                                             
                                                             window.clearTempData = function(noLab) {
@@ -3053,13 +3047,14 @@
                                                             
                                                             
                                                             let html = '';
+                                                            let lastJudul = null;
                                                             
                                                             // Tampilkan setiap parameter dengan header judulnya masing-masing
                                                             e.pasiens.forEach((p, pIdx) => {
                                                                 const judul = p.data_pemeriksaan?.judul;
                                                                 
                                                                 // Tampilkan header judul untuk setiap parameter (jika ada judul)
-                                                                if (judul && judul !== p.data_pemeriksaan.nama_pemeriksaan) {
+                                                                if (judul && judul !== p.data_pemeriksaan.nama_pemeriksaan && judul !== lastJudul) {
                                                                     html += `
                                                                         <tr class="individual-title-header">
                                                                             <td colspan="8" class="fw-bold text-dark ps-3" style="background-color: #f1f3f4; border-left: 4px solid #6c757d; padding: 10px;">
@@ -3067,6 +3062,7 @@
                                                                             </td>
                                                                         </tr>
                                                                     `;
+                                                                    lastJudul = judul; 
                                                                 }
                                                                 
                                                                 // Tampilkan parameter dengan indentasi jika ada judul
@@ -3876,207 +3872,243 @@
 
 
         function populateModal(spesimen, scollection, shandling, history, data_pemeriksaan_pasien, hasil) {
-    const accordion = document.getElementById('sampleHistoryAccordion');
-    let accordionContent = '';
+            const accordion = document.getElementById('sampleHistoryAccordion');
+            let accordionContent = '';
 
-    // ========== Inspection Details ==========
-    accordionContent += `<h5 class="title mt-3">Inspection Details</h5><hr><div class="row">`;
-    data_pemeriksaan_pasien.forEach(e => {
-        accordionContent += `
-            <input type="hidden" name="no_lab" value="${e.no_lab}">
-            <div class="col-12 col-md-6" id="${e.id_departement}">
-                <h6>${e.data_departement.nama_department}</h6>
-                <ol>
-        `;
-        e.pasiens.forEach(p => {
-            accordionContent += `<li>${p.data_pemeriksaan.nama_pemeriksaan}</li>`;
-        });
-        accordionContent += `</ol><hr></div>`;
-    });
-    accordionContent += `</div>`;
-
-    // ========== History ==========
-    accordionContent += `
-        <h5>History</h5>
-        <ul class="step-wizard-list mt-4">
-            ${history.map((h, index) => {
-                let createdAt = new Date(h.created_at);
-                let formattedDate = createdAt.toLocaleString('id-ID', {
-                    year: 'numeric',
-                    month: 'numeric',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                return `
-                    <li class="step-wizard-item">
-                        <span class="progress-count">${index + 1}</span>
-                        <span class="progress-label">${h.proses}</span>
-                        <span class="progress-label">${formattedDate}</span>
-                    </li>
+            // ========== Inspection Details ==========
+            accordionContent += `<h5 class="title mt-3">Inspection Details</h5><hr><div class="row">`;
+            data_pemeriksaan_pasien.forEach(e => {
+                accordionContent += `
+                    <input type="hidden" name="no_lab" value="${e.no_lab}">
+                    <div class="col-12 col-md-6" id="${e.id_departement}">
+                        <h6>${e.data_departement.nama_department}</h6>
+                        <ol>
                 `;
-            }).join('')}
-        </ul>
-    `;
+                e.pasiens.forEach(p => {
+                    accordionContent += `<li>${p.data_pemeriksaan.nama_pemeriksaan}</li>`;
+                });
+                accordionContent += `</ol><hr></div>`;
+            });
+            accordionContent += `</div>`;
 
-    // ========== Spesimen Collection ==========
-    let collectionSpecimens = spesimen.filter(e => e.spesiment === "Spesiment Collection");
-    if (collectionSpecimens.length > 0) {
-        accordionContent += `<h5 class="title mt-3">Spesiment Collection</h5><hr>`;
-        accordionContent += `<div class="accordion" id="accordionCollection">`;
-        collectionSpecimens.forEach(e => {
-            accordionContent += generateAccordionHTML(e, scollection, shandling, "collection");
-        });
-        accordionContent += `</div>`;
-    }
+            // ========== History ==========
+            accordionContent += `
+                <h5>History</h5>
+                <ul class="step-wizard-list mt-4">
+                    ${history.map((h, index) => {
+                        let createdAt = new Date(h.created_at);
+                        let formattedDate = createdAt.toLocaleString('id-ID', {
+                            year: 'numeric',
+                            month: 'numeric',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        return `
+                            <li class="step-wizard-item">
+                                <span class="progress-count">${index + 1}</span>
+                                <span class="progress-label">${h.proses}</span>
+                                <span class="progress-label">${formattedDate}</span>
+                            </li>
+                        `;
+                    }).join('')}
+                </ul>
+            `;
 
-    // ========== Spesimen Handlings ==========
-    let handlingSpecimens = spesimen.filter(e => e.spesiment === "Spesiment Handlings");
-    if (handlingSpecimens.length > 0) {
-        accordionContent += `<h5 class="title mt-3">Spesiment Handlings</h5><hr>`;
-        accordionContent += `<div class="accordion" id="accordionHandling">`;
-        handlingSpecimens.forEach(e => {
-            accordionContent += generateAccordionHTML(e, scollection, shandling, "handling");
-        });
-        accordionContent += `</div>`;
-    }
+            // ========== Spesimen Collection ==========
+            let collectionSpecimens = spesimen.filter(e => e.spesiment === "Spesiment Collection");
+            // Filter hanya yang memiliki data di scollection
+            let collectionWithData = collectionSpecimens.filter(e => {
+                return scollection.some(item => 
+                    item.no_lab === e.laravel_through_key &&
+                    item.tabung === e.tabung &&
+                    item.kode === e.kode
+                );
+            });
 
-    // ========== Notes Doctor & Analyst ==========
-    const historyItem = history.find(h => h.proses === 'Dikembalikan oleh dokter');
-    if (historyItem && historyItem.note) {
-        accordionContent += `
-            <div class="d-flex justify-content-between mt-3">
-                <div class="doctor-note" style="width: 48%;">
-                    <label class="fw-bold mt-2">Catatan (Doctor)</label>
-                    <textarea class="form-control" rows="3" disabled>${historyItem.note}</textarea>
-                </div>
-                <div class="analyst-note" style="width: 48%;">
-                    <label class="fw-bold mt-2">Catatan (Analyst)</label>
-                    <textarea class="form-control" rows="3" disabled>${hasil.length > 0 && hasil[0].note ? hasil[0].note : '-'}</textarea>
-                </div>
-            </div>
-        `;
-    }
-
-    // render ke modal
-    accordion.innerHTML = accordionContent;
-}
-
-
-// ===================================
-// versi generateAccordionHTML terbaru
-// ===================================
-function generateAccordionHTML(e, scollection, shandling, type) {
-    let details = '';
-    let hasData = false;
-    let noteText = '';
-    let kapasitas, serumh, clotact, serum;
-
-    let dataItem = null;
-
-    if (type === "collection") {
-        dataItem = scollection.find(item =>
-            item.no_lab === e.laravel_through_key &&
-            item.tabung === e.tabung &&
-            item.kode === e.kode
-        );
-    } else if (type === "handling") {
-        dataItem = shandling.find(item =>
-            item.no_lab === e.laravel_through_key &&
-            item.tabung === e.tabung &&
-            item.kode === e.kode
-        );
-    }
-
-    if (dataItem) {
-        hasData  = true;
-        noteText = dataItem.note || '';
-        kapasitas = dataItem.kapasitas;
-        serumh   = dataItem.serumh;
-        clotact  = dataItem.clotact;
-        serum    = dataItem.serum;
-    }
-
-    const uniqId = `${e.tabung}-${e.kode}`.replace(/\s+/g, '');
-
-    if (e.details && e.details.length > 0) {
-        details = `<div class="detail-container col-12 col-md-6">`;
-        e.details.forEach(detail => {
-            const imageUrl = `/gambar/${detail.gambar}`;
-            let isChecked = '';
-            let isDisabled = '';
-
-            if (hasData) {
-                if (type === "collection") {
-                    if (e.tabung === 'K3-EDTA') {
-                        isChecked = kapasitas == detail.id ? 'checked' : '';
-                        isDisabled = 'disabled';
-                    } else if (e.tabung === 'CLOTH-ACTIVATOR') {
-                        isChecked = serumh == detail.id ? 'checked' : '';
-                        isDisabled = 'disabled';
-                    } else if (e.tabung === 'CLOTH-ACT') {
-                        isChecked = clotact == detail.id ? 'checked' : '';
-                        isDisabled = 'disabled';
-                    }
-                } else if (type === "handling") {
-                    // FIX: Handle both CLOTH-ACTIVATOR and CLOT-ACTIVATOR
-                    if (e.tabung === 'CLOTH-ACTIVATOR' || e.tabung === 'CLOT-ACTIVATOR') {
-                        isChecked = parseInt(serum) === parseInt(detail.id) ? 'checked' : '';
-                        isDisabled = 'disabled';
-                    }
-                }
-            } else {
-                if (detail.nama_parameter.toLowerCase().includes('normal')) {
-                    isChecked = 'checked';
-                }
-                isDisabled = '';
+            if (collectionWithData.length > 0) {
+                accordionContent += `<h5 class="title mt-3">Spesiment Collection</h5><hr>`;
+                accordionContent += `<div class="accordion" id="accordionCollection">`;
+                collectionWithData.forEach(e => {
+                    accordionContent += generateAccordionHTML(e, scollection, shandling, "collection");
+                });
+                accordionContent += `</div>`;
             }
 
-            const radioName = (type === "handling") ? `serum[${e.kode}]` : `${e.tabung}_${e.kode}`;
+            // ========== Spesimen Handlings ==========
+            let handlingSpecimens = spesimen.filter(e => e.spesiment === "Spesiment Handlings");
+            // Filter hanya yang memiliki data di shandling
+            let handlingWithData = handlingSpecimens.filter(e => {
+                return shandling.some(item => 
+                    item.no_lab === e.laravel_through_key &&
+                    item.tabung === e.tabung &&
+                    item.kode === e.kode
+                );
+            });
 
-            details += `
-            <div class="detail-item">
-                <div class="detail-text">${detail.nama_parameter}</div>
-                <div class="detail-image-container">
-                    <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>
-                </div>
-                <div class="detail-radio-container">
-                    <input type="radio" name="${radioName}" value="${detail.id}" ${isChecked} ${isDisabled}/>
+            if (handlingWithData.length > 0) {
+                accordionContent += `<h5 class="title mt-3">Spesiment Handlings</h5><hr>`;
+                accordionContent += `<div class="accordion" id="accordionHandling">`;
+                handlingWithData.forEach(e => {
+                    accordionContent += generateAccordionHTML(e, scollection, shandling, "handling");
+                });
+                accordionContent += `</div>`;
+            }
+
+            // ========== Info jika hanya ada 1 data spesimen ==========
+            const totalSpecimensWithData = collectionWithData.length + handlingWithData.length;
+            if (totalSpecimensWithData === 1) {
+                let specimenInfo = '';
+                if (collectionWithData.length === 1) {
+                    const spec = collectionWithData[0];
+                    specimenInfo = `Spesiment Collection - Tabung ${spec.tabung} (${spec.kode})`;
+                } else if (handlingWithData.length === 1) {
+                    const spec = handlingWithData[0];
+                    specimenInfo = `Spesiment Handlings - Tabung ${spec.tabung} (${spec.kode})`;
+                }
+                accordionContent += `
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle"></i> Hanya terdapat 1 data spesimen: <strong>${specimenInfo}</strong>
+                    </div>
+                `;
+            }
+
+            // ========== Notes Doctor & Analyst ==========
+            const historyItem = history.find(h => h.proses === 'Dikembalikan oleh dokter');
+            if (historyItem && historyItem.note) {
+                accordionContent += `
+                    <div class="d-flex justify-content-between mt-3">
+                        <div class="doctor-note" style="width: 48%;">
+                            <label class="fw-bold mt-2">Catatan (Doctor)</label>
+                            <textarea class="form-control" rows="3" disabled>${historyItem.note}</textarea>
+                        </div>
+                        <div class="analyst-note" style="width: 48%;">
+                            <label class="fw-bold mt-2">Catatan (Analyst)</label>
+                            <textarea class="form-control" rows="3" disabled>${hasil.length > 0 && hasil[0].note ? hasil[0].note : '-'}</textarea>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // render ke modal
+            accordion.innerHTML = accordionContent;
+        }
+
+
+        // ===================================
+        // versi generateAccordionHTML terbaru
+        // ===================================
+        function generateAccordionHTML(e, scollection, shandling, type) {
+            let details = '';
+            let hasData = false;
+            let noteText = '';
+            let kapasitas, serumh, clotact, serum;
+
+            let dataItem = null;
+
+            if (type === "collection") {
+                dataItem = scollection.find(item =>
+                    item.no_lab === e.laravel_through_key &&
+                    item.tabung === e.tabung &&
+                    item.kode === e.kode
+                );
+            } else if (type === "handling") {
+                dataItem = shandling.find(item =>
+                    item.no_lab === e.laravel_through_key &&
+                    item.tabung === e.tabung &&
+                    item.kode === e.kode
+                );
+            }
+
+            if (dataItem) {
+                hasData  = true;
+                noteText = dataItem.note || '';
+                kapasitas = dataItem.kapasitas;
+                serumh   = dataItem.serumh;
+                clotact  = dataItem.clotact;
+                serum    = dataItem.serum;
+            }
+
+            const uniqId = `${e.tabung}-${e.kode}`.replace(/\s+/g, '');
+
+            if (e.details && e.details.length > 0) {
+                details = `<div class="detail-container col-12 col-md-6">`;
+                e.details.forEach(detail => {
+                    const imageUrl = `/gambar/${detail.gambar}`;
+                    let isChecked = '';
+                    let isDisabled = '';
+
+                    if (hasData) {
+                        if (type === "collection") {
+                            if (e.tabung === 'K3-EDTA') {
+                                isChecked = kapasitas == detail.id ? 'checked' : '';
+                                isDisabled = 'disabled';
+                            } else if (e.tabung === 'CLOTH-ACTIVATOR') {
+                                isChecked = serumh == detail.id ? 'checked' : '';
+                                isDisabled = 'disabled';
+                            } else if (e.tabung === 'CLOTH-ACT') {
+                                isChecked = clotact == detail.id ? 'checked' : '';
+                                isDisabled = 'disabled';
+                            }
+                        } else if (type === "handling") {
+                            // FIX: Handle both CLOTH-ACTIVATOR and CLOT-ACTIVATOR
+                            if (e.tabung === 'CLOTH-ACTIVATOR' || e.tabung === 'CLOT-ACTIVATOR') {
+                                isChecked = parseInt(serum) === parseInt(detail.id) ? 'checked' : '';
+                                isDisabled = 'disabled';
+                            }
+                        }
+                    } else {
+                        if (detail.nama_parameter.toLowerCase().includes('normal')) {
+                            isChecked = 'checked';
+                        }
+                        isDisabled = '';
+                    }
+
+                    const radioName = (type === "handling") ? `serum[${e.kode}]` : `${e.tabung}_${e.kode}`;
+
+                    details += `
+                    <div class="detail-item">
+                        <div class="detail-text">${detail.nama_parameter}</div>
+                        <div class="detail-image-container">
+                            <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>
+                        </div>
+                        <div class="detail-radio-container">
+                            <input type="radio" name="${radioName}" value="${detail.id}" ${isChecked} ${isDisabled}/>
+                        </div>
+                    </div>`;
+                });
+                details += `</div>`;
+            }
+
+            let noteHTML = '';
+            if (type === "handling") {
+                noteHTML = `
+                    <input type="hidden" name="kode[]" value="${e.kode}">
+                    <p class="mb-0"><strong>Catatan</strong></p>
+                    <textarea class="form-control" name="note[${e.kode}]" rows="3" disabled>${noteText}</textarea>
+                `;
+            } else {
+                noteHTML = `
+                    <p class="mb-0"><strong>Catatan</strong></p>
+                    <textarea class="form-control" rows="3" disabled>${noteText || '-'}</textarea>
+                `;
+            }
+
+            return `
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading${uniqId}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${uniqId}">
+                        Tabung ${e.tabung} (${e.kode})
+                    </button>
+                </h2>
+                <div id="collapse${uniqId}" class="accordion-collapse collapse" aria-labelledby="heading${uniqId}">
+                    <div class="accordion-body">
+                        <div class="container">${details}</div>
+                        ${noteHTML}
+                    </div>
                 </div>
             </div>`;
-        });
-        details += `</div>`;
-    }
-
-    let noteHTML = '';
-    if (type === "handling") {
-        noteHTML = `
-            <input type="hidden" name="kode[]" value="${e.kode}">
-            <p class="mb-0"><strong>Catatan</strong></p>
-            <textarea class="form-control" name="note[${e.kode}]" rows="3" disabled>${noteText}</textarea>
-        `;
-    } else {
-        noteHTML = `
-            <p class="mb-0"><strong>Catatan</strong></p>
-            <textarea class="form-control" rows="3" disabled>${noteText || '-'}</textarea>
-        `;
-    }
-
-    return `
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="heading${uniqId}">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${uniqId}">
-                Tabung ${e.tabung} (${e.kode})
-            </button>
-        </h2>
-        <div id="collapse${uniqId}" class="accordion-collapse collapse" aria-labelledby="heading${uniqId}">
-            <div class="accordion-body">
-                <div class="container">${details}</div>
-                ${noteHTML}
-            </div>
-        </div>
-    </div>`;
-}
+        }
         });
         });
     </script>

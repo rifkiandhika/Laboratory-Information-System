@@ -75,7 +75,7 @@ class resultController extends Controller
             }
         }
 
-        // Ambil dokter internal saja
+        // Ambil dokter internal
         $userDokter = null;
         $dokterName = null;
 
@@ -84,13 +84,20 @@ class resultController extends Controller
             $userDokter = User::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($dokterName))])->first();
         }
 
+        // Ambil analyst dari tabel pasien, bukan dari auth()->user()
+        $userAnalyst = null;
+        if ($data_pasien->analyst) {
+            $userAnalyst = User::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($data_pasien->analyst))])->first();
+        }
+
         return view('print-view.print-pasien', compact(
             'data_pasien',
             'note',
             'hasil_pemeriksaans',
             'nilai_rujukan_map',
             'userDokter',
-            'dokterName'
+            'dokterName',
+            'userAnalyst'
         ));
     }
 

@@ -276,6 +276,8 @@ class worklistController extends Controller
             'duplo_d3.*' => 'nullable',
             'duplo_dx.*' => 'nullable',
             'is_switched.*' => 'nullable|boolean',
+            'flag_dx' => 'nullable|array',  // ✅ Ubah validasi
+            'flag_dx.*' => 'nullable|string',
         ]);
 
         try {
@@ -284,6 +286,8 @@ class worklistController extends Controller
             Log::info('Update hasil pemeriksaan', [
                 'no_lab' => $no_lab,
                 'total_pemeriksaan' => count($data['nama_pemeriksaan']),
+                'flag_dx_keys' => isset($data['flag_dx']) ? array_keys($data['flag_dx']) : [],
+                'flag_dx_data' => $data['flag_dx'] ?? [],
             ]);
 
             $updateCount = 0;
@@ -304,45 +308,64 @@ class worklistController extends Controller
                     $newHasil = $data['hasil'][$i] ?? null;
                     $newDx = $data['duplo_dx'][$i] ?? null;
 
-                    $newSwitch = $oldSwitch; // default: tidak berubah
+                    // ✅ Ambil flag_dx berdasarkan nama pemeriksaan (param.nama)
+                    $newFlagDx = isset($data['flag_dx'][$nama]) ? $data['flag_dx'][$nama] : null;
 
-                    // 🔹 Hanya proses jika DX ada nilai
+                    Log::info("Processing $nama", [
+                        'index' => $i,
+                        'nama_pemeriksaan' => $nama,
+                        'new_flag_dx' => $newFlagDx,
+                        'new_dx' => $newDx,
+                        'is_switched_input' => $data['is_switched'][$i] ?? null,
+                    ]);
+
+                    $newSwitch = $oldSwitch;
+
                     if (!is_null($newDx) && $newDx !== '') {
-
-                        // 🟢 Kondisi 1: Jika DX sebelumnya kosong tapi sekarang terisi (dan nilainya sama dengan hasil lama)
                         if ((is_null($oldDx) || $oldDx === '') && $newDx === $oldHasil && $oldHasil !== null) {
                             $newSwitch = 1;
                             Log::info("DX baru diisi untuk $nama → is_switched = 1");
-                        }
-
-                        // 🟡 Kondisi 2: Jika hasil & dx saling tertukar dari sebelumnya
-                        elseif (($newHasil === $oldDx && $newDx === $oldHasil) &&
+                        } elseif (($newHasil === $oldDx && $newDx === $oldHasil) &&
                             ($oldHasil !== null || $oldDx !== null)
                         ) {
                             $newSwitch = $oldSwitch === 1 ? 0 : 1;
                             Log::info("Terjadi pertukaran hasil-DX untuk $nama → is_switched toggle {$oldSwitch} → {$newSwitch}");
                         }
                     } else {
-                        // 🚫 Jika DX masih kosong, jangan ubah is_switched
-                        Log::info("Lewati update is_switched untuk $nama (DX kosong)");
+                        // ✅ Jika DX dikosongkan, reset switch dan flag_dx
+                        $newSwitch = 0;
+                        $newFlagDx = null;
+                        Log::info("DX dikosongkan untuk $nama → is_switched = 0, flag_dx = null");
                     }
 
-                    // 🔹 Lanjut update semua kolom
+                    // ✅ Validasi flag_dx: simpan hanya jika is_switched = 1 dan tidak kosong
+                    $finalFlagDx = ($newSwitch === 1 && !empty($newFlagDx) && trim($newFlagDx) !== '') ? $newFlagDx : null;
+
                     $hasil->update([
                         'hasil' => $newHasil,
                         'duplo_d1' => $data['duplo_d1'][$i] ?? null,
                         'duplo_d2' => $data['duplo_d2'][$i] ?? null,
                         'duplo_d3' => $data['duplo_d3'][$i] ?? null,
                         'duplo_dx' => $newDx,
+                        'flag_dx' => $finalFlagDx,  // ✅ Simpan flag_dx
                         'is_switched' => $newSwitch,
                         'updated_at' => now(),
                     ]);
 
+                    Log::info("✅ Updated $nama", [
+                        'flag_dx_saved' => $finalFlagDx,
+                        'is_switched' => $newSwitch,
+                        'new_dx' => $newDx,
+                    ]);
+
                     $updateCount++;
+                } else {
+                    Log::warning("⚠️ Hasil pemeriksaan tidak ditemukan untuk $nama", [
+                        'no_lab' => $no_lab,
+                    ]);
                 }
             }
 
-            // 🔹 Simpan ke riwayat jika ada perubahan
             if ($updateCount > 0) {
                 $totalHistory = HistoryPasien::where('no_lab', $no_lab)
                     ->where('proses', 'like', '%Update Hasil%')
@@ -357,14 +380,20 @@ class worklistController extends Controller
                     'waktu_proses' => now(),
                     'created_at' => now(),
                 ]);
+
+                Log::info('✅ History berhasil disimpan', [
+                    'proses' => "Update Hasil ke-$updateNumber",
+                ]);
             }
 
             toast("Data hasil diperbarui ($updateCount parameter)", 'success');
             return redirect()->back();
         } catch (\Exception $e) {
-            Log::error('Gagal update hasil pemeriksaan', [
+            Log::error('❌ Gagal update hasil pemeriksaan', [
                 'no_lab' => $no_lab,
                 'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
             ]);
 
             toast('Gagal update data: ' . $e->getMessage(), 'error');

@@ -1459,6 +1459,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 satuan: item.satuan || '',
                 note: item.note || '',
                 flag: item.flag || '',
+                flag_dx: item.flag_dx || '',
                 is_switched: Number(item.is_switched) || 0
             };
         });
@@ -1488,6 +1489,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 satuan: data.satuan,
                 range: data.range,
                 flag: data.flag,
+                flag_dx: data.flag_dx || '',
                 switched: Number(data.is_switched) || 0
             };
         }
@@ -1501,7 +1503,8 @@ document.addEventListener('DOMContentLoaded', function() {
             hasilUtama: values[0] || '',
             satuan: '',
             range: '',
-            flag: '' 
+            flag: '' ,
+            flag_dx: '',
         };
     }
 
@@ -1873,7 +1876,23 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         </td>
                                                         <td class="col-3 flag-cell">
                                                             ${renderFlag(dataValues.flag || flagContent(dataValues.hasilUtama, {innerHTML: ''}, p.data_pemeriksaan.nama_parameter))}
+                                                            ${dataValues.switched ? `
+                                                            <div class='checkbox-r-container d-flex align-items-center gap-1'>
+                                                                <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
+                                                                <span class='text-danger fw-bold'>R</span>
+                                                                <select name="flag_dx[${param.nama}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
+                                                                    <option value="Normal" ${(dataValues.flag_dx || 'Normal') === 'Normal' ? 'selected' : ''}>Normal</option>
+                                                                    <option value="Low" ${dataValues.flag_dx === 'Low' ? 'selected' : ''}>Low</option>
+                                                                    <option value="Low*" ${dataValues.flag_dx === 'Low*' ? 'selected' : ''}>Low*</option>
+                                                                    <option value="High" ${dataValues.flag_dx === 'High' ? 'selected' : ''}>High</option>
+                                                                    <option value="High*" ${dataValues.flag_dx === 'High*' ? 'selected' : ''}>High*</option>
+                                                                </select>
+                                                            </div>
+                                                        ` : `
+                                                            <input type="hidden" name="flag_dx[]" value="">
+                                                        `}
                                                         </td>
+                                                        
                                                         <td>
                                                             <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
                                                                 value="${dataValues.satuan || param.satuan}" readonly />
@@ -1995,7 +2014,24 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         </select>
                                                     </td>
                                                 ` : ''}
-                                                <td class="col-3 flag-cell"></td>
+                                                <td class="col-3 flag-cell">
+                                                    ${obxValues.switched ? `
+                                                    <div class='checkbox-r-container d-flex align-items-center gap-1'>
+                                                        <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
+                                                        <span class='text-danger fw-bold'>R</span>
+                                                        <select name="flag_dx[${param.nama}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
+                                                            <option value="Normal" ${(obxValues.flag_dx || 'Normal') === 'Normal' ? 'selected' : ''}>Normal</option>
+                                                            <option value="Low" ${obxValues.flag_dx === 'Low' ? 'selected' : ''}>Low</option>
+                                                            <option value="Low*" ${obxValues.flag_dx === 'Low*' ? 'selected' : ''}>Low*</option>
+                                                            <option value="High" ${obxValues.flag_dx === 'High' ? 'selected' : ''}>High</option>
+                                                            <option value="High*" ${obxValues.flag_dx === 'High*' ? 'selected' : ''}>High*</option>
+                                                        </select>
+                                                    </div>
+                                                ` : `
+                                                    <input type="hidden" name="flag_dx[]" value="">
+                                                `}
+                                                </td>
+                                                
                                                 <td>
                                                     <input type="hidden" name="satuan[]" value="${param.satuan}" readonly />
                                                     ${param.satuan}
@@ -2178,8 +2214,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
                                                         <!-- Kolom Flag -->
                                                         <td class="col-3 flag-cell">
-                                                            
+                                                            ${obxValues.switched ? `
+                                                            <div class='checkbox-r-container d-flex align-items-center gap-1'>
+                                                                <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
+                                                                <span class='text-danger fw-bold'>R</span>
+                                                                <select name="flag_dx[${param.nama}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
+                                                                    <option value="Normal" ${(obxValues.flag_dx || 'Normal') === 'Normal' ? 'selected' : ''}>Normal</option>
+                                                                    <option value="Low" ${obxValues.flag_dx === 'Low' ? 'selected' : ''}>Low</option>
+                                                                    <option value="Low*" ${obxValues.flag_dx === 'Low*' ? 'selected' : ''}>Low*</option>
+                                                                    <option value="High" ${obxValues.flag_dx === 'High' ? 'selected' : ''}>High</option>
+                                                                    <option value="High*" ${obxValues.flag_dx === 'High*' ? 'selected' : ''}>High*</option>
+                                                                </select>
+                                                            </div>
+                                                        ` : `
+                                                            <input type="hidden" name="flag_dx[]" value="">
+                                                        `}
                                                         </td>
+                                                        
 
                                                         <!-- Kolom Satuan -->
                                                         <td>
@@ -2317,7 +2368,24 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                     </select>
                                                                 `}
                                                             </td>
-                                                            <td class="col-3 flag-cell"></td>
+                                                            <td class="col-3 flag-cell">
+                                                                ${obxValues.switched ? `
+                                                                    <div class='checkbox-r-container d-flex align-items-center gap-1'>
+                                                                        <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
+                                                                        <span class='text-danger fw-bold'>R</span>
+                                                                        <select name="flag_dx[${param.nama}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
+                                                                            <option value="Normal" ${(obxValues.flag_dx || 'Normal') === 'Normal' ? 'selected' : ''}>Normal</option>
+                                                                            <option value="Low" ${obxValues.flag_dx === 'Low' ? 'selected' : ''}>Low</option>
+                                                                            <option value="Low*" ${obxValues.flag_dx === 'Low*' ? 'selected' : ''}>Low*</option>
+                                                                            <option value="High" ${obxValues.flag_dx === 'High' ? 'selected' : ''}>High</option>
+                                                                            <option value="High*" ${obxValues.flag_dx === 'High*' ? 'selected' : ''}>High*</option>
+                                                                        </select>
+                                                                    </div>
+                                                                ` : `
+                                                                    <input type="hidden" name="flag_dx[]" value="">
+                                                                `}    
+                                                            </td>
+                                                            
                                                             <td>
                                                                 <input type="hidden" name="satuan[]" value="${param.satuan || ''}" readonly />
                                                                 ${param.satuan || ''}
@@ -2449,7 +2517,24 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                     </select>
                                                                 `}
                                                             </td>
-                                                            <td class="col-3 flag-cell"></td>
+                                                            <td class="col-3 flag-cell">
+                                                                ${obxValues.switched ? `
+                                                                    <div class='checkbox-r-container d-flex align-items-center gap-1'>
+                                                                        <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
+                                                                        <span class='text-danger fw-bold'>R</span>
+                                                                        <select name="flag_dx[${param.nama}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
+                                                                            <option value="Normal" ${(obxValues.flag_dx || 'Normal') === 'Normal' ? 'selected' : ''}>Normal</option>
+                                                                            <option value="Low" ${obxValues.flag_dx === 'Low' ? 'selected' : ''}>Low</option>
+                                                                            <option value="Low*" ${obxValues.flag_dx === 'Low*' ? 'selected' : ''}>Low*</option>
+                                                                            <option value="High" ${obxValues.flag_dx === 'High' ? 'selected' : ''}>High</option>
+                                                                            <option value="High*" ${obxValues.flag_dx === 'High*' ? 'selected' : ''}>High*</option>
+                                                                        </select>
+                                                                    </div>
+                                                                ` : `
+                                                                    <input type="hidden" name="flag_dx[]" value="">
+                                                                `}    
+                                                            </td>
+                                                            
                                                             <td>
                                                                 <input type="hidden" name="satuan[]" value="${param.satuan || ''}" readonly />
                                                                 ${param.satuan || ''}
@@ -2560,7 +2645,25 @@ document.addEventListener('DOMContentLoaded', function() {
                                             </td>
 
                                             <!-- Flag -->
-                                            <td class="col-3 flag-cell"></td>
+                                            <td class="col-3 flag-cell">
+                                                ${obxValues.switched ? `
+                                                <div class='checkbox-r-container d-flex align-items-center gap-1'>
+                                                    <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
+                                                    <span class='text-danger fw-bold'>R</span>
+                                                    <select name="flag_dx[${param.nama}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
+                                                        <option value="Normal" ${(obxValues.flag_dx || 'Normal') === 'Normal' ? 'selected' : ''}>Normal</option>
+                                                        <option value="Low" ${obxValues.flag_dx === 'Low' ? 'selected' : ''}>Low</option>
+                                                        <option value="Low*" ${obxValues.flag_dx === 'Low*' ? 'selected' : ''}>Low*</option>
+                                                        <option value="High" ${obxValues.flag_dx === 'High' ? 'selected' : ''}>High</option>
+                                                        <option value="High*" ${obxValues.flag_dx === 'High*' ? 'selected' : ''}>High*</option>
+                                                    </select>
+                                                </div>
+                                            ` : `
+                                                <input type="hidden" name="flag_dx[]" value="">
+                                            `}    
+                                            </td>
+
+                                            
 
                                             <!-- Satuan -->
                                             <td>
@@ -2623,21 +2726,20 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
 
                             let html = '';
+                            let lastJudul = null;
 
                             e.pasiens.forEach((p, pIdx) => {
                                 const judul = p.data_pemeriksaan?.judul;
-                                const hasHeader = judul && judul !== p.data_pemeriksaan.nama_pemeriksaan;
 
-                                // Tampilkan header judul jika ada
-                                if (hasHeader) {
+                                if (judul && judul !== p.data_pemeriksaan.nama_pemeriksaan && judul !== lastJudul) {
                                     html += `
                                         <tr class="individual-title-header">
-                                            <td colspan="8" class="fw-bold text-dark ps-3"
-                                                style="background-color:#f1f3f4; border-left:4px solid #6c757d; padding:10px;">
+                                            <td colspan="8" class="fw-bold text-dark ps-3" style="background-color: #f1f3f4; border-left: 4px solid #6c757d; padding: 10px;">
                                                 ${judul}
                                             </td>
                                         </tr>
                                     `;
+                                    lastJudul = judul; 
                                 }
 
                                 // Ambil hasil OBX
@@ -2662,8 +2764,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                                 html += `
                                     <tr data-id="${rowId}" data-parameter="${p.data_pemeriksaan.nama_parameter}">
-                                        <td class="col-2 ${hasHeader ? 'ps-4' : ''}" ${hasHeader ? 'style="border-left:2px solid #e9ecef;"' : ''}>
-                                            <strong>${hasHeader ? p.data_pemeriksaan.nama_parameter : p.data_pemeriksaan.nama_pemeriksaan}</strong>
+                                        <td class="col-2 ${lastJudul ? 'ps-4' : ''}" ${lastJudul ? 'style="border-left:2px solid #e9ecef;"' : ''}>
+                                            <strong>${lastJudul ? p.data_pemeriksaan.nama_parameter : p.data_pemeriksaan.nama_pemeriksaan}</strong>
                                             ${nilaiRujukanDisplay ? `<br><small class="text-muted">${nilaiRujukanDisplay}</small>` : ''}
                                             <input type="hidden" name="nama_pemeriksaan[]" value="${p.data_pemeriksaan.nama_pemeriksaan}" />
                                             <input type="hidden" name="judul[]" value="${judul || ''}" />
@@ -2784,7 +2886,23 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <!-- Flag -->
                                         <td class="col-3 flag-cell">
                                             ${renderFlag(obxValues.flag || renderFlag(obxValues.hasilUtama, {innerHTML: ''}, p.data_pemeriksaan.nama_parameter))}
+                                            ${obxValues.switched ? `
+                                                <div class='checkbox-r-container d-flex align-items-center gap-1'>
+                                                    <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
+                                                    <span class='text-danger fw-bold'>R</span>
+                                                    <select name="flag_dx[${p.data_pemeriksaan.nama_parameter}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
+                                                        <option value="Normal" ${(obxValues.flag_dx || 'Normal') === 'Normal' ? 'selected' : ''}>Normal</option>
+                                                        <option value="Low" ${obxValues.flag_dx === 'Low' ? 'selected' : ''}>Low</option>
+                                                        <option value="Low*" ${obxValues.flag_dx === 'Low*' ? 'selected' : ''}>Low*</option>
+                                                        <option value="High" ${obxValues.flag_dx === 'High' ? 'selected' : ''}>High</option>
+                                                        <option value="High*" ${obxValues.flag_dx === 'High*' ? 'selected' : ''}>High*</option>
+                                                    </select>
+                                                </div>
+                                            ` : `
+                                                <input type="hidden" name="flag_dx[]" value="">
+                                            `}
                                         </td>
+
 
                                         <!-- Satuan -->
                                         <td>
@@ -2861,6 +2979,34 @@ document.addEventListener('DOMContentLoaded', function() {
             background-color: #f8f9fa;
             opacity: 1;
         }
+            .flag-dx-select {
+        width: 100px !important;
+        padding: 2px 8px;
+        font-size: 0.875rem;
+    }
+    
+    .checkbox-r-container {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .flag-cell {
+        vertical-align: middle;
+    }
+    
+    .flag-cell .d-flex {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .flag-icon {
+        min-width: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
     </style>
     `;
 
@@ -2991,45 +3137,120 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
 
-            // ✅ Tambahkan checkbox R + label teks “R” di sebelah DX
+            
              function addCheckboxR(dxInput) {
-                // Hapus yang lama jika ada
-                removeCheckboxR(dxInput);
+            // Hapus yang lama jika ada
+            removeCheckboxR(dxInput);
 
-                // Pastikan parent element ada
-                if (!dxInput.parentElement) return;
+            // Pastikan parent element ada
+            if (!dxInput.parentElement) return;
 
-                const container = document.createElement('div');
-                container.className = 'checkbox-r-container d-flex align-items-center gap-1';
+            const container = document.createElement('div');
+            container.className = 'checkbox-r-container d-flex align-items-center gap-1';
 
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.className = 'checkbox-r form-check-input';
-                checkbox.checked = true;
-                checkbox.title = 'Nilai asli berpindah ke kolom DX';
-                checkbox.disabled = true;
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'checkbox-r form-check-input';
+            checkbox.checked = true;
+            checkbox.title = 'Nilai asli berpindah ke kolom DX';
+            checkbox.disabled = true;
 
-                const label = document.createElement('span');
-                label.className = 'text-danger fw-bold';
-                label.textContent = 'R';
+            const label = document.createElement('span');
+            label.className = 'text-danger fw-bold';
+            label.textContent = 'R';
 
-                container.appendChild(checkbox);
-                container.appendChild(label);
+            container.appendChild(checkbox);
+            container.appendChild(label);
 
-                // Tambahkan setelah input DX
-                dxInput.parentElement.appendChild(container);
+            // Tambahkan setelah input DX (dalam parent yang sama)
+            dxInput.parentElement.appendChild(container);
+            
+            // Tambahkan dropdown flag_dx di kolom FLAG
+            addFlagDxDropdown(dxInput);
+            
+            console.log('Checkbox R berhasil ditambahkan di kolom DX');
+        }
+
+        // ✅ Fungsi baru untuk menambahkan dropdown flag_dx di kolom FLAG
+        function addFlagDxDropdown(dxInput) {
+            const row = dxInput.closest('tr');
+            const flagCell = row.querySelector('.flag-cell');
+            
+            if (!flagCell) return;
+            
+            // Cek apakah dropdown sudah ada
+            let existingDropdown = flagCell.querySelector('.flag-dx-select');
+            if (existingDropdown) return;
+            
+            // Cari atau buat container di flag cell
+            let flagContainer = flagCell.querySelector('.d-flex');
+            if (!flagContainer) {
+                flagContainer = document.createElement('div');
+                flagContainer.className = 'd-flex align-items-center gap-2';
                 
-                console.log('Checkbox R berhasil ditambahkan');
+                // Pindahkan icon flag yang ada ke dalam container
+                const existingContent = flagCell.innerHTML;
+                flagCell.innerHTML = '';
+                
+                const iconSpan = document.createElement('span');
+                iconSpan.className = 'flag-icon';
+                iconSpan.innerHTML = existingContent;
+                
+                flagContainer.appendChild(iconSpan);
+                flagCell.appendChild(flagContainer);
             }
+            
+            // Buat dropdown flag_dx
+            const flagSelect = document.createElement('select');
+            flagSelect.name = 'flag_dx[]';
+            flagSelect.className = 'form-select form-select-sm flag-dx-select';
+            flagSelect.style.width = '100px';
+            
+            const flagOptions = ['Normal', 'Low', 'Low*', 'High', 'High*'];
+            flagOptions.forEach(option => {
+                const optElement = document.createElement('option');
+                optElement.value = option;
+                optElement.textContent = option;
+                flagSelect.appendChild(optElement);
+            });
+            
+            flagSelect.value = 'Normal';
+            
+            // Tambahkan ke flag cell
+            flagContainer.appendChild(flagSelect);
+            
+            console.log('Dropdown flag_dx berhasil ditambahkan di kolom FLAG');
+        }
 
             // Fungsi removeCheckboxR tetap sama
-            function removeCheckboxR(dxInput) {
-                const container = dxInput.parentElement?.querySelector('.checkbox-r-container');
-                if (container) {
-                    container.remove();
-                    console.log('Checkbox R berhasil dihapus');
-                }
+           function removeCheckboxR(dxInput) {
+            // Hapus checkbox R dari kolom DX
+            const dxContainer = dxInput.parentElement?.querySelector('.checkbox-r-container');
+            if (dxContainer) {
+                dxContainer.remove();
+                console.log('Checkbox R berhasil dihapus dari kolom DX');
             }
+            
+            // Hapus dropdown flag_dx dari kolom FLAG
+            const row = dxInput.closest('tr');
+            const flagCell = row?.querySelector('.flag-cell');
+            const flagDropdown = flagCell?.querySelector('.flag-dx-select');
+            
+            if (flagDropdown) {
+                flagDropdown.remove();
+                console.log('Dropdown flag_dx berhasil dihapus dari kolom FLAG');
+            }
+            
+            // Tambahkan hidden input untuk flag_dx kosong
+            const existingHidden = row?.querySelector('input[name="flag_dx[]"]');
+            if (!existingHidden) {
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'flag_dx[]';
+                hiddenInput.value = '';
+                row?.appendChild(hiddenInput);
+            }
+        }
 
             // ✅ Fungsi untuk menambahkan/ubah input hidden is_switched[]
             function setSwitchStatus(row, value) {
