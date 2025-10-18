@@ -3522,23 +3522,37 @@ $('.preview').on('click', function(event) {
                 // ========== Spesimen Collection ==========
                 let collectionSpecimens = spesimen.filter(e => e.spesiment === "Spesiment Collection");
                 if (collectionSpecimens.length > 0) {
-                    accordionContent += `<h5 class="title mt-3">Spesiment Collection</h5><hr>`;
-                    accordionContent += `<div class="accordion" id="accordionCollection">`;
+                    let collectionHTML = '';
                     collectionSpecimens.forEach(e => {
-                        accordionContent += generateAccordionHTML(e, scollection, shandling, "collection");
+                        const html = generateAccordionHTML(e, scollection, shandling, "collection");
+                        if (html) collectionHTML += html;
                     });
-                    accordionContent += `</div>`;
+                    
+                    // Hanya tampilkan section jika ada tabung yang memiliki data
+                    if (collectionHTML) {
+                        accordionContent += `<h5 class="title mt-3">Spesiment Collection</h5><hr>`;
+                        accordionContent += `<div class="accordion" id="accordionCollection">`;
+                        accordionContent += collectionHTML;
+                        accordionContent += `</div>`;
+                    }
                 }
 
                 // ========== Spesimen Handlings ==========
                 let handlingSpecimens = spesimen.filter(e => e.spesiment === "Spesiment Handlings");
                 if (handlingSpecimens.length > 0) {
-                    accordionContent += `<h5 class="title mt-3">Spesiment Handlings</h5><hr>`;
-                    accordionContent += `<div class="accordion" id="accordionHandling">`;
+                    let handlingHTML = '';
                     handlingSpecimens.forEach(e => {
-                        accordionContent += generateAccordionHTML(e, scollection, shandling, "handling");
+                        const html = generateAccordionHTML(e, scollection, shandling, "handling");
+                        if (html) handlingHTML += html;
                     });
-                    accordionContent += `</div>`;
+                    
+                    // Hanya tampilkan section jika ada tabung yang memiliki data
+                    if (handlingHTML) {
+                        accordionContent += `<h5 class="title mt-3">Spesiment Handlings</h5><hr>`;
+                        accordionContent += `<div class="accordion" id="accordionHandling">`;
+                        accordionContent += handlingHTML;
+                        accordionContent += `</div>`;
+                    }
                 }
 
                 // ========== Notes ==========
@@ -3591,14 +3605,17 @@ $('.preview').on('click', function(event) {
             );
         }
 
-        if (dataItem) {
-            hasData  = true;
-            noteText = dataItem.note || '';
-            kapasitas = dataItem.kapasitas;
-            serumh   = dataItem.serumh;
-            clotact  = dataItem.clotact;
-            serum    = dataItem.serum;
+        // Jika tidak ada data di database, return empty string (tidak tampilkan tabung)
+        if (!dataItem) {
+            return '';
         }
+
+        hasData  = true;
+        noteText = dataItem.note || '';
+        kapasitas = dataItem.kapasitas;
+        serumh   = dataItem.serumh;
+        clotact  = dataItem.clotact;
+        serum    = dataItem.serum;
 
         const uniqId = `${e.tabung}-${e.kode}`.replace(/\s+/g, '');
 
@@ -3607,31 +3624,20 @@ $('.preview').on('click', function(event) {
             e.details.forEach(detail => {
                 const imageUrl = `/gambar/${detail.gambar}`;
                 let isChecked = '';
-                let isDisabled = '';
+                let isDisabled = 'disabled';
 
-                if (hasData) {
-                    if (type === "collection") {
-                        if (e.tabung === 'K3-EDTA') {
-                            isChecked = kapasitas == detail.id ? 'checked' : '';
-                            isDisabled = 'disabled';
-                        } else if (e.tabung === 'CLOTH-ACTIVATOR') {
-                            isChecked = serumh == detail.id ? 'checked' : '';
-                            isDisabled = 'disabled';
-                        } else if (e.tabung === 'CLOTH-ACT') {
-                            isChecked = clotact == detail.id ? 'checked' : '';
-                            isDisabled = 'disabled';
-                        }
-                    } else if (type === "handling") {
-                        if (e.tabung === 'CLOTH-ACTIVATOR' || e.tabung === 'CLOT-ACTIVATOR') {
-                            isChecked = parseInt(serum) === parseInt(detail.id) ? 'checked' : '';
-                            isDisabled = 'disabled';
-                        }
+                if (type === "collection") {
+                    if (e.tabung === 'K3-EDTA') {
+                        isChecked = kapasitas == detail.id ? 'checked' : '';
+                    } else if (e.tabung === 'CLOTH-ACTIVATOR') {
+                        isChecked = serumh == detail.id ? 'checked' : '';
+                    } else if (e.tabung === 'CLOTH-ACT') {
+                        isChecked = clotact == detail.id ? 'checked' : '';
                     }
-                } else {
-                    if (detail.nama_parameter.toLowerCase().includes('normal')) {
-                        isChecked = 'checked';
+                } else if (type === "handling") {
+                    if (e.tabung === 'CLOTH-ACTIVATOR' || e.tabung === 'CLOT-ACTIVATOR') {
+                        isChecked = parseInt(serum) === parseInt(detail.id) ? 'checked' : '';
                     }
-                    isDisabled = '';
                 }
 
                 const radioName = (type === "handling") ? `serum[${e.kode}]` : `${e.tabung}_${e.kode}`;
