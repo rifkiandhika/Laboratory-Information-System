@@ -3368,82 +3368,164 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, 0);
 
+
     return content;
 }
 
 // Export fungsi jika diperlukan
 window.getResultTableContent = getResultTableContent;
     
-    // Fungsi untuk mengecek dan menampilkan kolom duplo - ALWAYS SHOW VERSION
-    function checkAndShowDuploColumns() {
-        const accordion = document.getElementById('accordionPemeriksaan');
-        if (!accordion) {
-            // console.log('Accordion not found');
-            return;
+       function checkAndShowDuploColumns() {
+    const accordion = document.getElementById('accordionPemeriksaan');
+    if (!accordion) {
+        console.log('Accordion not found');
+        return;
+    }
+
+    const d1Cells = accordion.querySelectorAll('.d1-column');
+    const d2Cells = accordion.querySelectorAll('.d2-column');
+    const d3Cells = accordion.querySelectorAll('.d3-column');
+
+    console.log('Found duplo cells:', {
+        d1: d1Cells.length,
+        d2: d2Cells.length,
+        d3: d3Cells.length
+    });
+
+    let hasD1 = false;
+    let hasD2 = false;
+    let hasD3 = false;
+
+    // === CEK D1 ===
+    const d1Elements = accordion.querySelectorAll('input.d1, select.d1');
+    console.log('D1 elements found:', d1Elements.length);
+
+    d1Elements.forEach(element => {
+        let value = '';
+
+        // Ambil nilai asli dari database, bukan default select
+        if (element.tagName === 'SELECT') {
+            const selectedOption = element.querySelector('option[selected]');
+            value = selectedOption ? selectedOption.value.trim() : '';
+        } else {
+            value = element.value ? element.value.trim() : '';
         }
-        
-        // const d1Cells = accordion.querySelectorAll('.d1-column');
-        // const d2Cells = accordion.querySelectorAll('.d2-column');
-        // const d3Cells = accordion.querySelectorAll('.d3-column');
-        
-        // console.log('Found duplo cells:', {
-        //     d1: d1Cells.length,
-        //     d2: d2Cells.length,
-        //     d3: d3Cells.length
-        // });
-        
-        let hasD1 = false;
-        let hasD2 = false;
-        let hasD3 = false;
-        
-        // Check if any D1, D2, D3 values exist
-        const duploInputs = accordion.querySelectorAll('input.d1, input.d2, input.d3');
-        // console.log('Found duplo inputs:', duploInputs.length);
-        
-        duploInputs.forEach(input => {
-            const value = input.value ? input.value.trim() : '';
-            if (value !== '' && value !== '0' && value !== '0.00') {
-                if (input.classList.contains('d1')) {
-                    hasD1 = true;
-                    // console.log('Found D1 data:', value);
-                }
-                if (input.classList.contains('d2')) {
-                    hasD2 = true;
-                    // console.log('Found D2 data:', value);
-                }
-                if (input.classList.contains('d3')) {
-                    hasD3 = true;
-                    // console.log('Found D3 data:', value);
-                }
-            }
+
+        console.log('Checking D1 element:', {
+            tag: element.tagName,
+            value: value,
+            disabled: element.disabled
         });
-        
-        // console.log('Duplo data status:', { hasD1, hasD2, hasD3 });
-        
-        // Always show all duplo columns regardless of data availability
+
+        if (value && !['0', '0.00', 'null', 'pilih...', ''].includes(value.toLowerCase())) {
+            hasD1 = true;
+            // console.log('✓ Found valid D1 data:', value);
+        }
+    });
+
+    // === CEK D2 ===
+    const d2Elements = accordion.querySelectorAll('input.d2, select.d2');
+    // console.log('D2 elements found:', d2Elements.length);
+
+    d2Elements.forEach(element => {
+        let value = '';
+
+        if (element.tagName === 'SELECT') {
+            const selectedOption = element.querySelector('option[selected]');
+            value = selectedOption ? selectedOption.value.trim() : '';
+        } else {
+            value = element.value ? element.value.trim() : '';
+        }
+
+        console.log('Checking D2 element:', {
+            tag: element.tagName,
+            value: value,
+            disabled: element.disabled
+        });
+
+        if (value && !['0', '0.00', 'null', 'pilih...', ''].includes(value.toLowerCase())) {
+            hasD2 = true;
+            // console.log('✓ Found valid D2 data:', value);
+        }
+    });
+
+    // === CEK D3 ===
+    const d3Elements = accordion.querySelectorAll('input.d3, select.d3');
+    console.log('D3 elements found:', d3Elements.length);
+
+    d3Elements.forEach(element => {
+        let value = '';
+
+        if (element.tagName === 'SELECT') {
+            const selectedOption = element.querySelector('option[selected]');
+            value = selectedOption ? selectedOption.value.trim() : '';
+        } else {
+            value = element.value ? element.value.trim() : '';
+        }
+
+        console.log('Checking D3 element:', {
+            tag: element.tagName,
+            value: value,
+            disabled: element.disabled
+        });
+
+        if (value && !['0', '0.00', 'null', 'pilih...', ''].includes(value.toLowerCase())) {
+            hasD3 = true;
+            // console.log('✓ Found valid D3 data:', value);
+        }
+    });
+
+    console.log('Final duplo status:', { hasD1, hasD2, hasD3 });
+
+    // === SHOW / HIDE D1 ===
+    if (hasD1) {
         d1Cells.forEach(cell => {
             cell.style.display = 'table-cell';
-            if (hasD1) {
-                cell.style.backgroundColor = '#e3f2fd';
-            }
+            cell.style.backgroundColor = '#e3f2fd';
+            cell.querySelectorAll('input[disabled], select[disabled]').forEach(el => {
+                el.style.opacity = '1';
+                el.style.cursor = 'not-allowed';
+            });
         });
-        
+        console.log('✓ D1 columns shown');
+    } else {
+        d1Cells.forEach(cell => (cell.style.display = 'none'));
+        // console.log('✗ D1 columns hidden');
+    }
+
+    // === SHOW / HIDE D2 ===
+    if (hasD2) {
         d2Cells.forEach(cell => {
             cell.style.display = 'table-cell';
-            if (hasD2) {
-                cell.style.backgroundColor = '#f3e5f5';
-            }
+            cell.style.backgroundColor = '#f3e5f5';
+            cell.querySelectorAll('input[disabled], select[disabled]').forEach(el => {
+                el.style.opacity = '1';
+                el.style.cursor = 'not-allowed';
+            });
         });
-        
+        // console.log('✓ D2 columns shown');
+    } else {
+        d2Cells.forEach(cell => (cell.style.display = 'none'));
+        // console.log('✗ D2 columns hidden');
+    }
+
+    // === SHOW / HIDE D3 ===
+    if (hasD3) {
         d3Cells.forEach(cell => {
             cell.style.display = 'table-cell';
-            if (hasD3) {
-                cell.style.backgroundColor = '#e8f5e8';
-            }
+            cell.style.backgroundColor = '#e8f5e8';
+            cell.querySelectorAll('input[disabled], select[disabled]').forEach(el => {
+                el.style.opacity = '1';
+                el.style.cursor = 'not-allowed';
+            });
         });
-        
-        // console.log('All duplo columns are now visible');
+        // console.log('✓ D3 columns shown');
+    } else {
+        d3Cells.forEach(cell => (cell.style.display = 'none'));
+        // console.log('✗ D3 columns hidden');
     }
+}
+
 });
 </script>
 

@@ -169,6 +169,21 @@
     <script src="{{ asset('assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js') }}"></script>
     <script src="{{ asset('assets/js/tables-datatables-advanced.js')}}"></script>
 
+    <script>
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    document.addEventListener('keydown', e => {
+    if (e.key === 'F12') e.preventDefault();
+    if (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) e.preventDefault();
+    if (e.ctrlKey && ['U','S'].includes(e.key.toUpperCase())) e.preventDefault();
+    });
+
+    setInterval(() => {
+    if (window.outerWidth - window.innerWidth > 160 || window.outerHeight - window.innerHeight > 160) {
+        alert('Developer Tools terdeteksi! Tutup dulu DevTools-nya.');
+    }
+    }, 1000);
+    </script>
 
 
     <script>

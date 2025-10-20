@@ -2639,6 +2639,7 @@
                                                                                     <input type="text" name="duplo_d1[]" class="form-control d1 w-60 p-0 text-center" disabled value="${obxValues.duplo_d1 || ''}" />
                                                                                 ` : `
                                                                                     <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                                        <option value="" selected hidden>Pilih...</option>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2650,6 +2651,7 @@
                                                                                     <input type="text" name="duplo_d2[]" class="form-control d2 w-60 p-0 text-center" disabled value="${obxValues.duplo_d2 || ''}" />
                                                                                 ` : `
                                                                                     <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                                                        <option value="" selected hidden>Pilih...</option>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2661,6 +2663,7 @@
                                                                                     <input type="text" name="duplo_d3[]" class="form-control d3 w-50 p-0 text-center" disabled value="${obxValues.duplo_d3 || ''}" />
                                                                                 ` : `
                                                                                     <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                                        <option value="" selected hidden>Pilih...</option>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -3117,6 +3120,7 @@
                                                                                 disabled 
                                                                                 style="display: ${p.data_pemeriksaan.tipe_inputan === 'Dropdown' ? 'block' : 'none'}"
                                                                             >
+                                                                            <option value="" selected hidden>Pilih...</option>
                                                                                 ${p.data_pemeriksaan.tipe_inputan === 'Dropdown' && p.data_pemeriksaan.opsi_output ? 
                                                                                     p.data_pemeriksaan.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>
@@ -3138,6 +3142,7 @@
                                                                                 p.data_pemeriksaan.tipe_inputan === 'Dropdown' && p.data_pemeriksaan.opsi_output ?
                                                                                 `
                                                                                 <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                                    <option value="" selected hidden>Pilih...</option>
                                                                                     ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>
                                                                                             ${opt.trim()}
@@ -3158,6 +3163,7 @@
                                                                                 p.data_pemeriksaan.tipe_inputan === 'Dropdown' && p.data_pemeriksaan.opsi_output ?
                                                                                 `
                                                                                 <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                                                    <option value="" selected hidden>Pilih...</option>
                                                                                     ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>
                                                                                             ${opt.trim()}
@@ -3178,6 +3184,7 @@
                                                                                 p.data_pemeriksaan.tipe_inputan === 'Dropdown' && p.data_pemeriksaan.opsi_output ?
                                                                                 `
                                                                                 <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                                    <option value="" selected hidden>Pilih...</option>
                                                                                     ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>
                                                                                             ${opt.trim()}
