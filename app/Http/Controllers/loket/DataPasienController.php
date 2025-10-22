@@ -18,7 +18,7 @@ class DataPasienController extends Controller
      */
     public function index()
     {
-        $data_pasien = DataPasien::paginate(10);
+        $data_pasien = DataPasien::get();
 
         return view('loket.data-pasien', compact('data_pasien'));
     }

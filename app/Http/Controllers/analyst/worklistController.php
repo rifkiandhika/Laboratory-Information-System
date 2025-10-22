@@ -83,8 +83,9 @@ class worklistController extends Controller
             'satuan.*' => 'nullable',
             'metode.*' => 'nullable',
             'department.*' => 'required',
-            'flag.*' => 'nullable', // ⬅️ tambahan
-            'judul.*' => 'nullable', // ⬅️ tambahan
+            'flag' => 'nullable',
+            'flag.*' => 'nullable',
+            'judul.*' => 'nullable',
             'note' => 'nullable',
         ]);
 
@@ -255,9 +256,9 @@ class worklistController extends Controller
 
         // Menampilkan toast dan redirect
         if ($errorCount > 0) {
-            toast("Data berhasil disimpan ({$savedCount} parameter), tapi ada {$errorCount} error", 'warning');
+            toast("Data berhasil disimpan, tapi ada {$errorCount} error", 'warning');
         } else {
-            toast("Data berhasil disimpan ({$savedCount} parameter)", 'success');
+            toast("Data berhasil disimpan", 'success');
         }
 
         return redirect()->route('worklist.index');
@@ -266,6 +267,7 @@ class worklistController extends Controller
 
     public function updateHasil(Request $request, $no_lab)
     {
+
         // dd($request->all());
         $request->validate([
             'no_lab' => 'required',
@@ -274,20 +276,25 @@ class worklistController extends Controller
             'duplo_d1.*' => 'nullable',
             'duplo_d2.*' => 'nullable',
             'duplo_d3.*' => 'nullable',
+            'duplo_dx' => 'nullable',
             'duplo_dx.*' => 'nullable',
             'is_switched.*' => 'nullable|boolean',
-            'flag_dx' => 'nullable|array',  // ✅ Ubah validasi
-            'flag_dx.*' => 'nullable|string',
+            'flag_dx' => 'nullable',
+            'flag_dx.*' => 'nullable',
         ]);
 
         try {
             $data = $request->all();
 
-            Log::info('Update hasil pemeriksaan', [
+            Log::info('=== UPDATE HASIL PEMERIKSAAN ===', [
                 'no_lab' => $no_lab,
                 'total_pemeriksaan' => count($data['nama_pemeriksaan']),
+            ]);
+
+            // 🔍 DEBUG: Log semua flag_dx yang dikirim
+            Log::info('📦 FLAG_DX yang diterima dari request:', [
+                'flag_dx_array' => $data['flag_dx'] ?? 'TIDAK ADA',
                 'flag_dx_keys' => isset($data['flag_dx']) ? array_keys($data['flag_dx']) : [],
-                'flag_dx_data' => $data['flag_dx'] ?? [],
             ]);
 
             $updateCount = 0;
@@ -304,42 +311,71 @@ class worklistController extends Controller
                     $oldHasil = $hasil->hasil;
                     $oldDx = $hasil->duplo_dx;
                     $oldSwitch = (int) $hasil->is_switched;
+                    $oldFlagDx = $hasil->flag_dx; // 🔍 Tambahkan ini
 
                     $newHasil = $data['hasil'][$i] ?? null;
                     $newDx = $data['duplo_dx'][$i] ?? null;
 
-                    // ✅ Ambil flag_dx berdasarkan nama pemeriksaan (param.nama)
+                    // ✅ Ambil flag_dx berdasarkan nama pemeriksaan
                     $newFlagDx = isset($data['flag_dx'][$nama]) ? $data['flag_dx'][$nama] : null;
 
-                    Log::info("Processing $nama", [
+                    // 🔍 DEBUG: Log detail per parameter
+                    Log::info("📋 Processing: $nama", [
                         'index' => $i,
-                        'nama_pemeriksaan' => $nama,
-                        'new_flag_dx' => $newFlagDx,
-                        'new_dx' => $newDx,
-                        'is_switched_input' => $data['is_switched'][$i] ?? null,
+                        '--- OLD VALUES ---' => '',
+                        'old_hasil' => $oldHasil,
+                        'old_duplo_dx' => $oldDx,
+                        'old_is_switched' => $oldSwitch,
+                        'old_flag_dx' => $oldFlagDx,
+                        '--- NEW VALUES ---' => '',
+                        'new_hasil' => $newHasil,
+                        'new_duplo_dx' => $newDx,
+                        'new_flag_dx_from_request' => $newFlagDx,
+                        '--- REQUEST INFO ---' => '',
+                        'flag_dx_key_exists' => isset($data['flag_dx'][$nama]) ? 'YES' : 'NO',
+                        'flag_dx_value' => $data['flag_dx'][$nama] ?? 'NOT SET',
                     ]);
 
                     $newSwitch = $oldSwitch;
 
                     if (!is_null($newDx) && $newDx !== '') {
+                        // Kondisi 1: DX baru diisi
                         if ((is_null($oldDx) || $oldDx === '') && $newDx === $oldHasil && $oldHasil !== null) {
                             $newSwitch = 1;
-                            Log::info("DX baru diisi untuk $nama → is_switched = 1");
-                        } elseif (($newHasil === $oldDx && $newDx === $oldHasil) &&
+                            Log::info("✅ KONDISI 1: DX baru diisi untuk $nama → is_switched = 1");
+                        }
+                        // Kondisi 2: Terjadi pertukaran
+                        elseif (($newHasil === $oldDx && $newDx === $oldHasil) &&
                             ($oldHasil !== null || $oldDx !== null)
                         ) {
                             $newSwitch = $oldSwitch === 1 ? 0 : 1;
-                            Log::info("Terjadi pertukaran hasil-DX untuk $nama → is_switched toggle {$oldSwitch} → {$newSwitch}");
+                            Log::info("✅ KONDISI 2: Pertukaran hasil-DX untuk $nama → is_switched toggle {$oldSwitch} → {$newSwitch}");
+                        }
+                        // DEBUG: Kondisi tidak terpenuhi
+                        else {
+                            Log::info("⚠️ KONDISI TIDAK TERPENUHI untuk $nama", [
+                                'kondisi_1_check' => [
+                                    'oldDx_is_null_or_empty' => (is_null($oldDx) || $oldDx === ''),
+                                    'newDx_equals_oldHasil' => $newDx === $oldHasil,
+                                    'oldHasil_not_null' => $oldHasil !== null,
+                                ],
+                                'kondisi_2_check' => [
+                                    'newHasil_equals_oldDx' => $newHasil === $oldDx,
+                                    'newDx_equals_oldHasil' => $newDx === $oldHasil,
+                                    'old_values_not_null' => ($oldHasil !== null || $oldDx !== null),
+                                ],
+                            ]);
                         }
                     } else {
-                        // ✅ Jika DX dikosongkan, reset switch dan flag_dx
+                        // DX dikosongkan
                         $newSwitch = 0;
                         $newFlagDx = null;
                         Log::info("DX dikosongkan untuk $nama → is_switched = 0, flag_dx = null");
                     }
 
-                    // ✅ Validasi flag_dx: simpan hanya jika is_switched = 1 dan tidak kosong
-                    $finalFlagDx = ($newSwitch === 1 && !empty($newFlagDx) && trim($newFlagDx) !== '') ? $newFlagDx : null;
+                    // Validasi flag_dx
+                    $finalFlagDx = (!empty($newFlagDx) && trim($newFlagDx) !== '') ? $newFlagDx : null;
+
 
                     $hasil->update([
                         'hasil' => $newHasil,
@@ -347,15 +383,14 @@ class worklistController extends Controller
                         'duplo_d2' => $data['duplo_d2'][$i] ?? null,
                         'duplo_d3' => $data['duplo_d3'][$i] ?? null,
                         'duplo_dx' => $newDx,
-                        'flag_dx' => $finalFlagDx,  // ✅ Simpan flag_dx
+                        'flag_dx' => $finalFlagDx,
                         'is_switched' => $newSwitch,
                         'updated_at' => now(),
                     ]);
 
-                    Log::info("✅ Updated $nama", [
+                    Log::info("💾 SAVED $nama", [
                         'flag_dx_saved' => $finalFlagDx,
-                        'is_switched' => $newSwitch,
-                        'new_dx' => $newDx,
+                        'is_switched_saved' => $newSwitch,
                     ]);
 
                     $updateCount++;
@@ -386,10 +421,10 @@ class worklistController extends Controller
                 ]);
             }
 
-            toast("Data hasil diperbarui ($updateCount parameter)", 'success');
+            toast("Data hasil diperbarui", 'success');
             return redirect()->back();
         } catch (\Exception $e) {
-            Log::error('❌ Gagal update hasil pemeriksaan', [
+            Log::error('Gagal update hasil pemeriksaan', [
                 'no_lab' => $no_lab,
                 'error' => $e->getMessage(),
                 'file' => $e->getFile(),
@@ -527,9 +562,9 @@ class worklistController extends Controller
         ]);
 
         if ($errorCount > 0) {
-            toast("Data berhasil disimpan ({$savedCount} parameter), tapi ada {$errorCount} error", 'warning');
+            toast("Data berhasil disimpan , tapi ada {$errorCount} error", 'warning');
         } else {
-            toast("Data berhasil disimpan ({$savedCount} parameter)", 'success');
+            toast("Data berhasil disimpan ", 'success');
         }
 
         return redirect()->route('worklist.index');

@@ -1889,7 +1889,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                 </select>
                                                             </div>
                                                         ` : `
-                                                            <input type="hidden" name="flag_dx[]" value="">
                                                         `}
                                                         </td>
                                                         
@@ -2028,7 +2027,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         </select>
                                                     </div>
                                                 ` : `
-                                                    <input type="hidden" name="flag_dx[]" value="">
+                                                <input type="hidden" name="flag_dx[]" value="">
                                                 `}
                                                 </td>
                                                 
@@ -2042,7 +2041,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                                         return html;
                                     } else if (hasUrine) {
-                                        // Ambil nama pemeriksaan urine (fallback: Urinalisis)
                                         const urinePemeriksaan = e.pasiens.find(p => 
                                             p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('urin') ||
                                             p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('urine')
@@ -2053,16 +2051,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
                                         let html = '';
 
-                                        // Group params berdasarkan judul
                                         const groupedParams = UrineParams.reduce((acc, param) => {
                                             if (!acc[param.judul]) acc[param.judul] = [];
                                             acc[param.judul].push(param);
                                             return acc;
                                         }, {});
 
-                                        // Loop setiap grup judul
                                         Object.entries(groupedParams).forEach(([judulGroup, params]) => {
-                                            // Tambahkan header judul
                                             html += `
                                                 <tr class="urine-title-header">
                                                     <td colspan="8" class="fw-bold text-info ps-3"
@@ -2072,10 +2067,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                                 </tr>
                                             `;
 
-                                            // Render parameter dalam grup
                                             html += params.map((param, paramIdx) => {
                                                 const obxValues = getDataValues(param.nama);
                                                 const rowId = `urine_${idx}_${paramIdx}`;
+                                                const paramKey = param.nama.replace(/\s+/g, '_'); // Gunakan nama parameter sebagai key
+                                                
                                                 const initialFlag = renderFlag(
                                                     obxValues.hasilUtama,
                                                     param.nama,
@@ -2094,20 +2090,28 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                 ? `<small class="text-muted d-block">${normalValues.rujukan ?? ''}</small>` 
                                                                 : ''}
                                                             
-                                                            <input type="hidden" name="nama_pemeriksaan[]" value="${param.nama}" />
-                                                            <input type="hidden" name="judul[]" value="${param.judul}" />
-                                                            <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                            <input type="hidden" name="nilai_rujukan[]" value="${normalValues.rujukan}" />
-                                                            <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                            <!-- Gunakan key unik untuk setiap hidden input -->
+                                                            <input type="hidden" name="row_id[]" value="${rowId}" />
+                                                            <input type="hidden" name="nama_pemeriksaan[${rowId}]" value="${param.nama}" />
+                                                            <input type="hidden" name="judul[${rowId}]" value="${param.judul}" />
+                                                            <input type="hidden" name="parameter_name[${rowId}]" value="${param.nama}" />
+                                                            <input type="hidden" name="nilai_rujukan[${rowId}]" value="${normalValues.rujukan}" />
+                                                            <input type="hidden" name="department[${rowId}]" value="${e.data_departement.nama_department}" />
                                                         </td>
 
                                                         <td class="col-2">
                                                             ${param.tipe_inputan.toLowerCase() === 'text' ? `
-                                                                <input type="text" name="hasil[]" 
+                                                                <input type="text" name="hasil[${rowId}]" 
                                                                     class="form-control manualInput w-60 p-0 text-center"
+                                                                    data-row-id="${rowId}"
+                                                                    data-parameter="${param.nama}"
                                                                     disabled value="${obxValues.hasilUtama || param.default || ''}" />
                                                             ` : `
-                                                                <select name="hasil[]" class="form-select manualInput w-60 p-0" disabled>
+                                                                <select name="hasil[${rowId}]" 
+                                                                    class="form-select manualInput w-60 p-0"
+                                                                    data-row-id="${rowId}"
+                                                                    data-parameter="${param.nama}"
+                                                                    disabled>
                                                                     ${param.opsi_output.split(';').map(opt => `
                                                                         <option value="${opt.trim()}" 
                                                                             ${(obxValues.hasilUtama || param.default) === opt.trim() ? 'selected' : ''}>
@@ -2120,21 +2124,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
                                                         <td class="col-1">
                                                             <button type="button" class="btn btn-outline-secondary btn-sm switch-btn"
-                                                                    data-index="${paramIdx}" data-switch-index="0">
+                                                                    data-row-id="${rowId}"
+                                                                    data-parameter="${param.nama}"
+                                                                    data-index="${paramIdx}" 
+                                                                    data-switch-index="0">
                                                                 <i class="ti ti-switch-2"></i>
                                                             </button>
                                                         </td>
 
-                                                        <!-- Kolom duplo DX -->
+                                                        <!-- Kolom duplo DX dengan identifier unik -->
                                                         <td class="col-2 text-center">
                                                             <div class="d-flex align-items-center justify-content-center gap-1">
                                                                 ${param.tipe_inputan.toLowerCase() === 'text' ? `
                                                                     <input type="text"
-                                                                        name="duplo_dx[]"
+                                                                        name="duplo_dx[${rowId}]"
                                                                         class="form-control dx w-60 p-0 text-center"
+                                                                        data-row-id="${rowId}"
                                                                         value="${obxValues.duplo_dx || ''}" />
                                                                 ` : `
-                                                                    <select name="duplo_dx[]" class="form-select dx w-60 p-0">
+                                                                    <select name="duplo_dx[${rowId}]" 
+                                                                        class="form-select dx w-60 p-0"
+                                                                        data-row-id="${rowId}">
                                                                         ${param.opsi_output
                                                                             ? param.opsi_output.split(';').map(opt => `
                                                                                 <option value="${opt.trim()}"
@@ -2147,11 +2157,20 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                     </select>
                                                                 `}
 
-                                                                <input type="hidden" name="is_switched[]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
+                                                                <!-- PENTING: is_switched dengan key unik -->
+                                                                <input type="hidden" 
+                                                                    name="is_switched[${rowId}]" 
+                                                                    class="is-switched-input"
+                                                                    data-row-id="${rowId}"
+                                                                    value="${Number(obxValues.switched) === 1 ? 1 : 0}">
 
                                                                 ${obxValues.switched ? `
-                                                                    <div class='checkbox-r-container d-flex align-items-center gap-1'>
-                                                                        <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
+                                                                    <div class='checkbox-r-container d-flex align-items-center gap-1'
+                                                                        data-row-id="${rowId}">
+                                                                        <input type='checkbox' 
+                                                                            class='checkbox-r form-check-input' 
+                                                                            data-row-id="${rowId}"
+                                                                            checked disabled>
                                                                         <span class='text-danger fw-bold'>R</span>
                                                                     </div>
                                                                 ` : ''}
@@ -2161,11 +2180,15 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         <!-- Kolom duplo D1 -->
                                                         <td class="col-2 duplo d1-column text-center" style="display:none;">
                                                             ${param.tipe_inputan.toLowerCase() === 'text' ? `
-                                                                <input type="text" name="duplo_d1[]" 
+                                                                <input type="text" name="duplo_d1[${rowId}]" 
                                                                     class="form-control d1 w-60 p-0 text-center"
+                                                                    data-row-id="${rowId}"
                                                                     disabled value="${obxValues.duplo_d1 || ''}" />
                                                             ` : `
-                                                                <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                <select name="duplo_d1[${rowId}]" 
+                                                                    class="form-select d1 w-60 p-0"
+                                                                    data-row-id="${rowId}"
+                                                                    disabled>
                                                                     <option value="" selected hidden>Pilih...</option>
                                                                     ${param.opsi_output.split(';').map(opt => `
                                                                         <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>
@@ -2179,12 +2202,16 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         <!-- Kolom duplo D2 -->
                                                         <td class="col-2 duplo d2-column" style="display:none;">
                                                             ${param.tipe_inputan.toLowerCase() === 'text' ? `
-                                                                <input type="text" name="duplo_d2[]" 
+                                                                <input type="text" name="duplo_d2[${rowId}]" 
                                                                     class="form-control d2 w-60 p-0 text-center"
+                                                                    data-row-id="${rowId}"
                                                                     disabled value="${obxValues.duplo_d2 || ''}" />
                                                             ` : `
-                                                                <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
-                                                                    <option value="" selected  hidden>Pilih...</option>
+                                                                <select name="duplo_d2[${rowId}]" 
+                                                                    class="form-select d2 w-60 p-0"
+                                                                    data-row-id="${rowId}"
+                                                                    disabled>
+                                                                    <option value="" selected hidden>Pilih...</option>
                                                                     ${param.opsi_output.split(';').map(opt => `
                                                                         <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>
                                                                             ${opt.trim()}
@@ -2197,11 +2224,15 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         <!-- Kolom duplo D3 -->
                                                         <td class="col-2 duplo d3-column" style="display:none;">
                                                             ${param.tipe_inputan.toLowerCase() === 'text' ? `
-                                                                <input type="text" name="duplo_d3[]" 
+                                                                <input type="text" name="duplo_d3[${rowId}]" 
                                                                     class="form-control d3 w-50 p-0 text-center"
+                                                                    data-row-id="${rowId}"
                                                                     disabled value="${obxValues.duplo_d3 || ''}" />
                                                             ` : `
-                                                                <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                <select name="duplo_d3[${rowId}]" 
+                                                                    class="form-select d3 w-50 p-0"
+                                                                    data-row-id="${rowId}"
+                                                                    disabled>
                                                                     <option value="" selected hidden>Pilih...</option>
                                                                     ${param.opsi_output.split(';').map(opt => `
                                                                         <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>
@@ -2212,29 +2243,36 @@ document.addEventListener('DOMContentLoaded', function() {
                                                             `}
                                                         </td>
 
-                                                        <!-- Kolom Flag -->
-                                                        <td class="col-3 flag-cell">
+                                                        <!-- Kolom Flag dengan identifier unik -->
+                                                        <td class="col-3 flag-cell" data-row-id="${rowId}">
                                                             ${obxValues.switched ? `
-                                                            <div class='checkbox-r-container d-flex align-items-center gap-1'>
-                                                                <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
-                                                                <span class='text-danger fw-bold'>R</span>
-                                                                <select name="flag_dx[${param.nama}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
-                                                                    <option value="Normal" ${(obxValues.flag_dx || 'Normal') === 'Normal' ? 'selected' : ''}>Normal</option>
-                                                                    <option value="Low" ${obxValues.flag_dx === 'Low' ? 'selected' : ''}>Low</option>
-                                                                    <option value="Low*" ${obxValues.flag_dx === 'Low*' ? 'selected' : ''}>Low*</option>
-                                                                    <option value="High" ${obxValues.flag_dx === 'High' ? 'selected' : ''}>High</option>
-                                                                    <option value="High*" ${obxValues.flag_dx === 'High*' ? 'selected' : ''}>High*</option>
-                                                                </select>
-                                                            </div>
-                                                        ` : `
-                                                            <input type="hidden" name="flag_dx[]" value="">
-                                                        `}
+                                                                <div class='checkbox-r-container d-flex align-items-center gap-1'>
+                                                                    <input type='checkbox' 
+                                                                        class='checkbox-r form-check-input' 
+                                                                        data-row-id="${rowId}"
+                                                                        checked disabled>
+                                                                    <span class='text-danger fw-bold'>R</span>
+                                                                    <select name="flag_dx[${rowId}]" 
+                                                                        class="form-select form-select-sm flag-dx-select"
+                                                                        data-row-id="${rowId}"
+                                                                        style="width: 100px;">
+                                                                        <option value="Normal" ${(obxValues.flag_dx || 'Normal') === 'Normal' ? 'selected' : ''}>Normal</option>
+                                                                        <option value="Low" ${obxValues.flag_dx === 'Low' ? 'selected' : ''}>Low</option>
+                                                                        <option value="Low*" ${obxValues.flag_dx === 'Low*' ? 'selected' : ''}>Low*</option>
+                                                                        <option value="High" ${obxValues.flag_dx === 'High' ? 'selected' : ''}>High</option>
+                                                                        <option value="High*" ${obxValues.flag_dx === 'High*' ? 'selected' : ''}>High*</option>
+                                                                    </select>
+                                                                </div>
+                                                            ` : `
+                                                                <input type="hidden" name="flag_dx[${rowId}]" value="">
+                                                            `}
+                                                            <input type="hidden" name="flag[${rowId}]" class="flag-value" 
+                                                                data-row-id="${rowId}" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
                                                         </td>
-                                                        
 
                                                         <!-- Kolom Satuan -->
                                                         <td>
-                                                            <input type="hidden" name="satuan[]" value="${param.satuan}" readonly />
+                                                            <input type="hidden" name="satuan[${rowId}]" value="${param.satuan}" readonly />
                                                             ${param.satuan}
                                                         </td>
                                                     </tr>
@@ -2382,7 +2420,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                         </select>
                                                                     </div>
                                                                 ` : `
-                                                                    <input type="hidden" name="flag_dx[]" value="">
+                                                                <input type="hidden" name="flag_dx[]" value="">
                                                                 `}    
                                                             </td>
                                                             
@@ -2531,7 +2569,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                         </select>
                                                                     </div>
                                                                 ` : `
-                                                                    <input type="hidden" name="flag_dx[]" value="">
+                                                                <input type="hidden" name="flag_dx[]" value="">
                                                                 `}    
                                                             </td>
                                                             
@@ -2659,7 +2697,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                     </select>
                                                 </div>
                                             ` : `
-                                                <input type="hidden" name="flag_dx[]" value="">
+                                            <input type="hidden" name="flag_dx[]" value="">
                                             `}    
                                             </td>
 
@@ -2836,6 +2874,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <td class="col-2 duplo d1-column text-center" style="display:none;">
                                             ${p.data_pemeriksaan.tipe_inputan === 'Dropdown' ? `
                                                 <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                     <option value="" selected hidden>Pilih...</option>
                                                     ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
                                                         <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>
                                                             ${opt.trim()}
@@ -2853,6 +2892,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <td class="col-2 duplo d2-column text-center" style="display:none;">
                                             ${p.data_pemeriksaan.tipe_inputan === 'Dropdown' ? `
                                                 <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                     <option value="" selected hidden>Pilih...</option>
                                                     ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
                                                         <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>
                                                             ${opt.trim()}
@@ -2870,6 +2910,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <td class="col-2 duplo d3-column text-center" style="display:none;">
                                             ${p.data_pemeriksaan.tipe_inputan === 'Dropdown' ? `
                                                 <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                     <option value="" selected hidden>Pilih...</option>
                                                     ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
                                                         <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>
                                                             ${opt.trim()}
@@ -2899,7 +2940,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                     </select>
                                                 </div>
                                             ` : `
-                                                <input type="hidden" name="flag_dx[]" value="">
+                                            <input type="hidden" name="flag_dx[]" value="">
                                             `}
                                         </td>
 
@@ -3108,6 +3149,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const flagCell = row.querySelector('.flag-cell');
                     const parameter = row.dataset.parameter;
                     const originalValue = hasilInput.dataset.original?.trim() || '';
+                    
 
                     if (!hasilInput || !dxInput) return;
 
@@ -3202,7 +3244,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Buat dropdown flag_dx
             const flagSelect = document.createElement('select');
-            flagSelect.name = 'flag_dx[]';
+            flagSelect.name = `flag_dx[${row.dataset.parameter}]`;
             flagSelect.className = 'form-select form-select-sm flag-dx-select';
             flagSelect.style.width = '100px';
             

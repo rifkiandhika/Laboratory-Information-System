@@ -3202,7 +3202,7 @@
                                                                         </td>
                                                                         <td class="col-3 flag-cell">
                                                                             ${initialFlag}
-                                                                            <input type="hidden" name="flag[]" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
+                                                                            <input type="hidden" name="flag[]" class="flag-value" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
                                                                         </td>
                                                                         <td>
                                                                             <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
@@ -3451,31 +3451,38 @@
                                     
                                     flagCell.innerHTML = `
                                         ${icon} ${flagWithStar}
-                                        <input type="hidden" name="flag[]" value="${flagWithStar}">
+                                        <input type="hidden" name="flag[]" class="flag-value" value="${flagWithStar}">
                                     `;
+                                    
+                                    console.log(`Flag set to: ${flagWithStar} for parameter: ${parameter}`);
                                 } else {
                                     flagCell.innerHTML = `
-                                        <input type="hidden" name="flag[]" value="">
+                                        <input type="hidden" name="flag[]" class="flag-value" value="">
                                     `;
                                 }
                             }
 
                             function setupFlagEventListeners() {
-                                // Hapus event listener dari semua input terlebih dahulu
-                                const allInputs = document.querySelectorAll('.manualInput, .d1, .d2, .d3');
+                                // Hapus event listener lama
+                                const allInputs = document.querySelectorAll('.hasil-input, .hasil-select, .manualInput, .d1, .d2, .d3');
                                 allInputs.forEach(input => {
                                     input.removeEventListener('input', inputHandler);
                                     input.removeEventListener('change', inputHandler);
                                 });
 
-                                // HANYA tambahkan event listener untuk field HASIL (.manualInput)
-                                const hasilInputs = document.querySelectorAll('.manualInput');
+                                // Tambahkan event listener untuk SEMUA input hasil yang visible
+                                const hasilInputs = document.querySelectorAll('.hasil-input, .hasil-select, .manualInput');
                                 hasilInputs.forEach(input => {
-                                    input.addEventListener('input', inputHandler);
-                                    input.addEventListener('change', inputHandler); // Untuk select elements
+                                    // Cek apakah input visible
+                                    if (input.style.display !== 'none') {
+                                        if (input.tagName === 'SELECT') {
+                                            input.addEventListener('change', inputHandler);
+                                        } else {
+                                            input.addEventListener('input', inputHandler);
+                                        }
+                                    }
                                 });
                                 
-                                console.log(`Setup flag event listeners ONLY for ${hasilInputs.length} HASIL inputs`);
                             }
 
 
@@ -3484,9 +3491,16 @@
                                 const flagCell = row.querySelector('.flag-cell');
                                 const parameter = row.dataset.parameter;
 
-                                // Pastikan ini adalah input HASIL
-                                if (this.classList.contains('manualInput')) {
-                                    updateFlag(this.value, flagCell, parameter);
+                                // Pastikan ini adalah input HASIL yang visible
+                                if (this.classList.contains('manualInput') || 
+                                    this.classList.contains('hasil-input') || 
+                                    this.classList.contains('hasil-select')) {
+                                    
+                                    // Hanya update flag jika input ini visible
+                                    if (this.style.display !== 'none') {
+                                        updateFlag(this.value, flagCell, parameter);
+                                        console.log(`Flag updated for ${parameter}: ${this.value}`);
+                                    }
                                 }
                             }
 
@@ -3751,6 +3765,8 @@
                             // Event listener untuk tombol verifikasi
                             if (verifikasiHasilBtn) {
                                 verifikasiHasilBtn.addEventListener('click', () => {
+                                    const flagInputs = document.querySelectorAll('input[name="flag[]"]');
+                                    
                                     document.getElementById('worklistForm').action = "{{ route('worklist.store') }}";
                                     document.getElementById('worklistForm').submit();
                                 });

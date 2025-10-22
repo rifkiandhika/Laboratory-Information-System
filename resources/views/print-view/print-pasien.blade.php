@@ -6,7 +6,7 @@
     <title>Preview Cetak Hasil</title>
     <style>
         body {
-            font-size: 8px !important;
+            font-size: 10px !important;
             font-family: Arial, Helvetica, sans-serif;
             margin: 0;
             padding: 5px;
@@ -69,7 +69,7 @@
 
         @media print {
             body {
-                font-size: 8pt !important;
+                font-size: 10pt !important;
                 color: black;
                 background-color: white !important;
                 margin: 0;
@@ -585,13 +585,13 @@
                 <!-- KANAN: Analis dari tabel pasien -->
                 @if($userAnalyst && $userAnalyst->status === 'active')
                 <div class="user-info text-end">
-                    <h6 style="margin-right: 55px;">Analis Pemeriksa</h6>
+                    <h6 style="margin-right: 60px;">Analis Pemeriksa</h6>
                     @if($userAnalyst->signature)
                         <img src="{{ asset('signatures/' . $userAnalyst->signature) }}"
                             alt="Signature"
                             style="display:block; height:150px; width:auto; object-fit:contain; margin-left:auto;">
                     @endif
-                    <div style="padding-right: 25px; margin-top:5px; text-align:right; margin-right: 20px;">
+                    <div style="padding-right: 25px; margin-top:5px; text-align:right; margin-right: 15px;">
                         <div style="display: inline-block; text-align: center;">
                             <div style="padding-top: 2px; min-width: 65px;">
                                 <div style="font-weight: bold;">{{ $userAnalyst->name }}</div>
@@ -605,13 +605,13 @@
                 <!-- Kalau tidak ada dokter/signature, hanya tampilkan analyst -->
                 @if($userAnalyst && $userAnalyst->status === 'active')
                 <div class="doctor-info text-end w-100">
-                    <h6 style="margin-right: 55px;">Analis Pemeriksa</h6>
+                    <h6 style="margin-right: 60px;">Analis Pemeriksa</h6>
                     @if($userAnalyst->signature)
                         <img src="{{ asset('signatures/' . $userAnalyst->signature) }}"
                             alt="Signature"
                             style="display:block; height:150px; width:auto; object-fit:contain; margin-left:auto;">
                     @endif
-                    <div style="padding-right: 25px; margin-top:5px; text-align:right; margin-right: 20px;">
+                    <div style="padding-right: 25px; margin-top:5px; text-align:right; margin-right: 15px;">
                         <div style="display: inline-block; text-align: center;">
                             <div style="padding-top: 2px; min-width: 65px;">
                                 <div style="font-weight: bold;">{{ $userAnalyst->name }}</div>

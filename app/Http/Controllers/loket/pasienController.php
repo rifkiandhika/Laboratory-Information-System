@@ -232,10 +232,11 @@ class pasienController extends Controller
         }
 
         $nik = trim($request->nik) ?: '000';
+        $norm = trim($request->norm) ?: '000';
 
         Pasien::create([
             'no_lab'          => $noLab,
-            'no_rm'           => $request->norm,
+            'no_rm'           => $norm,
             'cito'            => $cito,
             'nik'             => $nik,
             'jenis_pelayanan' => $request->jenispelayanan,
@@ -266,7 +267,7 @@ class pasienController extends Controller
         if (!$existingDataPasien) {
             // Jika belum ada, baru buat baru
             DataPasien::create([
-                'no_rm'           => $request->norm,
+                'no_rm'           => $norm,
                 'nik'             => $nik,
                 'nama'            => $request->nama,
                 'lahir'           => $request->tanggallahir,
