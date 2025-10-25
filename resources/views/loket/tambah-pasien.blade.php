@@ -484,7 +484,6 @@ document.addEventListener('DOMContentLoaded', function() {
 $(document).ready(function() {
     console.log('Memulai inisialisasi Select2 NIK...');
     
-    // Pastikan element ada
     if ($('#nik').length === 0) {
         console.error('Element #nik tidak ditemukan!');
         return;
@@ -492,10 +491,10 @@ $(document).ready(function() {
     
     // Inisialisasi Select2 untuk NIK
     $("#nik").select2({
-        placeholder: 'Ketik NIK, Nama, atau No RM (min 3 karakter)',
+        placeholder: 'Ketik NIK, Nama, atau UID (min 3 karakter)', // Update placeholder
         allowClear: true,
         minimumInputLength: 3,
-        tags: true, // Izinkan input manual
+        tags: true,
         language: {
             inputTooShort: function() {
                 return "Ketik minimal 3 karakter";
@@ -510,12 +509,10 @@ $(document).ready(function() {
         createTag: function(params) {
             var term = $.trim(params.term);
             
-            // Izinkan semua input angka (tidak harus 16 digit saat mengetik)
             if (!/^\d+$/.test(term)) {
-                return null; // Hanya tolak jika bukan angka
+                return null;
             }
             
-            // Tampilkan sebagai NIK baru
             if (term.length >= 3) {
                 return {
                     id: term,
@@ -553,10 +550,11 @@ $(document).ready(function() {
                 }
                 
                 let results = data.data.map(function(pasien) {
+                    // Tampilkan NIK, Nama, dan UID di dropdown
                     return {
                         id: pasien.nik,
-                        text: pasien.nik + ' - ' + pasien.nama + ' (RM: ' + pasien.no_rm + ')',
-                        pasienData: pasien
+                        text: pasien.nik + ' - ' + pasien.nama + ' (UID: ' + pasien.uid + ')',
+                        pasienData: pasien // Simpan semua data termasuk no_rm
                     };
                 });
                 
@@ -582,7 +580,6 @@ $(document).ready(function() {
             console.log('NIK Baru - Input Manual');
             clearFormFields();
             
-            // Optional: Tampilkan notifikasi
             if (typeof toastr !== 'undefined') {
                 toastr.info('Silakan isi data pasien baru', 'NIK Baru');
             }
@@ -594,7 +591,6 @@ $(document).ready(function() {
             console.log('Pasien ditemukan, mengisi form...');
             fillFormWithPasienData(data.pasienData);
             
-            // Optional: Tampilkan notifikasi
             if (typeof toastr !== 'undefined') {
                 toastr.success('Data pasien berhasil dimuat', 'Pasien Ditemukan');
             }
@@ -611,8 +607,9 @@ $(document).ready(function() {
     function fillFormWithPasienData(pasien) {
         console.log('Mengisi form dengan data:', pasien);
         
-        // Isi semua field
-        $('#norm').val(pasien.no_rm || '');
+        // Isi semua field termasuk no_rm dan uid
+        $('#norm').val(pasien.no_rm || ''); // no_rm tetap terisi otomatis
+        $('#uid').val(pasien.uid || ''); // uid juga terisi
         $('#nama').val(pasien.nama || '');
         $('#tanggallahir').val(pasien.lahir || '');
         $('#jeniskelamin').val(pasien.jenis_kelamin || 'Choose Gender');
@@ -621,6 +618,7 @@ $(document).ready(function() {
         
         // Disable field yang tidak boleh diubah untuk pasien lama
         $('#norm').prop('readonly', true);
+        $('#uid').prop('readonly', true);
         $('#nama').prop('readonly', true);
         $('#tanggallahir').prop('readonly', true);
         $('#jeniskelamin').prop('readonly', true);
@@ -635,6 +633,7 @@ $(document).ready(function() {
         console.log('Mengosongkan form');
         
         $('#norm').val('');
+        $('#uid').val('');
         $('#nama').val('');
         $('#tanggallahir').val('');
         $('#jeniskelamin').val('Choose Gender');
@@ -643,6 +642,7 @@ $(document).ready(function() {
         
         // Enable semua field untuk pasien baru
         $('#norm').prop('readonly', false);
+        $('#uid').prop('readonly', false);
         $('#nama').prop('readonly', false);
         $('#tanggallahir').prop('readonly', false);
         $('#jeniskelamin').prop('disabled', false);

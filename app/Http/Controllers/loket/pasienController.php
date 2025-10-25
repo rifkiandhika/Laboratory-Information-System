@@ -147,11 +147,12 @@ class pasienController extends Controller
             ]);
         }
 
+        // Pencarian hanya berdasarkan nik, nama, dan uid
         $pasiens = DataPasien::where('nik', 'LIKE', "%{$keyword}%")
             ->orWhere('nama', 'LIKE', "%{$keyword}%")
-            ->orWhere('no_rm', 'LIKE', "%{$keyword}%")
+            ->orWhere('uid', 'LIKE', "%{$keyword}%") // Tambahkan pencarian UID
             ->limit(10)
-            ->get(['id', 'nik', 'no_rm', 'nama', 'lahir', 'jenis_kelamin', 'no_telp', 'alamat']);
+            ->get(['id', 'nik', 'uid', 'no_rm', 'nama', 'lahir', 'jenis_kelamin', 'no_telp', 'alamat']); // no_rm tetap diambil
 
         return response()->json([
             'status' => 'success',
@@ -267,6 +268,7 @@ class pasienController extends Controller
         if (!$existingDataPasien) {
             // Jika belum ada, baru buat baru
             DataPasien::create([
+                'uid'             => $this->generateUid($request->nama, $request->tanggallahir),
                 'no_rm'           => $norm,
                 'nik'             => $nik,
                 'nama'            => $request->nama,
@@ -316,6 +318,7 @@ class pasienController extends Controller
                     'id_parameter'   => $pemeriksaan,
                     'nama_parameter' => $data->nama_parameter,
                     'nama_dokter'    => $request->dokter_internal,
+                    'asal_ruangan'    => $request->asal_ruangan,
                     'dokter_external' => $request->dokter_external,
                     'mcu_package_id' => $request->mcu_package_id,
                     'quantity'       => 1,
@@ -338,6 +341,55 @@ class pasienController extends Controller
     }
 
 
+    private function generateUid($nama, $tanggalLahir)
+    {
+
+        $namaClean = preg_replace('/[^a-zA-Z]/', '', $nama);
+        $namaLength = strlen($namaClean);
+
+
+        $namaChars = '';
+        $positions = [];
+        for ($i = 0; $i < 3 && $i < $namaLength; $i++) {
+            do {
+                $pos = rand(0, $namaLength - 1);
+            } while (in_array($pos, $positions));
+            $positions[] = $pos;
+            $namaChars .= $namaClean[$pos];
+        }
+
+
+        $tanggalStr = str_replace(['-', '/', ' '], '', $tanggalLahir);
+        $tanggalNums = preg_replace('/[^0-9]/', '', $tanggalStr);
+        $tanggalLength = strlen($tanggalNums);
+
+
+        $tanggalChars = '';
+        $positions = [];
+        for ($i = 0; $i < 3 && $i < $tanggalLength; $i++) {
+            do {
+                $pos = rand(0, $tanggalLength - 1);
+            } while (in_array($pos, $positions));
+            $positions[] = $pos;
+            $tanggalChars .= $tanggalNums[$pos];
+        }
+
+
+        $random = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 4));
+
+
+        $parts = [$namaChars, $tanggalChars, $random];
+        shuffle($parts);
+
+        $uid = strtoupper(implode('', $parts));
+
+
+        while (DataPasien::where('uid', $uid)->exists()) {
+            $uid = strtoupper(substr(str_shuffle($uid . rand(1000, 9999)), 0, 10));
+        }
+
+        return $uid;
+    }
 
 
 

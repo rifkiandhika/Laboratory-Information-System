@@ -85,6 +85,16 @@
                         </div>
 
                         <div class="col-12 col-md-6 col-lg-2">
+                            <label for="asal_ruangan" class="form-label"><b>Asal Ruangan</b> <span class="text-danger"> *</span></label>
+                            <select id="asal_ruangan" name="asal_ruangan[]" class="form-control select2" multiple>
+                                <option value="All">Semua</option>
+                                @foreach($asal_ruangan as $ruangan)
+                                    <option value="{{ $ruangan }}">{{ $ruangan }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-2">
                             <label for="analyst" class="form-label"><b>Analis</b> <span class="text-danger"> *</span></label>
                             <select id="analyst" name="analyst[]" class="form-control select2" multiple>
                                 <option value="All">Semua</option>
@@ -112,6 +122,7 @@
                         <tr>
                             <th rowspan="2">DATA LAPORAN</th>
                             <th rowspan="2">DOKTER</th>
+                            <th rowspan="2">ASAL RUANGAN</th>
                             <th rowspan="2">FEE DOKTER / Pengirim</th>
                             <th rowspan="2">ANALIS</th>
                             <th rowspan="2">FEE ANALIS</th>
@@ -133,7 +144,7 @@
                     </thead>
                     <tbody id="reportTableBody">
                         <tr>
-                            <td colspan="14" class="text-center text-muted">
+                            <td colspan="15" class="text-center text-muted">
                                 Silakan pilih filter dan tekan <strong>Tampilkan</strong> untuk menampilkan laporan.
                             </td>
                         </tr>
@@ -148,7 +159,7 @@
 @push('script')
 <script>
 $(document).ready(function () {
-    $('#department, #payment, #dokter_internal, #dokter_external, #mcu, #analyst').select2({ 
+    $('#department, #payment, #dokter_internal, #dokter_external, #mcu, #analyst, #asal_ruangan').select2({ 
         placeholder: 'Pilih...', 
         allowClear: true 
     });
@@ -160,7 +171,7 @@ $(document).ready(function () {
 
     $('#filterForm').on('reset', function () {
         setTimeout(() => {
-            $('#department, #payment, #mcu, #dokter_internal, #dokter_external, #analyst').val(null).trigger('change');
+            $('#department, #payment, #mcu, #dokter_internal, #dokter_external, #analyst, #asal_ruangan').val(null).trigger('change');
             $('#tanggal_awal').val(hariPertama.toISOString().split('T')[0]);
             $('#tanggal_akhir').val(hariIni.toISOString().split('T')[0]);
         }, 100);
@@ -176,6 +187,7 @@ function muatDataLaporan() {
     // ✅ PERBAIKAN: Pisahkan filter dokter internal dan external
     const pilihanDokterInternal = $('#dokter_internal').val() || [];
     const pilihanDokterExternal = $('#dokter_external').val() || [];
+    const pilihanAsalRuangan = $('#asal_ruangan').val() || [];
 
     toggleKolomPembayaran(pilihanPembayaran, semuaTerpilih);
 
@@ -187,6 +199,7 @@ function muatDataLaporan() {
         dokter_internal: pilihanDokterInternal, // ✅ Kirim dokter internal terpisah
         dokter_external: pilihanDokterExternal, // ✅ Kirim dokter external terpisah
         analyst: pilihanAnalyst,
+        asal_ruangan: pilihanAsalRuangan,
         payment_method: pilihanPembayaran,
         _token: $('meta[name="csrf-token"]').attr('content') || '{{ csrf_token() }}'
     };
@@ -422,6 +435,7 @@ function tampilkanTabelLaporan(data, pilihanPembayaran, semuaTerpilih) {
         // MCU Parameter - kosongkan semua kolom kecuali nama
         if (row.is_mcu_parameter) {
             tableHTML += `<td style="${testNameStyle}">-</td>`; // dokter
+            tableHTML += `<td style="${testNameStyle}">-</td>`; //asal ruangan
             tableHTML += `<td style="${testNameStyle}">-</td>`; // fee dokter
             tableHTML += `<td style="${testNameStyle}">-</td>`; // analis
             tableHTML += `<td style="${testNameStyle}">-</td>`; // fee analis
@@ -439,6 +453,7 @@ function tampilkanTabelLaporan(data, pilihanPembayaran, semuaTerpilih) {
 
         // Department Header
         if (row.is_department_header) {
+            tableHTML += `<td style="${testNameStyle}">-</td>`;
             tableHTML += `<td style="${testNameStyle}">-</td>`;
             tableHTML += `<td style="${testNameStyle}">-</td>`;
             tableHTML += `<td style="${testNameStyle}">-</td>`;
@@ -461,6 +476,7 @@ function tampilkanTabelLaporan(data, pilihanPembayaran, semuaTerpilih) {
             tableHTML += `<td style="${testNameStyle}">-</td>`;
             tableHTML += `<td style="${testNameStyle}">-</td>`;
             tableHTML += `<td style="${testNameStyle}">-</td>`;
+            tableHTML += `<td style="${testNameStyle}">-</td>`;
 
             ['bpjs', 'asuransi', 'umum'].forEach(jenis => {
                 tableHTML += `<td class="cell-${jenis}" style="${testNameStyle}">-</td>`;
@@ -474,6 +490,7 @@ function tampilkanTabelLaporan(data, pilihanPembayaran, semuaTerpilih) {
 
         // Data normal
         const namaDokter = row.dokter || '-';
+        const asalRuangan = row.asal_ruangan || '-'; 
         const feeDokter = row.jasa_dokter && row.jasa_dokter > 0 ? formatMataUang(row.jasa_dokter) : '-';
         const namaAnalis = row.analyst || '-';
 
@@ -481,6 +498,7 @@ function tampilkanTabelLaporan(data, pilihanPembayaran, semuaTerpilih) {
         const feeAnalis = totalFeeAnalis > 0 ? formatMataUang(totalFeeAnalis) : '-';
 
         tableHTML += `<td style="${testNameStyle}">${namaDokter}</td>`;
+        tableHTML += `<td style="${testNameStyle}">${asalRuangan}</td>`;
         tableHTML += `<td style="${testNameStyle}">${feeDokter}</td>`;
         tableHTML += `<td style="${testNameStyle}">${namaAnalis}</td>`;
         tableHTML += `<td style="${testNameStyle}">${feeAnalis}</td>`;
@@ -508,6 +526,7 @@ function tampilkanTabelLaporan(data, pilihanPembayaran, semuaTerpilih) {
 
         tableHTML += `<tr style="${styleTotal}">`;
         tableHTML += `<td style="${styleTotal}"><strong>TOTAL</strong></td>`;
+        tableHTML += `<td style="${styleTotal}">-</td>`;
         tableHTML += `<td style="${styleTotal}">-</td>`;
         tableHTML += `<td style="${styleTotal}">-</td>`;
         tableHTML += `<td style="${styleTotal}">-</td>`;
@@ -597,7 +616,7 @@ function hitungTotalFeeDokter() {
     $('#reportTableBody tr').each(function() {
         const $cells = $(this).find('td');
         if ($cells.length > 0) {
-            const feeDokterText = $cells.eq(2).text().trim(); // kolom ke-3 = Fee Dokter
+            const feeDokterText = $cells.eq(3).text().trim(); // kolom ke-3 = Fee Dokter
             if (feeDokterText.includes('Rp ')) {
                 const nilai = parseInt(feeDokterText.replace('Rp ', '').replace(/\./g, ''));
                 if (!isNaN(nilai)) total += nilai;
@@ -675,7 +694,7 @@ function unduhExcel() {
 
         // Setup header rows
         const headerRow1 = ['DATA LAPORAN', 'DOKTER', 'FEE DOKTER', 'ANALIS', 'FEE ANALIS'];
-        const headerRow2 = ['', '', '', '', ''];
+        const headerRow2 = ['', '', '', '', '', ''];
 
         if (semuaTerpilih || pilihanPembayaran.includes('bpjs')) {
             headerRow1.push('BPJS', '', '');
@@ -713,7 +732,7 @@ function unduhExcel() {
                         let rawText = String($(this).text().trim() || '');
 
                         // Special handling for Fee Dokter in TOTAL row
-                        if (isTotal && index === 2) {
+                        if (isTotal && index === 3) {
                             const totalFeeDokter = hitungTotalFeeDokter();
                             rawText = String(totalFeeDokter > 0 ? totalFeeDokter : '');
                         }
@@ -756,6 +775,7 @@ function unduhExcel() {
         ws['!cols'] = [
             { wch: 25 }, // DATA LAPORAN
             { wch: 20 }, // DOKTER
+            { wch: 20 }, // Asal Ruangan
             { wch: 15 }, // FEE DOKTER
             { wch: 15 }, // ANALIS
             { wch: 15 }, // FEE ANALIS
@@ -867,7 +887,7 @@ function getTabelTerformatUntukCetak() {
             const $cell = $(this);
             if ($cell.is(':visible')) {
                 let nilaiSel = $cell.text().trim();
-                if (namaTes.toUpperCase() === 'TOTAL' && index === 2) {
+                if (namaTes.toUpperCase() === 'TOTAL' && index === 3) {
                     const totalFeeDokter = hitungTotalFeeDokter();
                     nilaiSel = totalFeeDokter > 0 ? 'Rp ' + totalFeeDokter.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : '-';
                 }

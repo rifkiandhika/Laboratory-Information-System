@@ -24,6 +24,7 @@
                 <thead>
                   <tr>
                     <th>No</th>
+                    <th>Uid</th>
                     <th>No.RM</th>
                     <th>NIK</th>
                     <th>Name</th>
@@ -38,6 +39,7 @@
                   @foreach ($data_pasien as $x => $dp)
                   <tr>
                     <th>{{ $x + 1 }}</th>
+                    <td>{{ $dp->uid }}</td>
                     <td>{{ $dp->no_rm }}</td>
                     <td>{{ $dp->nik }}</td>
                     <td>{{ $dp->nama }}</td>

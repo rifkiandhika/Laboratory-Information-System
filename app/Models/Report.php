@@ -24,7 +24,8 @@ class Report extends Model
         'tanggal',
         'nama_dokter',
         'mcu_package_id',
-        'dokter_external'
+        'dokter_external',
+        'asal_ruangan'
     ];
     public function detailDepartment()
     {
