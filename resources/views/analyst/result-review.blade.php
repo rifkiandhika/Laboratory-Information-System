@@ -676,774 +676,770 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Fungsi untuk generate content hasil pemeriksaan dalam modal
     function getResultTableContent(data_pemeriksaan_pasien, data_pasien, hasil, history) {
-    const hematologiParams = [
-        { nama: 'WBC', display_name: 'Leukosit', satuan: '10³/µL', normal_min: 4.0, normal_max: 10.0 },
-        { nama: 'LYM#', display_name: 'LYM#', satuan: '10³/µL', normal_min: 1.0, normal_max: 4.0 },
-        { nama: 'MID#', display_name: 'MID#', satuan: '10³/µL', normal_min: 0.2, normal_max: 0.8 },
-        { nama: 'GRAN#', display_name: 'GRAN#', satuan: '10³/µL', normal_min: 2.0, normal_max: 7.0 },
-        { nama: 'LYM%', display_name: 'Limfosit', satuan: '%', normal_min: 20, normal_max: 40 },
-        { nama: 'MID%', display_name: 'Monosit', satuan: '%', normal_min: 3, normal_max: 15 },
-        { nama: 'GRAN%', display_name: 'Granulosit', satuan: '%', normal_min: 50, normal_max: 70 },
-        { nama: 'RBC', display_name: 'Eritrosit', satuan: '10⁶/µL', normal_min: 4.0, normal_max: 5.5 },
-        { nama: 'HGB', display_name: 'Hemoglobin', satuan: 'g/dL', normal_min: 12.0, normal_max: 16.0 },
-        { nama: 'HCT', display_name: 'Hematokrit', satuan: '%', normal_min: 36, normal_max: 48 },
-        { nama: 'MCV', display_name: 'MCV', satuan: 'fL', normal_min: 80, normal_max: 100 },
-        { nama: 'MCH', display_name: 'MCH', satuan: 'pg', normal_min: 27, normal_max: 32 },
-        { nama: 'MCHC', display_name: 'MCHC', satuan: 'g/dL', normal_min: 32, normal_max: 36 },
-        { nama: 'RDW-CV', display_name: 'RDW-CV', satuan: '%', normal_min: 11.5, normal_max: 14.5 },
-        { nama: 'RDW-SD', display_name: 'RDW-SD', satuan: 'fL', normal_min: 39, normal_max: 46 },
-        { nama: 'PLT', display_name: 'Trombosit', satuan: '10³/µL', normal_min: 150, normal_max: 450 },
-        { nama: 'MPV', display_name: 'MPV', satuan: 'fL', normal_min: 7.0, normal_max: 11.0 },
-        { nama: 'PDW', display_name: 'PDW', satuan: 'fL', normal_min: 10.0, normal_max: 18.0 },
-        { nama: 'PCT', display_name: 'PCT', satuan: '%', normal_min: 0.15, normal_max: 0.50 },
-        { nama: 'P-LCC', display_name: 'P-LCC', satuan: '10³/µL', normal_min: 30, normal_max: 90 },
-        { nama: 'P-LCR', display_name: 'P-LCR', satuan: '%', normal_min: 13, normal_max: 43 }
-    ];
+        const hematologiParams = [
+                { nama: 'WBC', display_name: 'Leukosit', satuan: '10³/µL', normal_min: 4.0, normal_max: 10.0 },
+                { nama: 'LYM#', display_name: 'LYM#', satuan: '10³/µL', normal_min: 1.0, normal_max: 4.0 },
+                { nama: 'MID#', display_name: 'MID#', satuan: '10³/µL', normal_min: 0.2, normal_max: 0.8 },
+                { nama: 'GRAN#', display_name: 'GRAN#', satuan: '10³/µL', normal_min: 2.0, normal_max: 7.0 },
+                { nama: 'LYM%', display_name: 'Limfosit', satuan: '%', normal_min: 20, normal_max: 40 },
+                { nama: 'MID%', display_name: 'Monosit', satuan: '%', normal_min: 3, normal_max: 15 },
+                { nama: 'GRAN%', display_name: 'Granulosit', satuan: '%', normal_min: 50, normal_max: 70 },
+                { nama: 'RBC', display_name: 'Eritrosit', satuan: '10⁶/µL', normal_min: 4.0, normal_max: 5.5 },
+                { nama: 'HGB', display_name: 'Hemoglobin', satuan: 'g/dL', normal_min: 12.0, normal_max: 16.0 },
+                { nama: 'HCT', display_name: 'Hematokrit', satuan: '%', normal_min: 36, normal_max: 48 },
+                { nama: 'MCV', display_name: 'MCV', satuan: 'fL', normal_min: 80, normal_max: 100 },
+                { nama: 'MCH', display_name: 'MCH', satuan: 'pg', normal_min: 27, normal_max: 32 },
+                { nama: 'MCHC', display_name: 'MCHC', satuan: 'g/dL', normal_min: 32, normal_max: 36 },
+                { nama: 'RDW-CV', display_name: 'RDW-CV', satuan: '%', normal_min: 11.5, normal_max: 14.5 },
+                { nama: 'RDW-SD', display_name: 'RDW-SD', satuan: 'fL', normal_min: 39, normal_max: 46 },
+                { nama: 'PLT', display_name: 'Trombosit', satuan: '10³/µL', normal_min: 150, normal_max: 450 },
+                { nama: 'MPV', display_name: 'MPV', satuan: 'fL', normal_min: 7.0, normal_max: 11.0 },
+                { nama: 'PDW', display_name: 'PDW', satuan: 'fL', normal_min: 10.0, normal_max: 18.0 },
+                { nama: 'PCT', display_name: 'PCT', satuan: '%', normal_min: 0.15, normal_max: 0.50 },
+                { nama: 'P-LCC', display_name: 'P-LCC', satuan: '10³/µL', normal_min: 30, normal_max: 90 },
+                { nama: 'P-LCR', display_name: 'P-LCR', satuan: '%', normal_min: 13, normal_max: 43 }
+            ];
 
-    // Tambahkan parameter Widal
-    const WidalParams = [
-            {
-                nama: 'Salmonella Typhi H',
-                display_name: 'Salmonella Typhi H',
-                satuan: '-',
-                normal_min_l: '-',
-                normal_max_l: '-',
-                normal_min_p: '-',
-                normal_max_p: '-',
-                nilai_rujukan_l: '-',
-                nilai_rujukan_p: '-',
-                nilai_kritis: 'L.- P.-',
-                metode: '-',
-                tipe_inputan: 'Dropdown',
-                opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
-            },
-            {
-                nama: 'Salmonella Typhi O',
-                display_name: 'Salmonella Typhi O',
-                satuan: '-',
-                normal_min_l: '-',
-                normal_max_l: '-',
-                normal_min_p: '-',
-                normal_max_p: '-',
-                nilai_rujukan_l: '-',
-                nilai_rujukan_p: '-',
-                nilai_kritis: 'L.- P.-',
-                metode: '-',
-                tipe_inputan: 'Dropdown',
-                opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
-            },
-            {
-                nama: 'Salmonella Paratyphi AO',
-                display_name: 'Salmonella Paratyphi AO',
-                satuan: '-',
-                normal_min_l: '-',
-                normal_max_l: '-',
-                normal_min_p: '-',
-                normal_max_p: '-',
-                nilai_rujukan_l: '-',
-                nilai_rujukan_p: '-',
-                nilai_kritis: 'L.- P.-',
-                metode: '-',
-                tipe_inputan: 'Dropdown',
-                opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
-            },
-            {
-                nama: 'Salmonella Paratyphi BO',
-                display_name: 'Salmonella Paratyphi BO',
-                satuan: '-',
-                normal_min_l: '-',
-                normal_max_l: '-',
-                normal_min_p: '-',
-                normal_max_p: '-',
-                nilai_rujukan_l: '-',
-                nilai_rujukan_p: '-',
-                nilai_kritis: 'L.- P.-',
-                metode: '-',
-                tipe_inputan: 'Dropdown',
-                opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
-            }
-        ];
-
-    // Tambahkan parameter Urine
-    const UrineParams = [
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Warna',
-            display_name: 'Warna',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: '-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Kuning;Kuning Pucat;Kuning Tua;Kuning kecokelatan;Orange;Merah;Coklat',
-            default: 'Kuning' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Kekeruhan',
-            display_name: 'Kekeruhan',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'L.- P.-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Jernih;Agak Keruh;Keruh;Sangat keruh',
-            default: 'Jernih' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Berat Jenis',
-            display_name: 'Berat Jenis',
-            satuan: '-',
-            normal_min: 'L.1,003 P.1,003',
-            normal_max: 'L.1,035 P.1,035',
-            nilai_rujukan: 'L.1,003-1,035 P.1,003-1,035',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : '<1.005;1.005;1.010;1.015;1.020;1.025;1.030',
-            default: '1.015' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'PH',
-            display_name: 'pH',
-            satuan: '-',
-            normal_min: 'L.4,5 P.4,5',
-            normal_max: 'L.8,0 P.8,0',
-            nilai_rujukan: 'L.4,5-8,0 P.4,5-8,0',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : '4.5;5.0;5.5;6.0;6.5;7.0;7.5;8.0;8.5;9.0',
-            default: '6.0' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Leukosit',
-            display_name: 'Leukosit',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'L.- P.-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
-            default: 'Negatif' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Nitrit',
-            display_name: 'Nitrit',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'L.- P.-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Protein',
-            display_name: 'Protein',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'L.- P.-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Glukosa',
-            display_name: 'Glukosa',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'L.- P.-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Keton',
-            display_name: 'Keton',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'L.- P.-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif'  
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Urobilinogen',
-            display_name: 'Urobilinogen',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'L.- P.-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++)',
-            default: 'Negatif' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Bilirubin',
-            display_name: 'Bilirubin',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'L.- P.-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Blood',
-            display_name: 'Blood',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'L.- P.-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif' 
-        },
-        {
-            judul: 'Sedimen',
-            nama: 'Eritrosit',
-            display_name: '- Eritrosit',
-            satuan: '',
-            normal_min: 'L.0 P.0',
-            normal_max: 'L.2 P.2',
-            nilai_rujukan: 'L.0-2 P.0-2',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Text',
-            opsi_output : '',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Sedimen',
-            nama: 'Leukosit_sedimen',
-            display_name: '- Leukosit',
-            satuan: '',
-            normal_min: 'L.0 P.0',
-            normal_max: 'L.5 P.5',
-            nilai_rujukan: 'L.0-5 P.0-5',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Text',
-            opsi_output : '',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Sedimen',
-            nama: 'Epithel',
-            display_name: '- Epithel',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'Tidak ada - Sedikit',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Text',
-            opsi_output : 'Tidak ada;Sedikit;Sedang;Banyak',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Sedimen',
-            nama: 'Silinder',
-            display_name: '- Silinder',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'Tidak ada',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Sedimen',
-            nama: 'Kristal',
-            display_name: '- Kristal',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'Tidak ada',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Tidak ada;Asam urat;Kalsium oksalat;Fosfat amorf;Lainnya',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Sedimen',
-            nama: 'Bakteri',
-            display_name: '- Bakteri',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'Tidak ada',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Sedimen',
-            nama: 'Jamur',
-            display_name: '- Jamur',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'Tidak ada',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Sedimen',
-            nama: 'Lain-lain',
-            display_name: '- Lain-lain',
-            satuan: '-',
-            normal_min: '',
-            normal_max: '',
-            nilai_rujukan: '',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Text',
-            opsi_output : '',
-            default: ''
-        }
-    ];
-    // Parameter Miccrobiologi
-    const MicrobiologiParams = [
-        {
-            judul: '',
-            nama: 'Preparat Gram',
-            display_name: 'Preparat Gram',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: '-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Ditemukan Kuman;Tidak Ditemukan Kuman' 
-        },
-        {
-            judul: '',
-            nama: 'Batang Gram Negatif',
-            display_name: 'Batang Gram Negatif',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: '-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
-        },
-        {
-            judul: '',
-            nama: 'Batang Gram Positif',
-            display_name: 'Batang Gram Positif',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: '-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
-        },
-        {
-            judul: '',
-            nama: 'Coccus Gram Negatif',
-            display_name: 'Coccus Gram Negatif',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: '-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++'
-        },
-        {
-            judul: '',
-            nama: 'Coccus Gram Positif',
-            display_name: 'Coccus Gram Positif',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: '-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
-        }
-    ];
-    const PreparatBasahParams = [
-        {
-            judul: '',
-            nama: 'Preparat Basah',
-            display_name: 'Preparat Basah',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: '-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Tidak Ditemukan Jamur;Ditemukan Jamur Berbentuk Hifa' 
-        },
-        {
-            judul: '',
-            nama: 'Leukosit',
-            display_name: 'Leukosit',
-            satuan: '/LP',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: '-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Text',
-            opsi_output : '',
-        },
-        {
-            judul: '',
-            nama: 'Epithel',
-            display_name: 'Epithel',
-            satuan: '/LP',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: '-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Text',
-            opsi_output : '',
-        }
-    ];
-    const DengueParams =  [
-        {
-            judul: 'Dengue_IgG/IgM',
-            nama: 'Dengue_IgG',
-            display_name: 'Dengue IgG',
-            satuan: '-',
-            normal_min: '—',
-            normal_max: '—',
-            nilai_rujukan: 'Negatif',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;Positif(+)',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Dengue_IgG/IgM',
-            nama: 'Dengue_IgM',
-            display_name: 'Dengue IgM',
-            satuan: '-',
-            normal_min: '—',
-            normal_max: '—',
-            nilai_rujukan: 'Negatif',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;Positif(+)',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Dengue_IgG/IgM',
-            nama: 'COI_IgG',
-            display_name: 'Cutoff Index IgG (COI)',
-            satuan: '',
-            normal_min: '0.00',
-            normal_max: '∞',
-            nilai_rujukan: '< 1.00',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Text',
-            opsi_output: '',
-            default: ''
-        },
-        {
-            judul: 'Dengue_IgG/IgM',
-            nama: 'COI_IgM',
-            display_name: 'Cutoff Index IgM (COI)',
-            satuan: '',
-            normal_min: '0.00',
-            normal_max: '∞',
-            nilai_rujukan: '< 1.00',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Text',
-            opsi_output: '',
-            default: ''
-        }
-    ];
-    const NS1Params =  [
-        {
-            judul: 'Dengue_Ns1',
-            nama: 'Dengue_Ns1',
-            display_name: 'Dengue_Ns1',
-            satuan: '-',
-            normal_min: '—',
-            normal_max: '—',
-            nilai_rujukan: 'Negatif',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;Positif(+)',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Dengue_Ns1',
-            nama: 'COI_Ns1',
-            display_name: 'Cutoff Index (COI)',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: '<1.00',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Text',
-            opsi_output: '-',
-            default: ''
-        }
-    ];
-    const TifoidParams = [
-        {
-            judul: 'Typhoid_IgG/IgM',
-            nama: 'Typhoid_IgM',
-            display_name: 'Typhoid IgM',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Negatif',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;Positif(+)',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Typhoid_IgG/IgM',
-            nama: 'Typhoid_IgG',
-            display_name: 'Typhoid IgG',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Negatif',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;Positif(+)',
-            default: 'Negatif'
-        }
-    ];
-    const FesesParams = [
-        {
-            judul: 'Feses',
-            nama: 'Konsistensi',
-            display_name: 'Konsistensi',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Lunak',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Lunak;Padat;Setengah cair;Cair',
-            default: 'Lunak'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Warna',
-            display_name: 'Warna',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Coklat',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Coklat;Coklat kekuningan;Coklat kehijauan;Hitam;Pucat;Merah',
-            default: 'Coklat'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Lendir',
-            display_name: 'Lendir',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Negatif',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Darah',
-            display_name: 'Darah',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Negatif',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Telur Cacing',
-            display_name: 'Telur Cacing',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Tidak ditemukan',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Tidak ditemukan;Ascaris;Trichuris;Hookworm;Oxyuris;Lainnya',
-            default: 'Tidak ditemukan'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Kista Protozoa',
-            display_name: 'Kista Protozoa',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Tidak ditemukan',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Tidak ditemukan;Entamoeba histolytica;Entamoeba coli;Giardia lamblia;Lainnya',
-            default: 'Tidak ditemukan'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Trofozoit',
-            display_name: 'Trofozoit',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Tidak ditemukan',
-            tipe_inputan: 'Dropdown',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            opsi_output: 'Tidak ditemukan;Entamoeba histolytica;Giardia lamblia;Lainnya',
-            default: 'Tidak ditemukan'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Leukosit',
-            display_name: 'Leukosit',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: '0-1/lpb',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Text',
-            opsi_output: '',
-            default: '0-1/lpb'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Eritrosit',
-            display_name: 'Eritrosit',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: '0/lpb',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Text',
-            opsi_output: '',
-            default: '0/lpb'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Lemak',
-            display_name: 'Lemak',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Negatif',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Sisa Makanan',
-            display_name: 'Sisa Makanan',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Negatif',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Lain-lain',
-            display_name: 'Lain-lain',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: '',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Text',
-            opsi_output: '',
-            default: ''
-        },
-    ];
+                        const WidalParams = [
+                            {
+                                nama: 'Salmonella Typhi H',
+                                display_name: 'Salmonella Typhi H',
+                                satuan: '-',
+                                normal_min_l: '-',
+                                normal_max_l: '-',
+                                normal_min_p: '-',
+                                normal_max_p: '-',
+                                nilai_rujukan_l: '-',
+                                nilai_rujukan_p: '-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Dropdown',
+                                opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
+                            },
+                            {
+                                nama: 'Salmonella Typhi O',
+                                display_name: 'Salmonella Typhi O',
+                                satuan: '-',
+                                normal_min_l: '-',
+                                normal_max_l: '-',
+                                normal_min_p: '-',
+                                normal_max_p: '-',
+                                nilai_rujukan_l: '-',
+                                nilai_rujukan_p: '-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Dropdown',
+                                opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
+                            },
+                            {
+                                nama: 'Salmonella Paratyphi AO',
+                                display_name: 'Salmonella Paratyphi AO',
+                                satuan: '-',
+                                normal_min_l: '-',
+                                normal_max_l: '-',
+                                normal_min_p: '-',
+                                normal_max_p: '-',
+                                nilai_rujukan_l: '-',
+                                nilai_rujukan_p: '-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Dropdown',
+                                opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
+                            },
+                            {
+                                nama: 'Salmonella Paratyphi BO',
+                                display_name: 'Salmonella Paratyphi BO',
+                                satuan: '-',
+                                normal_min_l: '-',
+                                normal_max_l: '-',
+                                normal_min_p: '-',
+                                normal_max_p: '-',
+                                nilai_rujukan_l: '-',
+                                nilai_rujukan_p: '-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Dropdown',
+                                opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
+                            }
+                        ];
+                        const UrineParams = [
+                            {
+ 				                judul: 'Urine Lengkap',
+                                nama: 'Urine-Warna',
+                                display_name: 'Warna',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: '-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : 'Kuning;Kuning Pucat;Kuning Tua;Kuning kecokelatan;Orange;Merah;Coklat',
+                                default: 'Kuning' 
+                            },
+                            {
+ 				                judul: 'Urine Lengkap',
+                                nama: 'Kekeruhan',
+                                display_name: 'Kekeruhan',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: 'L.- P.-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : 'Jernih;Agak Keruh;Keruh;Sangat keruh',
+                                default: 'Jernih' 
+                            },
+                            {
+ 				                judul: 'Urine Lengkap',
+                                nama: 'Berat Jenis',
+                                display_name: 'Berat Jenis',
+                                satuan: '-',
+                                normal_min: 'L.1,003 P.1,003',
+                                normal_max: 'L.1,035 P.1,035',
+                                nilai_rujukan: 'L.1,003-1,035 P.1,003-1,035',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : '<1.005;1.005;1.010;1.015;1.020;1.025;1.030',
+                                default: '1.015' 
+                            },
+                            {
+ 				                judul: 'Urine Lengkap',
+                                nama: 'PH',
+                                display_name: 'pH',
+                                satuan: '-',
+                                normal_min: 'L.4,5 P.4,5',
+                                normal_max: 'L.8,0 P.8,0',
+                                nilai_rujukan: 'L.4,5-8,0 P.4,5-8,0',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : '4.5;5.0;5.5;6.0;6.5;7.0;7.5;8.0;8.5;9.0',
+                                default: '6.0' 
+                            },
+                            {
+ 				                judul: 'Urine Lengkap',
+                                nama: 'Urine-Leukosit',
+                                display_name: 'Leukosit',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: 'L.- P.-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
+                                default: 'Negatif' 
+                            },
+                            {
+ 				                judul: 'Urine Lengkap',
+                                nama: 'Nitrit',
+                                display_name: 'Nitrit',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: 'L.- P.-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                                default: 'Negatif' 
+                            },
+                            {
+ 				                judul: 'Urine Lengkap',
+                                nama: 'Protein',
+                                display_name: 'Protein',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: 'L.- P.-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                                default: 'Negatif' 
+                            },
+                            {
+ 				                judul: 'Urine Lengkap',
+                                nama: 'Glukosa',
+                                display_name: 'Glukosa',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: 'L.- P.-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                                default: 'Negatif' 
+                            },
+                            {
+ 				                judul: 'Urine Lengkap',
+                                nama: 'Keton',
+                                display_name: 'Keton',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: 'L.- P.-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                                default: 'Negatif'  
+                            },
+                            {
+ 				                judul: 'Urine Lengkap',
+                                nama: 'Urobilinogen',
+                                display_name: 'Urobilinogen',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: 'L.- P.-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++)',
+                                default: 'Negatif' 
+                            },
+                            {
+ 				                judul: 'Urine Lengkap',
+                                nama: 'Bilirubin',
+                                display_name: 'Bilirubin',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: 'L.- P.-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                                default: 'Negatif' 
+                            },
+                            {
+ 				                judul: 'Urine Lengkap',
+                                nama: 'Blood',
+                                display_name: 'Blood',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: 'L.- P.-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                                default: 'Negatif' 
+                            },
+                            {
+ 				                judul: 'Sedimen',
+                                nama: 'Urine-Eritrosit',
+                                display_name: '- Eritrosit',
+                                satuan: '',
+                                normal_min: 'L.0 P.0',
+                                normal_max: 'L.2 P.2',
+                                nilai_rujukan: 'L.0-2 P.0-2',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Text',
+                                opsi_output : '',
+                                default: 'Negatif'
+                            },
+                            {
+ 				                judul: 'Sedimen',
+                                nama: 'Leukosit_sedimen',
+                                display_name: '- Leukosit',
+                                satuan: '',
+                                normal_min: 'L.0 P.0',
+                                normal_max: 'L.5 P.5',
+                                nilai_rujukan: 'L.0-5 P.0-5',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Text',
+                                opsi_output : '',
+                                default: 'Negatif'
+                            },
+                            {
+ 				                judul: 'Sedimen',
+                                nama: 'Urine-Epithel',
+                                display_name: '- Epithel',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: 'Tidak ada - Sedikit',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Text',
+                                opsi_output : 'Tidak ada;Sedikit;Sedang;Banyak',
+                                default: 'Negatif'
+                            },
+                            {
+ 				                judul: 'Sedimen',
+                                nama: 'Silinder',
+                                display_name: '- Silinder',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: 'Tidak ada',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
+                                default: 'Negatif'
+                            },
+                            {
+ 				                judul: 'Sedimen',
+                                nama: 'Kristal',
+                                display_name: '- Kristal',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: 'Tidak ada',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : 'Tidak ada;Asam urat;Kalsium oksalat;Fosfat amorf;Lainnya',
+                                default: 'Negatif'
+                            },
+                            {
+ 				                judul: 'Sedimen',
+                                nama: 'Bakteri',
+                                display_name: '- Bakteri',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: 'Tidak ada',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
+                                default: 'Negatif'
+                            },
+                            {
+ 				                judul: 'Sedimen',
+                                nama: 'Jamur',
+                                display_name: '- Jamur',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: 'Tidak ada',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
+                                default: 'Negatif'
+                            },
+                            {
+ 				                judul: 'Sedimen',
+                                nama: 'Sedimen-Lain-lain',
+                                display_name: '- Lain-lain',
+                                satuan: '-',
+                                normal_min: '',
+                                normal_max: '',
+                                nilai_rujukan: '',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Text',
+                                opsi_output : '',
+                                default: ''
+                            }
+                        ];
+                        const MicrobiologiParams = [
+                            {
+                                judul: '',
+                                nama: 'Preparat Gram',
+                                display_name: 'Preparat Gram',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: '-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : 'Ditemukan Kuman;Tidak Ditemukan Kuman' 
+                            },
+                            {
+                                judul: '',
+                                nama: 'Batang Gram Negatif',
+                                display_name: 'Batang Gram Negatif',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: '-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
+                            },
+                            {
+                                judul: '',
+                                nama: 'Batang Gram Positif',
+                                display_name: 'Batang Gram Positif',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: '-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
+                            },
+                            {
+                                judul: '',
+                                nama: 'Coccus Gram Negatif',
+                                display_name: 'Coccus Gram Negatif',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: '-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++'
+                            },
+                            {
+                                judul: '',
+                                nama: 'Coccus Gram Positif',
+                                display_name: 'Coccus Gram Positif',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: '-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
+                            }
+                        ];
+                        const PreparatBasahParams = [
+                            {
+                                judul: 'Preparat Basah',
+                                nama: 'Preparat Basah',
+                                display_name: 'Preparat Basah',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: '-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Dropdown',
+                                opsi_output : 'Tidak Ditemukan Jamur;Ditemukan Jamur Berbentuk Hifa' 
+                            },
+                            {
+                                judul: '',
+                                nama: 'Leukosit',
+                                display_name: 'Leukosit',
+                                satuan: '/LP',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: '-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Text',
+                                opsi_output : '',
+                            },
+                            {
+                                judul: '',
+                                nama: 'Epithel',
+                                display_name: 'Epithel',
+                                satuan: '/LP',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: '-',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan : 'Text',
+                                opsi_output : '',
+                            }
+                        ];
+                        const DengueParams =  [
+                            {
+                                judul: 'Dengue_IgG/IgM',
+                                nama: 'Dengue_IgG',
+                                display_name: 'Dengue IgG',
+                                satuan: '-',
+                                normal_min: '—',
+                                normal_max: '—',
+                                nilai_rujukan: 'Negatif',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Dropdown',
+                                opsi_output: 'Negatif;Positif(+)',
+                                default: 'Negatif'
+                            },
+                            {
+                                judul: 'Dengue_IgG/IgM',
+                                nama: 'Dengue_IgM',
+                                display_name: 'Dengue IgM',
+                                satuan: '-',
+                                normal_min: '—',
+                                normal_max: '—',
+                                nilai_rujukan: 'Negatif',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Dropdown',
+                                opsi_output: 'Negatif;Positif(+)',
+                                default: 'Negatif'
+                            },
+                            {
+                                judul: 'Dengue_IgG/IgM',
+                                nama: 'COI_IgG',
+                                display_name: 'Cutoff Index IgG (COI)',
+                                satuan: '',
+                                normal_min: '0.00',
+                                normal_max: '∞',
+                                nilai_rujukan: '< 1.00',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Text',
+                                opsi_output: '',
+                                default: ''
+                            },
+                            {
+                                judul: 'Dengue_IgG/IgM',
+                                nama: 'COI_IgM',
+                                display_name: 'Cutoff Index IgM (COI)',
+                                satuan: '',
+                                normal_min: '0.00',
+                                normal_max: '∞',
+                                nilai_rujukan: '< 1.00',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Text',
+                                opsi_output: '',
+                                default: ''
+                            }
+                        ];
+                        const NS1Params =  [
+                            {
+                                judul: 'Dengue_Ns1',
+                                nama: 'Dengue_Ns1',
+                                display_name: 'Dengue_Ns1',
+                                satuan: '-',
+                                normal_min: '—',
+                                normal_max: '—',
+                                nilai_rujukan: 'Negatif',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Dropdown',
+                                opsi_output: 'Negatif;Positif(+)',
+                                default: 'Negatif'
+                            },
+                            {
+                                judul: 'Dengue_Ns1',
+                                nama: 'COI_Ns1',
+                                display_name: 'Cutoff Index (COI)',
+                                satuan: '-',
+                                normal_min: '-',
+                                normal_max: '-',
+                                nilai_rujukan: '<1.00',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Text',
+                                opsi_output: '-',
+                                default: ''
+                            }
+                        ];
+                        const TifoidParams = [
+                            {
+                                judul: 'Typhoid_IgG/IgM',
+                                nama: 'Typhoid_IgM',
+                                display_name: 'Typhoid IgM',
+                                satuan: '-',
+                                normal_min: '-',
+                                normal_max: '-',
+                                nilai_rujukan: 'Negatif',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Dropdown',
+                                opsi_output: 'Negatif;Positif(+)',
+                                default: 'Negatif'
+                            },
+                            {
+                                judul: 'Typhoid_IgG/IgM',
+                                nama: 'Typhoid_IgG',
+                                display_name: 'Typhoid IgG',
+                                satuan: '-',
+                                normal_min: '-',
+                                normal_max: '-',
+                                nilai_rujukan: 'Negatif',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Dropdown',
+                                opsi_output: 'Negatif;Positif(+)',
+                                default: 'Negatif'
+                            }
+                        ];
+                        const FesesParams = [
+                            {
+                                judul: 'Feses',
+                                nama: 'Konsistensi',
+                                display_name: 'Konsistensi',
+                                satuan: '-',
+                                normal_min: '-',
+                                normal_max: '-',
+                                nilai_rujukan: 'Lunak',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Dropdown',
+                                opsi_output: 'Lunak;Padat;Setengah cair;Cair',
+                                default: 'Lunak'
+                            },
+                            {
+                                judul: 'Feses',
+                                nama: 'Feses-Warna',
+                                display_name: 'Warna',
+                                satuan: '-',
+                                normal_min: '-',
+                                normal_max: '-',
+                                nilai_rujukan: 'Coklat',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Dropdown',
+                                opsi_output: 'Coklat;Coklat kekuningan;Coklat kehijauan;Hitam;Pucat;Merah',
+                                default: 'Coklat'
+                            },
+                            {
+                                judul: 'Feses',
+                                nama: 'Lendir',
+                                display_name: 'Lendir',
+                                satuan: '-',
+                                normal_min: '-',
+                                normal_max: '-',
+                                nilai_rujukan: 'Negatif',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Dropdown',
+                                opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                                default: 'Negatif'
+                            },
+                            {
+                                judul: 'Feses',
+                                nama: 'Darah',
+                                display_name: 'Darah',
+                                satuan: '-',
+                                normal_min: '-',
+                                normal_max: '-',
+                                nilai_rujukan: 'Negatif',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Dropdown',
+                                opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                                default: 'Negatif'
+                            },
+                            {
+                                judul: 'Feses',
+                                nama: 'Telur Cacing',
+                                display_name: 'Telur Cacing',
+                                satuan: '-',
+                                normal_min: '-',
+                                normal_max: '-',
+                                nilai_rujukan: 'Tidak ditemukan',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Dropdown',
+                                opsi_output: 'Tidak ditemukan;Ascaris;Trichuris;Hookworm;Oxyuris;Lainnya',
+                                default: 'Tidak ditemukan'
+                            },
+                            {
+                                judul: 'Feses',
+                                nama: 'Kista Protozoa',
+                                display_name: 'Kista Protozoa',
+                                satuan: '-',
+                                normal_min: '-',
+                                normal_max: '-',
+                                nilai_rujukan: 'Tidak ditemukan',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Dropdown',
+                                opsi_output: 'Tidak ditemukan;Entamoeba histolytica;Entamoeba coli;Giardia lamblia;Lainnya',
+                                default: 'Tidak ditemukan'
+                            },
+                            {
+                                judul: 'Feses',
+                                nama: 'Trofozoit',
+                                display_name: 'Trofozoit',
+                                satuan: '-',
+                                normal_min: '-',
+                                normal_max: '-',
+                                nilai_rujukan: 'Tidak ditemukan',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Dropdown',
+                                opsi_output: 'Tidak ditemukan;Entamoeba histolytica;Giardia lamblia;Lainnya',
+                                default: 'Tidak ditemukan'
+                            },
+                            {
+                                judul: 'Feses',
+                                nama: 'Feses-Leukosit',
+                                display_name: 'Leukosit',
+                                satuan: '-',
+                                normal_min: '-',
+                                normal_max: '-',
+                                nilai_rujukan: '0-1/lpb',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Text',
+                                opsi_output: '',
+                                default: '0-1/lpb'
+                            },
+                            {
+                                judul: 'Feses',
+                                nama: 'Eritrosit',
+                                display_name: 'Eritrosit',
+                                satuan: '-',
+                                normal_min: '-',
+                                normal_max: '-',
+                                nilai_rujukan: '0/lpb',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Text',
+                                opsi_output: '',
+                                default: '0/lpb'
+                            },
+                            {
+                                judul: 'Feses',
+                                nama: 'Lemak',
+                                display_name: 'Lemak',
+                                satuan: '-',
+                                normal_min: '-',
+                                normal_max: '-',
+                                nilai_rujukan: 'Negatif',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Dropdown',
+                                opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                                default: 'Negatif'
+                            },
+                            {
+                                judul: 'Feses',
+                                nama: 'Sisa Makanan',
+                                display_name: 'Sisa Makanan',
+                                satuan: '-',
+                                normal_min: '-',
+                                normal_max: '-',
+                                nilai_rujukan: 'Negatif',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Dropdown',
+                                opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                                default: 'Negatif'
+                            },
+                            {
+                                judul: 'Feses',
+                                nama: 'Lain-lain',
+                                display_name: 'Lain-lain',
+                                satuan: '-',
+                                normal_min: '-',
+                                normal_max: '-',
+                                nilai_rujukan: '',
+                                nilai_kritis: 'L.- P.-',
+                                metode: '-',
+                                tipe_inputan: 'Text',
+                                opsi_output: '',
+                                default: ''
+                            },
+			            ];
 
    // Buat map dari data hasil pemeriksaan yang ada di database
     const hasilMap = {};
@@ -1460,6 +1456,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 note: item.note || '',
                 flag: item.flag || '',
                 flag_dx: item.flag_dx || '',
+                uid: item.uid || '',
                 is_switched: Number(item.is_switched) || 0
             };
         });
@@ -1490,6 +1487,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 range: data.range,
                 flag: data.flag,
                 flag_dx: data.flag_dx || '',
+                uid: data.uid || '',
                 switched: Number(data.is_switched) || 0
             };
         }
@@ -1505,6 +1503,7 @@ document.addEventListener('DOMContentLoaded', function() {
             range: '',
             flag: '' ,
             flag_dx: '',
+            uid: '',
         };
     }
 
@@ -1579,6 +1578,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const noteValue = hasil.length > 0 && hasil[0].note ? hasil[0].note : '';
     const kesimpulanValue = hasil.length > 0 && hasil[0].kesimpulan ? hasil[0].kesimpulan : '';
     const saranValue = hasil.length > 0 && hasil[0].saran ? hasil[0].saran : '';
+
+    let parameterCounter = 0;
+    
+    function generateParameterUID(pemeriksaan, parameter, idx) {
+        parameterCounter++;
+        const cleanPemeriksaan = pemeriksaan.replace(/[^a-zA-Z0-9]/g, '_');
+        const cleanParameter = parameter.replace(/[^a-zA-Z0-9]/g, '_');
+        return `${cleanPemeriksaan}_${cleanParameter}_${idx}_${parameterCounter}`;
+    }
 
     const content = `
     <form id="worklistForm" method="POST">
@@ -1696,11 +1704,20 @@ document.addEventListener('DOMContentLoaded', function() {
                                                     const obxValues = getDataValues(param.nama);
                                                     const rowId = `${judul}_${idx}_${paramIdx}`;
                                                     const label = param.display_name || param.nama || '-';
+                                                    const uniqueID = generateParameterUID(judul, param.nama, paramIdx);
+                                                    const flagContent = renderFlag(
+                                                        obxValues.hasilUtama,
+                                                        { innerHTML: '' },
+                                                        param.nama,
+                                                        false,
+                                                        false,
+                                                        true
+                                                    );
 
                                                     const renderField = (name, value, className) => {
                                                         if (param.tipe_inputan === 'Dropdown') {
                                                             return `
-                                                                <select name="${name}[]" class="form-select ${className} w-60 p-0">
+                                                                <select name="${name}[${uniqueID}]" class="form-select ${className} w-60 p-0">
                                                                     <option value="" hidden>Pilih...</option>
                                                                     ${param.opsi_output.split(';').map(opt => `
                                                                         <option value="${opt.trim()}" ${value === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
@@ -1709,7 +1726,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                             `;
                                                         } else {
                                                             return `
-                                                                <input type="text" name="${name}[]" 
+                                                                <input type="text" name="${name}[${uniqueID}]" 
                                                                     class="form-control ${className} w-60 p-0 text-center" 
                                                                      value="${value || ''}" />
                                                             `;
@@ -1717,16 +1734,17 @@ document.addEventListener('DOMContentLoaded', function() {
                                                     };
 
                                                     return `
-                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" class="serologi-row">
+                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="serologi-row">
                                                             <!-- Nama parameter -->
                                                             <td class="col-2 ps-4">
                                                                 <strong>${label}</strong>
                                                                 ${param.nilai_rujukan ? `<small class="text-muted d-block">${param.nilai_rujukan}</small>` : ''}
-                                                                <input type="hidden" name="nama_pemeriksaan[]" value="${param.nama}" />
-                                                                <input type="hidden" name="judul[]" value="${judul}" />
-                                                                <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                                <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan}" />
-                                                                <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                                <input type="hidden" name="uid[${uniqueID}]" value="${obxValues.uid}" />
+                                                                <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${param.nama}" />
+                                                                <input type="hidden" name="judul[${uniqueID}]" value="${judul}" />
+                                                                <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                                <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${param.nilai_rujukan}" />
+                                                                <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                                             </td>
 
                                                             <!-- Hasil utama -->
@@ -1748,7 +1766,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                             <td class="col-2 text-center">
                                                                 <div class="d-flex align-items-center justify-content-center gap-1">
                                                                     ${renderField('duplo_dx', obxValues.duplo_dx, 'dx')}
-                                                                    <input type="hidden" name="is_switched[]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
+                                                                    <input type="hidden" name="is_switched[${uniqueID}]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
                                                                     ${obxValues.switched ? `
                                                                         <div class='checkbox-r-container d-flex align-items-center gap-1'>
                                                                             <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
@@ -1774,11 +1792,25 @@ document.addEventListener('DOMContentLoaded', function() {
                                                             </td>
 
                                                             <!-- Flag -->
-                                                            <td class="col-3 flag-cell"></td>
+                                                            <td class="col-3 flag-cell">
+                                                                ${obxValues.switched ? `
+                                                                <div class='checkbox-r-container d-flex align-items-center gap-1'>
+                                                                    <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
+                                                                    <span class='text-danger fw-bold'>R</span>
+                                                                    <select name="flag_dx[${uniqueID}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
+                                                                        <option value="Normal" ${(obxValues.flag_dx || 'Normal') === 'Normal' ? 'selected' : ''}>Normal</option>
+                                                                        <option value="Low" ${obxValues.flag_dx === 'Low' ? 'selected' : ''}>Low</option>
+                                                                        <option value="Low*" ${obxValues.flag_dx === 'Low*' ? 'selected' : ''}>Low*</option>
+                                                                        <option value="High" ${obxValues.flag_dx === 'High' ? 'selected' : ''}>High</option>
+                                                                        <option value="High*" ${obxValues.flag_dx === 'High*' ? 'selected' : ''}>High*</option>
+                                                                    </select>
+                                                                </div>
+                                                            ` : `
+                                                            `}
+                                                            </td>
 
                                                             <!-- Satuan -->
                                                             <td>
-                                                                <input type="hidden" name="satuan[]" value="${param.satuan || ''}" />
                                                                 ${param.satuan || ''}
                                                             </td>
                                                         </tr>
@@ -1809,6 +1841,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                             html += hematologiParams.map((param, paramIdx) => {
                                                 const dataValues = getDataValues(param.nama, param.nama);
                                                 const rowId = `hematologi_${idx}_${paramIdx}`;
+                                                const uniqueID = generateParameterUID('Hematologi', param.nama, paramIdx);
                                                 const flagContent = renderFlag(
                                                     dataValues.hasilUtama,
                                                     { innerHTML: '' },
@@ -1819,16 +1852,17 @@ document.addEventListener('DOMContentLoaded', function() {
                                                 );
 
                                                 return `
-                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" class="hematologi-row">
+                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="hematologi-row">
                                                         <td class="col-2 ${judulHematologi ? 'ps-4' : ''}" ${judulHematologi ? 'style="border-left: 2px solid #e9ecef;"' : ''}>
                                                             <strong>${param.display_name}</strong>
                                                             <small class="text-muted d-block">${param.normal_min}-${param.normal_max}</small>
-                                                            <input type="hidden" name="nama_pemeriksaan[]" value="${param.nama}" />
-                                                            ${judulHematologi ? `<input type="hidden" name="judul[]" value="${judulHematologi}" />` : ''}
-                                                            <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                            <input type="hidden" name="uid[${uniqueID}]" value="${dataValues.uid}" />
+                                                            <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${param.nama}" />
+                                                            ${judulHematologi ? `<input type="hidden" name="judul[${uniqueID}]" value="${judulHematologi}" />` : ''}
+                                                            <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                                         </td>
                                                         <td class="col-2">
-                                                            <input type="number" name="hasil[]" 
+                                                            <input type="number" name="hasil[${uniqueID}]" 
                                                                 class="form-control manualInput w-60 p-0 text-center" 
                                                                 value="${dataValues.hasilUtama}" 
                                                                 step="0.01" placeholder="" readonly />
@@ -1842,13 +1876,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         <td class="col-2 duplo dx-column text-center">
                                                             <div class="d-flex align-items-center justify-content-center gap-1">
                                                                 <input type="number" 
-                                                                    name="duplo_dx[]" 
+                                                                    name="duplo_dx[${uniqueID}]" 
                                                                     class="form-control dx w-60 p-0 text-center" 
                                                                     value="${dataValues.duplo_dx ?? ''}" 
                                                                     step="0.01" />
 
                                                                 <!-- Hidden input untuk simpan status switch -->
-                                                                <input type="hidden" name="is_switched[]" value="${Number(dataValues.switched) === 1 ? 1 : 0}">
+                                                                <input type="hidden" name="is_switched[${uniqueID}]" value="${Number(dataValues.switched) === 1 ? 1 : 0}">
 
                                                                 <!-- Jika sudah di-switch, tampilkan checkbox R -->
                                                                 ${dataValues.switched ? `
@@ -1860,17 +1894,17 @@ document.addEventListener('DOMContentLoaded', function() {
                                                             </div>
                                                         </td>
                                                         <td class="col-2 duplo d1-column text-center" style="display: ${duploStatus.hasD1 ? 'table-cell' : 'none'};">
-                                                            <input type="number" name="duplo_d1[]" 
+                                                            <input type="number" name="duplo_d1[${uniqueID}]" 
                                                                 class="form-control d1 w-60 p-0 text-center" 
                                                                 value="${dataValues.duplo_d1}" step="0.01" readonly />
                                                         </td>
                                                         <td class="col-2 duplo d2-column" style="display: ${duploStatus.hasD2 ? 'table-cell' : 'none'};">
-                                                            <input type="number" name="duplo_d2[]" 
+                                                            <input type="number" name="duplo_d2[${uniqueID}]" 
                                                                 class="form-control d2 w-60 p-0 text-center" 
                                                                 value="${dataValues.duplo_d2}" step="0.01" readonly />
                                                         </td>
                                                         <td class="col-2 duplo d3-column" style="display: ${duploStatus.hasD3 ? 'table-cell' : 'none'};">
-                                                            <input type="number" name="duplo_d3[]" 
+                                                            <input type="number" name="duplo_d3[${uniqueID}]" 
                                                                 class="form-control d3 w-50 p-0 text-center" 
                                                                 value="${dataValues.duplo_d3}" step="0.01" readonly />
                                                         </td>
@@ -1880,7 +1914,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                             <div class='checkbox-r-container d-flex align-items-center gap-1'>
                                                                 <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
                                                                 <span class='text-danger fw-bold'>R</span>
-                                                                <select name="flag_dx[${param.nama}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
+                                                                <select name="flag_dx[${uniqueID}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
                                                                     <option value="Normal" ${(dataValues.flag_dx || 'Normal') === 'Normal' ? 'selected' : ''}>Normal</option>
                                                                     <option value="Low" ${dataValues.flag_dx === 'Low' ? 'selected' : ''}>Low</option>
                                                                     <option value="Low*" ${dataValues.flag_dx === 'Low*' ? 'selected' : ''}>Low*</option>
@@ -1893,10 +1927,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         </td>
                                                         
                                                         <td>
-                                                            <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
-                                                                value="${dataValues.satuan || param.satuan}" readonly />
-                                                            <input type="hidden" name="range[]" class="form-control w-100 p-0" 
-                                                                value="${dataValues.range || param.normal_min + '-' + param.normal_max}" readonly />
                                                             ${dataValues.satuan || param.satuan}
                                                         </td>
                                                     </tr>
@@ -1931,22 +1961,24 @@ document.addEventListener('DOMContentLoaded', function() {
                                         const obxValues = getDataValues(param.nama, param.nama);
                                         const rowId = `widal_${idx}_${paramIdx}`;
                                         const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
+                                        const uniqueID = generateParameterUID('Widal', param.nama, paramIdx);
 
                                         // flag apakah ada hasil duplo
                                         const hasDuplo = obxValues.duplo_dx || obxValues.duplo_d1 || obxValues.duplo_d2 || obxValues.duplo_d3;
 
                                         return `
-                                            <tr data-id="${rowId}" data-parameter="${param.nama}" class="widal-row">
+                                            <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="widal-row">
                                                 <td class="col-2 ${judulWidal ? 'ps-4' : ''}" ${judulWidal ? 'style="border-left: 2px solid #e9ecef;"' : ''}>
                                                     <strong>${param.display_name}</strong>
-                                                    <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanWidal}" />
-                                                    ${judulWidal ? `<input type="hidden" name="judul[]" value="${judulWidal}" />` : ''}
-                                                    <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                    <input type="hidden" name="nilai_rujukan[]" value="${normalValues.rujukan}" />
-                                                    <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                    <input type="hidden" name="uid[${uniqueID}]" value="${obxValues.uid}" />
+                                                    <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${namaPemeriksaanWidal}" />
+                                                    ${judulWidal ? `<input type="hidden" name="judul[${uniqueID}]" value="${judulWidal}" />` : ''}
+                                                    <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                    <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${normalValues.rujukan}" />
+                                                    <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                                 </td>
                                                 <td class="col-2">
-                                                    <select name="hasil[]" class="form-select manualInput w-60 p-0">
+                                                    <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0">
                                                         ${param.opsi_output.split(';').map(opt => `
                                                             <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>
                                                                 ${opt.trim()}
@@ -1962,7 +1994,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                                 </td>
                                                 <td class="col-2 text-center">
                                                     <div class="d-flex align-items-center justify-content-center gap-1">
-                                                        <select name="duplo_dx[]" class="form-select dx w-60 p-0">
+                                                        <select name="duplo_dx[${uniqueID}]" class="form-select dx w-60 p-0">
+                                                        <option value="" selected hidden>Pilih...</option>
                                                             ${param.opsi_output
                                                                 ? param.opsi_output.split(';').map(opt => `
                                                                     <option value="${opt.trim()}"
@@ -1974,7 +2007,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                             }
                                                         </select>
 
-                                                        <input type="hidden" name="is_switched[]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
+                                                        <input type="hidden" name="is_switched[${uniqueID}]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
 
                                                         ${obxValues.switched ? `
                                                             <div class='checkbox-r-container d-flex align-items-center gap-1'>
@@ -1986,7 +2019,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                                 </td>
                                                 ${hasDuplo ? `
                                                     <td class="col-2 duplo d1-column text-center" style="display: ${duploStatus.hasD1 ? 'table-cell' : 'none'};">
-                                                        <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                        <select name="duplo_d1[${uniqueID}]" class="form-select d1 w-60 p-0" disabled>
+                                                        <option value="" selected hidden>Pilih...</option>
                                                             ${param.opsi_output.split(';').map(opt => `
                                                                 <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>
                                                                     ${opt.trim()}
@@ -1995,7 +2029,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         </select>
                                                     </td>
                                                     <td class="col-2 duplo d2-column" style="display: ${duploStatus.hasD2 ? 'table-cell' : 'none'};">
-                                                        <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                        <select name="duplo_d2[${uniqueID}]" class="form-select d2 w-60 p-0" disabled>
+                                                        <option value="" selected hidden>Pilih...</option>
                                                             ${param.opsi_output.split(';').map(opt => `
                                                                 <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>
                                                                     ${opt.trim()}
@@ -2004,7 +2039,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         </select>
                                                     </td>
                                                     <td class="col-2 duplo d3-column" style="display: ${duploStatus.hasD3 ? 'table-cell' : 'none'};">
-                                                        <select name="duplo_d3[]" class="form-select d3 w-60 p-0" disabled>
+                                                        <select name="duplo_d3[${uniqueID}]" class="form-select d3 w-60 p-0" disabled>
+                                                        <option value="" selected hidden>Pilih...</option>
                                                             ${param.opsi_output.split(';').map(opt => `
                                                                 <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>
                                                                     ${opt.trim()}
@@ -2018,7 +2054,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                     <div class='checkbox-r-container d-flex align-items-center gap-1'>
                                                         <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
                                                         <span class='text-danger fw-bold'>R</span>
-                                                        <select name="flag_dx[${param.nama}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
+                                                        <select name="flag_dx[${uniqueID}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
                                                             <option value="Normal" ${(obxValues.flag_dx || 'Normal') === 'Normal' ? 'selected' : ''}>Normal</option>
                                                             <option value="Low" ${obxValues.flag_dx === 'Low' ? 'selected' : ''}>Low</option>
                                                             <option value="Low*" ${obxValues.flag_dx === 'Low*' ? 'selected' : ''}>Low*</option>
@@ -2027,12 +2063,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         </select>
                                                     </div>
                                                 ` : `
-                                                <input type="hidden" name="flag_dx[]" value="">
                                                 `}
                                                 </td>
                                                 
                                                 <td>
-                                                    <input type="hidden" name="satuan[]" value="${param.satuan}" readonly />
                                                     ${param.satuan}
                                                 </td>
                                             </tr>
@@ -2070,7 +2104,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                             html += params.map((param, paramIdx) => {
                                                 const obxValues = getDataValues(param.nama);
                                                 const rowId = `urine_${idx}_${paramIdx}`;
-                                                const paramKey = param.nama.replace(/\s+/g, '_'); // Gunakan nama parameter sebagai key
+                                                const paramKey = param.nama.replace(/\s+/g, '_');
+                                                const uniqueID = generateParameterUID('Urine_' + judulGroup, param.nama, paramIdx);
                                                 
                                                 const initialFlag = renderFlag(
                                                     obxValues.hasilUtama,
@@ -2083,35 +2118,34 @@ document.addEventListener('DOMContentLoaded', function() {
                                                 const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
 
                                                 return `
-                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" class="urine-row">
+                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="urine-row">
                                                         <td class="col-2 ps-4" style="border-left:2px solid #e9ecef;">
                                                             <strong>${param.display_name}</strong>
                                                             ${normalValues.rujukan !== '-' && normalValues.rujukan !== '' 
                                                                 ? `<small class="text-muted d-block">${normalValues.rujukan ?? ''}</small>` 
                                                                 : ''}
                                                             
-                                                            <!-- Gunakan key unik untuk setiap hidden input -->
-                                                            <input type="hidden" name="row_id[]" value="${rowId}" />
-                                                            <input type="hidden" name="nama_pemeriksaan[${rowId}]" value="${param.nama}" />
-                                                            <input type="hidden" name="judul[${rowId}]" value="${param.judul}" />
-                                                            <input type="hidden" name="parameter_name[${rowId}]" value="${param.nama}" />
-                                                            <input type="hidden" name="nilai_rujukan[${rowId}]" value="${normalValues.rujukan}" />
-                                                            <input type="hidden" name="department[${rowId}]" value="${e.data_departement.nama_department}" />
+                                                            <input type="hidden" name="uid[${uniqueID}]" value="${obxValues.uid}" />
+                                                            <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${param.nama}" />
+                                                            <input type="hidden" name="judul[${uniqueID}]" value="${param.judul}" />
+                                                            <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                            <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${normalValues.rujukan}" />
+                                                            <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                                         </td>
 
                                                         <td class="col-2">
                                                             ${param.tipe_inputan.toLowerCase() === 'text' ? `
-                                                                <input type="text" name="hasil[${rowId}]" 
+                                                                <input type="text" name="hasil[${uniqueID}]" 
                                                                     class="form-control manualInput w-60 p-0 text-center"
-                                                                    data-row-id="${rowId}"
+                                                                    data-uid="${uniqueID}"
                                                                     data-parameter="${param.nama}"
-                                                                    disabled value="${obxValues.hasilUtama || param.default || ''}" />
+                                                                     value="${obxValues.hasilUtama || param.default || ''}" />
                                                             ` : `
-                                                                <select name="hasil[${rowId}]" 
+                                                                <select name="hasil[${uniqueID}]" 
                                                                     class="form-select manualInput w-60 p-0"
-                                                                    data-row-id="${rowId}"
+                                                                    data-uid="${uniqueID}"
                                                                     data-parameter="${param.nama}"
-                                                                    disabled>
+                                                                    >
                                                                     ${param.opsi_output.split(';').map(opt => `
                                                                         <option value="${opt.trim()}" 
                                                                             ${(obxValues.hasilUtama || param.default) === opt.trim() ? 'selected' : ''}>
@@ -2124,7 +2158,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                                                         <td class="col-1">
                                                             <button type="button" class="btn btn-outline-secondary btn-sm switch-btn"
-                                                                    data-row-id="${rowId}"
+                                                                    data-uid="${uniqueID}"
                                                                     data-parameter="${param.nama}"
                                                                     data-index="${paramIdx}" 
                                                                     data-switch-index="0">
@@ -2137,14 +2171,15 @@ document.addEventListener('DOMContentLoaded', function() {
                                                             <div class="d-flex align-items-center justify-content-center gap-1">
                                                                 ${param.tipe_inputan.toLowerCase() === 'text' ? `
                                                                     <input type="text"
-                                                                        name="duplo_dx[${rowId}]"
+                                                                        name="duplo_dx[${uniqueID}]"
                                                                         class="form-control dx w-60 p-0 text-center"
-                                                                        data-row-id="${rowId}"
+                                                                        data-uid="${uniqueID}"
                                                                         value="${obxValues.duplo_dx || ''}" />
                                                                 ` : `
-                                                                    <select name="duplo_dx[${rowId}]" 
+                                                                    <select name="duplo_dx[${uniqueID}]" 
                                                                         class="form-select dx w-60 p-0"
-                                                                        data-row-id="${rowId}">
+                                                                        data-uid="${uniqueID}">
+                                                                        <option value="" selected hidden>Pilih...</option>
                                                                         ${param.opsi_output
                                                                             ? param.opsi_output.split(';').map(opt => `
                                                                                 <option value="${opt.trim()}"
@@ -2159,17 +2194,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
                                                                 <!-- PENTING: is_switched dengan key unik -->
                                                                 <input type="hidden" 
-                                                                    name="is_switched[${rowId}]" 
+                                                                    name="is_switched[${uniqueID}]" 
                                                                     class="is-switched-input"
-                                                                    data-row-id="${rowId}"
+                                                                    data-uid="${uniqueID}"
                                                                     value="${Number(obxValues.switched) === 1 ? 1 : 0}">
 
                                                                 ${obxValues.switched ? `
                                                                     <div class='checkbox-r-container d-flex align-items-center gap-1'
-                                                                        data-row-id="${rowId}">
+                                                                        data-uid="${uniqueID}">
                                                                         <input type='checkbox' 
                                                                             class='checkbox-r form-check-input' 
-                                                                            data-row-id="${rowId}"
+                                                                            data-uid="${uniqueID}"
                                                                             checked disabled>
                                                                         <span class='text-danger fw-bold'>R</span>
                                                                     </div>
@@ -2180,14 +2215,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         <!-- Kolom duplo D1 -->
                                                         <td class="col-2 duplo d1-column text-center" style="display:none;">
                                                             ${param.tipe_inputan.toLowerCase() === 'text' ? `
-                                                                <input type="text" name="duplo_d1[${rowId}]" 
+                                                                <input type="text" name="duplo_d1[${uniqueID}]" 
                                                                     class="form-control d1 w-60 p-0 text-center"
-                                                                    data-row-id="${rowId}"
+                                                                    data-uid="${uniqueID}"
                                                                     disabled value="${obxValues.duplo_d1 || ''}" />
                                                             ` : `
-                                                                <select name="duplo_d1[${rowId}]" 
+                                                                <select name="duplo_d1[${uniqueID}]" 
                                                                     class="form-select d1 w-60 p-0"
-                                                                    data-row-id="${rowId}"
+                                                                    data-uid="${uniqueID}"
                                                                     disabled>
                                                                     <option value="" selected hidden>Pilih...</option>
                                                                     ${param.opsi_output.split(';').map(opt => `
@@ -2202,14 +2237,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         <!-- Kolom duplo D2 -->
                                                         <td class="col-2 duplo d2-column" style="display:none;">
                                                             ${param.tipe_inputan.toLowerCase() === 'text' ? `
-                                                                <input type="text" name="duplo_d2[${rowId}]" 
+                                                                <input type="text" name="duplo_d2[${uniqueID}]" 
                                                                     class="form-control d2 w-60 p-0 text-center"
-                                                                    data-row-id="${rowId}"
+                                                                    data-uid="${uniqueID}"
                                                                     disabled value="${obxValues.duplo_d2 || ''}" />
                                                             ` : `
-                                                                <select name="duplo_d2[${rowId}]" 
+                                                                <select name="duplo_d2[${uniqueID}]" 
                                                                     class="form-select d2 w-60 p-0"
-                                                                    data-row-id="${rowId}"
+                                                                    data-uid="${uniqueID}"
                                                                     disabled>
                                                                     <option value="" selected hidden>Pilih...</option>
                                                                     ${param.opsi_output.split(';').map(opt => `
@@ -2224,14 +2259,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         <!-- Kolom duplo D3 -->
                                                         <td class="col-2 duplo d3-column" style="display:none;">
                                                             ${param.tipe_inputan.toLowerCase() === 'text' ? `
-                                                                <input type="text" name="duplo_d3[${rowId}]" 
+                                                                <input type="text" name="duplo_d3[${uniqueID}]" 
                                                                     class="form-control d3 w-50 p-0 text-center"
-                                                                    data-row-id="${rowId}"
+                                                                    data-uid="${uniqueID}"
                                                                     disabled value="${obxValues.duplo_d3 || ''}" />
                                                             ` : `
-                                                                <select name="duplo_d3[${rowId}]" 
+                                                                <select name="duplo_d3[${uniqueID}]" 
                                                                     class="form-select d3 w-50 p-0"
-                                                                    data-row-id="${rowId}"
+                                                                    data-uid="${uniqueID}"
                                                                     disabled>
                                                                     <option value="" selected hidden>Pilih...</option>
                                                                     ${param.opsi_output.split(';').map(opt => `
@@ -2244,17 +2279,17 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         </td>
 
                                                         <!-- Kolom Flag dengan identifier unik -->
-                                                        <td class="col-3 flag-cell" data-row-id="${rowId}">
+                                                        <td class="col-3 flag-cell" data-uid="${uniqueID}">
                                                             ${obxValues.switched ? `
                                                                 <div class='checkbox-r-container d-flex align-items-center gap-1'>
                                                                     <input type='checkbox' 
                                                                         class='checkbox-r form-check-input' 
-                                                                        data-row-id="${rowId}"
+                                                                        data-uid="${uniqueID}"
                                                                         checked disabled>
                                                                     <span class='text-danger fw-bold'>R</span>
-                                                                    <select name="flag_dx[${rowId}]" 
+                                                                    <select name="flag_dx[${uniqueID}]" 
                                                                         class="form-select form-select-sm flag-dx-select"
-                                                                        data-row-id="${rowId}"
+                                                                        data-uid="${uniqueID}"
                                                                         style="width: 100px;">
                                                                         <option value="Normal" ${(obxValues.flag_dx || 'Normal') === 'Normal' ? 'selected' : ''}>Normal</option>
                                                                         <option value="Low" ${obxValues.flag_dx === 'Low' ? 'selected' : ''}>Low</option>
@@ -2264,15 +2299,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                     </select>
                                                                 </div>
                                                             ` : `
-                                                                <input type="hidden" name="flag_dx[${rowId}]" value="">
                                                             `}
-                                                            <input type="hidden" name="flag[${rowId}]" class="flag-value" 
-                                                                data-row-id="${rowId}" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
                                                         </td>
 
                                                         <!-- Kolom Satuan -->
                                                         <td>
-                                                            <input type="hidden" name="satuan[${rowId}]" value="${param.satuan}" readonly />
                                                             ${param.satuan}
                                                         </td>
                                                     </tr>
@@ -2309,24 +2340,26 @@ document.addEventListener('DOMContentLoaded', function() {
                                                     const rowId = `mikrobiologi_${idx}_${paramIdx}`;
                                                     const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
                                                     const label = param.judul || param.display_name || param.nama || '-';
+                                                    const uniqueID = generateParameterUID('Microbiologi', param.nama, paramIdx);
 
                                                     return `
-                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" class="mikrobiologi-row">
+                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="mikrobiologi-row">
                                                             <td class="col-2 ps-4" style="border-left: 2px solid #e9ecef;">
                                                                 <strong>${label}</strong>
                                                                 ${param.nilai_rujukan !== '-' && param.nilai_rujukan !== '' ? 
                                                                     `<small class="text-muted d-block">${param.nilai_rujukan ?? ''}</small>` : ''}
-                                                                <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanMikrobiologi}" />
-                                                                <input type="hidden" name="judul[]" value="${judulMikrobiologi}" />
-                                                                <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                                <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan ?? '-'}" />
-                                                                <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                                <input type="hidden" name="uid[${uniqueID}]" value="${obxValues.uid}" />
+                                                                <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${namaPemeriksaanMikrobiologi}" />
+                                                                <input type="hidden" name="judul[${uniqueID}]" value="${judulMikrobiologi}" />
+                                                                <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                                <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${param.nilai_rujukan ?? '-'}" />
+                                                                <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                                             </td>
                                                             <td class="col-2">
                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                    <input type="text" name="hasil[]" class="form-control manualInput w-60 p-0 text-center" disabled value="${obxValues.hasilUtama || ''}" />
+                                                                    <input type="text" name="hasil[${uniqueID}]" class="form-control manualInput w-60 p-0 text-center" disabled value="${obxValues.hasilUtama || ''}" />
                                                                 ` : `
-                                                                    <select name="hasil[]" class="form-select manualInput w-60 p-0" disabled>
+                                                                    <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0" disabled>
                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                             <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2345,11 +2378,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                 <div class="d-flex align-items-center justify-content-center gap-1">
                                                                     ${param.tipe_inputan.toLowerCase() === 'Text' ? `
                                                                         <input type="text"
-                                                                            name="duplo_dx[]"
+                                                                            name="duplo_dx[${uniqueID}]"
                                                                             class="form-control dx w-60 p-0 text-center"
                                                                             value="${obxValues.duplo_dx || ''}" />
                                                                     ` : `
-                                                                        <select name="duplo_dx[]" class="form-select dx w-60 p-0">
+                                                                        <select name="duplo_dx[${uniqueID}]" class="form-select dx w-60 p-0">
+                                                                        <option value="" selected hidden>Pilih...</option>
                                                                             ${param.opsi_output
                                                                                 ? param.opsi_output.split(';').map(opt => `
                                                                                     <option value="${opt.trim()}"
@@ -2362,7 +2396,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                         </select>
                                                                     `}
 
-                                                                    <input type="hidden" name="is_switched[]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
+                                                                    <input type="hidden" name="is_switched[${uniqueID}]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
 
                                                                     ${obxValues.switched ? `
                                                                         <div class='checkbox-r-container d-flex align-items-center gap-1'>
@@ -2375,9 +2409,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
                                                             <td class="col-2 duplo d1-column text-center" style="display: none;">
                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                    <input type="text" name="duplo_d1[]" class="form-control d1 w-60 p-0 text-center" disabled value="${obxValues.duplo_d1 || ''}" />
+                                                                    <input type="text" name="duplo_d1[${uniqueID}]" class="form-control d1 w-60 p-0 text-center" disabled value="${obxValues.duplo_d1 || ''}" />
                                                                 ` : `
-                                                                    <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                    <select name="duplo_d1[${uniqueID}]" class="form-select d1 w-60 p-0" disabled>
+                                                                    <option value="" selected hidden>Pilih...</option>
                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2386,9 +2421,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                                             </td>
                                                             <td class="col-2 duplo d2-column" style="display: none;">
                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                    <input type="text" name="duplo_d2[]" class="form-control d2 w-60 p-0 text-center" disabled value="${obxValues.duplo_d2 || ''}" />
+                                                                    <input type="text" name="duplo_d2[${uniqueID}]" class="form-control d2 w-60 p-0 text-center" disabled value="${obxValues.duplo_d2 || ''}" />
                                                                 ` : `
-                                                                    <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                                    <select name="duplo_d2[${uniqueID}]" class="form-select d2 w-60 p-0" disabled>
+                                                                    <option value="" selected hidden>Pilih...</option>
                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2397,9 +2433,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                                             </td>
                                                             <td class="col-2 duplo d3-column" style="display: none;">
                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                    <input type="text" name="duplo_d3[]" class="form-control d3 w-50 p-0 text-center" disabled value="${obxValues.duplo_d3 || ''}" />
+                                                                    <input type="text" name="duplo_d3[${uniqueID}]" class="form-control d3 w-50 p-0 text-center" disabled value="${obxValues.duplo_d3 || ''}" />
                                                                 ` : `
-                                                                    <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                    <select name="duplo_d3[${uniqueID}]" class="form-select d3 w-50 p-0" disabled>
+                                                                    <option value="" selected hidden>Pilih...</option>
                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2411,7 +2448,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                     <div class='checkbox-r-container d-flex align-items-center gap-1'>
                                                                         <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
                                                                         <span class='text-danger fw-bold'>R</span>
-                                                                        <select name="flag_dx[${param.nama}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
+                                                                        <select name="flag_dx[${uniqueID}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
                                                                             <option value="Normal" ${(obxValues.flag_dx || 'Normal') === 'Normal' ? 'selected' : ''}>Normal</option>
                                                                             <option value="Low" ${obxValues.flag_dx === 'Low' ? 'selected' : ''}>Low</option>
                                                                             <option value="Low*" ${obxValues.flag_dx === 'Low*' ? 'selected' : ''}>Low*</option>
@@ -2420,12 +2457,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                         </select>
                                                                     </div>
                                                                 ` : `
-                                                                <input type="hidden" name="flag_dx[]" value="">
                                                                 `}    
                                                             </td>
                                                             
                                                             <td>
-                                                                <input type="hidden" name="satuan[]" value="${param.satuan || ''}" readonly />
                                                                 ${param.satuan || ''}
                                                             </td>
                                                         </tr>
@@ -2458,24 +2493,26 @@ document.addEventListener('DOMContentLoaded', function() {
                                                     const rowId = `preparatbasah_${idx}_${paramIdx}`;
                                                     const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
                                                     const label = param.judul || param.display_name || param.nama || '-';
+                                                    const uniqueID = generateParameterUID('PreparatBasah', param.nama, paramIdx);
 
                                                     return `
-                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" class="preparatbasah-row">
+                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="preparatbasah-row">
                                                             <td class="col-2 ps-4" style="border-left: 2px solid #e9ecef;">
                                                                 <strong>${label}</strong>
                                                                 ${param.nilai_rujukan !== '-' && param.nilai_rujukan !== '' ? 
                                                                     `<small class="text-muted d-block">${param.nilai_rujukan ?? ''}</small>` : ''}
-                                                                <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanPreparatBasah}" />
-                                                                <input type="hidden" name="judul[]" value="${judulPreparatBasah}" />
-                                                                <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                                <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan ?? '-'}" />
-                                                                <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                                <input type="hidden" name="uid[${uniqueID}]" value="${obxValues.uid}" />
+                                                                <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${namaPemeriksaanPreparatBasah}" />
+                                                                <input type="hidden" name="judul[${uniqueID}]" value="${judulPreparatBasah}" />
+                                                                <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                                <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${param.nilai_rujukan ?? '-'}" />
+                                                                <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                                             </td>
                                                             <td class="col-2">
                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                    <input type="text" name="hasil[]" class="form-control manualInput w-60 p-0 text-center" disabled value="${obxValues.hasilUtama || ''}" />
+                                                                    <input type="text" name="hasil[${uniqueID}]" class="form-control manualInput w-60 p-0 text-center" disabled value="${obxValues.hasilUtama || ''}" />
                                                                 ` : `
-                                                                    <select name="hasil[]" class="form-select manualInput w-60 p-0" disabled>
+                                                                    <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0" disabled>
                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                             <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2494,11 +2531,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                 <div class="d-flex align-items-center justify-content-center gap-1">
                                                                     ${param.tipe_inputan.toLowerCase() === 'text' ? `
                                                                         <input type="text"
-                                                                            name="duplo_dx[]"
+                                                                            name="duplo_dx[${uniqueID}]"
                                                                             class="form-control dx w-60 p-0 text-center"
                                                                             value="${obxValues.duplo_dx || ''}" />
                                                                     ` : `
-                                                                        <select name="duplo_dx[]" class="form-select dx w-60 p-0">
+                                                                        <select name="duplo_dx[${uniqueID}]" class="form-select dx w-60 p-0">
+                                                                        <option value="" selected hidden>Pilih...</option>
                                                                             ${param.opsi_output
                                                                                 ? param.opsi_output.split(';').map(opt => `
                                                                                     <option value="${opt.trim()}"
@@ -2511,7 +2549,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                         </select>
                                                                     `}
 
-                                                                    <input type="hidden" name="is_switched[]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
+                                                                    <input type="hidden" name="is_switched[${uniqueID}]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
 
                                                                     ${obxValues.switched ? `
                                                                         <div class='checkbox-r-container d-flex align-items-center gap-1'>
@@ -2524,9 +2562,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
                                                             <td class="col-2 duplo d1-column text-center" style="display: none;">
                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                    <input type="text" name="duplo_d1[]" class="form-control d1 w-60 p-0 text-center" disabled value="${obxValues.duplo_d1 || ''}" />
+                                                                    <input type="text" name="duplo_d1[${uniqueID}]" class="form-control d1 w-60 p-0 text-center" disabled value="${obxValues.duplo_d1 || ''}" />
                                                                 ` : `
-                                                                    <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                    <select name="duplo_d1[${uniqueID}]" class="form-select d1 w-60 p-0" disabled>
+                                                                    <option value="" selected hidden>Pilih...</option>
                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2535,9 +2574,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                                             </td>
                                                             <td class="col-2 duplo d2-column" style="display: none;">
                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                    <input type="text" name="duplo_d2[]" class="form-control d2 w-60 p-0 text-center" disabled value="${obxValues.duplo_d2 || ''}" />
+                                                                    <input type="text" name="duplo_d2[${uniqueID}]" class="form-control d2 w-60 p-0 text-center" disabled value="${obxValues.duplo_d2 || ''}" />
                                                                 ` : `
-                                                                    <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                                    <select name="duplo_d2[${uniqueID}]" class="form-select d2 w-60 p-0" disabled>
+                                                                    <option value="" selected hidden>Pilih...</option>
                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2546,9 +2586,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                                             </td>
                                                             <td class="col-2 duplo d3-column" style="display: none;">
                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                    <input type="text" name="duplo_d3[]" class="form-control d3 w-50 p-0 text-center" disabled value="${obxValues.duplo_d3 || ''}" />
+                                                                    <input type="text" name="duplo_d3[${uniqueID}]" class="form-control d3 w-50 p-0 text-center" disabled value="${obxValues.duplo_d3 || ''}" />
                                                                 ` : `
-                                                                    <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                    <select name="duplo_d3[${uniqueID}]" class="form-select d3 w-50 p-0" disabled>
+                                                                    <option value="" selected hidden>Pilih...</option>
                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2560,7 +2601,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                     <div class='checkbox-r-container d-flex align-items-center gap-1'>
                                                                         <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
                                                                         <span class='text-danger fw-bold'>R</span>
-                                                                        <select name="flag_dx[${param.nama}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
+                                                                        <select name="flag_dx[${uniqueID}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
                                                                             <option value="Normal" ${(obxValues.flag_dx || 'Normal') === 'Normal' ? 'selected' : ''}>Normal</option>
                                                                             <option value="Low" ${obxValues.flag_dx === 'Low' ? 'selected' : ''}>Low</option>
                                                                             <option value="Low*" ${obxValues.flag_dx === 'Low*' ? 'selected' : ''}>Low*</option>
@@ -2569,12 +2610,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                                                         </select>
                                                                     </div>
                                                                 ` : `
-                                                                <input type="hidden" name="flag_dx[]" value="">
                                                                 `}    
                                                             </td>
                                                             
                                                             <td>
-                                                                <input type="hidden" name="satuan[]" value="${param.satuan || ''}" readonly />
                                                                 ${param.satuan || ''}
                                                             </td>
                                                         </tr>
@@ -2605,11 +2644,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                     const obxValues = getDataValues(param.nama); // ambil hasil dari backend
                                     const rowId = `feses_${idx}_${paramIdx}`;
                                     const label = param.display_name || param.nama || '-';
+                                    const uniqueID = generateParameterUID('Feses', param.nama, paramIdx);
 
                                     const renderField = (name, value, className = '') => {
                                         if (param.tipe_inputan === 'Dropdown') {
                                             return `
-                                                <select name="${name}[]" class="form-select ${className} w-60 p-0">
+                                                <select name="${name}[${uniqueID}]" class="form-select ${className} w-60 p-0">
                                                     <option value="" hidden>Pilih...</option>
                                                     ${param.opsi_output.split(';').map(opt => `
                                                         <option value="${opt.trim()}" ${value === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
@@ -2618,7 +2658,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                             `;
                                         } else {
                                             return `
-                                                <input type="text" name="${name}[]" 
+                                                <input type="text" name="${name}[${uniqueID}]" 
                                                     class="form-control ${className} w-60 p-0 text-center" 
                                                      value="${value || ''}" />
                                             `;
@@ -2626,16 +2666,17 @@ document.addEventListener('DOMContentLoaded', function() {
                                     };
 
                                     return `
-                                        <tr data-id="${rowId}" data-parameter="${param.nama}" class="feses-row">
+                                        <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="feses-row">
                                             <!-- Nama parameter -->
                                             <td class="col-2 ps-4">
                                                 <strong>${label}</strong>
                                                 ${param.nilai_rujukan ? `<small class="text-muted d-block">${param.nilai_rujukan}</small>` : ''}
-                                                <input type="hidden" name="nama_pemeriksaan[]" value="${param.nama}" />
-                                                <input type="hidden" name="judul[]" value="${judulFeses}" />
-                                                <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan}" />
-                                                <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                <input type="hidden" name="uid[${uniqueID}]" value="${obxValues.uid}" />
+                                                <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${param.nama}" />
+                                                <input type="hidden" name="judul[${uniqueID}]" value="${judulFeses}" />
+                                                <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${param.nilai_rujukan}" />
+                                                <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                             </td>
 
                                             <!-- Hasil utama -->
@@ -2657,7 +2698,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                             <td class="col-2 text-center">
                                                 <div class="d-flex align-items-center justify-content-center gap-1">
                                                     ${renderField('duplo_dx', obxValues.duplo_dx, 'dx')}
-                                                    <input type="hidden" name="is_switched[]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
+                                                    <input type="hidden" name="is_switched[${uniqueID}]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
                                                     ${obxValues.switched ? `
                                                         <div class='checkbox-r-container d-flex align-items-center gap-1'>
                                                             <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
@@ -2688,7 +2729,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                 <div class='checkbox-r-container d-flex align-items-center gap-1'>
                                                     <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
                                                     <span class='text-danger fw-bold'>R</span>
-                                                    <select name="flag_dx[${param.nama}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
+                                                    <select name="flag_dx[${uniqueID}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
                                                         <option value="Normal" ${(obxValues.flag_dx || 'Normal') === 'Normal' ? 'selected' : ''}>Normal</option>
                                                         <option value="Low" ${obxValues.flag_dx === 'Low' ? 'selected' : ''}>Low</option>
                                                         <option value="Low*" ${obxValues.flag_dx === 'Low*' ? 'selected' : ''}>Low*</option>
@@ -2697,7 +2738,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                                     </select>
                                                 </div>
                                             ` : `
-                                            <input type="hidden" name="flag_dx[]" value="">
                                             `}    
                                             </td>
 
@@ -2705,7 +2745,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                                             <!-- Satuan -->
                                             <td>
-                                                <input type="hidden" name="satuan[]" value="${param.satuan || ''}" />
                                                 ${param.satuan || ''}
                                             </td>
                                         </tr>
@@ -2780,11 +2819,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                     lastJudul = judul; 
                                 }
 
-                                // Ambil hasil OBX
                                 const obxValues = getDataValues(p.data_pemeriksaan.nama_parameter);
                                 const rowId = p.data_pemeriksaan.id;
 
-                                // Flag awal
                                 const initialFlag = renderFlag(
                                     obxValues.hasilUtama,
                                     p.data_pemeriksaan.nama_parameter,
@@ -2800,22 +2837,29 @@ document.addEventListener('DOMContentLoaded', function() {
                                     data_pasien.jenis_kelamin
                                 );
 
+                                const uniqueID = generateParameterUID(
+                                    p.data_pemeriksaan.nama_pemeriksaan, 
+                                    p.data_pemeriksaan.nama_parameter, 
+                                    pIdx
+                                );
+
                                 html += `
-                                    <tr data-id="${rowId}" data-parameter="${p.data_pemeriksaan.nama_parameter}">
+                                    <tr data-id="${rowId}" data-parameter="${p.data_pemeriksaan.nama_parameter}" data-uid="${uniqueID}">
                                         <td class="col-2 ${lastJudul ? 'ps-4' : ''}" ${lastJudul ? 'style="border-left:2px solid #e9ecef;"' : ''}>
                                             <strong>${lastJudul ? p.data_pemeriksaan.nama_parameter : p.data_pemeriksaan.nama_pemeriksaan}</strong>
                                             ${nilaiRujukanDisplay ? `<br><small class="text-muted">${nilaiRujukanDisplay}</small>` : ''}
-                                            <input type="hidden" name="nama_pemeriksaan[]" value="${p.data_pemeriksaan.nama_pemeriksaan}" />
-                                            <input type="hidden" name="judul[]" value="${judul || ''}" />
-                                            <input type="hidden" name="parameter_name[]" value="${p.data_pemeriksaan.nama_parameter}" />
-                                            <input type="hidden" name="nilai_rujukan[]" value="${p.data_pemeriksaan.nilai_rujukan || ''}" />
-                                            <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                            <input type="hidden" name="uid[${uniqueID}]" value="${obxValues.uid}" />
+                                            <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${p.data_pemeriksaan.nama_pemeriksaan}" />
+                                            <input type="hidden" name="judul[${uniqueID}]" value="${judul || ''}" />
+                                            <input type="hidden" name="parameter_name[${uniqueID}]" value="${p.data_pemeriksaan.nama_parameter}" />
+                                            <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${p.data_pemeriksaan.nilai_rujukan || ''}" />
+                                            <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                         </td>
 
                                         <!-- Kolom hasil utama -->
                                         <td class="col-2">
                                             ${p.data_pemeriksaan.tipe_inputan === 'Dropdown' ? `
-                                                <select name="hasil[]" class="form-select manualInput w-60 p-0" disabled>
+                                                <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0" disabled>
                                                     ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
                                                         <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>
                                                             ${opt.trim()}
@@ -2823,7 +2867,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                     `).join('')}
                                                 </select>
                                             ` : `
-                                                <input type="text" name="hasil[]" 
+                                                <input type="text" name="hasil[${uniqueID}]" 
                                                     class="form-control manualInput w-60 p-0 text-center" 
                                                     value="${obxValues.hasilUtama || ''}"  />
                                             `}
@@ -2840,7 +2884,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <td class="col-2 text-center">
                                             <div class="d-flex align-items-center justify-content-center gap-1">
                                                 ${p.data_pemeriksaan.tipe_inputan === 'Dropdown' ? `
-                                                    <select name="duplo_dx[]" class="form-select dx w-60 p-0">
+                                                    <select name="duplo_dx[${uniqueID}]" class="form-select dx w-60 p-0">
+                                                    <option value="" selected hidden>Pilih...</option>
                                                         ${p.data_pemeriksaan.opsi_output
                                                             ? p.data_pemeriksaan.opsi_output.split(';').map(opt => `
                                                                 <option value="${opt.trim()}" ${obxValues.duplo_dx === opt.trim() ? 'selected' : ''}>
@@ -2852,13 +2897,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                                     </select>
                                                 ` : `
                                                     <input type="text" 
-                                                        name="duplo_dx[]" 
+                                                        name="duplo_dx[${uniqueID}]" 
                                                         class="form-control dx w-60 p-0 text-center"
                                                         value="${obxValues.duplo_dx || ''}" />
                                                 `}
 
                                                 <!-- Hidden input untuk kirim status switch -->
-                                                <input type="hidden" name="is_switched[]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
+                                                <input type="hidden" name="is_switched[${uniqueID}]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
 
                                                 <!-- Jika sudah di-switch, tampilkan checkbox R -->
                                                 ${obxValues.switched ? `
@@ -2873,7 +2918,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <!-- Duplo D1 -->
                                         <td class="col-2 duplo d1-column text-center" style="display:none;">
                                             ${p.data_pemeriksaan.tipe_inputan === 'Dropdown' ? `
-                                                <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                <select name="duplo_d1[${uniqueID}]" class="form-select d1 w-60 p-0" disabled>
                                                      <option value="" selected hidden>Pilih...</option>
                                                     ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
                                                         <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>
@@ -2882,7 +2927,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                     `).join('')}
                                                 </select>
                                             ` : `
-                                                <input type="text" name="duplo_d1[]" 
+                                                <input type="text" name="duplo_d1[${uniqueID}]" 
                                                     class="form-control d1 w-60 p-0 text-center" 
                                                     value="${obxValues.duplo_d1 || ''}" disabled />
                                             `}
@@ -2891,7 +2936,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <!-- Duplo D2 -->
                                         <td class="col-2 duplo d2-column text-center" style="display:none;">
                                             ${p.data_pemeriksaan.tipe_inputan === 'Dropdown' ? `
-                                                <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                <select name="duplo_d2[${uniqueID}]" class="form-select d2 w-60 p-0" disabled>
                                                      <option value="" selected hidden>Pilih...</option>
                                                     ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
                                                         <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>
@@ -2900,7 +2945,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                     `).join('')}
                                                 </select>
                                             ` : `
-                                                <input type="text" name="duplo_d2[]" 
+                                                <input type="text" name="duplo_d2[${uniqueID}]" 
                                                     class="form-control d2 w-60 p-0 text-center" 
                                                     value="${obxValues.duplo_d2 || ''}" disabled />
                                             `}
@@ -2909,7 +2954,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <!-- Duplo D3 -->
                                         <td class="col-2 duplo d3-column text-center" style="display:none;">
                                             ${p.data_pemeriksaan.tipe_inputan === 'Dropdown' ? `
-                                                <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                <select name="duplo_d3[${uniqueID}]" class="form-select d3 w-50 p-0" disabled>
                                                      <option value="" selected hidden>Pilih...</option>
                                                     ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
                                                         <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>
@@ -2918,7 +2963,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                     `).join('')}
                                                 </select>
                                             ` : `
-                                                <input type="text" name="duplo_d3[]" 
+                                                <input type="text" name="duplo_d3[${uniqueID}]" 
                                                     class="form-control d3 w-50 p-0 text-center" 
                                                     value="${obxValues.duplo_d3 || ''}" disabled />
                                             `}
@@ -2926,12 +2971,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
                                         <!-- Flag -->
                                         <td class="col-3 flag-cell">
-                                            ${renderFlag(obxValues.flag || renderFlag(obxValues.hasilUtama, {innerHTML: ''}, p.data_pemeriksaan.nama_parameter))}
+                                        ${renderFlag(obxValues.flag || renderFlag(obxValues.hasilUtama, {innerHTML: ''}, p.data_pemeriksaan.nama_parameter))}
                                             ${obxValues.switched ? `
                                                 <div class='checkbox-r-container d-flex align-items-center gap-1'>
                                                     <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
                                                     <span class='text-danger fw-bold'>R</span>
-                                                    <select name="flag_dx[${p.data_pemeriksaan.nama_parameter}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
+                                                    <select name="flag_dx[${uniqueID}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
                                                         <option value="Normal" ${(obxValues.flag_dx || 'Normal') === 'Normal' ? 'selected' : ''}>Normal</option>
                                                         <option value="Low" ${obxValues.flag_dx === 'Low' ? 'selected' : ''}>Low</option>
                                                         <option value="Low*" ${obxValues.flag_dx === 'Low*' ? 'selected' : ''}>Low*</option>
@@ -2940,15 +2985,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                                     </select>
                                                 </div>
                                             ` : `
-                                            <input type="hidden" name="flag_dx[]" value="">
+                                            <input type="hidden" name="flag_dx[${uniqueID}]" value="">
                                             `}
                                         </td>
 
 
                                         <!-- Satuan -->
                                         <td>
-                                            <input type="hidden" name="satuan[]" 
-                                                value="${p.data_pemeriksaan.nilai_satuan || ''}" readonly />
                                             ${p.data_pemeriksaan.nilai_satuan || ''}
                                         </td>
                                     </tr>
@@ -3052,363 +3095,368 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
 
     setTimeout(() => {
-        // Referensi elemen-elemen yang diperlukan
-        const kembalikanBtn = document.getElementById('kembalikanBtn');
-        const releaseBtn = document.getElementById('releaseBtn');
-        const masterSwitchAllBtn = document.getElementById('masterSwitchAllBtn');
-        
-        if (masterSwitchAllBtn) {
-            masterSwitchAllBtn.addEventListener('click', () => {
-                switchAllHasilToDX();
-            });
-        }
-
-        // Event listener untuk tombol kembalikan
-        if (kembalikanBtn) {
-            kembalikanBtn.addEventListener('click', () => {
-                if (confirm('Apakah Anda yakin ingin mengembalikan hasil ke Analyst?')) {
-                    // Buat form baru untuk kembalikan
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = `worklist/return/${data_pasien.id}`;
-                    
-                    // Tambahkan CSRF token
-                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                    const csrfInput = document.createElement('input');
-                    csrfInput.type = 'hidden';
-                    csrfInput.name = '_token';
-                    csrfInput.value = csrfToken;
-                    form.appendChild(csrfInput);
-                    
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            });
-        }
-
-        // Event listener untuk tombol release
-        if (releaseBtn) {
-            releaseBtn.addEventListener('click', () => {
-                if (confirm('Apakah Anda yakin ingin me-release hasil pemeriksaan?')) {
-                    document.getElementById('worklistForm').action = `worklist/release/${data_pasien.id}`;
-                    document.getElementById('worklistForm').submit();
-                }
-            });
-        }
-
-        // Simpan nilai hasil asli dari database ke atribut data-original
-            document.querySelectorAll('.manualInput').forEach(input => {
-                // Ambil nilai dari input dan pastikan ada nilainya
-                const currentValue = input.value?.trim() || '';
-                if (currentValue !== '' && !input.dataset.original) {
-                    input.dataset.original = currentValue;
-                }
-            });
-
-                document.querySelectorAll('tr[data-parameter]').forEach(row => {
-                    const hasilInput = row.querySelector('.manualInput');
-                    const dxInput = row.querySelector('.dx, input[name="duplo_dx[]"], select[name="duplo_dx[]"]');
-                    const hiddenSwitch = row.querySelector('input[name="is_switched[]"]');
-
-                    if (!hasilInput || !dxInput || !hiddenSwitch) {
-                        console.log('Element tidak ditemukan untuk row:', row.dataset.parameter);
-                        return;
-                    }
-
-                    // Pastikan data original tersimpan
-                    if (!hasilInput.dataset.original && hasilInput.value?.trim()) {
-                        hasilInput.dataset.original = hasilInput.value.trim();
-                    }
-
-                    console.log('Checking parameter:', row.dataset.parameter, 'is_switched value:', hiddenSwitch.value);
-
-                    // PERBAIKAN: Cek berdasarkan nilai is_switched dari database
-                    if (Number(hiddenSwitch.value) === 1) {
-                        // Jika is_switched = 1, berarti sudah di-switch
-                        // Tampilkan checkbox R di kolom DX
-                        const existingCheckbox = dxInput.parentElement.querySelector('.checkbox-r-container');
-                        if (!existingCheckbox) {
-                            addCheckboxR(dxInput);
-                            console.log('✅ Checkbox R ditampilkan untuk parameter:', row.dataset.parameter);
-                        } else {
-                            console.log('Checkbox R sudah ada untuk parameter:', row.dataset.parameter);
-                        }
-                    } else {
-                        // Jika is_switched = 0, pastikan tidak ada checkbox R
-                        removeCheckboxR(dxInput);
-                        console.log('❌ Checkbox R dihapus untuk parameter:', row.dataset.parameter);
-                    }
-                });
-
-            // Event klik tombol switch
-            document.querySelectorAll('.switch-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const row = this.closest('tr');
-                    const hasilInput = row.querySelector('.manualInput');
-                    const dxInput = row.querySelector('.dx, input[name="duplo_dx[]"], select[name="duplo_dx[]"]');
-                    const flagCell = row.querySelector('.flag-cell');
-                    const parameter = row.dataset.parameter;
-                    const originalValue = hasilInput.dataset.original?.trim() || '';
-                    
-
-                    if (!hasilInput || !dxInput) return;
-
-                    // Tukar nilai
-                    const tempHasil = hasilInput.value;
-                    hasilInput.value = dxInput.value;
-                    dxInput.value = tempHasil;
-
-                    // Cek apakah nilai asli pindah ke DX
-                    if (dxInput.value.trim() === originalValue && originalValue !== '') {
-                        addCheckboxR(dxInput);
-                        setSwitchStatus(row, 1);
-                    } else if (hasilInput.value.trim() === originalValue) {
-                        // Jika nilai asli kembali ke hasil utama
-                        removeCheckboxR(dxInput);
-                        setSwitchStatus(row, 0);
-                    } else {
-                        // Hilangkan R jika tidak ada nilai asli di DX
-                        removeCheckboxR(dxInput);
-                        setSwitchStatus(row, 0);
-                    }
-
-                    // Update flag hasil
-                    if (flagCell && parameter) {
-                        updateFlag(hasilInput.value, flagCell, parameter);
-                    }
-                });
-            });
-
-            
-             function addCheckboxR(dxInput) {
-            // Hapus yang lama jika ada
-            removeCheckboxR(dxInput);
-
-            // Pastikan parent element ada
-            if (!dxInput.parentElement) return;
-
-            const container = document.createElement('div');
-            container.className = 'checkbox-r-container d-flex align-items-center gap-1';
-
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.className = 'checkbox-r form-check-input';
-            checkbox.checked = true;
-            checkbox.title = 'Nilai asli berpindah ke kolom DX';
-            checkbox.disabled = true;
-
-            const label = document.createElement('span');
-            label.className = 'text-danger fw-bold';
-            label.textContent = 'R';
-
-            container.appendChild(checkbox);
-            container.appendChild(label);
-
-            // Tambahkan setelah input DX (dalam parent yang sama)
-            dxInput.parentElement.appendChild(container);
-            
-            // Tambahkan dropdown flag_dx di kolom FLAG
-            addFlagDxDropdown(dxInput);
-            
-            console.log('Checkbox R berhasil ditambahkan di kolom DX');
-        }
-
-        // ✅ Fungsi baru untuk menambahkan dropdown flag_dx di kolom FLAG
-        function addFlagDxDropdown(dxInput) {
-            const row = dxInput.closest('tr');
-            const flagCell = row.querySelector('.flag-cell');
-            
-            if (!flagCell) return;
-            
-            // Cek apakah dropdown sudah ada
-            let existingDropdown = flagCell.querySelector('.flag-dx-select');
-            if (existingDropdown) return;
-            
-            // Cari atau buat container di flag cell
-            let flagContainer = flagCell.querySelector('.d-flex');
-            if (!flagContainer) {
-                flagContainer = document.createElement('div');
-                flagContainer.className = 'd-flex align-items-center gap-2';
-                
-                // Pindahkan icon flag yang ada ke dalam container
-                const existingContent = flagCell.innerHTML;
-                flagCell.innerHTML = '';
-                
-                const iconSpan = document.createElement('span');
-                iconSpan.className = 'flag-icon';
-                iconSpan.innerHTML = existingContent;
-                
-                flagContainer.appendChild(iconSpan);
-                flagCell.appendChild(flagContainer);
-            }
-            
-            // Buat dropdown flag_dx
-            const flagSelect = document.createElement('select');
-            flagSelect.name = `flag_dx[${row.dataset.parameter}]`;
-            flagSelect.className = 'form-select form-select-sm flag-dx-select';
-            flagSelect.style.width = '100px';
-            
-            const flagOptions = ['Normal', 'Low', 'Low*', 'High', 'High*'];
-            flagOptions.forEach(option => {
-                const optElement = document.createElement('option');
-                optElement.value = option;
-                optElement.textContent = option;
-                flagSelect.appendChild(optElement);
-            });
-            
-            flagSelect.value = 'Normal';
-            
-            // Tambahkan ke flag cell
-            flagContainer.appendChild(flagSelect);
-            
-            console.log('Dropdown flag_dx berhasil ditambahkan di kolom FLAG');
-        }
-
-            // Fungsi removeCheckboxR tetap sama
-           function removeCheckboxR(dxInput) {
-            // Hapus checkbox R dari kolom DX
-            const dxContainer = dxInput.parentElement?.querySelector('.checkbox-r-container');
-            if (dxContainer) {
-                dxContainer.remove();
-                console.log('Checkbox R berhasil dihapus dari kolom DX');
-            }
-            
-            // Hapus dropdown flag_dx dari kolom FLAG
-            const row = dxInput.closest('tr');
-            const flagCell = row?.querySelector('.flag-cell');
-            const flagDropdown = flagCell?.querySelector('.flag-dx-select');
-            
-            if (flagDropdown) {
-                flagDropdown.remove();
-                console.log('Dropdown flag_dx berhasil dihapus dari kolom FLAG');
-            }
-            
-            // Tambahkan hidden input untuk flag_dx kosong
-            const existingHidden = row?.querySelector('input[name="flag_dx[]"]');
-            if (!existingHidden) {
-                const hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = 'flag_dx[]';
-                hiddenInput.value = '';
-                row?.appendChild(hiddenInput);
-            }
-        }
-
-            // ✅ Fungsi untuk menambahkan/ubah input hidden is_switched[]
-            function setSwitchStatus(row, value) {
-                let hidden = row.querySelector('input[name="is_switched[]"]');
-                if (!hidden) {
-                    hidden = document.createElement('input');
-                    hidden.type = 'hidden';
-                    hidden.name = 'is_switched[]';
-                    row.appendChild(hidden);
-                }
-                hidden.value = value;
-            }
-
-         function switchAllHasilToDX() {
-                // Ambil semua row yang memiliki data parameter
-                const allRows = document.querySelectorAll('tr[data-parameter]');
-                let switchedCount = 0;
-                
-                allRows.forEach(row => {
-                    const hasilInput = row.querySelector('.manualInput'); // Field HASIL
-                    const dxInput = row.querySelector('.dx, input[name="duplo_dx[]"], select[name="duplo_dx[]"]'); // Field DX
-                    const flagCell = row.querySelector('.flag-cell');
-                    const parameter = row.dataset.parameter;
-
-                    // Pastikan kedua input ada
-                    if (hasilInput && dxInput) {
-                        // Simpan nilai sementara
-                        const tempHasil = hasilInput.value;
-                        const tempDx = dxInput.value;
-                        
-                        // Tukar nilai
-                        hasilInput.value = tempDx;
-                        dxInput.value = tempHasil;
-                        
-                        // Update flag berdasarkan nilai baru di HASIL
-                        if (flagCell && parameter) {
-                            updateFlag(hasilInput.value, flagCell, parameter);
-                        }
-                        
-                        switchedCount++;
-                    }
-                });
-                
-                console.log(`Switched ${switchedCount} parameters between HASIL and DX`);
-                
-                // Visual feedback pada button
-                provideSwitchFeedback();
-            }
-
-            function provideSwitchFeedback() {
-                const button = masterSwitchAllBtn;
-                const icon = button.querySelector('i');
-                
-                // Animasi feedback
-                button.classList.add('btn-success');
-                button.classList.remove('btn-outline-primary');
-                icon.className = 'ti ti-check';
-                
-                // Reset setelah 1 detik
-                setTimeout(() => {
-                    button.classList.remove('btn-success');
-                    button.classList.add('btn-outline-primary');
-                    icon.className = 'ti ti-arrows-exchange';
-                }, 1000);
-            }
-
-        // Update function menggunakan form submit seperti worklist.store (tanpa parameter_name)
-        document.querySelector('#resultReviewModal .update-btn').addEventListener('click', function () {
-            // SweetAlert konfirmasi sebelum update dengan z-index tinggi
-            Swal.fire({
-                title: 'Konfirmasi Update',
-                text: 'Apakah Anda yakin ingin mengupdate hasil pemeriksaan?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Update!',
-                cancelButtonText: 'Batal',
-                customClass: {
-                    container: 'swal-high-z-index'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const form = document.getElementById('worklistForm');
-                    
-                    // Show loading alert
-                    Swal.fire({
-                        title: 'Sedang memproses...',
-                        text: 'Mohon tunggu, data sedang diupdate',
-                        icon: 'info',
-                        allowOutsideClick: false,
-                        showConfirmButton: false,
-                        willOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-                    
-                    // Enable semua input yang disabled agar nilainya bisa terkirim
-                    const disabledInputs = form.querySelectorAll('input[disabled], select[disabled], textarea[disabled]');
-                    disabledInputs.forEach(input => {
-                        input.removeAttribute('disabled');
-                    });
-                    
-                    // Ubah action form ke route update
-                    const noLab = form.querySelector('input[name="no_lab"]').value;
-                    form.action = `/analyst/worklist/update-hasil/${noLab}`;
-                    
-                    // Ubah method form ke POST (jika belum)
-                    form.method = 'POST';
-                    
-                    // Submit form seperti worklist.store
-                    form.submit();
-                }
-            });
+    // Referensi elemen-elemen yang diperlukan
+    const kembalikanBtn = document.getElementById('kembalikanBtn');
+    const releaseBtn = document.getElementById('releaseBtn');
+    const masterSwitchAllBtn = document.getElementById('masterSwitchAllBtn');
+    
+    if (masterSwitchAllBtn) {
+        masterSwitchAllBtn.addEventListener('click', () => {
+            switchAllHasilToDX();
         });
-    }, 0);
+    }
+
+    // Event listener untuk tombol kembalikan
+    if (kembalikanBtn) {
+        kembalikanBtn.addEventListener('click', () => {
+            if (confirm('Apakah Anda yakin ingin mengembalikan hasil ke Analyst?')) {
+                // Buat form baru untuk kembalikan
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `worklist/return/${data_pasien.id}`;
+                
+                // Tambahkan CSRF token
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = csrfToken;
+                form.appendChild(csrfInput);
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    // Event listener untuk tombol release
+    if (releaseBtn) {
+        releaseBtn.addEventListener('click', () => {
+            if (confirm('Apakah Anda yakin ingin me-release hasil pemeriksaan?')) {
+                document.getElementById('worklistForm').action = `worklist/release/${data_pasien.id}`;
+                document.getElementById('worklistForm').submit();
+            }
+        });
+    }
+
+    // Simpan nilai hasil asli dari database ke atribut data-original
+    document.querySelectorAll('.manualInput').forEach(input => {
+        // Ambil nilai dari input dan pastikan ada nilainya
+        const currentValue = input.value?.trim() || '';
+        if (currentValue !== '' && !input.dataset.original) {
+            input.dataset.original = currentValue;
+        }
+    });
+
+    // ✅ PERBAIKAN: Gunakan uniqueID untuk setiap parameter
+    document.querySelectorAll('tr[data-parameter]').forEach(row => {
+        const hasilInput = row.querySelector('.manualInput');
+        const dxInput = row.querySelector('.dx, input[name^="duplo_dx"]');
+        const uniqueID = row.dataset.uid; // Ambil uniqueID dari data attribute
+        const hiddenSwitch = row.querySelector(`input[name="is_switched[${uniqueID}]"]`);
+
+        if (!hasilInput || !dxInput || !hiddenSwitch || !uniqueID) {
+            console.log('Element tidak ditemukan untuk row:', row.dataset.parameter);
+            return;
+        }
+
+        // Pastikan data original tersimpan
+        if (!hasilInput.dataset.original && hasilInput.value?.trim()) {
+            hasilInput.dataset.original = hasilInput.value.trim();
+        }
+
+        console.log('Checking parameter:', row.dataset.parameter, 'uniqueID:', uniqueID, 'is_switched value:', hiddenSwitch.value);
+
+        // PERBAIKAN: Cek berdasarkan nilai is_switched dari database
+        if (Number(hiddenSwitch.value) === 1) {
+            // Jika is_switched = 1, berarti sudah di-switch
+            // Tampilkan checkbox R di kolom DX
+            const existingCheckbox = dxInput.parentElement.querySelector('.checkbox-r-container');
+            if (!existingCheckbox) {
+                addCheckboxR(dxInput, uniqueID);
+                console.log('✅ Checkbox R ditampilkan untuk parameter:', row.dataset.parameter, 'uniqueID:', uniqueID);
+            } else {
+                console.log('Checkbox R sudah ada untuk parameter:', row.dataset.parameter);
+            }
+        } else {
+            // Jika is_switched = 0, pastikan tidak ada checkbox R
+            removeCheckboxR(dxInput, uniqueID);
+            console.log('❌ Checkbox R dihapus untuk parameter:', row.dataset.parameter);
+        }
+    });
+
+    // ✅ Event klik tombol switch dengan uniqueID
+    document.querySelectorAll('.switch-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const row = this.closest('tr');
+            const hasilInput = row.querySelector('.manualInput');
+            const dxInput = row.querySelector('.dx, input[name^="duplo_dx"]');
+            const flagCell = row.querySelector('.flag-cell');
+            const parameter = row.dataset.parameter;
+            const uniqueID = row.dataset.uid; // Ambil uniqueID dari row
+            const originalValue = hasilInput.dataset.original?.trim() || '';
+            
+            if (!hasilInput || !dxInput || !uniqueID) return;
+
+            // Tukar nilai
+            const tempHasil = hasilInput.value;
+            hasilInput.value = dxInput.value;
+            dxInput.value = tempHasil;
+
+            // Cek apakah nilai asli pindah ke DX
+            if (dxInput.value.trim() === originalValue && originalValue !== '') {
+                addCheckboxR(dxInput, uniqueID);
+                setSwitchStatus(row, 1, uniqueID);
+            } else if (hasilInput.value.trim() === originalValue) {
+                // Jika nilai asli kembali ke hasil utama
+                removeCheckboxR(dxInput, uniqueID);
+                setSwitchStatus(row, 0, uniqueID);
+            } else {
+                // Hilangkan R jika tidak ada nilai asli di DX
+                removeCheckboxR(dxInput, uniqueID);
+                setSwitchStatus(row, 0, uniqueID);
+            }
+
+            // Update flag hasil
+            if (flagCell && parameter) {
+                updateFlag(hasilInput.value, flagCell, parameter);
+            }
+        });
+    });
+
+    // ✅ Fungsi addCheckboxR dengan uniqueID
+    function addCheckboxR(dxInput, uniqueID) {
+        // Hapus yang lama jika ada
+        removeCheckboxR(dxInput, uniqueID);
+
+        // Pastikan parent element ada
+        if (!dxInput.parentElement) return;
+
+        const container = document.createElement('div');
+        container.className = 'checkbox-r-container d-flex align-items-center gap-1';
+        container.dataset.uid = uniqueID; // Tambahkan uniqueID untuk identifikasi
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'checkbox-r form-check-input';
+        checkbox.checked = true;
+        checkbox.title = 'Nilai asli berpindah ke kolom DX';
+        checkbox.disabled = true;
+
+        const label = document.createElement('span');
+        label.className = 'text-danger fw-bold';
+        label.textContent = 'R';
+
+        container.appendChild(checkbox);
+        container.appendChild(label);
+
+        // Tambahkan setelah input DX (dalam parent yang sama)
+        dxInput.parentElement.appendChild(container);
+        
+        // Tambahkan dropdown flag_dx di kolom FLAG dengan uniqueID
+        addFlagDxDropdown(dxInput, uniqueID);
+        
+        console.log('Checkbox R berhasil ditambahkan di kolom DX untuk uniqueID:', uniqueID);
+    }
+
+    // ✅ Fungsi untuk menambahkan dropdown flag_dx di kolom FLAG dengan uniqueID
+    function addFlagDxDropdown(dxInput, uniqueID) {
+        const row = dxInput.closest('tr');
+        const flagCell = row.querySelector('.flag-cell');
+        
+        if (!flagCell) return;
+        
+        // Cek apakah dropdown sudah ada untuk uniqueID ini
+        let existingDropdown = flagCell.querySelector(`.flag-dx-select[data-uid="${uniqueID}"]`);
+        if (existingDropdown) return;
+        
+        // Cari atau buat container di flag cell
+        let flagContainer = flagCell.querySelector('.d-flex');
+        if (!flagContainer) {
+            flagContainer = document.createElement('div');
+            flagContainer.className = 'd-flex align-items-center gap-2';
+            
+            // Pindahkan icon flag yang ada ke dalam container
+            const existingContent = flagCell.innerHTML;
+            flagCell.innerHTML = '';
+            
+            const iconSpan = document.createElement('span');
+            iconSpan.className = 'flag-icon';
+            iconSpan.innerHTML = existingContent;
+            
+            flagContainer.appendChild(iconSpan);
+            flagCell.appendChild(flagContainer);
+        }
+        
+        // Buat dropdown flag_dx dengan uniqueID
+        const flagSelect = document.createElement('select');
+        flagSelect.name = `flag_dx[${uniqueID}]`; // Gunakan uniqueID dalam name
+        flagSelect.className = 'form-select form-select-sm flag-dx-select';
+        flagSelect.dataset.uid = uniqueID; // Tambahkan data-uid untuk identifikasi
+        flagSelect.style.width = '100px';
+        
+        const flagOptions = ['Normal', 'Low', 'Low*', 'High', 'High*'];
+        flagOptions.forEach(option => {
+            const optElement = document.createElement('option');
+            optElement.value = option;
+            optElement.textContent = option;
+            flagSelect.appendChild(optElement);
+        });
+        
+        flagSelect.value = 'Normal';
+        
+        // Tambahkan ke flag cell
+        flagContainer.appendChild(flagSelect);
+        
+        console.log('Dropdown flag_dx berhasil ditambahkan di kolom FLAG untuk uniqueID:', uniqueID);
+    }
+
+    // ✅ Fungsi removeCheckboxR dengan uniqueID
+    function removeCheckboxR(dxInput, uniqueID) {
+        // Hapus checkbox R dari kolom DX berdasarkan uniqueID
+        const dxContainer = dxInput.parentElement?.querySelector(`.checkbox-r-container[data-uid="${uniqueID}"]`);
+        if (dxContainer) {
+            dxContainer.remove();
+            console.log('Checkbox R berhasil dihapus dari kolom DX untuk uniqueID:', uniqueID);
+        }
+        
+        // Hapus dropdown flag_dx dari kolom FLAG berdasarkan uniqueID
+        const row = dxInput.closest('tr');
+        const flagCell = row?.querySelector('.flag-cell');
+        const flagDropdown = flagCell?.querySelector(`.flag-dx-select[data-uid="${uniqueID}"]`);
+        
+        if (flagDropdown) {
+            flagDropdown.remove();
+            console.log('Dropdown flag_dx berhasil dihapus dari kolom FLAG untuk uniqueID:', uniqueID);
+        }
+        
+        // Tambahkan hidden input untuk flag_dx kosong dengan uniqueID
+        const existingHidden = row?.querySelector(`input[name="flag_dx[${uniqueID}]"]`);
+        if (!existingHidden && uniqueID) {
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = `flag_dx[${uniqueID}]`;
+            hiddenInput.value = '';
+            row?.appendChild(hiddenInput);
+        }
+    }
+
+    // ✅ Fungsi untuk menambahkan/ubah input hidden is_switched[] dengan uniqueID
+    function setSwitchStatus(row, value, uniqueID) {
+        let hidden = row.querySelector(`input[name="is_switched[${uniqueID}]"]`);
+        if (!hidden) {
+            hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = `is_switched[${uniqueID}]`;
+            row.appendChild(hidden);
+        }
+        hidden.value = value;
+        console.log('Set is_switched untuk uniqueID:', uniqueID, 'value:', value);
+    }
+
+    function switchAllHasilToDX() {
+        // Ambil semua row yang memiliki data parameter
+        const allRows = document.querySelectorAll('tr[data-parameter]');
+        let switchedCount = 0;
+        
+        allRows.forEach(row => {
+            const hasilInput = row.querySelector('.manualInput'); // Field HASIL
+            const dxInput = row.querySelector('.dx, input[name^="duplo_dx"]'); // Field DX
+            const flagCell = row.querySelector('.flag-cell');
+            const parameter = row.dataset.parameter;
+
+            // Pastikan kedua input ada
+            if (hasilInput && dxInput) {
+                // Simpan nilai sementara
+                const tempHasil = hasilInput.value;
+                const tempDx = dxInput.value;
+                
+                // Tukar nilai
+                hasilInput.value = tempDx;
+                dxInput.value = tempHasil;
+                
+                // Update flag berdasarkan nilai baru di HASIL
+                if (flagCell && parameter) {
+                    updateFlag(hasilInput.value, flagCell, parameter);
+                }
+                
+                switchedCount++;
+            }
+        });
+        
+        console.log(`Switched ${switchedCount} parameters between HASIL and DX`);
+        
+        // Visual feedback pada button
+        provideSwitchFeedback();
+    }
+
+    function provideSwitchFeedback() {
+        const button = masterSwitchAllBtn;
+        const icon = button.querySelector('i');
+        
+        // Animasi feedback
+        button.classList.add('btn-success');
+        button.classList.remove('btn-outline-primary');
+        icon.className = 'ti ti-check';
+        
+        // Reset setelah 1 detik
+        setTimeout(() => {
+            button.classList.remove('btn-success');
+            button.classList.add('btn-outline-primary');
+            icon.className = 'ti ti-arrows-exchange';
+        }, 1000);
+    }
+
+    // Update function menggunakan form submit seperti worklist.store (tanpa parameter_name)
+    document.querySelector('#resultReviewModal .update-btn').addEventListener('click', function () {
+        // SweetAlert konfirmasi sebelum update dengan z-index tinggi
+        Swal.fire({
+            title: 'Konfirmasi Update',
+            text: 'Apakah Anda yakin ingin mengupdate hasil pemeriksaan?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, Update!',
+            cancelButtonText: 'Batal',
+            customClass: {
+                container: 'swal-high-z-index'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.getElementById('worklistForm');
+                
+                // Show loading alert
+                Swal.fire({
+                    title: 'Sedang memproses...',
+                    text: 'Mohon tunggu, data sedang diupdate',
+                    icon: 'info',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                
+                // Enable semua input yang disabled agar nilainya bisa terkirim
+                const disabledInputs = form.querySelectorAll('input[disabled], select[disabled], textarea[disabled]');
+                disabledInputs.forEach(input => {
+                    input.removeAttribute('disabled');
+                });
+                
+                // Ubah action form ke route update
+                const noLab = form.querySelector('input[name="no_lab"]').value;
+                form.action = `/analyst/worklist/update-hasil/${noLab}`;
+                
+                // Ubah method form ke POST (jika belum)
+                form.method = 'POST';
+                
+                // Submit form seperti worklist.store
+                form.submit();
+            }
+        });
+    });
+}, 0);
 
 
     return content;

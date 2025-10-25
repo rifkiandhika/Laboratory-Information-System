@@ -48,9 +48,9 @@ use Illuminate\Support\Facades\Response;
 
 
 
-Route::get('/test', function () {
-    return view('Note/test');
-});
+// Route::get('/test', function () {
+//     return view('Note/test');
+// });
 
 // Route::get('/print-view/print-pasien', function () {
 //     return view('print-view.print-pasien');
@@ -58,6 +58,12 @@ Route::get('/test', function () {
 Route::get('/', function () {
     return redirect('/login');
 });
+
+// routes/web.php
+// Route::get('/phpinfo', function () {
+//     phpinfo();
+// });
+
 
 route::resource('login', AuthController::class);
 route::post('login-proses', [AuthController::class, 'proses'])->name('login.proses');
@@ -147,6 +153,8 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
     Route::get('/departments/list', [resultController::class, 'getDepartments'])->name('departments.list');
     Route::get('/doctors/list', [resultController::class, 'getDoctors'])->name('doctors.list');
     // Route::post('/result/data', [resultController::class, 'getReportData'])->name('result.data');
+
+
 
 
     Route::get('print/pasien/{no_lab}', [resultController::class, 'print'])->name('print.pasien');

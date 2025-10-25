@@ -861,7 +861,7 @@
                         const UrineParams = [
                             {
  				                judul: 'Urine Lengkap',
-                                nama: 'Warna',
+                                nama: 'Urine-Warna',
                                 display_name: 'Warna',
                                 satuan: '-',
                                 normal_min: 'L.- P.-',
@@ -917,7 +917,7 @@
                             },
                             {
  				                judul: 'Urine Lengkap',
-                                nama: 'Leukosit',
+                                nama: 'Urine-Leukosit',
                                 display_name: 'Leukosit',
                                 satuan: '-',
                                 normal_min: 'L.- P.-',
@@ -1029,7 +1029,7 @@
                             },
                             {
  				                judul: 'Sedimen',
-                                nama: 'Eritrosit',
+                                nama: 'Urine-Eritrosit',
                                 display_name: '- Eritrosit',
                                 satuan: '',
                                 normal_min: 'L.0 P.0',
@@ -1057,7 +1057,7 @@
                             },
                             {
  				                judul: 'Sedimen',
-                                nama: 'Epithel',
+                                nama: 'Urine-Epithel',
                                 display_name: '- Epithel',
                                 satuan: '-',
                                 normal_min: 'L.- P.-',
@@ -1127,7 +1127,7 @@
                             },
                             {
  				                judul: 'Sedimen',
-                                nama: 'Lain-lain',
+                                nama: 'Sedimen-Lain-lain',
                                 display_name: '- Lain-lain',
                                 satuan: '-',
                                 normal_min: '',
@@ -1383,7 +1383,7 @@
                             },
                             {
                                 judul: 'Feses',
-                                nama: 'Warna',
+                                nama: 'Feses-Warna',
                                 display_name: 'Warna',
                                 satuan: '-',
                                 normal_min: '-',
@@ -1467,7 +1467,7 @@
                             },
                             {
                                 judul: 'Feses',
-                                nama: 'Leukosit',
+                                nama: 'Feses-Leukosit',
                                 display_name: 'Leukosit',
                                 satuan: '-',
                                 normal_min: '-',
@@ -1950,6 +1950,14 @@
                                 rujukan: cleanValue(rujukanValue)
                             };
                         }
+                        let parameterCounter = 0;
+    
+                        function generateParameterUID(pemeriksaan, parameter, idx) {
+                            parameterCounter++;
+                            const cleanPemeriksaan = pemeriksaan.replace(/[^a-zA-Z0-9]/g, '_');
+                            const cleanParameter = parameter.replace(/[^a-zA-Z0-9]/g, '_');
+                            return `${cleanPemeriksaan}_${cleanParameter}_${idx}_${parameterCounter}`;
+                        }
 
                         const content = `
                         <form id="worklistForm" action="{{ route('worklist.store') }}" method="POST">
@@ -2053,105 +2061,114 @@
 
                                                         // Tambahkan di bagian atas sebelum if-else pemeriksaan
                                                         function renderSerologiSection({ e, idx, flag, params, judul, warna, defaultName }) {
-                                                        if (!flag) return '';
+                                                            if (!flag) return '';
 
-                                                        const pemeriksaan = e.pasiens.find(p =>
-                                                            p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes(judul.toLowerCase().split('_')[0])
-                                                        );
+                                                            const pemeriksaan = e.pasiens.find(p =>
+                                                                p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes(judul.toLowerCase().split('_')[0])
+                                                            );
 
-                                                        const namaPemeriksaan = pemeriksaan
-                                                            ? pemeriksaan.data_pemeriksaan.nama_pemeriksaan
-                                                            : defaultName;
+                                                            const namaPemeriksaan = pemeriksaan
+                                                                ? pemeriksaan.data_pemeriksaan.nama_pemeriksaan
+                                                                : defaultName;
 
-                                                        let html = `
-                                                            <tr class="section-title-header">
-                                                                <td colspan="8" class="fw-bold text-secondary ps-3"
-                                                                    style="background-color: #f8f9fa; border-left: 4px solid ${warna}; padding: 10px;">
-                                                                    ${judul}
-                                                                </td>
-                                                            </tr>
-                                                        `;
-
-                                                        html += params.map((param, paramIdx) => {
-                                                            const obxValues = getObxValues(param.nama);
-                                                            const rowId = `${judul}_${idx}_${paramIdx}`;
-                                                            const label = param.display_name || param.nama || '-';
-
-                                                            const renderField = (name, value, extraClass = '') => {
-                                                                if (param.tipe_inputan === 'Dropdown') {
-                                                                    return `
-                                                                        <select name="${name}[]" class="form-select ${extraClass} w-60 p-0" disabled>
-                                                                            <option value="" selected hidden></option>
-                                                                            ${param.opsi_output.split(';').map(opt => `
-                                                                                <option value="${opt.trim()}" ${value === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
-                                                                            `).join('')}
-                                                                        </select>
-                                                                    `;
-                                                                } else {
-                                                                    return `
-                                                                        <input type="text" name="${name}[]" 
-                                                                            class="form-control ${extraClass} w-60 p-0 text-center" 
-                                                                            disabled value="${value || ''}" />
-                                                                    `;
-                                                                }
-                                                            };
-
-                                                            return `
-                                                                <tr data-id="${rowId}" data-parameter="${param.nama}" class="serologi-row">
-                                                                    <td class="col-2 ps-4">
-                                                                        <strong>${label}</strong>
-                                                                        ${param.nilai_rujukan ? `<small class="text-muted d-block">${param.nilai_rujukan}</small>` : ''}
-                                                                        <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaan}" />
-                                                                        <input type="hidden" name="judul[]" value="${judul}" />
-                                                                        <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                                        <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
-                                                                        <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan}" />
-                                                                        <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
-                                                                    </td>
-
-                                                                    <!-- hasil utama -->
-                                                                    <td class="col-2">
-                                                                        ${renderField('hasil', obxValues.hasilUtama || param.default, 'manualInput')}
-                                                                    </td>
-
-                                                                    <!-- tombol switch -->
-                                                                    <td class="col-1 text-center">
-                                                                        <button type="button" class="btn btn-outline-secondary btn-sm switch-btn">
-                                                                            <i class="ti ti-switch-2"></i>
-                                                                        </button>
-                                                                    </td>
-
-                                                                    <!-- duplo D1 -->
-                                                                    <td class="col-2 duplo d1-column text-center" style="display:none;">
-                                                                        ${renderField('duplo_d1', obxValues.duplo_d1, 'd1')}
-                                                                    </td>
-
-                                                                    <!-- duplo D2 -->
-                                                                    <td class="col-2 duplo d2-column text-center" style="display:none;">
-                                                                        ${renderField('duplo_d2', obxValues.duplo_d2, 'd2')}
-                                                                    </td>
-
-                                                                    <!-- duplo D3 -->
-                                                                    <td class="col-2 duplo d3-column text-center" style="display:none;">
-                                                                        ${renderField('duplo_d3', obxValues.duplo_d3, 'd3')}
-                                                                    </td>
-
-                                                                    <!-- flag -->
-                                                                    <td class="col-3 flag-cell"></td>
-
-                                                                    <!-- satuan -->
-                                                                    <td>
-                                                                        <input type="hidden" name="satuan[]" value="${param.satuan || ''}" />
-                                                                        ${param.satuan || ''}
+                                                            let html = `
+                                                                <tr class="section-title-header">
+                                                                    <td colspan="8" class="fw-bold text-secondary ps-3"
+                                                                        style="background-color: #f8f9fa; border-left: 4px solid ${warna}; padding: 10px;">
+                                                                        ${judul}
                                                                     </td>
                                                                 </tr>
                                                             `;
-                                                        }).join('');
 
-                                                        return html;
-                                                    }
+                                                            html += params.map((param, paramIdx) => {
+                                                                const obxValues = getObxValues(param.nama);
+                                                                const rowId = `${judul}_${idx}_${paramIdx}`;
+                                                                const label = param.display_name || param.nama || '-';
+                                                                
+                                                                // ★ TAMBAHAN: Generate UID unik untuk setiap parameter serologi
+                                                                const uniqueID = generateParameterUID(judul, param.nama, paramIdx);
 
-                                                        
+                                                                // ★ PERBAIKAN: Ubah renderField untuk menggunakan UID
+                                                                const renderField = (name, value, extraClass = '') => {
+                                                                    if (param.tipe_inputan === 'Dropdown') {
+                                                                        return `
+                                                                            <select name="${name}[${uniqueID}]" class="form-select ${extraClass} w-60 p-0" disabled>
+                                                                                <option value="" selected hidden></option>
+                                                                                ${param.opsi_output.split(';').map(opt => `
+                                                                                    <option value="${opt.trim()}" ${value === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
+                                                                                `).join('')}
+                                                                            </select>
+                                                                        `;
+                                                                    } else {
+                                                                        return `
+                                                                            <input type="text" name="${name}[${uniqueID}]" 
+                                                                                class="form-control ${extraClass} w-60 p-0 text-center" 
+                                                                                disabled value="${value || ''}" />
+                                                                        `;
+                                                                    }
+                                                                };
+
+                                                                return `
+                                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="serologi-row">
+                                                                        <td class="col-2 ps-4">
+                                                                            <strong>${label}</strong>
+                                                                            ${param.nilai_rujukan ? `<small class="text-muted d-block">${param.nilai_rujukan}</small>` : ''}
+                                                                            
+                                                                            <!-- ★ PERBAIKAN: Tambah UID sebagai master key -->
+                                                                            <input type="hidden" name="uid[]" value="${uniqueID}" />
+                                                                            
+                                                                            <!-- ★ PERBAIKAN: Semua field sekarang menggunakan UID sebagai key -->
+                                                                            <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${namaPemeriksaan}" />
+                                                                            <input type="hidden" name="judul[${uniqueID}]" value="${judul}" />
+                                                                            <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                                            <input type="hidden" name="metode[${uniqueID}]" value="${param.metode ?? ''}" />
+                                                                            <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${param.nilai_rujukan}" />
+                                                                            <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
+                                                                        </td>
+
+                                                                        <!-- hasil utama -->
+                                                                        <td class="col-2">
+                                                                            ${renderField('hasil', obxValues.hasilUtama || param.default, 'manualInput')}
+                                                                        </td>
+
+                                                                        <!-- tombol switch -->
+                                                                        <td class="col-1 text-center">
+                                                                            <button type="button" class="btn btn-outline-secondary btn-sm switch-btn">
+                                                                                <i class="ti ti-switch-2"></i>
+                                                                            </button>
+                                                                        </td>
+
+                                                                        <!-- duplo D1 -->
+                                                                        <td class="col-2 duplo d1-column text-center" style="display:none;">
+                                                                            ${renderField('duplo_d1', obxValues.duplo_d1, 'd1')}
+                                                                        </td>
+
+                                                                        <!-- duplo D2 -->
+                                                                        <td class="col-2 duplo d2-column text-center" style="display:none;">
+                                                                            ${renderField('duplo_d2', obxValues.duplo_d2, 'd2')}
+                                                                        </td>
+
+                                                                        <!-- duplo D3 -->
+                                                                        <td class="col-2 duplo d3-column text-center" style="display:none;">
+                                                                            ${renderField('duplo_d3', obxValues.duplo_d3, 'd3')}
+                                                                        </td>
+
+                                                                        <!-- flag -->
+                                                                        <td class="col-3 flag-cell">
+                                                                            <input type="hidden" name="flag[${uniqueID}]" value="" />
+                                                                        </td>
+
+                                                                        <!-- satuan -->
+                                                                        <td>
+                                                                            <input type="hidden" name="satuan[${uniqueID}]" value="${param.satuan || ''}" />
+                                                                            ${param.satuan || ''}
+                                                                        </td>
+                                                                    </tr>
+                                                                `;
+                                                            }).join('');
+
+                                                            return html;
+                                                        }
                                                         if (hasHematologi) {
                                                             const hematologiPemeriksaan = e.pasiens.find(p => 
                                                                 p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('darah lengkap')
@@ -2175,23 +2192,25 @@
                                                                 
                                                                 const obxValues = getObxValues(param.nama);
                                                                 const rowId = `hematologi_${idx}_${paramIdx}`;
+                                                                const uniqueID = generateParameterUID('Hematologi', param.nama, paramIdx);
                                                                 const initialFlag = getInitialFlagContent(obxValues.hasilUtama, param.nama, true, false);
                                                                 const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
                                                                 
                                                                 return `
-                                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" class="hematologi-row">
+                                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="hematologi-row">
                                                                         <td class="col-2 ${judulHematologi ? 'ps-4' : ''}" ${judulHematologi ? 'style="border-left: 2px solid #e9ecef;"' : ''}>
                                                                             <strong>${param.display_name}</strong>
                                                                             <small class="text-muted d-block">${normalValues.display}</small>
-                                                                            <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanHematologi}" />
-                                                                            ${judulHematologi ? `<input type="hidden" name="judul[]" value="${judulHematologi}" />` : ''}
-                                                                            <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                                            <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
-                                                                            <input type="hidden" name="nilai_rujukan[]" value="${normalValues.rujukan}" />
-                                                                            <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                                            <input type="hidden" name="uid[]" value="${uniqueID}" />
+                                                                            <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${namaPemeriksaanHematologi}" />
+                                                                            ${judulHematologi ? `<input type="hidden" name="judul[${uniqueID}]" value="${judulHematologi}" />` : ''}
+                                                                            <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                                            <input type="hidden" name="metode[${uniqueID}]" value="${param.metode ?? ''}" />
+                                                                            <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${normalValues.rujukan}" />
+                                                                            <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                                                         </td>
                                                                         <td class="col-2">
-                                                                            <input type="number" name="hasil[]" 
+                                                                            <input type="number" name="hasil[${uniqueID}]" 
                                                                                 class="form-control manualInput w-60 p-0 text-center" 
                                                                                 value="${obxValues.hasilUtama || ''}" 
                                                                                 step="0.01" placeholder="" required />
@@ -2203,26 +2222,26 @@
                                                                             </button>
                                                                         </td>
                                                                         <td class="col-2 duplo d1-column text-center" style="display: none;">
-                                                                            <input type="number" name="duplo_d1[]" 
+                                                                            <input type="number" name="duplo_d1[${uniqueID}]" 
                                                                                 class="form-control d1 w-60 p-0 text-center" 
                                                                                 disabled value="${obxValues.duplo_d1 || ''}" step="0.01" />
                                                                         </td>
                                                                         <td class="col-2 duplo d2-column" style="display: none;">
-                                                                            <input type="number" name="duplo_d2[]" 
+                                                                            <input type="number" name="duplo_d2[${uniqueID}]" 
                                                                                 class="form-control d2 w-60 p-0 text-center" 
                                                                                 disabled value="${obxValues.duplo_d2 || ''}" step="0.01" />
                                                                         </td>
                                                                         <td class="col-2 duplo d3-column" style="display: none;">
-                                                                            <input type="number" name="duplo_d3[]" 
+                                                                            <input type="number" name="duplo_d3[${uniqueID}]" 
                                                                                 class="form-control d3 w-50 p-0 text-center" 
                                                                                 disabled value="${obxValues.duplo_d3 || ''}" step="0.01" />
                                                                         </td>
                                                                         <td class="col-3 flag-cell">
                                                                             ${initialFlag}
-                                                                            <input type="hidden" name="flag[]" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
+                                                                            <input type="hidden" name="flag[${uniqueID}]" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
                                                                         </td>
                                                                         <td>
-                                                                            <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
+                                                                            <input type="hidden" name="satuan[${uniqueID}]" class="form-control w-100 p-0" 
                                                                                 value="${param.satuan}" readonly />
                                                                             ${param.satuan}
                                                                         </td>
@@ -2255,22 +2274,24 @@
                                                             html += WidalParams.map((param, paramIdx) => {
                                                                 const obxValues = getObxValues(param.nama);
                                                                 const rowId = `widal_${idx}_${paramIdx}`;
+                                                                const uniqueID = generateParameterUID('Widal', param.nama, paramIdx);
                                                                 const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
                                                                 
                                                                 return `
-                                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" class="widal-row">
+                                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="widal-row">
                                                                         <td class="col-2 ${judulWidal ? 'ps-4' : ''}" ${judulWidal ? 'style="border-left: 2px solid #e9ecef;"' : ''}>
                                                                             <strong>${param.display_name}</strong>
                                                                             <small class="text-muted d-block">${normalValues.display}</small>
-                                                                            <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanWidal}" />
-                                                                            ${judulWidal ? `<input type="hidden" name="judul[]" value="${judulWidal}" />` : ''}
-                                                                            <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                                            <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
-                                                                            <input type="hidden" name="nilai_rujukan[]" value="${normalValues.rujukan}" />
-                                                                            <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                                            <input type="hidden" name="uid[]" value="${uniqueID}" />
+                                                                            <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${namaPemeriksaanWidal}" />
+                                                                            ${judulWidal ? `<input type="hidden" name="judul[${uniqueID}]" value="${judulWidal}" />` : ''}
+                                                                            <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                                            <input type="hidden" name="metode[${uniqueID}]" value="${param.metode ?? ''}" />
+                                                                            <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${normalValues.rujukan}" />
+                                                                            <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                                                         </td>
                                                                         <td class="col-2">
-                                                                            <select name="hasil[]" 
+                                                                            <select name="hasil[${uniqueID}]" 
                                                                                 class="form-select manualInput w-60 p-0" 
                                                                                 disabled>
                                                                                 ${param.opsi_output.split(';').map(opt => `
@@ -2287,7 +2308,7 @@
                                                                             </button>
                                                                         </td>
                                                                         <td class="col-2 duplo d1-column text-center" style="display: block;">
-                                                                            <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                            <select name="duplo_d1[${uniqueID}]" class="form-select d1 w-60 p-0" disabled>
                                                                                 ${param.opsi_output.split(';').map(opt => `
                                                                                     <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>
                                                                                         ${opt.trim()}
@@ -2296,7 +2317,7 @@
                                                                             </select>
                                                                         </td>
                                                                         <td class="col-2 duplo d2-column" style="display: none;">
-                                                                            <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                                            <select name="duplo_d2[${uniqueID}]" class="form-select d2 w-60 p-0" disabled>
                                                                                 ${param.opsi_output.split(';').map(opt => `
                                                                                     <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>
                                                                                         ${opt.trim()}
@@ -2305,7 +2326,7 @@
                                                                             </select>
                                                                         </td>
                                                                         <td class="col-2 duplo d3-column" style="display: none;">
-                                                                            <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                            <select name="duplo_d3[${uniqueID}]" class="form-select d3 w-50 p-0" disabled>
                                                                                 ${param.opsi_output.split(';').map(opt => `
                                                                                     <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>
                                                                                         ${opt.trim()}
@@ -2317,7 +2338,7 @@
                                                                             <!-- Untuk widal tidak ada flag normal/abnormal -->
                                                                         </td>
                                                                         <td>
-                                                                            <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
+                                                                            <input type="hidden" name="satuan[${uniqueID}]" class="form-control w-100 p-0" 
                                                                                 value="${param.satuan}" readonly />
                                                                             ${param.satuan}
                                                                         </td>
@@ -2369,33 +2390,35 @@
                                                                         null, 
                                                                         data_pasien.jenis_kelamin
                                                                     );
+                                                                    const uniqueID = generateParameterUID('Urine_' + judulGroup, param.nama, paramIdx);
                                                                     
                                                                     const normalValues = getUrineNormalValues(param, data_pasien.jenis_kelamin);
                                                                     const displayRujukan = normalValues.rujukan || '';
 
                                                                     return `
-                                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" class="urine-row">
+                                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="urine-row">
                                                                             <td class="col-2 ps-4" style="border-left: 2px solid #e9ecef;">
                                                                                 <strong>${param.display_name}</strong>
                                                                                 ${displayRujukan 
                                                                                     ? `<small class="text-muted d-block">${displayRujukan}</small>` 
                                                                                     : ''}
 
-                                                                                <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanUrine}" />
-                                                                                <input type="hidden" name="judul[]" value="${param.judul}" />
-                                                                                <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                                                <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
-                                                                                <input type="hidden" name="nilai_rujukan[]" value="${displayRujukan}" />
-                                                                                <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                                                <input type="hidden" name="uid[]" value="${uniqueID}" />
+                                                                                <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${namaPemeriksaanUrine}" />
+                                                                                <input type="hidden" name="judul[${uniqueID}]" value="${param.judul}" />
+                                                                                <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                                                <input type="hidden" name="metode[${uniqueID}]" value="${param.metode ?? ''}" />
+                                                                                <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${displayRujukan}" />
+                                                                                <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                                                             </td>
 
                                                                             <td class="col-2">
                                                                                 ${param.tipe_inputan.toLowerCase() === 'text' ? `
-                                                                                    <input type="text" name="hasil[]" 
+                                                                                    <input type="text" name="hasil[${uniqueID}]" 
                                                                                         class="form-control manualInput w-60 p-0 text-center" 
                                                                                         disabled value="${obxValues.hasilUtama || param.default || ''}" />
                                                                                 ` : `
-                                                                                    <select name="hasil[]" class="form-select manualInput w-60 p-0" disabled>
+                                                                                    <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0" disabled>
                                                                                         ${param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" 
                                                                                                 ${(obxValues.hasilUtama || param.default) === opt.trim() ? 'selected' : ''}>
@@ -2415,11 +2438,11 @@
 
                                                                             <td class="col-2 duplo d1-column text-center" style="display: none;">
                                                                                 ${param.tipe_inputan.toLowerCase() === 'text' ? `
-                                                                                    <input type="text" name="duplo_d1[]" 
+                                                                                    <input type="text" name="duplo_d1[${uniqueID}]" 
                                                                                         class="form-control d1 w-60 p-0 text-center" 
                                                                                         disabled value="${obxValues.duplo_d1 || ''}" />
                                                                                 ` : `
-                                                                                    <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                                    <select name="duplo_d1[${uniqueID}]" class="form-select d1 w-60 p-0" disabled>
                                                                                         ${param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>
                                                                                                 ${opt.trim()}
@@ -2431,11 +2454,11 @@
 
                                                                             <td class="col-2 duplo d2-column" style="display: none;">
                                                                                 ${param.tipe_inputan.toLowerCase() === 'text' ? `
-                                                                                    <input type="text" name="duplo_d2[]" 
+                                                                                    <input type="text" name="duplo_d2[${uniqueID}]" 
                                                                                         class="form-control d2 w-60 p-0 text-center" 
                                                                                         disabled value="${obxValues.duplo_d2 || ''}" />
                                                                                 ` : `
-                                                                                    <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                                                    <select name="duplo_d2[${uniqueID}]" class="form-select d2 w-60 p-0" disabled>
                                                                                         ${param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>
                                                                                                 ${opt.trim()}
@@ -2447,11 +2470,11 @@
 
                                                                             <td class="col-2 duplo d3-column" style="display: none;">
                                                                                 ${param.tipe_inputan.toLowerCase() === 'text' ? `
-                                                                                    <input type="text" name="duplo_d3[]" 
+                                                                                    <input type="text" name="duplo_d3[${uniqueID}]" 
                                                                                         class="form-control d3 w-50 p-0 text-center" 
                                                                                         disabled value="${obxValues.duplo_d3 || ''}" />
                                                                                 ` : `
-                                                                                    <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                                    <select name="duplo_d3[${uniqueID}]" class="form-select d3 w-50 p-0" disabled>
                                                                                         ${param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>
                                                                                                 ${opt.trim()}
@@ -2463,12 +2486,12 @@
 
                                                                             <td class="col-3 flag-cell">
                                                                                 ${initialFlag}
-                                                                                <input type="hidden" name="flag[]" 
+                                                                                <input type="hidden" name="flag[${uniqueID}]" 
                                                                                     value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
                                                                             </td>
 
                                                                             <td>
-                                                                                <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
+                                                                                <input type="hidden" name="satuan[${uniqueID}]" class="form-control w-100 p-0" 
                                                                                     value="${param.satuan}" readonly />
                                                                                 ${param.satuan}
                                                                             </td>
@@ -2504,27 +2527,29 @@
                                                                 html += MicrobiologiParams.map((param, paramIdx) => {
                                                                     const obxValues = getObxValues(param.nama);
                                                                     const rowId = `mikrobiologi_${idx}_${paramIdx}`;
+                                                                    const uniqueID = generateParameterUID('Mikrobiologi', param.nama, paramIdx);
                                                                     const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
                                                                     const label = param.judul || param.display_name || param.nama || '-';
 
                                                                     return `
-                                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" class="mikrobiologi-row">
+                                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="mikrobiologi-row">
                                                                             <td class="col-2 ps-4" style="border-left: 2px solid #e9ecef;">
                                                                                 <strong>${label}</strong>
                                                                                 ${param.nilai_rujukan !== '-' && param.nilai_rujukan !== '' ? 
                                                                                     `<small class="text-muted d-block">${param.nilai_rujukan ?? ''}</small>` : ''}
-                                                                                <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanMikrobiologi}" />
-                                                                                <input type="hidden" name="judul[]" value="${judulMikrobiologi}" />
-                                                                                <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                                                <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
-                                                                                <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan ?? '-'}" />
-                                                                                <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                                                <input type="hidden" name="uid[]" value="${uniqueID}" />
+                                                                                <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${namaPemeriksaanMikrobiologi}" />
+                                                                                <input type="hidden" name="judul[${uniqueID}]" value="${judulMikrobiologi}" />
+                                                                                <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                                                <input type="hidden" name="metode[${uniqueID}]" value="${param.metode ?? ''}" />
+                                                                                <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${param.nilai_rujukan ?? '-'}" />
+                                                                                <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                                                             </td>
                                                                             <td class="col-2">
                                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                                    <input type="text" name="hasil[]" class="form-control manualInput w-60 p-0 text-center" disabled value="${obxValues.hasilUtama || ''}" />
+                                                                                    <input type="text" name="hasil[${uniqueID}]" class="form-control manualInput w-60 p-0 text-center" disabled value="${obxValues.hasilUtama || ''}" />
                                                                                 ` : `
-                                                                                    <select name="hasil[]" class="form-select manualInput w-60 p-0" disabled>
+                                                                                    <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0" disabled>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2538,9 +2563,9 @@
                                                                             </td>
                                                                             <td class="col-2 duplo d1-column text-center" style="display: none;">
                                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                                    <input type="text" name="duplo_d1[]" class="form-control d1 w-60 p-0 text-center" disabled value="${obxValues.duplo_d1 || ''}" />
+                                                                                    <input type="text" name="duplo_d1[${uniqueID}]" class="form-control d1 w-60 p-0 text-center" disabled value="${obxValues.duplo_d1 || ''}" />
                                                                                 ` : `
-                                                                                    <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                                    <select name="duplo_d1[${uniqueID}]" class="form-select d1 w-60 p-0" disabled>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2549,9 +2574,9 @@
                                                                             </td>
                                                                             <td class="col-2 duplo d2-column" style="display: none;">
                                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                                    <input type="text" name="duplo_d2[]" class="form-control d2 w-60 p-0 text-center" disabled value="${obxValues.duplo_d2 || ''}" />
+                                                                                    <input type="text" name="duplo_d2[${uniqueID}]" class="form-control d2 w-60 p-0 text-center" disabled value="${obxValues.duplo_d2 || ''}" />
                                                                                 ` : `
-                                                                                    <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                                                    <select name="duplo_d2[${uniqueID}]" class="form-select d2 w-60 p-0" disabled>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2560,9 +2585,9 @@
                                                                             </td>
                                                                             <td class="col-2 duplo d3-column" style="display: none;">
                                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                                    <input type="text" name="duplo_d3[]" class="form-control d3 w-50 p-0 text-center" disabled value="${obxValues.duplo_d3 || ''}" />
+                                                                                    <input type="text" name="duplo_d3[${uniqueID}]" class="form-control d3 w-50 p-0 text-center" disabled value="${obxValues.duplo_d3 || ''}" />
                                                                                 ` : `
-                                                                                    <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                                    <select name="duplo_d3[${uniqueID}]" class="form-select d3 w-50 p-0" disabled>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2571,7 +2596,7 @@
                                                                             </td>
                                                                             <td class="col-3 flag-cell"></td>
                                                                             <td>
-                                                                                <input type="hidden" name="satuan[]" value="${param.satuan || ''}" readonly />
+                                                                                <input type="hidden" name="satuan[${uniqueID}]" value="${param.satuan || ''}" readonly />
                                                                                 ${param.satuan || ''}
                                                                             </td>
                                                                         </tr>
@@ -2602,27 +2627,29 @@
                                                                 html += PreparatBasahParams.map((param, paramIdx) => {
                                                                     const obxValues = getObxValues(param.nama);
                                                                     const rowId = `preparatbasah_${idx}_${paramIdx}`;
+                                                                    const uniqueID = generateParameterUID('PreparatBasah', param.nama, paramIdx);
                                                                     const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
                                                                     const label = param.judul || param.display_name || param.nama || '-';
 
                                                                     return `
-                                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" class="preparatbasah-row">
+                                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="preparatbasah-row">
                                                                             <td class="col-2 ps-4" style="border-left: 2px solid #e9ecef;">
                                                                                 <strong>${label}</strong>
                                                                                 ${param.nilai_rujukan !== '-' && param.nilai_rujukan !== '' ? 
                                                                                     `<small class="text-muted d-block">${param.nilai_rujukan ?? ''}</small>` : ''}
-                                                                                <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanPreparatBasah}" />
-                                                                                <input type="hidden" name="judul[]" value="${judulPreparatBasah}" />
-                                                                                <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                                                <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
-                                                                                <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan ?? '-'}" />
-                                                                                <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                                                <input type="hidden" name="uid[]" value="${uniqueID}" />
+                                                                                <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${namaPemeriksaanPreparatBasah}" />
+                                                                                <input type="hidden" name="judul[${uniqueID}]" value="${judulPreparatBasah}" />
+                                                                                <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                                                <input type="hidden" name="metode[${uniqueID}]" value="${param.metode ?? ''}" />
+                                                                                <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${param.nilai_rujukan ?? '-'}" />
+                                                                                <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                                                             </td>
                                                                             <td class="col-2">
                                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                                    <input type="text" name="hasil[]" class="form-control manualInput w-60 p-0 text-center" disabled value="${obxValues.hasilUtama || ''}" />
+                                                                                    <input type="text" name="hasil[${uniqueID}]" class="form-control manualInput w-60 p-0 text-center" disabled value="${obxValues.hasilUtama || ''}" />
                                                                                 ` : `
-                                                                                    <select name="hasil[]" class="form-select manualInput w-60 p-0" disabled>
+                                                                                    <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0" disabled>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2636,9 +2663,9 @@
                                                                             </td>
                                                                             <td class="col-2 duplo d1-column text-center" style="display: none;">
                                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                                    <input type="text" name="duplo_d1[]" class="form-control d1 w-60 p-0 text-center" disabled value="${obxValues.duplo_d1 || ''}" />
+                                                                                    <input type="text" name="duplo_d1[${uniqueID}]" class="form-control d1 w-60 p-0 text-center" disabled value="${obxValues.duplo_d1 || ''}" />
                                                                                 ` : `
-                                                                                    <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                                    <select name="duplo_d1[${uniqueID}]" class="form-select d1 w-60 p-0" disabled>
                                                                                         <option value="" selected hidden>Pilih...</option>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
@@ -2648,9 +2675,9 @@
                                                                             </td>
                                                                             <td class="col-2 duplo d2-column" style="display: none;">
                                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                                    <input type="text" name="duplo_d2[]" class="form-control d2 w-60 p-0 text-center" disabled value="${obxValues.duplo_d2 || ''}" />
+                                                                                    <input type="text" name="duplo_d2[${uniqueID}]" class="form-control d2 w-60 p-0 text-center" disabled value="${obxValues.duplo_d2 || ''}" />
                                                                                 ` : `
-                                                                                    <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                                                    <select name="duplo_d2[${uniqueID}]" class="form-select d2 w-60 p-0" disabled>
                                                                                         <option value="" selected hidden>Pilih...</option>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
@@ -2660,9 +2687,9 @@
                                                                             </td>
                                                                             <td class="col-2 duplo d3-column" style="display: none;">
                                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                                    <input type="text" name="duplo_d3[]" class="form-control d3 w-50 p-0 text-center" disabled value="${obxValues.duplo_d3 || ''}" />
+                                                                                    <input type="text" name="duplo_d3[${uniqueID}]" class="form-control d3 w-50 p-0 text-center" disabled value="${obxValues.duplo_d3 || ''}" />
                                                                                 ` : `
-                                                                                    <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                                    <select name="duplo_d3[${uniqueID}]" class="form-select d3 w-50 p-0" disabled>
                                                                                         <option value="" selected hidden>Pilih...</option>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
@@ -2672,7 +2699,7 @@
                                                                             </td>
                                                                             <td class="col-3 flag-cell"></td>
                                                                             <td>
-                                                                                <input type="hidden" name="satuan[]" value="${param.satuan || ''}" readonly />
+                                                                                <input type="hidden" name="satuan[${uniqueID}]" value="${param.satuan || ''}" readonly />
                                                                                 ${param.satuan || ''}
                                                                             </td>
                                                                         </tr>
@@ -2705,31 +2732,33 @@
                                                                 const obxValues = getObxValues(param.nama);
                                                                 const rowId = `feses_${idx}_${paramIdx}`;
                                                                 const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
+                                                                const uniqueID = generateParameterUID('Feses', param.nama, paramIdx);
 
                                                                 const label = param.display_name || param.nama || '-';
 
                                                                 return `
-                                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" class="feses-row">
+                                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="feses-row">
                                                                         <td class="col-2 ps-4" style="border-left: 2px solid #e9ecef;">
                                                                             <strong>${label}</strong>
                                                                             ${param.nilai_rujukan !== '-' && param.nilai_rujukan !== '' ? 
                                                                                 `<small class="text-muted d-block">${param.nilai_rujukan ?? ''}</small>` : ''}
 
-                                                                            <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanFeses}" />
-                                                                            <input type="hidden" name="judul[]" value="${judulFeses}" />
-                                                                            <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                                            <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
-                                                                            <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan ?? '-'}" />
-                                                                            <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                                            <input type="hidden" name="uid[]" value="${uniqueID}" />
+                                                                            <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${namaPemeriksaanFeses}" />
+                                                                            <input type="hidden" name="judul[${uniqueID}]" value="${judulFeses}" />
+                                                                            <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                                            <input type="hidden" name="metode[${uniqueID}]" value="${param.metode ?? ''}" />
+                                                                            <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${param.nilai_rujukan ?? '-'}" />
+                                                                            <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                                                         </td>
 
                                                                         <td class="col-2">
                                                                             ${param.tipe_inputan === 'Text' ? `
-                                                                                <input type="text" name="hasil[]" 
+                                                                                <input type="text" name="hasil[${uniqueID}]" 
                                                                                     class="form-control manualInput w-60 p-0 text-center" 
                                                                                     disabled value="${obxValues.hasilUtama || param.default || ''}" />
                                                                             ` : `
-                                                                                <select name="hasil[]" class="form-select manualInput w-60 p-0" disabled>
+                                                                                <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0" disabled>
                                                                                     ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${(obxValues.hasilUtama || param.default) === opt.trim() ? 'selected' : ''}>
                                                                                             ${opt.trim()}
@@ -2748,9 +2777,9 @@
 
                                                                         <td class="col-2 duplo d1-column text-center" style="display: none;">
                                                                             ${param.tipe_inputan === 'Text' ? `
-                                                                                <input type="text" name="duplo_d1[]" class="form-control d1 w-60 p-0 text-center" disabled value="${obxValues.duplo_d1 || ''}" />
+                                                                                <input type="text" name="duplo_d1[${uniqueID}]" class="form-control d1 w-60 p-0 text-center" disabled value="${obxValues.duplo_d1 || ''}" />
                                                                             ` : `
-                                                                                <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                                <select name="duplo_d1[${uniqueID}]" class="form-select d1 w-60 p-0" disabled>
                                                                                     ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>
                                                                                             ${opt.trim()}
@@ -2762,9 +2791,9 @@
 
                                                                         <td class="col-2 duplo d2-column" style="display: none;">
                                                                             ${param.tipe_inputan === 'Text' ? `
-                                                                                <input type="text" name="duplo_d2[]" class="form-control d2 w-60 p-0 text-center" disabled value="${obxValues.duplo_d2 || ''}" />
+                                                                                <input type="text" name="duplo_d2[${uniqueID}]" class="form-control d2 w-60 p-0 text-center" disabled value="${obxValues.duplo_d2 || ''}" />
                                                                             ` : `
-                                                                                <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                                                <select name="duplo_d2[${uniqueID}]" class="form-select d2 w-60 p-0" disabled>
                                                                                     ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>
                                                                                             ${opt.trim()}
@@ -2776,9 +2805,9 @@
 
                                                                         <td class="col-2 duplo d3-column" style="display: none;">
                                                                             ${param.tipe_inputan === 'Text' ? `
-                                                                                <input type="text" name="duplo_d3[]" class="form-control d3 w-50 p-0 text-center" disabled value="${obxValues.duplo_d3 || ''}" />
+                                                                                <input type="text" name="duplo_d3[${uniqueID}]" class="form-control d3 w-50 p-0 text-center" disabled value="${obxValues.duplo_d3 || ''}" />
                                                                             ` : `
-                                                                                <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                                <select name="duplo_d3[${uniqueID}]" class="form-select d3 w-50 p-0" disabled>
                                                                                     ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>
                                                                                             ${opt.trim()}
@@ -2791,7 +2820,7 @@
                                                                         <td class="col-3 flag-cell"></td>
 
                                                                         <td>
-                                                                            <input type="hidden" name="satuan[]" class="form-control w-100 p-0" value="${param.satuan || ''}" readonly />
+                                                                            <input type="hidden" name="satuan[${uniqueID}]" class="form-control w-100 p-0" value="${param.satuan || ''}" readonly />
                                                                             ${param.satuan || ''}
                                                                         </td>
                                                                     </tr>
@@ -3080,6 +3109,7 @@
                                                                     p.data_pemeriksaan.nilai_rujukan,
                                                                     data_pasien.jenis_kelamin
                                                                 );
+                                                                const uniqueID = generateParameterUID(p.data_pemeriksaan.nama_pemeriksaan, p.data_pemeriksaan.nama_parameter, pIdx);
                                                                 
                                                                 const nilaiRujukanDisplay = getNilaiRujukanDisplay(
                                                                     p.data_pemeriksaan.nilai_rujukan,
@@ -3090,24 +3120,25 @@
                                                                 const hasHeader = judul && judul !== p.data_pemeriksaan.nama_pemeriksaan;
                                                                 
                                                                 html += `
-                                                                    <tr data-id="${rowId}" data-parameter="${p.data_pemeriksaan.nama_parameter}">
+                                                                    <tr data-id="${rowId}" data-parameter="${p.data_pemeriksaan.nama_parameter}" data-uid="${uniqueID}">
                                                                         <td class="col-2 ${hasHeader ? 'ps-4' : ''}" ${hasHeader ? 'style="border-left: 2px solid #e9ecef;"' : ''}>
                                                                             <strong>${hasHeader ? p.data_pemeriksaan.nama_parameter : p.data_pemeriksaan.nama_pemeriksaan}</strong>
                                                                             ${nilaiRujukanDisplay ? `<br><small class="text-muted">${nilaiRujukanDisplay}</small>` : ''}
-                                                                            <input type="hidden" name="nama_pemeriksaan[]" 
+                                                                            <input type="hidden" name="uid[${uniqueID}]" value="${uniqueID}" />
+                                                                            <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" 
                                                                                 value="${p.data_pemeriksaan.nama_pemeriksaan}" />
-                                                                            <input type="hidden" name="judul[]" value="${judul || ''}" />
-                                                                            <input type="hidden" name="parameter_name[]" 
+                                                                            <input type="hidden" name="judul[${uniqueID}]" value="${judul || ''}" />
+                                                                            <input type="hidden" name="parameter_name[${uniqueID}]" 
                                                                                 value="${p.data_pemeriksaan.nama_parameter}" />
-                                                                            <input type="hidden" name="nilai_rujukan[]" value="${p.data_pemeriksaan.nilai_rujukan || ''}" />
-                                                                            <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
-                                                                            <input type="hidden" name="metode[]" value="${p.data_pemeriksaan.metode ?? ''}" />
+                                                                            <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${p.data_pemeriksaan.nilai_rujukan || ''}" />
+                                                                            <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
+                                                                            <input type="hidden" name="metode[${uniqueID}]" value="${p.data_pemeriksaan.metode ?? ''}" />
                                                                         </td>
                                                                         <td class="col-2">
                                                                             <!-- Input Text -->
                                                                             <input 
                                                                                 type="text" 
-                                                                                name="hasil[]" 
+                                                                                name="hasil[${uniqueID}]" 
                                                                                 class="form-control manualInput w-60 p-0 hasil-input text-center" 
                                                                                 value="${obxValues.hasilUtama || ''}" 
                                                                                 disabled 
@@ -3115,7 +3146,7 @@
                                                                             />
                                                                             <!-- Select Dropdown -->
                                                                             <select 
-                                                                                name="hasil[]" 
+                                                                                name="hasil[${uniqueID}]" 
                                                                                 class="form-select manualInput w-60 p-0 hasil-select" 
                                                                                 disabled 
                                                                                 style="display: ${p.data_pemeriksaan.tipe_inputan === 'Dropdown' ? 'block' : 'none'}"
@@ -3141,7 +3172,7 @@
                                                                             ${
                                                                                 p.data_pemeriksaan.tipe_inputan === 'Dropdown' && p.data_pemeriksaan.opsi_output ?
                                                                                 `
-                                                                                <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                                <select name="duplo_d1[${uniqueID}]" class="form-select d1 w-60 p-0" disabled>
                                                                                     <option value="" selected hidden>Pilih...</option>
                                                                                     ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>
@@ -3152,7 +3183,7 @@
                                                                                 `
                                                                                 :
                                                                                 `
-                                                                                <input type="number" name="duplo_d1[]" 
+                                                                                <input type="number" name="duplo_d1[${uniqueID}]" 
                                                                                     class="form-control d1 w-60 p-0 text-center" 
                                                                                     disabled value="${obxValues.duplo_d1 || ''}" />
                                                                                 `
@@ -3162,7 +3193,7 @@
                                                                             ${
                                                                                 p.data_pemeriksaan.tipe_inputan === 'Dropdown' && p.data_pemeriksaan.opsi_output ?
                                                                                 `
-                                                                                <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                                                <select name="duplo_d2[${uniqueID}]" class="form-select d2 w-60 p-0" disabled>
                                                                                     <option value="" selected hidden>Pilih...</option>
                                                                                     ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>
@@ -3173,7 +3204,7 @@
                                                                                 `
                                                                                 :
                                                                                 `
-                                                                                <input type="number" name="duplo_d2[]" 
+                                                                                <input type="number" name="duplo_d2[${uniqueID}]" 
                                                                                     class="form-control d2 w-60 p-0 text-center" 
                                                                                     disabled value="${obxValues.duplo_d2 || ''}" />
                                                                                 `
@@ -3183,7 +3214,7 @@
                                                                             ${
                                                                                 p.data_pemeriksaan.tipe_inputan === 'Dropdown' && p.data_pemeriksaan.opsi_output ?
                                                                                 `
-                                                                                <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                                <select name="duplo_d3[${uniqueID}]" class="form-select d3 w-50 p-0" disabled>
                                                                                     <option value="" selected hidden>Pilih...</option>
                                                                                     ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>
@@ -3194,7 +3225,7 @@
                                                                                 `
                                                                                 :
                                                                                 `
-                                                                                <input type="number" name="duplo_d3[]" 
+                                                                                <input type="number" name="duplo_d3[${uniqueID}]" 
                                                                                     class="form-control d3 w-50 p-0 text-center" 
                                                                                     disabled value="${obxValues.duplo_d3 || ''}" />
                                                                                 `
@@ -3202,10 +3233,10 @@
                                                                         </td>
                                                                         <td class="col-3 flag-cell">
                                                                             ${initialFlag}
-                                                                            <input type="hidden" name="flag[]" class="flag-value" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
+                                                                            <input type="hidden" name="flag[${uniqueID}]" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
                                                                         </td>
                                                                         <td>
-                                                                            <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
+                                                                            <input type="hidden" name="satuan[${uniqueID}]" class="form-control w-100 p-0" 
                                                                                 value="${p.data_pemeriksaan.nilai_satuan || ''}" readonly />
                                                                             ${p.data_pemeriksaan.nilai_satuan || ''}
                                                                         </td>
@@ -3321,13 +3352,13 @@
                                 const isHematologi = row && row.classList.contains('hematologi-row');
                                 const isWidal = row && row.classList.contains('widal-row');
                                 const isUrine = row && row.classList.contains('urine-row');
+                                const uid = row?.getAttribute('data-uid'); // TAMBAHKAN INI
 
-                                let flagText = ''; // untuk simpan teks flag (Normal / Low / High)
-                                let showStar = false; // untuk menentukan apakah perlu bintang
+                                let flagText = '';
+                                let showStar = false;
 
                                 if (isWidal) {
-                                    // Widal tidak ada flag
-                                    flagCell.innerHTML = `<input type="hidden" name="flag[]" value="" />`;
+                                    flagCell.innerHTML = `<input type="hidden" name="flag[${uid}]" value="" />`;
                                     return;
                                 }
 
@@ -3345,7 +3376,6 @@
                                                 flagText = 'Normal';
                                             }
                                             
-                                            // Cek threshold bintang untuk hematologi
                                             showStar = checkStarThresholdHematologi(numValue, parameter, data_pasien.jenis_kelamin);
                                         }
                                     } else if (isUrine && parameter) {
@@ -3361,12 +3391,11 @@
                                                 flagText = 'Normal';
                                             }
                                             
-                                            // Cek threshold bintang untuk urine
                                             showStar = checkStarThresholdUrine(numValue, parameter, data_pasien.jenis_kelamin);
                                         }
                                     } else {
                                         // Umum (non-hematologi/urine)
-                                        const nilaiRujukanInput = row.querySelector('input[name="nilai_rujukan[]"]');
+                                        const nilaiRujukanInput = row.querySelector('input[name^="nilai_rujukan"]');
                                         const nilaiRujukan = nilaiRujukanInput ? nilaiRujukanInput.value : null;
 
                                         if (nilaiRujukan && data_pasien.jenis_kelamin) {
@@ -3380,7 +3409,6 @@
                                             }
 
                                             if (genderCode) {
-                                                // Hapus bagian dalam kurung untuk parsing normal range
                                                 const cleanNilaiRujukan = nilaiRujukan.replace(/\([^)]*\)/, '').trim();
                                                 const parts = cleanNilaiRujukan.split(' ');
                                                 let targetRange = null;
@@ -3428,14 +3456,13 @@
                                                     flagText = 'Normal';
                                                 }
                                                 
-                                                // Cek apakah perlu bintang untuk kasus umum
                                                 showStar = checkStarThreshold(numValue, nilaiRujukan, genderCode);
                                             }
                                         }
                                     }
                                 }
 
-                                // Render ulang isi cell dengan flag + hidden input
+                                // Render ulang dengan UID yang benar
                                 if (flagText) {
                                     let icon = '';
                                     if (flagText === 'Low') {
@@ -3451,13 +3478,13 @@
                                     
                                     flagCell.innerHTML = `
                                         ${icon} ${flagWithStar}
-                                        <input type="hidden" name="flag[]" class="flag-value" value="${flagWithStar}">
+                                        <input type="hidden" name="flag[${uid}]" class="flag-value" value="${flagWithStar}">
                                     `;
                                     
-                                    console.log(`Flag set to: ${flagWithStar} for parameter: ${parameter}`);
+                                    console.log(`Flag set to: ${flagWithStar} for UID: ${uid}, parameter: ${parameter}`);
                                 } else {
                                     flagCell.innerHTML = `
-                                        <input type="hidden" name="flag[]" class="flag-value" value="">
+                                        <input type="hidden" name="flag[${uid}]" class="flag-value" value="">
                                     `;
                                 }
                             }
