@@ -28,7 +28,12 @@ class AuthController extends Controller
      */
     public function verifyLocation(Request $request)
     {
-        Log::info('✅ verifyLocation terpanggil!', $request->all());
+
+        Log::info('VerifyLocation request', [
+            'user_lat' => $request->latitude,
+            'user_lng' => $request->longitude,
+            'user_accuracy' => $request->accuracy,
+        ]);
         $validator = Validator::make($request->all(), [
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
