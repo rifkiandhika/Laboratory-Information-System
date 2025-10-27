@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\auth;
 
 use App\Http\Controllers\Controller;
+use App\Services\LocationVerificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Services\LocationVerificationService;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-class AuthController extends Controller
+class LocationAuthController extends Controller
 {
     protected $locationService;
 
@@ -18,17 +17,19 @@ class AuthController extends Controller
         $this->locationService = $locationService;
     }
 
-    public function index()
+    /**
+     * Tampilkan halaman login dengan GPS
+     */
+    public function showLoginForm()
     {
-        return view('login.index');
+        return view('auth.location-login');
     }
 
     /**
-     * Verify Location (AJAX endpoint untuk cek lokasi sebelum login)
+     * Verifikasi lokasi sebelum login
      */
     public function verifyLocation(Request $request)
     {
-        Log::info('✅ verifyLocation terpanggil!', $request->all());
         $validator = Validator::make($request->all(), [
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
@@ -60,108 +61,67 @@ class AuthController extends Controller
         ]);
     }
 
-    public function proses(Request $request)
+    /**
+     * Login dengan verifikasi lokasi
+     */
+    public function login(Request $request)
     {
-        // Validasi input
-        $fields = $request->validate([
-            'username' => 'required',
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
             'password' => 'required',
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
             'accuracy' => 'nullable|numeric'
         ]);
 
-        // 1. Verifikasi lokasi GPS dulu
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        // 1. Verifikasi lokasi dulu
         $locationResult = $this->locationService->verifyLocation(
             $request->latitude,
             $request->longitude,
             $request->accuracy
         );
 
-        // 2. Coba login dengan credentials
-        if (!Auth::attempt(['username' => $fields['username'], 'password' => $fields['password']])) {
-            toast(__("Wrong username or password"), 'error');
-            return redirect()->route('login.index');
+        // 2. Coba login credentials
+        $credentials = $request->only('email', 'password');
+
+        if (!Auth::attempt($credentials)) {
+            return back()
+                ->withErrors(['email' => 'Email atau password salah'])
+                ->withInput($request->only('email'));
         }
 
         $user = Auth::user();
 
-        // 3. Log aktivitas login dengan lokasi
+        // 3. Log login attempt
         $this->locationService->logLoginAttempt($user->id, $locationResult, $request);
 
         // 4. Cek apakah lokasi diizinkan
         if (!$locationResult['allowed']) {
             Auth::logout();
-            toast($locationResult['reason'], 'error');
-            return redirect()->route('login.index');
+            return back()->withErrors([
+                'location' => $locationResult['reason']
+            ])->withInput($request->only('email'));
         }
 
-        // 5. Simpan lokasi ke session untuk monitoring berkelanjutan
-        session([
-            'current_latitude' => $request->latitude,
-            'current_longitude' => $request->longitude,
-            'last_location_check' => now(),
-            'current_clinic' => $locationResult['clinic']->name ?? null
-        ]);
+        // 5. Login berhasil
+        $request->session()->regenerate();
 
-        // 6. Login berhasil
-        toast(__("Login successful!"), 'success');
-        return redirect()->route('admin.dashboard');
+        return redirect()->intended('dashboard')->with('success', 'Login berhasil!');
     }
 
+    /**
+     * Logout
+     */
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('login.index');
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect('/');
     }
 }

@@ -67,6 +67,8 @@ Route::get('/', function () {
 
 route::resource('login', AuthController::class);
 route::post('login-proses', [AuthController::class, 'proses'])->name('login.proses');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+Route::post('/verify-location', [AuthController::class, 'verifyLocation'])->name('verifylocation');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 //admin
