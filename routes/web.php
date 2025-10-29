@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\admin\AdminDeviceController;
+use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\admin\IpRangeController;
+use App\Http\Controllers\admin\LoginLogController;
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\icd10\icd10Controller;
@@ -18,6 +22,7 @@ use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\analyst\spesimentHendlingController;
 use App\Http\Controllers\analyst\vDokterController;
 use App\Http\Controllers\auth\AuthController;
+use App\Http\Controllers\auth\LocationController;
 use App\Http\Controllers\department\DepartmentController;
 use App\Http\Controllers\DokterController;
 use App\Http\Controllers\HasilController;
@@ -55,9 +60,9 @@ use Illuminate\Support\Facades\Response;
 // Route::get('/print-view/print-pasien', function () {
 //     return view('print-view.print-pasien');
 // });
-Route::get('/', function () {
-    return redirect('/login');
-});
+// Route::get('/', function () {
+//     return redirect('/login');
+// });
 
 // routes/web.php
 // Route::get('/phpinfo', function () {
@@ -66,10 +71,58 @@ Route::get('/', function () {
 
 
 route::resource('login', AuthController::class);
-route::post('login-proses', [AuthController::class, 'proses'])->name('login.proses');
-Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
-Route::post('/verify-location', [AuthController::class, 'verifyLocation'])->name('verifylocation');
+// route::post('login-proses', [AuthController::class, 'proses'])->name('login.proses');
+// Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+// Route::post('/verify-location', [AuthController::class, 'verifyLocation'])->name('verifylocation');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/', function () {
+    return redirect()->route('login.index');
+});
+
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'index'])->name('login.index');
+    Route::post('/login', [AuthController::class, 'proses'])->name('login.proses');
+});
+
+// Location verification routes (accessible before login)
+Route::post('/check-device', [LocationController::class, 'checkDevice'])->name('check.device');
+Route::post('/register-device', [LocationController::class, 'registerDevice'])->name('register.device');
+Route::post('/verify-location', [LocationController::class, 'verifyLocation'])->name('verifylocation');
+
+
+// Location verification routes (accessible before login)
+Route::post('/check-device', [LocationController::class, 'checkDevice'])->name('check.device');
+Route::post('/register-device', [LocationController::class, 'registerDevice'])->name('register.device');
+Route::post('/verify-location', [LocationController::class, 'verifyLocation'])->name('verifylocation');
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+
+    // Dashboard
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboardmon', [DashboardController::class, 'index'])->name('dashboard.index');
+
+    // Device Management
+    Route::prefix('devices')->name('devices.')->group(function () {
+        Route::get('/', [AdminDeviceController::class, 'index'])->name('index');
+        Route::post('/{id}/approve', [AdminDeviceController::class, 'approve'])->name('approve');
+        Route::post('/{id}/reject', [AdminDeviceController::class, 'reject'])->name('reject');
+        Route::post('/{id}/revoke', [AdminDeviceController::class, 'revoke'])->name('revoke');
+        Route::delete('/{id}', [AdminDeviceController::class, 'destroy'])->name('destroy');
+        Route::post('/bulk-approve', [AdminDeviceController::class, 'bulkApprove'])->name('bulk-approve');
+    });
+
+    // IP Range Management
+    Route::prefix('ip-ranges')->name('ip-ranges.')->group(function () {
+        Route::get('/', [IpRangeController::class, 'index'])->name('index');
+        Route::post('/', [IpRangeController::class, 'store'])->name('store');
+        Route::post('/{id}/toggle', [IpRangeController::class, 'toggle'])->name('toggle');
+        Route::delete('/{id}', [IpRangeController::class, 'destroy'])->name('destroy');
+    });
+
+    // Login Logs
+    Route::get('/login-logs', [LoginLogController::class, 'index'])->name('login-logs');
+});
 
 //admin
 route::middleware('auth')->group(function () {
@@ -88,7 +141,8 @@ route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class);
     Route::get('/package-details/{id}', [McuMcuPackageController::class, 'getPackageDetails'])->name('package-details');
 });
-// routes/web.php
+
+
 Route::get('signature/{filename}', function ($filename) {
     $path = storage_path('app/public/signatures/' . $filename);
 

@@ -53,6 +53,7 @@ class DataPasienController extends Controller
     {
         $pasien = DataPasien::findOrFail($id);
         $pasien->update([
+            'uid'           => $request->no_rm,
             'no_rm'         => $request->no_rm,
             'nik'           => $request->nik,
             'nama'          => $request->nama,

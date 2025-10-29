@@ -268,7 +268,7 @@ class pasienController extends Controller
         if (!$existingDataPasien) {
             // Jika belum ada, baru buat baru
             DataPasien::create([
-                'uid'             => $this->generateUid($request->nama, $request->tanggallahir),
+                'uid'             => $norm,
                 'no_rm'           => $norm,
                 'nik'             => $nik,
                 'nama'            => $request->nama,

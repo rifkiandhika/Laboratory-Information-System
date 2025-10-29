@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class admin
+class superadmin
 {
     /**
      * Handle an incoming request.
@@ -15,20 +15,24 @@ class admin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Pastikan sudah login
         if (!auth()->check()) {
-            return redirect()->route('login')
-                ->with('error', 'Silakan login terlebih dahulu.');
+            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
+        // Cek apakah user adalah admin
         $user = auth()->user();
 
-        // Hanya izinkan superadmin
-        if ($user->hasRole('Superadmin')) {
+        // Opsi 1: menggunakan kolom is_admin
+        if (isset($user->is_admin) && $user->is_admin == 4) {
             return $next($request);
         }
 
-        // Jika bukan superadmin
+        // Opsi 2: menggunakan kolom role
+        if (isset($user->role) && $user->role === 'superadmin') {
+            return $next($request);
+        }
+
+        // Jika bukan admin
         abort(403, 'Anda tidak memiliki akses ke halaman ini.');
     }
 }

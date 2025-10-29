@@ -50,4 +50,19 @@ class ClinicLocation extends Model
         $distance = $this->calculateDistance($userLat, $userLon);
         return $distance <= $this->radius;
     }
+
+    public function devices()
+    {
+        return $this->hasMany(WhitelistedDevice::class);
+    }
+
+    public function allowedIpRanges()
+    {
+        return $this->hasMany(AllowedIpRange::class);
+    }
+
+    public function loginLogs()
+    {
+        return $this->hasMany(LocationLoginLog::class);
+    }
 }

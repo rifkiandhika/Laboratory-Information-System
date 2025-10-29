@@ -8,6 +8,46 @@
 </li>
 @endcan
 
+@role('Superadmin')
+    <li class="menu-item {{ Request::is('admin*') ? 'open active' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons ti ti-shield-lock"></i>
+            <div data-i18n="Admin Panel">Admin Panel</div>
+        </a>
+
+        <ul class="menu-sub">
+            <li class="menu-item {{ Request::is('admin/dashboardmon') ? 'active' : '' }}">
+                <a href="{{ url('admin/dashboardmon') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-home"></i>
+                    <div data-i18n="Dashboard">Dashboard</div>
+                </a>
+            </li>
+
+            <li class="menu-item {{ Request::is('admin/devices') ? 'active' : '' }}">
+                <a href="{{ route('admin.devices.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-devices"></i>
+                    <div data-i18n="Devices">Devices</div>
+                </a>
+            </li>
+
+            <li class="menu-item {{ Request::is('admin/ip-ranges') ? 'active' : '' }}">
+                <a href="{{ route('admin.ip-ranges.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-world"></i>
+                    <div data-i18n="IP Ranges">IP Ranges</div>
+                </a>
+            </li>
+
+            <li class="menu-item {{ Request::is('admin/login-logs') ? 'active' : '' }}">
+                <a href="{{ route('admin.login-logs') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-activity"></i>
+                    <div data-i18n="Login Logs">Login Logs</div>
+                </a>
+            </li>
+        </ul>
+    </li>
+@endrole
+
+
 {{-- Loket Section --}}
 @canany(['read_loket-pasien','create_loket-pasien','update_loket-pasien','delete_loket-pasien',
          'read_loket-data-pasien','create_loket-data-pasien','update_loket-data-pasien','delete_loket-data-pasien',
