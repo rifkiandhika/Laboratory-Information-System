@@ -28,7 +28,6 @@ class AuthController extends Controller
      */
     public function proses(Request $request)
     {
-        // Validasi basic
         $request->validate([
             'username' => 'required',
             'password' => 'required',
@@ -39,54 +38,57 @@ class AuthController extends Controller
             'password' => $request->password,
         ];
 
-        // Attempt login
+
+        $ip = $request->ip();
+        $whitelistedIp = WhitelistedDevice::where('ip_address', $ip)
+            ->where('status', 'approved')
+            ->where('is_active', true)
+            ->first();
+
+        if (!$whitelistedIp) {
+
+            LocationLoginLog::create([
+                'user_id' => null,
+                'clinic_location_id' => 1,
+                'user_latitude' => $request->latitude ?? -7.983908,
+                'user_longitude' => $request->longitude ?? 112.621391,
+                'distance' => 0,
+                'accuracy' => 0,
+                'login_allowed' => false,
+                'ip_address' => $ip,
+                'user_agent' => $request->userAgent(),
+                'failure_reason' => 'IP address tidak terdaftar',
+                'attempted_at' => now('Asia/Jakarta'),
+            ]);
+
+            Log::warning('Login ditolak karena IP belum terdaftar', [
+                'ip' => $ip,
+                'username' => $request->username,
+            ]);
+
+            return back()->withErrors([
+                'username' => 'Login ditolak! IP address ini belum terdaftar. Silakan hubungi admin.',
+            ])->onlyInput('username');
+        }
+
+
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             $request->session()->regenerate();
 
 
-            if ($this->isSuperAdmin($user)) {
-                Log::info('Superadmin logged in - location check bypassed', [
-                    'user_id' => $user->id,
-                    'username' => $user->username
-                ]);
+            $whitelistedIp->update(['last_used_at' => now('Asia/Jakarta')]);
 
-                // Catat log login superadmin
-                $this->logLogin($user, $request, true, 'Superadmin - bypassed location check');
+            // Catat log sukses
+            $this->logLogin($user, $request, true, 'Login via IP terdaftar');
 
-                return redirect()->route('admin.dashboard')
-                    ->with('success', 'Login berhasil! (Superadmin - Location check bypassed)');
-            }
-
-
-            $validationResult = $this->validateLocationOrDevice($request, $user);
-
-            if (!$validationResult['success']) {
-                // Catat log gagal
-                $this->logLogin($user, $request, false, $validationResult['message']);
-
-                Auth::logout();
-                return back()->withErrors([
-                    'username' => $validationResult['message']
-                ])->onlyInput('username');
-            }
-
-            // Update last_used_at untuk whitelisted device
-            if ($request->device_fingerprint) {
-                WhitelistedDevice::where('device_fingerprint', $request->device_fingerprint)
-                    ->update(['last_used_at' => now('Asia/Jakarta')]);
-            }
-
-            // Catat log login sukses
-            $this->logLogin($user, $request, true);
-
-            Log::info('User logged in successfully', [
+            Log::info('User berhasil login via IP terdaftar', [
                 'user_id' => $user->id,
                 'username' => $user->username,
-                'location_method' => $validationResult['method'] ?? 'unknown'
+                'ip' => $ip,
             ]);
 
-            // Redirect berdasarkan role
+
             if ($this->isAdmin($user)) {
                 return redirect()->route('admin.dashboard')->with('success', 'Login berhasil!');
             }
@@ -95,24 +97,23 @@ class AuthController extends Controller
         }
 
 
-        Log::warning('Failed login attempt', [
-            'username' => $request->username,
-            'ip' => $request->ip(),
-        ]);
-
-
         LocationLoginLog::create([
             'user_id' => null,
             'clinic_location_id' => 1,
-            'user_latitude' => $request->latitude ?? 0,
-            'user_longitude' => $request->longitude ?? 0,
+            'user_latitude' => $request->latitude ?? -7.983908,
+            'user_longitude' => $request->longitude ?? 112.621391,
             'distance' => 0,
             'accuracy' => 0,
             'login_allowed' => false,
-            'ip_address' => $request->ip(),
+            'ip_address' => $ip,
             'user_agent' => $request->userAgent(),
             'failure_reason' => 'Username atau password salah',
             'attempted_at' => now('Asia/Jakarta')
+        ]);
+
+        Log::warning('Gagal login - username/password salah', [
+            'ip' => $ip,
+            'username' => $request->username,
         ]);
 
         return back()->withErrors([
