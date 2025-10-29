@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\LocationLoginLog;
+use App\Models\User;
 use App\Models\WhitelistedDevice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,13 +34,10 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $credentials = [
-            'username' => $request->username,
-            'password' => $request->password,
-        ];
-
-
         $ip = $request->ip();
+        $user = User::where('username', $request->username)->first();
+
+
         $whitelistedIp = WhitelistedDevice::where('ip_address', $ip)
             ->where('status', 'approved')
             ->where('is_active', true)
@@ -47,19 +45,9 @@ class AuthController extends Controller
 
         if (!$whitelistedIp) {
 
-            LocationLoginLog::create([
-                'user_id' => null,
-                'clinic_location_id' => 1,
-                'user_latitude' => $request->latitude ?? -7.983908,
-                'user_longitude' => $request->longitude ?? 112.621391,
-                'distance' => 0,
-                'accuracy' => 0,
-                'login_allowed' => false,
-                'ip_address' => $ip,
-                'user_agent' => $request->userAgent(),
-                'failure_reason' => 'IP address tidak terdaftar',
-                'attempted_at' => now('Asia/Jakarta'),
-            ]);
+            if ($user) {
+                $this->logLogin($user, $request, false, 'IP address tidak terdaftar');
+            }
 
             Log::warning('Login ditolak karena IP belum terdaftar', [
                 'ip' => $ip,
@@ -72,14 +60,14 @@ class AuthController extends Controller
         }
 
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
             $user = Auth::user();
             $request->session()->regenerate();
 
 
             $whitelistedIp->update(['last_used_at' => now('Asia/Jakarta')]);
 
-            // Catat log sukses
+
             $this->logLogin($user, $request, true, 'Login via IP terdaftar');
 
             Log::info('User berhasil login via IP terdaftar', [
@@ -88,7 +76,7 @@ class AuthController extends Controller
                 'ip' => $ip,
             ]);
 
-
+            // Redirect berdasarkan role
             if ($this->isAdmin($user)) {
                 return redirect()->route('admin.dashboard')->with('success', 'Login berhasil!');
             }
@@ -97,21 +85,11 @@ class AuthController extends Controller
         }
 
 
-        LocationLoginLog::create([
-            'user_id' => null,
-            'clinic_location_id' => 1,
-            'user_latitude' => $request->latitude ?? -7.983908,
-            'user_longitude' => $request->longitude ?? 112.621391,
-            'distance' => 0,
-            'accuracy' => 0,
-            'login_allowed' => false,
-            'ip_address' => $ip,
-            'user_agent' => $request->userAgent(),
-            'failure_reason' => 'Username atau password salah',
-            'attempted_at' => now('Asia/Jakarta')
-        ]);
+        if ($user) {
+            $this->logLogin($user, $request, false, 'Password salah');
+        }
 
-        Log::warning('Gagal login - username/password salah', [
+        Log::warning('Gagal login - username atau password salah', [
             'ip' => $ip,
             'username' => $request->username,
         ]);
