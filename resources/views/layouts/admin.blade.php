@@ -75,11 +75,15 @@
 
         <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
             <div class="app-brand demo ">
-              <a href="index-2.html" class="app-brand-link">
+              <a href="#" class="app-brand-link">
                 <span class="app-brand-logo demo">
           <img src="{{ asset('image/erecord.png') }}" width="60px"  alt="">
           </span>
-                <span class="app-brand-text demo menu-text fw-bold">Erecord Integrasi Laboratorium Information System</span>
+                <span class="app-brand-text demo menu-text fw-bold" style="font-size: 0.75rem; line-height: 1.3;">
+                    Erecord Integrasi 
+                    <br>
+                    LIS
+                </span>
               </a>
 
               <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">

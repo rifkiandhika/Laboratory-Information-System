@@ -17,12 +17,15 @@
 
   <!-- Icons -->
   <link rel="stylesheet" href="{{ asset('/assets/vendor/fonts/tabler-icons.css') }}" />
+  <link rel="stylesheet" href="{{ asset('assets/sweetalert2/sweetalert2.min.css') }}">
 
   <!-- Core CSS -->
   <link rel="stylesheet" href="{{ asset('/assets/vendor/css/rtl/core.css') }}" />
   <link rel="stylesheet" href="{{ asset('/assets/vendor/css/rtl/theme-default.css') }}" />
   <link rel="stylesheet" href="{{ asset('/assets/css/demo.css') }}" />
   <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/page-auth.css') }}" />
+  
+  <script src="{{ asset('assets/sweetalert2/sweetalert2.min.js') }}"></script>
 
   <style>
     .device-status-box {
@@ -111,7 +114,7 @@
                   <strong id="deviceTitle"></strong>
                   <div id="deviceMessage" class="small"></div>
                   <button id="registerDeviceBtn" class="btn btn-sm btn-outline-primary mt-2" style="display: none;" onclick="registerDevice()">
-                    <i class="ti ti-building me-1"></i>Daftarkan Device Ini
+                    <i class="ti ti-device-floppy me-1"></i>Daftarkan Device Ini
                   </button>
                 </div>
               </div>
@@ -223,31 +226,37 @@
       })
         .then(res => res.json())
         .then(data => {
-          if (data.whitelisted && data.status === 'approved') {
+          console.log('Check device response:', data);
+
+          if (data.status === 'approved') {
+            // Device SUDAH approved
             deviceVerified = true;
             showDeviceStatus('success', 'Device Terdaftar ✓', 
-              `${data.clinic_location.name} - Device ini sudah terdaftar dan approved`);
+              `${data.clinic_location.name} - Device ini sudah terdaftar dan disetujui`);
             enableLoginButton();
           } else if (data.status === 'pending') {
+            // Device SUDAH didaftarkan tapi masih pending
             deviceVerified = false;
             showDeviceStatus('warning', 'Device Pending ⏳', 
-              'Device ini sudah didaftarkan namun menunggu approval admin. Silakan hubungi admin.');
-            enableLoginButton(); // Allow login, will be checked on server
+              'Device ini sudah didaftarkan dan sedang menunggu approval dari admin. Silakan hubungi admin.');
+            enableLoginButton();
           } else if (data.status === 'rejected') {
+            // Device SUDAH didaftarkan tapi ditolak
             deviceVerified = false;
-            showDeviceStatus('error', 'Device Ditolak ✗', data.message);
-            enableLoginButton(); // Allow login, will be checked on server
+            showDeviceStatus('error', 'Device Ditolak ✗', 
+              'Device ini ditolak oleh admin. Silakan hubungi admin untuk informasi lebih lanjut.');
+            enableLoginButton();
           } else {
-            // Device belum terdaftar
+            // Device BELUM terdaftar sama sekali (status: not_registered)
             deviceVerified = false;
             showDeviceStatus('info', 'Device Belum Terdaftar', 
-              'Device ini belum terdaftar. Klik tombol di bawah untuk mendaftarkan.');
+              'Device ini belum terdaftar di sistem. Klik tombol di bawah untuk mendaftarkan.');
             document.getElementById('registerDeviceBtn').style.display = 'inline-block';
-            enableLoginButton(); // Allow login, will be checked on server
+            enableLoginButton();
           }
         })
         .catch(error => {
-          console.error('Error:', error);
+          console.error('Error checking device:', error);
           deviceVerified = false;
           showDeviceStatus('warning', 'Tidak Dapat Mengecek Device', 
             'Terjadi kesalahan saat mengecek device. Anda tetap bisa mencoba login.');
@@ -256,41 +265,125 @@
     }
 
     function registerDevice() {
-      if (!confirm('Daftarkan device ini ke sistem?\n\nDevice ini akan didaftarkan untuk klinik berdasarkan IP address Anda saat ini.')) {
-        return;
-      }
-      
-      showDeviceStatus('loading', 'Mendaftarkan Device...', 'Mohon tunggu...');
-      document.getElementById('registerDeviceBtn').style.display = 'none';
-      
-      fetch('{{ route("register.device") }}', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({
-          device_fingerprint: deviceFingerprint
-        })
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            deviceVerified = true;
-            showDeviceStatus('success', 'Device Terdaftar ✓', data.message);
-          } else {
-            showDeviceStatus(data.error_code === 'IP_NOT_ALLOWED' ? 'error' : 'warning', 
-              'Registrasi Device', data.message);
-            if (data.status !== 'pending') {
+      Swal.fire({
+        title: 'Daftarkan device ini ke sistem?',
+        html: 'Device ini akan didaftarkan untuk klinik berdasarkan <strong>IP address</strong> Anda saat ini.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // User klik OK
+          showDeviceStatus('loading', 'Mendaftarkan Device...', 'Mohon tunggu...');
+          document.getElementById('registerDeviceBtn').style.display = 'none';
+          
+          fetch('{{ route("register.device") }}', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+              device_fingerprint: deviceFingerprint
+            })
+          })
+            .then(res => res.json())
+            .then(data => {
+              console.log('Register device response:', data);
+              
+              if (data.success) {
+                // BERHASIL DIDAFTARKAN (pertama kali)
+                deviceVerified = false;
+                showDeviceStatus('warning', 'Device Terdaftar - Menunggu Approval ⏳', data.message);
+                
+                Swal.fire({
+                  title: 'Berhasil!',
+                  text: data.message,
+                  icon: 'success',
+                  confirmButtonText: 'OK'
+                });
+              } else {
+                // GAGAL mendaftar
+                if (data.already_registered) {
+                  // Device SUDAH pernah didaftarkan sebelumnya
+                  if (data.status === 'pending') {
+                    deviceVerified = false;
+                    showDeviceStatus('warning', 'Device Sudah Terdaftar - Pending ⏳', data.message);
+                    
+                    Swal.fire({
+                      title: 'Device Sudah Terdaftar',
+                      text: data.message,
+                      icon: 'warning',
+                      confirmButtonText: 'OK'
+                    });
+                  } else if (data.status === 'approved') {
+                    deviceVerified = true;
+                    showDeviceStatus('success', 'Device Sudah Approved ✓', data.message);
+                    
+                    Swal.fire({
+                      title: 'Device Sudah Approved',
+                      text: data.message,
+                      icon: 'success',
+                      confirmButtonText: 'OK'
+                    });
+                  } else if (data.status === 'rejected') {
+                    deviceVerified = false;
+                    showDeviceStatus('error', 'Device Ditolak ✗', data.message);
+                    
+                    Swal.fire({
+                      title: 'Device Ditolak',
+                      text: data.message,
+                      icon: 'error',
+                      confirmButtonText: 'OK'
+                    });
+                  }
+                } else if (data.error_code === 'IP_NOT_ALLOWED') {
+                  // IP tidak terdaftar di ClinicLocation
+                  deviceVerified = false;
+                  showDeviceStatus('error', 'IP Tidak Terdaftar ✗', data.message);
+                  document.getElementById('registerDeviceBtn').style.display = 'inline-block';
+                  
+                  Swal.fire({
+                    title: 'IP Tidak Terdaftar',
+                    text: data.message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                  });
+                } else {
+                  // Error lainnya
+                  deviceVerified = false;
+                  showDeviceStatus('error', 'Gagal Mendaftar', data.message);
+                  document.getElementById('registerDeviceBtn').style.display = 'inline-block';
+                  
+                  Swal.fire({
+                    title: 'Gagal Mendaftar',
+                    text: data.message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                  });
+                }
+              }
+            })
+            .catch(error => {
+              console.error('Error registering device:', error);
+              showDeviceStatus('error', 'Gagal Mendaftar', 
+                'Terjadi kesalahan jaringan. Silakan coba lagi atau hubungi admin.');
               document.getElementById('registerDeviceBtn').style.display = 'inline-block';
-            }
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          showDeviceStatus('error', 'Gagal Mendaftar', 'Terjadi kesalahan. Silakan hubungi admin.');
-          document.getElementById('registerDeviceBtn').style.display = 'inline-block';
-        });
+              
+              Swal.fire({
+                title: 'Error!',
+                text: 'Terjadi kesalahan jaringan. Silakan coba lagi atau hubungi admin.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+              });
+            });
+        }
+        // Jika user klik Cancel, tidak ada action
+      });
     }
 
     function enableLoginButton() {

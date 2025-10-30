@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\ClinicLocation;
 use App\Models\LocationLoginLog;
 use App\Models\WhitelistedDevice;
 use Illuminate\Http\Request;
@@ -114,7 +115,151 @@ class AuthController extends Controller
     }
 
     /**
-     * Validasi lokasi atau device whitelist untuk user biasa
+     * Check device status
+     */
+    public function checkDevice(Request $request)
+    {
+        $deviceFingerprint = $request->device_fingerprint;
+        $realIp = $this->getRealIpAddress($request);
+
+        Log::info('Checking device status', [
+            'fingerprint' => $deviceFingerprint,
+            'ip' => $realIp
+        ]);
+
+        // Cek apakah device sudah terdaftar
+        $device = WhitelistedDevice::where('device_fingerprint', $deviceFingerprint)->first();
+
+        if ($device) {
+            // Device SUDAH pernah didaftarkan
+            return response()->json([
+                'whitelisted' => $device->status === 'approved',
+                'status' => $device->status,
+                'message' => $this->getDeviceStatusMessage($device->status),
+                'clinic_location' => $device->clinicLocation,
+                'device_name' => $device->device_name,
+                'registered_at' => $device->registered_at,
+                'ip_address' => $device->ip_address
+            ]);
+        }
+
+        // Device BELUM terdaftar sama sekali
+        return response()->json([
+            'whitelisted' => false,
+            'status' => 'not_registered',
+            'message' => 'Device belum terdaftar di sistem',
+            'current_ip' => $realIp
+        ]);
+    }
+
+    /**
+     * Register new device
+     */
+    public function registerDevice(Request $request)
+    {
+        $deviceFingerprint = $request->device_fingerprint;
+        $realIp = $this->getRealIpAddress($request);
+
+        Log::info('Device registration attempt', [
+            'fingerprint' => $deviceFingerprint,
+            'ip' => $realIp
+        ]);
+
+        // ===== CRITICAL: CEK DEVICE SUDAH ADA ATAU BELUM =====
+        $existingDevice = WhitelistedDevice::where('device_fingerprint', $deviceFingerprint)->first();
+
+        if ($existingDevice) {
+            // Device SUDAH pernah didaftarkan
+            Log::info('Device registration blocked - already exists', [
+                'device_id' => $existingDevice->id,
+                'status' => $existingDevice->status,
+                'fingerprint' => $deviceFingerprint
+            ]);
+
+            $messages = [
+                'pending' => 'Device ini sudah didaftarkan dan sedang menunggu approval dari admin.',
+                'approved' => 'Device ini sudah terdaftar dan disetujui.',
+                'rejected' => 'Device ini ditolak oleh admin. Silakan hubungi admin untuk informasi lebih lanjut.'
+            ];
+
+            return response()->json([
+                'success' => false,
+                'already_registered' => true,
+                'status' => $existingDevice->status,
+                'message' => $messages[$existingDevice->status] ?? 'Device sudah terdaftar.',
+                'device_id' => $existingDevice->id,
+                'clinic_location' => $existingDevice->clinicLocation,
+                'registered_at' => $existingDevice->registered_at
+            ]);
+        }
+
+        // ===== CEK IP TERDAFTAR DI CLINIC LOCATION =====
+        $clinicLocation = ClinicLocation::where('ip_address', $realIp)
+            ->where('is_active', true)
+            ->first();
+
+        if (!$clinicLocation) {
+            Log::warning('Device registration failed - IP not allowed', [
+                'fingerprint' => $deviceFingerprint,
+                'ip' => $realIp
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'already_registered' => false,
+                'error_code' => 'IP_NOT_ALLOWED',
+                'message' => 'IP Address (' . $realIp . ') tidak terdaftar di sistem. Silakan hubungi admin untuk mendaftarkan IP ini terlebih dahulu.',
+                'current_ip' => $realIp
+            ]);
+        }
+
+        // ===== CREATE DEVICE BARU =====
+        try {
+            $device = WhitelistedDevice::create([
+                'clinic_location_id' => $clinicLocation->id,
+                'device_fingerprint' => $deviceFingerprint,
+                'device_name' => $this->getDeviceName($request),
+                'ip_address' => $realIp,
+                'status' => 'pending',
+                'is_active' => true,
+                'registered_at' => now('Asia/Jakarta'),
+                'last_used_at' => null
+            ]);
+
+            Log::info('Device registered successfully', [
+                'device_id' => $device->id,
+                'fingerprint' => $deviceFingerprint,
+                'clinic' => $clinicLocation->name,
+                'ip' => $realIp
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'already_registered' => false,
+                'status' => 'pending',
+                'message' => 'Device berhasil didaftarkan untuk ' . $clinicLocation->name . '. Menunggu approval dari admin.',
+                'device_id' => $device->id,
+                'clinic_location' => $clinicLocation,
+                'current_ip' => $realIp
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Device registration error', [
+                'error' => $e->getMessage(),
+                'fingerprint' => $deviceFingerprint,
+                'ip' => $realIp
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'already_registered' => false,
+                'error_code' => 'REGISTRATION_ERROR',
+                'message' => 'Terjadi kesalahan saat mendaftarkan device. Silakan coba lagi atau hubungi admin.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Validasi lokasi atau device whitelist
      */
     private function validateLocationOrDevice(Request $request, $user)
     {
@@ -148,7 +293,7 @@ class AuthController extends Controller
 
         return [
             'success' => false,
-            'message' => 'Device belum terdaftar atau lokasi tidak valid. Silakan hubungi admin untuk mendaftarkan device Anda.'
+            'message' => 'Device belum terdaftar atau belum disetujui. Silakan hubungi admin untuk mendaftarkan atau approve device Anda.'
         ];
     }
 
@@ -159,7 +304,7 @@ class AuthController extends Controller
     {
         LocationLoginLog::create([
             'user_id' => $user->id,
-            'clinic_location_id' => 1, // isi sesuai kebutuhan
+            'clinic_location_id' => 1,
             'user_latitude' => $request->latitude ?? 0,
             'user_longitude' => $request->longitude ?? 0,
             'distance' => 0,
@@ -170,6 +315,86 @@ class AuthController extends Controller
             'failure_reason' => $reason,
             'attempted_at' => now('Asia/Jakarta')
         ]);
+    }
+
+    /**
+     * Get device status message
+     */
+    private function getDeviceStatusMessage($status)
+    {
+        $messages = [
+            'pending' => 'Device menunggu approval dari admin',
+            'approved' => 'Device sudah disetujui',
+            'rejected' => 'Device ditolak oleh admin',
+        ];
+
+        return $messages[$status] ?? 'Status tidak diketahui';
+    }
+
+    /**
+     * Get device name from user agent
+     */
+    private function getDeviceName(Request $request)
+    {
+        $userAgent = $request->userAgent();
+
+        // Detect device type
+        if (preg_match('/mobile|android|iphone|ipad|ipod/i', $userAgent)) {
+            if (preg_match('/android/i', $userAgent)) {
+                return 'Android Mobile Device';
+            } elseif (preg_match('/iphone/i', $userAgent)) {
+                return 'iPhone';
+            } elseif (preg_match('/ipad/i', $userAgent)) {
+                return 'iPad';
+            }
+            return 'Mobile Device';
+        }
+
+        // Detect browser
+        if (preg_match('/chrome/i', $userAgent)) {
+            return 'Desktop - Chrome Browser';
+        } elseif (preg_match('/firefox/i', $userAgent)) {
+            return 'Desktop - Firefox Browser';
+        } elseif (preg_match('/safari/i', $userAgent)) {
+            return 'Desktop - Safari Browser';
+        } elseif (preg_match('/edge/i', $userAgent)) {
+            return 'Desktop - Edge Browser';
+        }
+
+        return 'Desktop/Laptop';
+    }
+
+    /**
+     * Get real IP address considering proxies
+     */
+    private function getRealIpAddress(Request $request)
+    {
+        $headers = [
+            'HTTP_CF_CONNECTING_IP',
+            'HTTP_X_FORWARDED_FOR',
+            'HTTP_X_REAL_IP',
+            'HTTP_X_FORWARDED',
+            'HTTP_X_CLUSTER_CLIENT_IP',
+            'HTTP_FORWARDED_FOR',
+            'HTTP_FORWARDED',
+            'HTTP_CLIENT_IP',
+            'REMOTE_ADDR'
+        ];
+
+        foreach ($headers as $header) {
+            if ($request->server($header)) {
+                $ip = $request->server($header);
+
+                if (strpos($ip, ',') !== false) {
+                    $ips = explode(',', $ip);
+                    $ip = trim($ips[0]);
+                }
+
+                return $ip;
+            }
+        }
+
+        return $request->ip();
     }
 
     /**
