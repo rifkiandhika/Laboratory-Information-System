@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\LocationLoginLog;
-use App\Models\User;
 use App\Models\WhitelistedDevice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -34,64 +33,65 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $ip = $request->ip();
-        $user = User::where('username', $request->username)->first();
+        $credentials = [
+            'username' => $request->username,
+            'password' => $request->password,
+        ];
 
-
-        $whitelistedIp = WhitelistedDevice::where('ip_address', $ip)
-            ->where('status', 'approved')
-            ->where('is_active', true)
-            ->first();
-
-        if (!$whitelistedIp) {
-
-            if ($user) {
-                $this->logLogin($user, $request, false, 'IP address tidak terdaftar');
-            }
-
-            Log::warning('Login ditolak karena IP belum terdaftar', [
-                'ip' => $ip,
-                'username' => $request->username,
-            ]);
-
-            return back()->withErrors([
-                'username' => 'Login ditolak! IP address ini belum terdaftar. Silakan hubungi admin.',
-            ])->onlyInput('username');
-        }
-
-
-        if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
+        if (Auth::attempt($credentials)) {
             $user = Auth::user();
             $request->session()->regenerate();
 
 
-            $whitelistedIp->update(['last_used_at' => now('Asia/Jakarta')]);
+            $validationResult = $this->validateLocationOrDevice($request, $user);
 
+            if (!$validationResult['success']) {
+                $this->logLogin($user, $request, false, $validationResult['message']);
+                Auth::logout();
 
-            $this->logLogin($user, $request, true, 'Login via IP terdaftar');
-
-            Log::info('User berhasil login via IP terdaftar', [
-                'user_id' => $user->id,
-                'username' => $user->username,
-                'ip' => $ip,
-            ]);
-
-            // Redirect berdasarkan role
-            if ($this->isAdmin($user)) {
-                return redirect()->route('admin.dashboard')->with('success', 'Login berhasil!');
+                return back()->withErrors([
+                    'username' => $validationResult['message']
+                ])->onlyInput('username');
             }
 
-            return redirect()->intended('dashboard')->with('success', 'Login berhasil!');
+
+            if ($request->device_fingerprint) {
+                WhitelistedDevice::where('device_fingerprint', $request->device_fingerprint)
+                    ->update(['last_used_at' => now('Asia/Jakarta')]);
+            }
+
+
+            $this->logLogin($user, $request, true);
+
+            Log::info('User logged in successfully', [
+                'user_id' => $user->id,
+                'username' => $user->username,
+                'location_method' => $validationResult['method'] ?? 'unknown'
+            ]);
+
+            return $this->isAdmin($user)
+                ? redirect()->route('admin.dashboard')->with('success', 'Login berhasil!')
+                : redirect()->intended('dashboard')->with('success', 'Login berhasil!');
         }
 
 
-        if ($user) {
-            $this->logLogin($user, $request, false, 'Password salah');
-        }
-
-        Log::warning('Gagal login - username atau password salah', [
-            'ip' => $ip,
+        Log::warning('Failed login attempt', [
             'username' => $request->username,
+            'ip' => $request->ip(),
+        ]);
+
+        LocationLoginLog::create([
+            'user_id' => null,
+            'clinic_location_id' => 1,
+            'user_latitude' => $request->latitude ?? 0,
+            'user_longitude' => $request->longitude ?? 0,
+            'distance' => 0,
+            'accuracy' => 0,
+            'login_allowed' => false,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'failure_reason' => 'Username atau password salah',
+            'attempted_at' => now('Asia/Jakarta')
         ]);
 
         return back()->withErrors([
@@ -99,44 +99,48 @@ class AuthController extends Controller
         ])->onlyInput('username');
     }
 
+
     /**
      * Validasi lokasi atau device whitelist untuk user biasa
      */
     private function validateLocationOrDevice(Request $request, $user)
     {
-        // Jika device fingerprint sudah approved
-        if ($request->device_fingerprint) {
-            $device = WhitelistedDevice::where('device_fingerprint', $request->device_fingerprint)
-                ->where('status', 'approved')
-                ->where('is_active', true)
-                ->first();
+        $ip = $request->ip();
+        $userAgent = $request->userAgent();
 
-            if ($device) {
-                Log::info('Login allowed via whitelisted device', [
-                    'user_id' => $user->id,
-                    'device' => $device->device_name
-                ]);
 
-                return [
-                    'success' => true,
-                    'method' => 'whitelist'
-                ];
-            }
-        }
+        $device = WhitelistedDevice::where('ip_address', $ip)->first();
 
-        // Jika pakai lokasi GPS (latitude & longitude dikirim)
-        if ($request->has('latitude') && $request->has('longitude')) {
+        if (!$device) {
+
+            WhitelistedDevice::create([
+                'ip_address' => $ip,
+                'device_name' => gethostbyaddr($ip) ?: 'Unknown Device',
+                'user_agent' => $userAgent,
+                'status' => 'pending',
+                'is_active' => true,
+            ]);
+
             return [
-                'success' => true,
-                'method' => 'gps'
+                'success' => false,
+                'message' => 'Device baru terdeteksi dan sedang menunggu approval admin.'
             ];
         }
 
+        if ($device->status !== 'approved') {
+            return [
+                'success' => false,
+                'message' => 'Device Anda masih menunggu approval admin.'
+            ];
+        }
+
+
         return [
-            'success' => false,
-            'message' => 'Device belum terdaftar atau lokasi tidak valid. Silakan hubungi admin untuk mendaftarkan device Anda.'
+            'success' => true,
+            'method' => 'whitelist'
         ];
     }
+
 
     /**
      * Helper untuk mencatat log login
