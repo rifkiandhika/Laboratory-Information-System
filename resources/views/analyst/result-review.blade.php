@@ -676,7 +676,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Fungsi untuk generate content hasil pemeriksaan dalam modal
     function getResultTableContent(data_pemeriksaan_pasien, data_pasien, hasil, history) {
-        const hematologiParams = [
+            const hematologiParams = [
                 { nama: 'WBC', display_name: 'Leukosit', satuan: '10³/µL', normal_min: 4.0, normal_max: 10.0 },
                 { nama: 'LYM#', display_name: 'LYM#', satuan: '10³/µL', normal_min: 1.0, normal_max: 4.0 },
                 { nama: 'MID#', display_name: 'MID#', satuan: '10³/µL', normal_min: 0.2, normal_max: 0.8 },
@@ -700,746 +700,746 @@ document.addEventListener('DOMContentLoaded', function() {
                 { nama: 'P-LCR', display_name: 'P-LCR', satuan: '%', normal_min: 13, normal_max: 43 }
             ];
 
-                        const WidalParams = [
-                            {
-                                nama: 'Salmonella Typhi H',
-                                display_name: 'Salmonella Typhi H',
-                                satuan: '-',
-                                normal_min_l: '-',
-                                normal_max_l: '-',
-                                normal_min_p: '-',
-                                normal_max_p: '-',
-                                nilai_rujukan_l: '-',
-                                nilai_rujukan_p: '-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
-                            },
-                            {
-                                nama: 'Salmonella Typhi O',
-                                display_name: 'Salmonella Typhi O',
-                                satuan: '-',
-                                normal_min_l: '-',
-                                normal_max_l: '-',
-                                normal_min_p: '-',
-                                normal_max_p: '-',
-                                nilai_rujukan_l: '-',
-                                nilai_rujukan_p: '-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
-                            },
-                            {
-                                nama: 'Salmonella Paratyphi AO',
-                                display_name: 'Salmonella Paratyphi AO',
-                                satuan: '-',
-                                normal_min_l: '-',
-                                normal_max_l: '-',
-                                normal_min_p: '-',
-                                normal_max_p: '-',
-                                nilai_rujukan_l: '-',
-                                nilai_rujukan_p: '-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
-                            },
-                            {
-                                nama: 'Salmonella Paratyphi BO',
-                                display_name: 'Salmonella Paratyphi BO',
-                                satuan: '-',
-                                normal_min_l: '-',
-                                normal_max_l: '-',
-                                normal_min_p: '-',
-                                normal_max_p: '-',
-                                nilai_rujukan_l: '-',
-                                nilai_rujukan_p: '-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
-                            }
-                        ];
-                        const UrineParams = [
-                            {
- 				                judul: 'Urine Lengkap',
-                                nama: 'Urine-Warna',
-                                display_name: 'Warna',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: '-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : 'Kuning;Kuning Pucat;Kuning Tua;Kuning kecokelatan;Orange;Merah;Coklat',
-                                default: 'Kuning' 
-                            },
-                            {
- 				                judul: 'Urine Lengkap',
-                                nama: 'Kekeruhan',
-                                display_name: 'Kekeruhan',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: 'L.- P.-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : 'Jernih;Agak Keruh;Keruh;Sangat keruh',
-                                default: 'Jernih' 
-                            },
-                            {
- 				                judul: 'Urine Lengkap',
-                                nama: 'Berat Jenis',
-                                display_name: 'Berat Jenis',
-                                satuan: '-',
-                                normal_min: 'L.1,003 P.1,003',
-                                normal_max: 'L.1,035 P.1,035',
-                                nilai_rujukan: 'L.1,003-1,035 P.1,003-1,035',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : '<1.005;1.005;1.010;1.015;1.020;1.025;1.030',
-                                default: '1.015' 
-                            },
-                            {
- 				                judul: 'Urine Lengkap',
-                                nama: 'PH',
-                                display_name: 'pH',
-                                satuan: '-',
-                                normal_min: 'L.4,5 P.4,5',
-                                normal_max: 'L.8,0 P.8,0',
-                                nilai_rujukan: 'L.4,5-8,0 P.4,5-8,0',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : '4.5;5.0;5.5;6.0;6.5;7.0;7.5;8.0;8.5;9.0',
-                                default: '6.0' 
-                            },
-                            {
- 				                judul: 'Urine Lengkap',
-                                nama: 'Urine-Leukosit',
-                                display_name: 'Leukosit',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: 'L.- P.-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
-                                default: 'Negatif' 
-                            },
-                            {
- 				                judul: 'Urine Lengkap',
-                                nama: 'Nitrit',
-                                display_name: 'Nitrit',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: 'L.- P.-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-                                default: 'Negatif' 
-                            },
-                            {
- 				                judul: 'Urine Lengkap',
-                                nama: 'Protein',
-                                display_name: 'Protein',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: 'L.- P.-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-                                default: 'Negatif' 
-                            },
-                            {
- 				                judul: 'Urine Lengkap',
-                                nama: 'Glukosa',
-                                display_name: 'Glukosa',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: 'L.- P.-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-                                default: 'Negatif' 
-                            },
-                            {
- 				                judul: 'Urine Lengkap',
-                                nama: 'Keton',
-                                display_name: 'Keton',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: 'L.- P.-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-                                default: 'Negatif'  
-                            },
-                            {
- 				                judul: 'Urine Lengkap',
-                                nama: 'Urobilinogen',
-                                display_name: 'Urobilinogen',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: 'L.- P.-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++)',
-                                default: 'Negatif' 
-                            },
-                            {
- 				                judul: 'Urine Lengkap',
-                                nama: 'Bilirubin',
-                                display_name: 'Bilirubin',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: 'L.- P.-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-                                default: 'Negatif' 
-                            },
-                            {
- 				                judul: 'Urine Lengkap',
-                                nama: 'Blood',
-                                display_name: 'Blood',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: 'L.- P.-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-                                default: 'Negatif' 
-                            },
-                            {
- 				                judul: 'Sedimen',
-                                nama: 'Urine-Eritrosit',
-                                display_name: '- Eritrosit',
-                                satuan: '',
-                                normal_min: 'L.0 P.0',
-                                normal_max: 'L.2 P.2',
-                                nilai_rujukan: 'L.0-2 P.0-2',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Text',
-                                opsi_output : '',
-                                default: 'Negatif'
-                            },
-                            {
- 				                judul: 'Sedimen',
-                                nama: 'Leukosit_sedimen',
-                                display_name: '- Leukosit',
-                                satuan: '',
-                                normal_min: 'L.0 P.0',
-                                normal_max: 'L.5 P.5',
-                                nilai_rujukan: 'L.0-5 P.0-5',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Text',
-                                opsi_output : '',
-                                default: 'Negatif'
-                            },
-                            {
- 				                judul: 'Sedimen',
-                                nama: 'Urine-Epithel',
-                                display_name: '- Epithel',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: 'Tidak ada - Sedikit',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Text',
-                                opsi_output : 'Tidak ada;Sedikit;Sedang;Banyak',
-                                default: 'Negatif'
-                            },
-                            {
- 				                judul: 'Sedimen',
-                                nama: 'Silinder',
-                                display_name: '- Silinder',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: 'Tidak ada',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
-                                default: 'Negatif'
-                            },
-                            {
- 				                judul: 'Sedimen',
-                                nama: 'Kristal',
-                                display_name: '- Kristal',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: 'Tidak ada',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : 'Tidak ada;Asam urat;Kalsium oksalat;Fosfat amorf;Lainnya',
-                                default: 'Negatif'
-                            },
-                            {
- 				                judul: 'Sedimen',
-                                nama: 'Bakteri',
-                                display_name: '- Bakteri',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: 'Tidak ada',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
-                                default: 'Negatif'
-                            },
-                            {
- 				                judul: 'Sedimen',
-                                nama: 'Jamur',
-                                display_name: '- Jamur',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: 'Tidak ada',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
-                                default: 'Negatif'
-                            },
-                            {
- 				                judul: 'Sedimen',
-                                nama: 'Sedimen-Lain-lain',
-                                display_name: '- Lain-lain',
-                                satuan: '-',
-                                normal_min: '',
-                                normal_max: '',
-                                nilai_rujukan: '',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Text',
-                                opsi_output : '',
-                                default: ''
-                            }
-                        ];
-                        const MicrobiologiParams = [
-                            {
-                                judul: '',
-                                nama: 'Preparat Gram',
-                                display_name: 'Preparat Gram',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: '-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : 'Ditemukan Kuman;Tidak Ditemukan Kuman' 
-                            },
-                            {
-                                judul: '',
-                                nama: 'Batang Gram Negatif',
-                                display_name: 'Batang Gram Negatif',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: '-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
-                            },
-                            {
-                                judul: '',
-                                nama: 'Batang Gram Positif',
-                                display_name: 'Batang Gram Positif',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: '-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
-                            },
-                            {
-                                judul: '',
-                                nama: 'Coccus Gram Negatif',
-                                display_name: 'Coccus Gram Negatif',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: '-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++'
-                            },
-                            {
-                                judul: '',
-                                nama: 'Coccus Gram Positif',
-                                display_name: 'Coccus Gram Positif',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: '-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
-                            }
-                        ];
-                        const PreparatBasahParams = [
-                            {
-                                judul: 'Preparat Basah',
-                                nama: 'Preparat Basah',
-                                display_name: 'Preparat Basah',
-                                satuan: '-',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: '-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Dropdown',
-                                opsi_output : 'Tidak Ditemukan Jamur;Ditemukan Jamur Berbentuk Hifa' 
-                            },
-                            {
-                                judul: '',
-                                nama: 'Leukosit',
-                                display_name: 'Leukosit',
-                                satuan: '/LP',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: '-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Text',
-                                opsi_output : '',
-                            },
-                            {
-                                judul: '',
-                                nama: 'Epithel',
-                                display_name: 'Epithel',
-                                satuan: '/LP',
-                                normal_min: 'L.- P.-',
-                                normal_max: 'L.- P.-',
-                                nilai_rujukan: '-',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan : 'Text',
-                                opsi_output : '',
-                            }
-                        ];
-                        const DengueParams =  [
-                            {
-                                judul: 'Dengue_IgG/IgM',
-                                nama: 'Dengue_IgG',
-                                display_name: 'Dengue IgG',
-                                satuan: '-',
-                                normal_min: '—',
-                                normal_max: '—',
-                                nilai_rujukan: 'Negatif',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif(+)',
-                                default: 'Negatif'
-                            },
-                            {
-                                judul: 'Dengue_IgG/IgM',
-                                nama: 'Dengue_IgM',
-                                display_name: 'Dengue IgM',
-                                satuan: '-',
-                                normal_min: '—',
-                                normal_max: '—',
-                                nilai_rujukan: 'Negatif',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif(+)',
-                                default: 'Negatif'
-                            },
-                            {
-                                judul: 'Dengue_IgG/IgM',
-                                nama: 'COI_IgG',
-                                display_name: 'Cutoff Index IgG (COI)',
-                                satuan: '',
-                                normal_min: '0.00',
-                                normal_max: '∞',
-                                nilai_rujukan: '< 1.00',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Text',
-                                opsi_output: '',
-                                default: ''
-                            },
-                            {
-                                judul: 'Dengue_IgG/IgM',
-                                nama: 'COI_IgM',
-                                display_name: 'Cutoff Index IgM (COI)',
-                                satuan: '',
-                                normal_min: '0.00',
-                                normal_max: '∞',
-                                nilai_rujukan: '< 1.00',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Text',
-                                opsi_output: '',
-                                default: ''
-                            }
-                        ];
-                        const NS1Params =  [
-                            {
-                                judul: 'Dengue_Ns1',
-                                nama: 'Dengue_Ns1',
-                                display_name: 'Dengue_Ns1',
-                                satuan: '-',
-                                normal_min: '—',
-                                normal_max: '—',
-                                nilai_rujukan: 'Negatif',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif(+)',
-                                default: 'Negatif'
-                            },
-                            {
-                                judul: 'Dengue_Ns1',
-                                nama: 'COI_Ns1',
-                                display_name: 'Cutoff Index (COI)',
-                                satuan: '-',
-                                normal_min: '-',
-                                normal_max: '-',
-                                nilai_rujukan: '<1.00',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Text',
-                                opsi_output: '-',
-                                default: ''
-                            }
-                        ];
-                        const TifoidParams = [
-                            {
-                                judul: 'Typhoid_IgG/IgM',
-                                nama: 'Typhoid_IgM',
-                                display_name: 'Typhoid IgM',
-                                satuan: '-',
-                                normal_min: '-',
-                                normal_max: '-',
-                                nilai_rujukan: 'Negatif',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif(+)',
-                                default: 'Negatif'
-                            },
-                            {
-                                judul: 'Typhoid_IgG/IgM',
-                                nama: 'Typhoid_IgG',
-                                display_name: 'Typhoid IgG',
-                                satuan: '-',
-                                normal_min: '-',
-                                normal_max: '-',
-                                nilai_rujukan: 'Negatif',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif(+)',
-                                default: 'Negatif'
-                            }
-                        ];
-                        const FesesParams = [
-                            {
-                                judul: 'Feses',
-                                nama: 'Konsistensi',
-                                display_name: 'Konsistensi',
-                                satuan: '-',
-                                normal_min: '-',
-                                normal_max: '-',
-                                nilai_rujukan: 'Lunak',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Lunak;Padat;Setengah cair;Cair',
-                                default: 'Lunak'
-                            },
-                            {
-                                judul: 'Feses',
-                                nama: 'Feses-Warna',
-                                display_name: 'Warna',
-                                satuan: '-',
-                                normal_min: '-',
-                                normal_max: '-',
-                                nilai_rujukan: 'Coklat',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Coklat;Coklat kekuningan;Coklat kehijauan;Hitam;Pucat;Merah',
-                                default: 'Coklat'
-                            },
-                            {
-                                judul: 'Feses',
-                                nama: 'Lendir',
-                                display_name: 'Lendir',
-                                satuan: '-',
-                                normal_min: '-',
-                                normal_max: '-',
-                                nilai_rujukan: 'Negatif',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-                                default: 'Negatif'
-                            },
-                            {
-                                judul: 'Feses',
-                                nama: 'Darah',
-                                display_name: 'Darah',
-                                satuan: '-',
-                                normal_min: '-',
-                                normal_max: '-',
-                                nilai_rujukan: 'Negatif',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-                                default: 'Negatif'
-                            },
-                            {
-                                judul: 'Feses',
-                                nama: 'Telur Cacing',
-                                display_name: 'Telur Cacing',
-                                satuan: '-',
-                                normal_min: '-',
-                                normal_max: '-',
-                                nilai_rujukan: 'Tidak ditemukan',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Tidak ditemukan;Ascaris;Trichuris;Hookworm;Oxyuris;Lainnya',
-                                default: 'Tidak ditemukan'
-                            },
-                            {
-                                judul: 'Feses',
-                                nama: 'Kista Protozoa',
-                                display_name: 'Kista Protozoa',
-                                satuan: '-',
-                                normal_min: '-',
-                                normal_max: '-',
-                                nilai_rujukan: 'Tidak ditemukan',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Tidak ditemukan;Entamoeba histolytica;Entamoeba coli;Giardia lamblia;Lainnya',
-                                default: 'Tidak ditemukan'
-                            },
-                            {
-                                judul: 'Feses',
-                                nama: 'Trofozoit',
-                                display_name: 'Trofozoit',
-                                satuan: '-',
-                                normal_min: '-',
-                                normal_max: '-',
-                                nilai_rujukan: 'Tidak ditemukan',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Tidak ditemukan;Entamoeba histolytica;Giardia lamblia;Lainnya',
-                                default: 'Tidak ditemukan'
-                            },
-                            {
-                                judul: 'Feses',
-                                nama: 'Feses-Leukosit',
-                                display_name: 'Leukosit',
-                                satuan: '-',
-                                normal_min: '-',
-                                normal_max: '-',
-                                nilai_rujukan: '0-1/lpb',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Text',
-                                opsi_output: '',
-                                default: '0-1/lpb'
-                            },
-                            {
-                                judul: 'Feses',
-                                nama: 'Eritrosit',
-                                display_name: 'Eritrosit',
-                                satuan: '-',
-                                normal_min: '-',
-                                normal_max: '-',
-                                nilai_rujukan: '0/lpb',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Text',
-                                opsi_output: '',
-                                default: '0/lpb'
-                            },
-                            {
-                                judul: 'Feses',
-                                nama: 'Lemak',
-                                display_name: 'Lemak',
-                                satuan: '-',
-                                normal_min: '-',
-                                normal_max: '-',
-                                nilai_rujukan: 'Negatif',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-                                default: 'Negatif'
-                            },
-                            {
-                                judul: 'Feses',
-                                nama: 'Sisa Makanan',
-                                display_name: 'Sisa Makanan',
-                                satuan: '-',
-                                normal_min: '-',
-                                normal_max: '-',
-                                nilai_rujukan: 'Negatif',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Dropdown',
-                                opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-                                default: 'Negatif'
-                            },
-                            {
-                                judul: 'Feses',
-                                nama: 'Lain-lain',
-                                display_name: 'Lain-lain',
-                                satuan: '-',
-                                normal_min: '-',
-                                normal_max: '-',
-                                nilai_rujukan: '',
-                                nilai_kritis: 'L.- P.-',
-                                metode: '-',
-                                tipe_inputan: 'Text',
-                                opsi_output: '',
-                                default: ''
-                            },
-			            ];
+            const WidalParams = [
+                {
+                    nama: 'Salmonella Typhi H',
+                    display_name: 'Salmonella Typhi H',
+                    satuan: '-',
+                    normal_min_l: '-',
+                    normal_max_l: '-',
+                    normal_min_p: '-',
+                    normal_max_p: '-',
+                    nilai_rujukan_l: '-',
+                    nilai_rujukan_p: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
+                },
+                {
+                    nama: 'Salmonella Typhi O',
+                    display_name: 'Salmonella Typhi O',
+                    satuan: '-',
+                    normal_min_l: '-',
+                    normal_max_l: '-',
+                    normal_min_p: '-',
+                    normal_max_p: '-',
+                    nilai_rujukan_l: '-',
+                    nilai_rujukan_p: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
+                },
+                {
+                    nama: 'Salmonella Paratyphi AO',
+                    display_name: 'Salmonella Paratyphi AO',
+                    satuan: '-',
+                    normal_min_l: '-',
+                    normal_max_l: '-',
+                    normal_min_p: '-',
+                    normal_max_p: '-',
+                    nilai_rujukan_l: '-',
+                    nilai_rujukan_p: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
+                },
+                {
+                    nama: 'Salmonella Paratyphi BO',
+                    display_name: 'Salmonella Paratyphi BO',
+                    satuan: '-',
+                    normal_min_l: '-',
+                    normal_max_l: '-',
+                    normal_min_p: '-',
+                    normal_max_p: '-',
+                    nilai_rujukan_l: '-',
+                    nilai_rujukan_p: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;1/80;1/160;1/320;1/640' 
+                }
+            ];
+            const UrineParams = [
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Warna Urine',
+                    display_name: 'Warna',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Kuning;Kuning Pucat;Kuning Tua;Kuning kecokelatan;Orange;Merah;Coklat',
+                    default: 'Kuning' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Kekeruhan',
+                    display_name: 'Kekeruhan',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'L.- P.-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Jernih;Agak Keruh;Keruh;Sangat keruh',
+                    default: 'Jernih' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Berat Jenis',
+                    display_name: 'Berat Jenis',
+                    satuan: '-',
+                    normal_min: 'L.1,003 P.1,003',
+                    normal_max: 'L.1,035 P.1,035',
+                    nilai_rujukan: 'L.1,003-1,035 P.1,003-1,035',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : '<1.005;1.005;1.010;1.015;1.020;1.025;1.030',
+                    default: '1.015' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'PH',
+                    display_name: 'pH',
+                    satuan: '-',
+                    normal_min: 'L.4,5 P.4,5',
+                    normal_max: 'L.8,0 P.8,0',
+                    nilai_rujukan: 'L.4,5-8,0 P.4,5-8,0',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : '4.5;5.0;5.5;6.0;6.5;7.0;7.5;8.0;8.5;9.0',
+                    default: '6.0' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Urine Makro',
+                    display_name: 'Leukosit',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'L.- P.-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
+                    default: 'Negatif' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Nitrit',
+                    display_name: 'Nitrit',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'L.- P.-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Protein',
+                    display_name: 'Protein',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'L.- P.-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Glukosa',
+                    display_name: 'Glukosa',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'L.- P.-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Keton',
+                    display_name: 'Keton',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'L.- P.-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif'  
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Urobilinogen',
+                    display_name: 'Urobilinogen',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'L.- P.-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++)',
+                    default: 'Negatif' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Bilirubin',
+                    display_name: 'Bilirubin',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'L.- P.-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Blood',
+                    display_name: 'Blood',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'L.- P.-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif' 
+                },
+                {
+                    judul: 'Sedimen',
+                    nama: 'Eritrosit Urine',
+                    display_name: '- Eritrosit',
+                    satuan: '',
+                    normal_min: 'L.0 P.0',
+                    normal_max: 'L.2 P.2',
+                    nilai_rujukan: 'L.0-2 P.0-2',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Text',
+                    opsi_output : '',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Sedimen',
+                    nama: 'Sedimen Urine',
+                    display_name: '- Leukosit',
+                    satuan: '',
+                    normal_min: 'L.0 P.0',
+                    normal_max: 'L.5 P.5',
+                    nilai_rujukan: 'L.0-5 P.0-5',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Text',
+                    opsi_output : '',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Sedimen',
+                    nama: 'Epithel Urine',
+                    display_name: '- Epithel',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'Tidak ada - Sedikit',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Text',
+                    opsi_output : 'Tidak ada;Sedikit;Sedang;Banyak',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Sedimen',
+                    nama: 'Silinder',
+                    display_name: '- Silinder',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Sedimen',
+                    nama: 'Kristal',
+                    display_name: '- Kristal',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Tidak ada;Asam urat;Kalsium oksalat;Fosfat amorf;Lainnya',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Sedimen',
+                    nama: 'Bakteri',
+                    display_name: '- Bakteri',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Sedimen',
+                    nama: 'Jamur',
+                    display_name: '- Jamur',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Sedimen',
+                    nama: 'Sedimen-Lain-lain',
+                    display_name: '- Lain-lain',
+                    satuan: '-',
+                    normal_min: '',
+                    normal_max: '',
+                    nilai_rujukan: '',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Text',
+                    opsi_output : '',
+                    default: ''
+                }
+            ];
+            const MicrobiologiParams = [
+                {
+                    judul: '',
+                    nama: 'Preparat Gram',
+                    display_name: 'Preparat Gram',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Ditemukan Kuman;Tidak Ditemukan Kuman' 
+                },
+                {
+                    judul: '',
+                    nama: 'Batang Gram Negatif',
+                    display_name: 'Batang Gram Negatif',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
+                },
+                {
+                    judul: '',
+                    nama: 'Batang Gram Positif',
+                    display_name: 'Batang Gram Positif',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
+                },
+                {
+                    judul: '',
+                    nama: 'Coccus Gram Negatif',
+                    display_name: 'Coccus Gram Negatif',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++'
+                },
+                {
+                    judul: '',
+                    nama: 'Coccus Gram Positif',
+                    display_name: 'Coccus Gram Positif',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
+                }
+            ];
+            const PreparatBasahParams = [
+                {
+                    judul: 'Preparat Basah',
+                    nama: 'Preparat Basah',
+                    display_name: 'Preparat Basah',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Tidak Ditemukan Jamur;Ditemukan Jamur Berbentuk Hifa' 
+                },
+                {
+                    judul: '',
+                    nama: 'Leukosit',
+                    display_name: 'Leukosit',
+                    satuan: '/LP',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Text',
+                    opsi_output : '',
+                },
+                {
+                    judul: '',
+                    nama: 'Epithel',
+                    display_name: 'Epithel',
+                    satuan: '/LP',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Text',
+                    opsi_output : '',
+                }
+            ];
+            const DengueParams =  [
+                {
+                    judul: 'Dengue_IgG/IgM',
+                    nama: 'Dengue_IgG',
+                    display_name: 'Dengue IgG',
+                    satuan: '-',
+                    normal_min: '—',
+                    normal_max: '—',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;Positif(+)',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Dengue_IgG/IgM',
+                    nama: 'Dengue_IgM',
+                    display_name: 'Dengue IgM',
+                    satuan: '-',
+                    normal_min: '—',
+                    normal_max: '—',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;Positif(+)',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Dengue_IgG/IgM',
+                    nama: 'COI_IgG',
+                    display_name: 'Cutoff Index IgG (COI)',
+                    satuan: '',
+                    normal_min: '0.00',
+                    normal_max: '∞',
+                    nilai_rujukan: '< 1.00',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Text',
+                    opsi_output: '',
+                    default: ''
+                },
+                {
+                    judul: 'Dengue_IgG/IgM',
+                    nama: 'COI_IgM',
+                    display_name: 'Cutoff Index IgM (COI)',
+                    satuan: '',
+                    normal_min: '0.00',
+                    normal_max: '∞',
+                    nilai_rujukan: '< 1.00',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Text',
+                    opsi_output: '',
+                    default: ''
+                }
+            ];
+            const NS1Params =  [
+                {
+                    judul: 'Dengue_Ns1',
+                    nama: 'Dengue_Ns1',
+                    display_name: 'Dengue_Ns1',
+                    satuan: '-',
+                    normal_min: '—',
+                    normal_max: '—',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;Positif(+)',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Dengue_Ns1',
+                    nama: 'COI_Ns1',
+                    display_name: 'Cutoff Index (COI)',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: '<1.00',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Text',
+                    opsi_output: '-',
+                    default: ''
+                }
+            ];
+            const TifoidParams = [
+                {
+                    judul: 'Typhoid_IgG/IgM',
+                    nama: 'Typhoid_IgM',
+                    display_name: 'Typhoid IgM',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;Positif(+)',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Typhoid_IgG/IgM',
+                    nama: 'Typhoid_IgG',
+                    display_name: 'Typhoid IgG',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;Positif(+)',
+                    default: 'Negatif'
+                }
+            ];
+            const FesesParams = [
+                {
+                    judul: 'Feses',
+                    nama: 'Konsistensi',
+                    display_name: 'Konsistensi',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Lunak',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Lunak;Padat;Setengah cair;Cair',
+                    default: 'Lunak'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Feses-Warna',
+                    display_name: 'Warna',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Coklat',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Coklat;Coklat kekuningan;Coklat kehijauan;Hitam;Pucat;Merah',
+                    default: 'Coklat'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Lendir',
+                    display_name: 'Lendir',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Darah',
+                    display_name: 'Darah',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Telur Cacing',
+                    display_name: 'Telur Cacing',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Tidak ditemukan',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Tidak ditemukan;Ascaris;Trichuris;Hookworm;Oxyuris;Lainnya',
+                    default: 'Tidak ditemukan'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Kista Protozoa',
+                    display_name: 'Kista Protozoa',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Tidak ditemukan',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Tidak ditemukan;Entamoeba histolytica;Entamoeba coli;Giardia lamblia;Lainnya',
+                    default: 'Tidak ditemukan'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Trofozoit',
+                    display_name: 'Trofozoit',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Tidak ditemukan',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Tidak ditemukan;Entamoeba histolytica;Giardia lamblia;Lainnya',
+                    default: 'Tidak ditemukan'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Feses-Leukosit',
+                    display_name: 'Leukosit',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: '0-1/lpb',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Text',
+                    opsi_output: '',
+                    default: '0-1/lpb'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Eritrosit',
+                    display_name: 'Eritrosit',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: '0/lpb',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Text',
+                    opsi_output: '',
+                    default: '0/lpb'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Lemak',
+                    display_name: 'Lemak',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Sisa Makanan',
+                    display_name: 'Sisa Makanan',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Lain-lain',
+                    display_name: 'Lain-lain',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: '',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Text',
+                    opsi_output: '',
+                    default: ''
+                },
+            ];
 
    // Buat map dari data hasil pemeriksaan yang ada di database
     const hasilMap = {};
@@ -1865,7 +1865,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                             <input type="number" name="hasil[${uniqueID}]" 
                                                                 class="form-control manualInput w-60 p-0 text-center" 
                                                                 value="${dataValues.hasilUtama}" 
-                                                                step="0.01" placeholder="" readonly />
+                                                                step="0.01" placeholder="" />
                                                         </td>
                                                         <td class="col-1">
                                                             <button type="button" class="btn btn-outline-secondary btn-sm switch-btn" 
@@ -1910,20 +1910,20 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         </td>
                                                         <td class="col-3 flag-cell">
                                                             ${renderFlag(dataValues.flag || flagContent(dataValues.hasilUtama, {innerHTML: ''}, p.data_pemeriksaan.nama_parameter))}
+                                                            
                                                             ${dataValues.switched ? `
-                                                            <div class='checkbox-r-container d-flex align-items-center gap-1'>
-                                                                <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
-                                                                <span class='text-danger fw-bold'>R</span>
-                                                                <select name="flag_dx[${uniqueID}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
-                                                                    <option value="Normal" ${(dataValues.flag_dx || 'Normal') === 'Normal' ? 'selected' : ''}>Normal</option>
-                                                                    <option value="Low" ${dataValues.flag_dx === 'Low' ? 'selected' : ''}>Low</option>
-                                                                    <option value="Low*" ${dataValues.flag_dx === 'Low*' ? 'selected' : ''}>Low*</option>
-                                                                    <option value="High" ${dataValues.flag_dx === 'High' ? 'selected' : ''}>High</option>
-                                                                    <option value="High*" ${dataValues.flag_dx === 'High*' ? 'selected' : ''}>High*</option>
-                                                                </select>
-                                                            </div>
-                                                        ` : `
-                                                        `}
+                                                                <div class='checkbox-r-container d-flex align-items-center gap-1'>
+                                                                    <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
+                                                                    <span class='text-danger fw-bold'>R</span>
+                                                                    <select name="flag_dx[${uniqueID}]" class="form-select form-select-sm flag-dx-select" style="width: 100px;">
+                                                                        <option value="Normal" ${(dataValues.flag_dx || 'Normal') === 'Normal' ? 'selected' : ''}>Normal</option>
+                                                                        <option value="Low" ${dataValues.flag_dx === 'Low' ? 'selected' : ''}>Low</option>
+                                                                        <option value="Low*" ${dataValues.flag_dx === 'Low*' ? 'selected' : ''}>Low*</option>
+                                                                        <option value="High" ${dataValues.flag_dx === 'High' ? 'selected' : ''}>High</option>
+                                                                        <option value="High*" ${dataValues.flag_dx === 'High*' ? 'selected' : ''}>High*</option>
+                                                                    </select>
+                                                                </div>
+                                                            ` : ''}
                                                         </td>
                                                         
                                                         <td>
@@ -3260,84 +3260,68 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ✅ Fungsi untuk menambahkan dropdown flag_dx di kolom FLAG dengan uniqueID
-    function addFlagDxDropdown(dxInput, uniqueID) {
-        const row = dxInput.closest('tr');
-        const flagCell = row.querySelector('.flag-cell');
-        
-        if (!flagCell) return;
-        
-        // Cek apakah dropdown sudah ada untuk uniqueID ini
-        let existingDropdown = flagCell.querySelector(`.flag-dx-select[data-uid="${uniqueID}"]`);
-        if (existingDropdown) return;
-        
-        // Cari atau buat container di flag cell
-        let flagContainer = flagCell.querySelector('.d-flex');
-        if (!flagContainer) {
-            flagContainer = document.createElement('div');
-            flagContainer.className = 'd-flex align-items-center gap-2';
-            
-            // Pindahkan icon flag yang ada ke dalam container
-            const existingContent = flagCell.innerHTML;
-            flagCell.innerHTML = '';
-            
-            const iconSpan = document.createElement('span');
-            iconSpan.className = 'flag-icon';
-            iconSpan.innerHTML = existingContent;
-            
-            flagContainer.appendChild(iconSpan);
-            flagCell.appendChild(flagContainer);
-        }
-        
-        // Buat dropdown flag_dx dengan uniqueID
-        const flagSelect = document.createElement('select');
-        flagSelect.name = `flag_dx[${uniqueID}]`; // Gunakan uniqueID dalam name
-        flagSelect.className = 'form-select form-select-sm flag-dx-select';
-        flagSelect.dataset.uid = uniqueID; // Tambahkan data-uid untuk identifikasi
-        flagSelect.style.width = '100px';
-        
-        const flagOptions = ['Normal', 'Low', 'Low*', 'High', 'High*'];
-        flagOptions.forEach(option => {
-            const optElement = document.createElement('option');
-            optElement.value = option;
-            optElement.textContent = option;
-            flagSelect.appendChild(optElement);
-        });
-        
-        flagSelect.value = 'Normal';
-        
-        // Tambahkan ke flag cell
-        flagContainer.appendChild(flagSelect);
-        
-        console.log('Dropdown flag_dx berhasil ditambahkan di kolom FLAG untuk uniqueID:', uniqueID);
+        // Ganti fungsi addFlagDxDropdown lama dengan ini
+function addFlagDxDropdown(dxInput, uniqueID) {
+    const row = dxInput.closest('tr');
+    if (!row) return;
+    const flagCell = row.querySelector('.flag-cell');
+    if (!flagCell) return;
+
+    // Hapus dropdown lama jika ada (hindari duplikat)
+    const existingDropdown = flagCell.querySelector(`.flag-dx-select[data-uid="${uniqueID}"]`);
+    if (existingDropdown) existingDropdown.remove();
+
+    // Pastikan ada container
+    let flagContainer = flagCell.querySelector('.d-flex');
+    if (!flagContainer) {
+        flagContainer = document.createElement('div');
+        flagContainer.className = 'd-flex align-items-center gap-2';
+        // Simpan isi lama (ikon dsb)
+        const existingContent = flagCell.innerHTML;
+        flagCell.innerHTML = '';
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'flag-icon';
+        iconSpan.innerHTML = existingContent;
+        flagContainer.appendChild(iconSpan);
+        flagCell.appendChild(flagContainer);
     }
 
-    // ✅ Fungsi removeCheckboxR dengan uniqueID
+    // Buat select
+    const flagSelect = document.createElement('select');
+    flagSelect.className = 'form-select form-select-sm flag-dx-select';
+    flagSelect.setAttribute('name', `flag_dx[${uniqueID}]`);
+    flagSelect.dataset.uid = uniqueID;
+    flagSelect.style.width = '100px';
+
+    const flagOptions = ['Normal', 'Low', 'Low*', 'High', 'High*'];
+    flagOptions.forEach(opt => {
+        const o = document.createElement('option');
+        o.value = opt;
+        o.textContent = opt;
+        flagSelect.appendChild(o);
+    });
+
+    // Pilih default 'Normal' dengan cara yang memastikan browser membaca selected
+    flagSelect.value = 'Normal';
+    // Pastikan attribute selected juga ada di opsi (untuk kompatibilitas)
+    const selOpt = [...flagSelect.options].find(o => o.value === 'Normal');
+    if (selOpt) selOpt.selected = true;
+
+    // Append lalu trigger change sehingga FormData/serialize atau listener lain menangkapnya
+    flagContainer.appendChild(flagSelect);
+    flagSelect.dispatchEvent(new Event('change', { bubbles: true })); // TRIGGER
+
+    console.log('Dropdown flag_dx dibuat untuk uniqueID:', uniqueID);
+}
+
+
+
     function removeCheckboxR(dxInput, uniqueID) {
         // Hapus checkbox R dari kolom DX berdasarkan uniqueID
         const dxContainer = dxInput.parentElement?.querySelector(`.checkbox-r-container[data-uid="${uniqueID}"]`);
         if (dxContainer) {
             dxContainer.remove();
             console.log('Checkbox R berhasil dihapus dari kolom DX untuk uniqueID:', uniqueID);
-        }
-        
-        // Hapus dropdown flag_dx dari kolom FLAG berdasarkan uniqueID
-        const row = dxInput.closest('tr');
-        const flagCell = row?.querySelector('.flag-cell');
-        const flagDropdown = flagCell?.querySelector(`.flag-dx-select[data-uid="${uniqueID}"]`);
-        
-        if (flagDropdown) {
-            flagDropdown.remove();
-            console.log('Dropdown flag_dx berhasil dihapus dari kolom FLAG untuk uniqueID:', uniqueID);
-        }
-        
-        // Tambahkan hidden input untuk flag_dx kosong dengan uniqueID
-        const existingHidden = row?.querySelector(`input[name="flag_dx[${uniqueID}]"]`);
-        if (!existingHidden && uniqueID) {
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = `flag_dx[${uniqueID}]`;
-            hiddenInput.value = '';
-            row?.appendChild(hiddenInput);
         }
     }
 

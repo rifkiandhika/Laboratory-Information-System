@@ -289,9 +289,8 @@ class worklistController extends Controller
 
     public function updateHasil(Request $request, $no_lab)
     {
-        $filtered = collect($request->except(['duplo_d1', 'duplo_d2', 'duplo_d3', 'parameter_name', 'nilai_rujukan']));
-        $request->replace($filtered->toArray());
-
+        // Validasi
+        // dd($request->all());
         $request->validate([
             'no_lab' => 'required',
             'uid' => 'required|array',
@@ -299,83 +298,136 @@ class worklistController extends Controller
             'nama_pemeriksaan' => 'required|array',
             'nama_pemeriksaan.*' => 'required|string',
             'hasil' => 'nullable|array',
-            'hasil.*' => 'nullable',
             'duplo_dx' => 'nullable|array',
-            'duplo_dx.*' => 'nullable',
             'is_switched' => 'nullable|array',
-            'is_switched.*' => 'nullable',
             'flag_dx' => 'nullable|array',
-            'flag_dx.*' => 'nullable|string',
-            'department' => 'nullable|array',
-            'department.*' => 'nullable',
-            'judul' => 'nullable|array',
-            'judul.*' => 'nullable',
         ]);
 
         try {
             $data = $request->all();
             $updateCount = 0;
             $failedUpdates = [];
+            $successUpdates = [];
 
-            foreach ($data['uid'] as $uid) {
-                $namaPemeriksaan = $data['nama_pemeriksaan'][$uid] ?? null;
+            // DEBUG: Cek semua UID yang ada di database untuk no_lab ini
+            $existingUIDs = HasilPemeriksaan::where('no_lab', $no_lab)
+                ->pluck('nama_pemeriksaan', 'uid')
+                ->toArray();
 
-                // Query berdasarkan UID
-                $hasil = HasilPemeriksaan::where('uid', $uid)->first();
+            Log::info("=== UID di Database ===", $existingUIDs);
+            Log::info("=== UID dari Request ===", $data['uid']);
+
+            foreach ($data['uid'] as $uniqueID => $uidValue) {
+                $namaPemeriksaan = $data['nama_pemeriksaan'][$uniqueID] ?? null;
+
+                Log::info("Processing", [
+                    'uniqueID_key' => $uniqueID,
+                    'uidValue' => $uidValue,
+                    'nama_pemeriksaan' => $namaPemeriksaan
+                ]);
+
+                // PERBAIKAN 1: Query berdasarkan UID
+                $hasil = HasilPemeriksaan::where('uid', $uniqueID)
+                    ->where('no_lab', $no_lab)
+                    ->first();
+
+                // PERBAIKAN 2: Jika tidak ketemu, coba cari berdasarkan nama_pemeriksaan
+                if (!$hasil && $namaPemeriksaan) {
+                    $hasil = HasilPemeriksaan::where('no_lab', $no_lab)
+                        ->where('nama_pemeriksaan', $namaPemeriksaan)
+                        ->first();
+
+                    if ($hasil) {
+                        Log::warning("UID Mismatch - Update UID", [
+                            'old_uid' => $hasil->uid,
+                            'new_uid' => $uniqueID,
+                            'nama_pemeriksaan' => $namaPemeriksaan
+                        ]);
+
+                        // Update UID agar match ke depannya
+                        $hasil->uid = $uniqueID;
+                        $hasil->save();
+                    }
+                }
+
 
                 if (!$hasil) {
-                    $failedUpdates[] = "$namaPemeriksaan (UID: $uid)";
+                    Log::error("Data tidak ditemukan", [
+                        'uniqueID' => $uniqueID,
+                        'nama_pemeriksaan' => $namaPemeriksaan,
+                        'no_lab' => $no_lab,
+                        'available_uids' => array_keys($existingUIDs)
+                    ]);
+
+                    $failedUpdates[] = [
+                        'uid' => $uniqueID,
+                        'nama' => $namaPemeriksaan,
+                        'reason' => 'Data tidak ditemukan di database'
+                    ];
                     continue;
                 }
 
-                // Simpan nilai lama
+                // Ambil nilai baru dari request
+                $newHasil = $data['hasil'][$uniqueID] ?? null;
+                $newDx = $data['duplo_dx'][$uniqueID] ?? null;
+                $newFlagDx = $data['flag_dx'][$uniqueID] ?? null;
+                $requestSwitch = isset($data['is_switched'][$uniqueID]) ? (int) $data['is_switched'][$uniqueID] : 0;
+
+                // Simpan nilai lama untuk tracking
                 $oldHasil = $hasil->hasil;
                 $oldDx = $hasil->duplo_dx;
                 $oldSwitch = (int) $hasil->is_switched;
                 $oldFlagDx = $hasil->flag_dx;
 
-                // Ambil nilai baru berdasarkan UID
-                $newHasil = $data['hasil'][$uid] ?? null;
-                $newDx = $data['duplo_dx'][$uid] ?? null;
-                $newFlagDx = $data['flag_dx'][$uid] ?? null;
-                $requestSwitch = isset($data['is_switched'][$uid]) ? (int) $data['is_switched'][$uid] : 0;
-
                 // Logika penentuan is_switched
                 $newSwitch = $oldSwitch;
 
                 if (!is_null($newDx) && trim($newDx) !== '') {
-                    // Kondisi 1: DX baru diisi pertama kali
+                    // Kondisi 1: DX baru diisi pertama kali dengan nilai dari hasil
                     if ((is_null($oldDx) || trim($oldDx) === '') &&
                         trim($newDx) === trim($oldHasil) &&
                         !is_null($oldHasil)
                     ) {
                         $newSwitch = 1;
+                        Log::info("Switch Case 1: DX filled with original hasil", ['uid' => $uniqueID]);
                     }
                     // Kondisi 2: Terjadi pertukaran nilai (swap)
                     elseif ((trim($newHasil) === trim($oldDx) && trim($newDx) === trim($oldHasil)) &&
                         (!is_null($oldHasil) || !is_null($oldDx))
                     ) {
                         $newSwitch = $oldSwitch === 1 ? 0 : 1;
+                        Log::info("Switch Case 2: Values swapped", ['uid' => $uniqueID, 'new_switch' => $newSwitch]);
                     }
-                    // Gunakan nilai dari request jika ada
-                    elseif ($requestSwitch === 1 && !is_null($newDx) && trim($newDx) !== '') {
+                    // Kondisi 3: Request mengirim is_switched = 1
+                    elseif ($requestSwitch === 1) {
                         $newSwitch = 1;
+                        Log::info("Switch Case 3: Request forced switch", ['uid' => $uniqueID]);
                     }
                 } else {
-                    // DX dikosongkan - reset
+                    // DX dikosongkan - reset switch
                     $newSwitch = 0;
                     $newFlagDx = null;
+                    Log::info("Switch Reset: DX emptied", ['uid' => $uniqueID]);
                 }
 
                 // Validasi flag_dx
-                $finalFlagDx = null;
-                if (!empty($newFlagDx) && trim($newFlagDx) !== '') {
-                    if ($newSwitch === 1 && !is_null($newDx) && trim($newDx) !== '') {
-                        $finalFlagDx = trim($newFlagDx);
+                if (is_null($newDx) || trim($newDx) === '') {
+                    $finalFlagDx = null;
+                } else {
+                    // Jika switch aktif atau baru aktif → gunakan flag_dx dari request, atau default 'Normal'
+                    if ($newSwitch === 1 || $requestSwitch === 1) {
+                        $finalFlagDx = !empty($newFlagDx) && trim($newFlagDx) !== ''
+                            ? trim($newFlagDx)
+                            : 'Normal';
+                    } else {
+                        // Jika belum switch tapi user isi flag, tetap simpan
+                        $finalFlagDx = !empty($newFlagDx) && trim($newFlagDx) !== ''
+                            ? trim($newFlagDx)
+                            : $oldFlagDx;
                     }
                 }
 
-                // Prepare data update
+                // Prepare update data
                 $updateData = [
                     'hasil' => $newHasil,
                     'duplo_dx' => $newDx,
@@ -384,10 +436,13 @@ class worklistController extends Controller
                     'updated_at' => now(),
                 ];
 
-                // Cek perubahan
+                // Cek apakah ada perubahan
+                $hasChanges = false;
                 $changes = [];
+
                 foreach ($updateData as $key => $value) {
                     if ($key !== 'updated_at' && $hasil->$key != $value) {
+                        $hasChanges = true;
                         $changes[$key] = [
                             'old' => $hasil->$key,
                             'new' => $value
@@ -395,42 +450,106 @@ class worklistController extends Controller
                     }
                 }
 
-                if (!empty($changes)) {
+                if ($hasChanges) {
+                    Log::info("Updating", [
+                        'uid' => $uniqueID,
+                        'nama_pemeriksaan' => $namaPemeriksaan,
+                        'changes' => $changes
+                    ]);
+
                     $hasil->update($updateData);
                     $updateCount++;
+
+                    $successUpdates[] = [
+                        'uid' => $uniqueID,
+                        'nama' => $namaPemeriksaan,
+                        'changes' => $changes
+                    ];
+                } else {
+                    Log::info("No changes", [
+                        'uid' => $uniqueID,
+                        'nama_pemeriksaan' => $namaPemeriksaan
+                    ]);
                 }
             }
 
-            // Catat history
+            // Logging hasil akhir
+            Log::info("=== Update Summary ===", [
+                'total_processed' => count($data['uid']),
+                'success' => $updateCount,
+                'failed' => count($failedUpdates),
+                'no_changes' => count($data['uid']) - $updateCount - count($failedUpdates)
+            ]);
+
+            if (count($failedUpdates) > 0) {
+                Log::error("Failed Updates Detail", $failedUpdates);
+            }
+
+            if (count($successUpdates) > 0) {
+                Log::info("Success Updates Detail", $successUpdates);
+            }
+
+            // History
             if ($updateCount > 0) {
                 $totalHistory = HistoryPasien::where('no_lab', $no_lab)
                     ->where('proses', 'like', '%Update Hasil%')
                     ->count();
 
-                $updateNumber = $totalHistory + 1;
-
                 HistoryPasien::create([
                     'no_lab' => $no_lab,
-                    'proses' => "Update Hasil ke-$updateNumber",
+                    'proses' => "Update Hasil ke-" . ($totalHistory + 1),
                     'tempat' => 'Result Review',
                     'waktu_proses' => now(),
                     'created_at' => now(),
                 ]);
 
-                $message = "Berhasil memperbarui data hasil pemeriksaan";
+                $message = "Berhasil update $updateCount data";
                 if (count($failedUpdates) > 0) {
-                    $message .= ". Gagal memperbarui data";
+                    $message .= ", gagal " . count($failedUpdates) . " data";
                 }
                 toast($message, 'success');
             } else {
-                toast('Tidak ada perubahan data', 'info');
+                if (count($failedUpdates) > 0) {
+                    toast('Gagal update semua data. Cek log untuk detail.', 'error');
+                } else {
+                    toast('Tidak ada perubahan data', 'info');
+                }
             }
 
             return redirect()->back();
         } catch (\Exception $e) {
+            Log::error("Update Exception", [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             toast('Gagal update: ' . $e->getMessage(), 'error');
             return redirect()->back()->withInput();
         }
+    }
+
+    // TAMBAHAN: Method untuk debug UID
+    public function debugUID($no_lab)
+    {
+        $hasil = HasilPemeriksaan::where('no_lab', $no_lab)->get();
+
+        $debug = $hasil->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'uid' => $item->uid,
+                'nama_pemeriksaan' => $item->nama_pemeriksaan,
+                'hasil' => $item->hasil,
+                'duplo_dx' => $item->duplo_dx,
+                'is_switched' => $item->is_switched,
+            ];
+        });
+
+        return response()->json([
+            'total' => $hasil->count(),
+            'data' => $debug
+        ]);
     }
 
 

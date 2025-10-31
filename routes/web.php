@@ -209,6 +209,7 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
     Route::get('/departments/list', [resultController::class, 'getDepartments'])->name('departments.list');
     Route::get('/doctors/list', [resultController::class, 'getDoctors'])->name('doctors.list');
     // Route::post('/result/data', [resultController::class, 'getReportData'])->name('result.data');
+    Route::get('/debug-uid/{no_lab}', [WorklistController::class, 'debugUID']);
 
 
 
