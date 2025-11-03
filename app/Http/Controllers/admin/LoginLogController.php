@@ -41,7 +41,10 @@ class LoginLogController extends Controller
             $query->where('user_id', $request->user_id);
         }
 
-        $logs = $query->paginate(50);
+        $logs = $query
+            ->orderByRaw("DATE(attempted_at) = CURDATE() DESC")
+            ->orderBy('attempted_at', 'desc')
+            ->paginate(50);
         $clinics = ClinicLocation::all();
         $users = User::orderBy('name')->get();
 
