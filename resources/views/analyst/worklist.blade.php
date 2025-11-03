@@ -2127,7 +2127,7 @@
                                                                         </td>
 
                                                                         <!-- hasil utama -->
-                                                                        <td class="col-2">
+                                                                        <td class="col-2" required>
                                                                             ${renderField('hasil', obxValues.hasilUtama || param.default, 'manualInput')}
                                                                         </td>
 
@@ -2293,7 +2293,7 @@
                                                                         <td class="col-2">
                                                                             <select name="hasil[${uniqueID}]" 
                                                                                 class="form-select manualInput w-60 p-0" 
-                                                                                disabled>
+                                                                                disabled required>
                                                                                 ${param.opsi_output.split(';').map(opt => `
                                                                                     <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>
                                                                                         ${opt.trim()}
@@ -2416,9 +2416,9 @@
                                                                                 ${param.tipe_inputan.toLowerCase() === 'text' ? `
                                                                                     <input type="text" name="hasil[${uniqueID}]" 
                                                                                         class="form-control manualInput w-60 p-0 text-center" 
-                                                                                        disabled value="${obxValues.hasilUtama || param.default || ''}" />
+                                                                                        disabled required value="${obxValues.hasilUtama || param.default || ''}" />
                                                                                 ` : `
-                                                                                    <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0" disabled>
+                                                                                    <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0" required disabled>
                                                                                         ${param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" 
                                                                                                 ${(obxValues.hasilUtama || param.default) === opt.trim() ? 'selected' : ''}>
@@ -2547,9 +2547,9 @@
                                                                             </td>
                                                                             <td class="col-2">
                                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                                    <input type="text" name="hasil[${uniqueID}]" class="form-control manualInput w-60 p-0 text-center" disabled value="${obxValues.hasilUtama || ''}" />
+                                                                                    <input type="text" name="hasil[${uniqueID}]" class="form-control manualInput w-60 p-0 text-center" required disabled value="${obxValues.hasilUtama || ''}" />
                                                                                 ` : `
-                                                                                    <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0" disabled>
+                                                                                    <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0" required disabled>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2647,9 +2647,9 @@
                                                                             </td>
                                                                             <td class="col-2">
                                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                                    <input type="text" name="hasil[${uniqueID}]" class="form-control manualInput w-60 p-0 text-center" disabled value="${obxValues.hasilUtama || ''}" />
+                                                                                    <input type="text" name="hasil[${uniqueID}]" class="form-control manualInput w-60 p-0 text-center" required disabled value="${obxValues.hasilUtama || ''}" />
                                                                                 ` : `
-                                                                                    <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0" disabled>
+                                                                                    <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0" required disabled>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2756,9 +2756,9 @@
                                                                             ${param.tipe_inputan === 'Text' ? `
                                                                                 <input type="text" name="hasil[${uniqueID}]" 
                                                                                     class="form-control manualInput w-60 p-0 text-center" 
-                                                                                    disabled value="${obxValues.hasilUtama || param.default || ''}" />
+                                                                                    disabled required value="${obxValues.hasilUtama || param.default || ''}" />
                                                                             ` : `
-                                                                                <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0" disabled>
+                                                                                <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0" required disabled>
                                                                                     ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${(obxValues.hasilUtama || param.default) === opt.trim() ? 'selected' : ''}>
                                                                                             ${opt.trim()}
@@ -3141,14 +3141,14 @@
                                                                                 name="hasil[${uniqueID}]" 
                                                                                 class="form-control manualInput w-60 p-0 hasil-input text-center" 
                                                                                 value="${obxValues.hasilUtama || ''}" 
-                                                                                disabled 
+                                                                                disabled  required
                                                                                 style="display: ${p.data_pemeriksaan.tipe_inputan === 'Text' ? 'block' : 'none'}" 
                                                                             />
                                                                             <!-- Select Dropdown -->
                                                                             <select 
                                                                                 name="hasil[${uniqueID}]" 
                                                                                 class="form-select manualInput w-60 p-0 hasil-select" 
-                                                                                disabled 
+                                                                                disabled required
                                                                                 style="display: ${p.data_pemeriksaan.tipe_inputan === 'Dropdown' ? 'block' : 'none'}"
                                                                             >
                                                                             <option value="" selected hidden>Pilih...</option>
@@ -3789,23 +3789,185 @@
                                 updateMasterSwitchIndicator();
                             }
 
+                            function validateAllInputs() {
+                                let isValid = true;
+                                let emptyFields = [];
+                                let emptyCount = 0;
+
+                                // Cek semua row pemeriksaan
+                                document.querySelectorAll('tr[data-parameter]').forEach(row => {
+                                    const parameter = row.getAttribute('data-parameter');
+                                    const uid = row.getAttribute('data-uid');
+                                    
+                                    // Ambil input yang visible (aktif)
+                                    const hasilInput = row.querySelector('.hasil-input');
+                                    const hasilSelect = row.querySelector('.hasil-select');
+                                    const manualInput = row.querySelector('.manualInput');
+                                    
+                                    let activeInput = null;
+                                    let isEmpty = false;
+                                    
+                                    // Tentukan input mana yang aktif
+                                    if (hasilInput && hasilInput.style.display !== 'none') {
+                                        activeInput = hasilInput;
+                                        isEmpty = !hasilInput.value || hasilInput.value.trim() === '';
+                                    } else if (hasilSelect && hasilSelect.style.display !== 'none') {
+                                        activeInput = hasilSelect;
+                                        isEmpty = !hasilSelect.value || hasilSelect.value === '';
+                                    } else if (manualInput && manualInput.style.display !== 'none') {
+                                        activeInput = manualInput;
+                                        if (manualInput.tagName === 'SELECT') {
+                                            isEmpty = !manualInput.value || manualInput.value === '';
+                                        } else {
+                                            isEmpty = !manualInput.value || manualInput.value.trim() === '';
+                                        }
+                                    }
+                                    
+                                    // Jika ada input yang kosong
+                                    if (isEmpty && activeInput) {
+                                        isValid = false;
+                                        emptyCount++;
+                                        
+                                        // Highlight field yang kosong
+                                        activeInput.classList.add('is-invalid');
+                                        activeInput.style.borderColor = '#dc3545';
+                                        activeInput.style.borderWidth = '2px';
+                                        
+                                        // Simpan info parameter yang kosong
+                                        const parameterName = row.querySelector('td strong')?.textContent || parameter;
+                                        emptyFields.push(parameterName);
+                                        
+                                        // Scroll ke field pertama yang kosong
+                                        if (emptyCount === 1) {
+                                            activeInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        }
+                                    } else if (activeInput) {
+                                        // Remove highlight jika sudah terisi
+                                        activeInput.classList.remove('is-invalid');
+                                        activeInput.style.borderColor = '';
+                                        activeInput.style.borderWidth = '';
+                                    }
+                                });
+                                
+                                return { isValid, emptyFields, emptyCount };
+                            }
+
+                            // Fungsi untuk remove highlight saat user mulai mengisi
+                            function setupInputValidation() {
+                                document.querySelectorAll('.hasil-input, .hasil-select, .manualInput').forEach(input => {
+                                    input.addEventListener('input', function() {
+                                        if (this.value && this.value.trim() !== '') {
+                                            this.classList.remove('is-invalid');
+                                            this.style.borderColor = '';
+                                            this.style.borderWidth = '';
+                                        }
+                                    });
+                                    
+                                    input.addEventListener('change', function() {
+                                        if (this.value && this.value.trim() !== '') {
+                                            this.classList.remove('is-invalid');
+                                            this.style.borderColor = '';
+                                            this.style.borderWidth = '';
+                                        }
+                                    });
+                                });
+                            }
+
+                            // Panggil setup validation
+                            setupInputValidation();
+
                             // Event listener untuk tombol verifikasi
                             if (verifikasiHasilBtn) {
-                                verifikasiHasilBtn.addEventListener('click', () => {
-                                    const flagInputs = document.querySelectorAll('input[name="flag[]"]');
+                                verifikasiHasilBtn.addEventListener('click', (e) => {
+                                    e.preventDefault();
                                     
-                                    document.getElementById('worklistForm').action = "{{ route('worklist.store') }}";
-                                    document.getElementById('worklistForm').submit();
+                                    // Validasi semua input
+                                    const validation = validateAllInputs();
+                                    
+                                    if (!validation.isValid) {
+                                        // Tampilkan pesan error dengan daftar field yang kosong
+                                        let errorMessage = `Terdapat ${validation.emptyCount} parameter yang belum diisi:\n\n`;
+                                        
+                                        // Batasi tampilan maksimal 10 field
+                                        const displayFields = validation.emptyFields.slice(0, 10);
+                                        errorMessage += displayFields.map((field, index) => `${index + 1}. ${field}`).join('\n');
+                                        
+                                        if (validation.emptyFields.length > 10) {
+                                            errorMessage += `\n... dan ${validation.emptyFields.length - 10} parameter lainnya`;
+                                        }
+                                        
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Data Belum Lengkap!',
+                                            text: errorMessage,
+                                            confirmButtonText: 'OK, Saya Akan Melengkapi',
+                                            confirmButtonColor: '#dc3545',
+                                            customClass: {
+                                                popup: 'swal-wide'
+                                            }
+                                        });
+                                        
+                                        return false;
+                                    }
+                                    
+                                    // Jika validasi berhasil, tampilkan konfirmasi
+                                    Swal.fire({
+                                        title: 'Konfirmasi Verifikasi Hasil',
+                                        text: `Apakah Anda yakin data ${validation.emptyCount === 0 ? 'semua' : ''} parameter sudah benar?`,
+                                        icon: 'question',
+                                        showCancelButton: true,
+                                        confirmButtonColor: '#3085d6',
+                                        cancelButtonColor: '#6c757d',
+                                        confirmButtonText: 'Ya, Verifikasi!',
+                                        cancelButtonText: 'Cek Kembali'
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            document.getElementById('worklistForm').action = "{{ route('worklist.store') }}";
+                                            document.getElementById('worklistForm').submit();
+                                        }
+                                    });
                                 });
                             }
 
                             if (verifikasiDokterBtn) {
                                 verifikasiDokterBtn.addEventListener('click', (e) => {
-                                    e.preventDefault(); // supaya langsung tidak submit
-
+                                    e.preventDefault();
+                                    
+                                    // Validasi semua input
+                                    const validation = validateAllInputs();
+                                    
+                                    if (!validation.isValid) {
+                                        // Tampilkan pesan error
+                                        let errorMessage = `Terdapat ${validation.emptyCount} parameter yang belum diisi:\n\n`;
+                                        
+                                        const displayFields = validation.emptyFields.slice(0, 10);
+                                        errorMessage += displayFields.map((field, index) => `${index + 1}. ${field}`).join('\n');
+                                        
+                                        if (validation.emptyFields.length > 10) {
+                                            errorMessage += `\n... dan ${validation.emptyFields.length - 10} parameter lainnya`;
+                                        }
+                                        
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Data Belum Lengkap!',
+                                            text: errorMessage,
+                                            confirmButtonText: 'OK, Saya Akan Melengkapi',
+                                            confirmButtonColor: '#dc3545',
+                                            customClass: {
+                                                popup: 'swal-wide'
+                                            }
+                                        });
+                                        
+                                        return false;
+                                    }
+                                    
+                                    // Jika validasi berhasil
                                     Swal.fire({
                                         title: 'Konfirmasi Verifikasi',
-                                        text: "Apakah Anda yakin ingin memverifikasi ke Dokter PK?",
+                                        html: `
+                                            <p>Apakah Anda yakin ingin memverifikasi ke Dokter PK?</p>
+                                            <p class="text-muted small">Semua ${validation.emptyCount === 0 ? Object.keys(validation).length : 'parameter'} telah terisi</p>
+                                        `,
                                         icon: 'warning',
                                         showCancelButton: true,
                                         confirmButtonColor: '#3085d6',
@@ -3814,7 +3976,6 @@
                                         cancelButtonText: 'Batal'
                                     }).then((result) => {
                                         if (result.isConfirmed) {
-                                            // Jika user klik "Ya"
                                             document.getElementById('worklistForm').action = `worklist/checkin/${data_pasien.id}`;
                                             document.getElementById('worklistForm').submit();
                                         }
