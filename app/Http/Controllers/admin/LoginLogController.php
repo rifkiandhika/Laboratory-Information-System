@@ -12,7 +12,7 @@ class LoginLogController extends Controller
 {
     public function index(Request $request)
     {
-        $query = LocationLoginLog::with(['user', 'clinic'])->latest('attempted_at');
+        $query = LocationLoginLog::with(['user', 'clinic'])->orderBy('attempted_at', 'desc');
 
         // Filter by date
         if ($request->filled('date')) {
@@ -38,7 +38,7 @@ class LoginLogController extends Controller
             $query->where('user_id', $request->user_id);
         }
 
-        $logs = $query->paginate(50);
+        $logs = $query->get();
         $clinics = ClinicLocation::all();
         $users = User::orderBy('name')->get();
 
