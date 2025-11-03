@@ -192,7 +192,7 @@
             </div>
 
             <div class="mt-3">
-                <p>Total: {{ $logs->count() }} records</p>
+                <p>{{ $logs->appends(request()->except('page'))->links() }}</p>
             </div>
         </div>
     </div>

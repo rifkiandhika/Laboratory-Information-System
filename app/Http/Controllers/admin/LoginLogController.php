@@ -41,7 +41,7 @@ class LoginLogController extends Controller
             $query->where('user_id', $request->user_id);
         }
 
-        $logs = $query->get();
+        $logs = $query->paginate(50);
         $clinics = ClinicLocation::all();
         $users = User::orderBy('name')->get();
 
