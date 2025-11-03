@@ -14,7 +14,7 @@ class PoliController extends Controller
      */
     public function index()
     {
-        $polis = Poli::paginate(20);
+        $polis = Poli::get();
         return view("poli.index", compact('polis'));
     }
 
