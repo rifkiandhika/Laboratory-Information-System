@@ -12,7 +12,10 @@ class LoginLogController extends Controller
 {
     public function index(Request $request)
     {
-        $query = LocationLoginLog::with(['user', 'clinic'])->orderBy('attempted_at', 'desc');
+        $today = now()->format('Y-m-d');
+        $query = LocationLoginLog::with(['user', 'clinic'])
+            ->orderByRaw("DATE(attempted_at) = ? DESC", [$today])
+            ->orderBy('attempted_at', 'desc');
 
         // Filter by date
         if ($request->filled('date')) {
