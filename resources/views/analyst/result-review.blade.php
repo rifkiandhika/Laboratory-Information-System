@@ -241,6 +241,13 @@
                                                 </a>
                                             </li>
                                             <li>
+                                                <a class="dropdown-item EditClock" 
+                                                data-id="{{ $dpc->id }}" 
+                                                href="#">
+                                                    <i class="ti ti-clock-edit me-2"></i> Edit Time
+                                                </a>
+                                            </li>
+                                            <li>
                                                 <button type="button" 
                                                         class="dropdown-item preview" 
                                                         data-id="{{ $dpc->id }}" 
@@ -425,7 +432,45 @@
                         </form>
                         </div>
                     </div>
+                </div>
+                {{-- Modal Edit Time --}}
+                <div class="modal fade" id="modalEditTime" tabindex="-1" aria-labelledby="modalEditTimeLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalEditTimeLabel">
+                            <i class="ti ti-clock-edit me-2"></i> Edit Waktu Order
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="formEditTime">
+                                <input type="hidden" id="edit_id" name="id">
+                                <input type="hidden" id="edit_no_lab" name="no_lab">
+
+                                <div class="mb-3">
+                                    <label for="edit_tanggal_masuk" class="form-label fw-bold">Tanggal Transaksi</label>
+                                    <input type="datetime-local" class="form-control" id="edit-asd" name="tanggal_masuk">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="edit_created_at" class="form-label fw-bold">Tanggal Diterima</label>
+                                    <input type="datetime-local" class="form-control" id="edit-asp" name="created_at">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="edit_updated_at" class="form-label fw-bold">Tanggal Selesai</label>
+                                    <input type="datetime-local" class="form-control" id="edit-asu" name="updated_at">
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="button" id="btnSaveEditTime" class="btn btn-success">Simpan</button>
+                        </div>
+                        </div>
                     </div>
+                </div>
               </div>
           </div>
       </div>
@@ -3605,9 +3650,6 @@ window.getResultTableContent = getResultTableContent;
 
 
 
-
-
-
 <script>
    // Ambil semua elemen dengan class 'editBtn'
 var editBtns = document.querySelectorAll('.editBtn');
@@ -3622,6 +3664,87 @@ editBtns.forEach(function(editBtn) {
 });
 
 
+</script>
+
+<script>
+ function formatToDatetimeLocal(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+// Klik tombol Edit Time
+$(document).on('click', '.EditClock', function (e) {
+    e.preventDefault();
+    const id = $(this).data('id');
+    $('#edit_id').val(id);
+
+    // Ambil data dari API - sesuaikan dengan route controller Anda
+    fetch(`/api/get-data-pasien/${id}`)
+        .then(res => res.json())
+        .then(response => {
+            if (response.status === 'success') {
+                const data = response.data;
+                $('#edit_no_lab').val(data.no_lab);
+                $('#edit-asd').val(formatToDatetimeLocal(data.tanggal_masuk));
+                $('#edit-asp').val(formatToDatetimeLocal(data.created_at));
+                $('#edit-asu').val(formatToDatetimeLocal(data.updated_at));
+                $('#modalEditTime').modal('show');
+            } else {
+                Swal.fire('Gagal', 'Tidak dapat mengambil data pasien!', 'error');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire('Error', 'Terjadi kesalahan pada server!', 'error');
+        });
+});
+
+// Klik tombol Simpan
+$('#btnSaveEditTime').on('click', function () {
+    const id = $('#edit_id').val();
+    const tanggal_masuk = $('#edit-asd').val();
+    const created_at = $('#edit-asp').val();
+    const updated_at = $('#edit-asu').val();
+
+    // Validasi sederhana
+    if (!id) {
+        Swal.fire('Peringatan', 'ID tidak ditemukan!', 'warning');
+        return;
+    }
+
+    const payload = { 
+        tanggal_masuk, 
+        created_at, 
+        updated_at 
+    };
+
+    fetch(`/api/update-time-by-id/${id}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        body: JSON.stringify(payload)
+    })
+        .then(res => res.json())
+        .then(response => {
+            if (response.status === 'success') {
+                Swal.fire('Berhasil', 'Waktu berhasil diperbarui!', 'success').then(() => {
+                    $('#modalEditTime').modal('hide');
+                    // Reload halaman atau refresh data table
+                    location.reload(); // atau gunakan cara lain untuk refresh data
+                });
+            } else {
+                Swal.fire('Gagal', response.message || 'Update gagal!', 'error');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire('Error', 'Terjadi kesalahan pada server!', 'error');
+        });
+});
 </script>
 <script>
 $('.preview').on('click', function(event) {

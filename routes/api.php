@@ -36,6 +36,8 @@ Route::get('/get-data-pasien/{lab}', [PasienController::class, 'getDataPasien'])
 Route::get('/get-data-diagnosa', [PasienController::class, 'getDataDiagnosa']);
 Route::get('/get-data-qc/{lab}', [QcController::class, 'getDataQc']);
 
+Route::post('/update-time-by-id/{id}', [resultController::class, 'updateTimeById']);
+
 // Endpoint untuk Check data apakah masuk atau belum
 Route::get('/check-data', [ApiController::class, 'checkData']);
 

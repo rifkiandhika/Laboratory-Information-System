@@ -202,6 +202,7 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
         ->name('hasil_pemeriksaans.simpanKesimpulanSaran');
 
 
+
     // Route::get('/print', [resultController::class, 'print']);
     // Route::get('/analyst/result/{result}', [ResultController::class, 'show'])->name('result.show');
     Route::post('/insert_qc', [QcController::class, 'store'])->name('insert_qc');

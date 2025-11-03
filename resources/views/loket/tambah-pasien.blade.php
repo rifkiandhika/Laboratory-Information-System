@@ -44,7 +44,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-6 col-md-6">
+                                    {{-- <div class="col-6 col-md-6">
                                         <label for="basic-url" class="fw-bold">Tanggal Order</label>
                                         <div class="input-group mb-6">
                                             <input 
@@ -53,7 +53,7 @@
                                                 name="tanggal_masuk"
                                                 value="{{ old('tanggal_masuk', now()->format('Y-m-d\TH:i')) }}">
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     
                                     <div class="col-6 col-md-6">
                                         <label for="basic-url" class="fw-bold">Nomor Induk Kewarganegaraan</label>

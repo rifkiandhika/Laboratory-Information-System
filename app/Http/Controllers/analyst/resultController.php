@@ -49,6 +49,44 @@ class resultController extends Controller
         return redirect()->route('result.index');
     }
 
+    public function updateTimeById(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'tanggal_masuk' => 'nullable|date',
+                'created_at' => 'nullable|date',
+                'updated_at' => 'nullable|date',
+            ]);
+
+            $pasien = pasien::find($id);
+
+            if (!$pasien) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Data tidak ditemukan'
+                ], 404);
+            }
+
+            // Update data
+            $pasien->tanggal_masuk = $request->tanggal_masuk;
+            $pasien->created_at = $request->created_at;
+            $pasien->updated_at = $request->updated_at;
+            $pasien->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Waktu berhasil diperbarui',
+                'data' => $pasien
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+
     public function print($no_lab, Request $request)
     {
         $note = $request->input('note', '');

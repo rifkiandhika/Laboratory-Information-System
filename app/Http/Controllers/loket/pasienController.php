@@ -249,9 +249,6 @@ class pasienController extends Controller
             'dokter_external' => $request->dokter_external,
             'asal_ruangan'    => $request->asal_ruangan,
             'diagnosa'        => $request->diagnosa,
-            'tanggal_masuk' => $request->filled('tanggal_masuk')
-                ? \Carbon\Carbon::parse($request->tanggal_masuk)
-                : now(),
             'alamat'          => $request->alamat,
             'tanggal'         => Carbon::today(),
         ]);
@@ -477,9 +474,6 @@ class pasienController extends Controller
             'asal_ruangan' => $request->asal_ruangan,
             'diagnosa' => $request->diagnosa,
             'alamat' => $request->alamat,
-            'tanggal_masuk' => $request->filled('tanggal_masuk')
-                ? \Carbon\Carbon::parse($request->tanggal_masuk)
-                : ($pasien->tanggal_masuk ?? now()),
 
         ]);
 
