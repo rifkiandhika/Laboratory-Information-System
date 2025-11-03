@@ -53,40 +53,22 @@ use Illuminate\Support\Facades\Response;
 
 
 
-// Route::get('/test', function () {
-//     return view('Note/test');
-// });
-
-// Route::get('/print-view/print-pasien', function () {
-//     return view('print-view.print-pasien');
-// });
-// Route::get('/', function () {
-//     return redirect('/login');
-// });
-
-// routes/web.php
-// Route::get('/phpinfo', function () {
-//     phpinfo();
-// });
-
 
 route::resource('login', AuthController::class);
-// route::post('login-proses', [AuthController::class, 'proses'])->name('login.proses');
-// Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
-// Route::post('/verify-location', [AuthController::class, 'verifyLocation'])->name('verifylocation');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/', function () {
-    return redirect()->route('login.index');
+    return auth()->check()
+        ? redirect()->route('admin.dashboard')
+        : redirect()->route('login');
 });
 
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'index'])->name('login.index');
-    Route::post('/login', [AuthController::class, 'proses'])->name('login.proses');
-});
+Route::get('/login', [AuthController::class, 'index'])->name('login.index');
+Route::post('/login', [AuthController::class, 'proses'])->name('login.proses');
 
 // Location verification routes (accessible before login)
 Route::post('/check-device', [LocationController::class, 'checkDevice'])->name('check.device');
+Route::get('/check-device-status', [AuthController::class, 'checkDeviceStatus'])->name('check.device.status');
 Route::post('/register-device', [LocationController::class, 'registerDevice'])->name('register.device');
 Route::post('/verify-location', [LocationController::class, 'verifyLocation'])->name('verifylocation');
 
