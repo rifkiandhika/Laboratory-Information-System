@@ -58,9 +58,7 @@ route::resource('login', AuthController::class);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/', function () {
-    return auth()->check()
-        ? redirect()->route('admin.dashboard')
-        : redirect()->route('login');
+    return redirect()->route('login.index');
 });
 
 Route::get('/login', [AuthController::class, 'index'])->name('login.index');
