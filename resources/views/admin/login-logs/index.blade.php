@@ -192,7 +192,7 @@
             </div>
 
             <div class="mt-3">
-                {{ $logs->appends(request()->query())->links() }}
+                <p>Total: {{ $logs->count() }} records</p>
             </div>
         </div>
     </div>
