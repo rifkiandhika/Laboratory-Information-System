@@ -28,7 +28,7 @@ class resultController extends Controller
     {
         // $dataPasien = pasien::where('status', 'Result Review')->orWhere('status', 'Spesiment')->where('cito', 0)->paginate(20);
         $dataPasien = pasien::whereIn('status', ['Result Review', 'diselesaikan'])
-            ->orderBy('updated_at', 'desc')
+            ->orderBy('created_at', 'desc')
             ->get();
 
         $dataHistory = historyPasien::where('proses', '=', 'order')->get();

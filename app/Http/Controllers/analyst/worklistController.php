@@ -290,6 +290,8 @@ class worklistController extends Controller
     public function updateHasil(Request $request, $no_lab)
     {
         // Validasi
+        $filtered = collect($request->except(['duplo_d1', 'duplo_d2', 'duplo_d3', 'parameter_name', 'nilai_rujukan']));
+        $request->replace($filtered->toArray());
         // dd($request->all());
         $request->validate([
             'no_lab' => 'required',
