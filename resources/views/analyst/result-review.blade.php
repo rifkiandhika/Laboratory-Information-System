@@ -866,7 +866,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 {
                     judul: 'Urine Lengkap',
-                    nama: 'Urine Makro',
+                    nama: 'Leukosit (Strip)',
                     display_name: 'Leukosit',
                     satuan: '-',
                     normal_min: 'L.- P.-',
@@ -992,7 +992,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 {
                     judul: 'Sedimen',
-                    nama: 'Sedimen Urine',
+                    nama: 'Leukosit Urine',
                     display_name: '- Leukosit',
                     satuan: '',
                     normal_min: 'L.0 P.0',
