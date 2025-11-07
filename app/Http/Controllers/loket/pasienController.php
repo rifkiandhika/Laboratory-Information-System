@@ -251,6 +251,7 @@ class pasienController extends Controller
             'diagnosa'        => $request->diagnosa,
             'alamat'          => $request->alamat,
             'tanggal'         => Carbon::today(),
+            'tanggal_masuk'   => now(),
         ]);
 
         if ($nik !== '000') {
