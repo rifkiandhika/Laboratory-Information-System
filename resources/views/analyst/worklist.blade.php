@@ -540,22 +540,22 @@
                         return `
                 <div class="preview-button" id="preview-button">
                     <div class="row">
-                        <div class="col-lg-3 mb-3">
+                        <div class="col-lg-4 mb-4">
                             <button type="button" id="manualButton" class="btn btn-outline-secondary btn-block w-100">Manual</button>
                         </div>
-                        <div class="col-lg-3 mb-3">
+                        <div class="col-lg-4 mb-4">
                             <button type="button" id="duploButton" class="btn btn-outline-primary btn-block w-100">Duplo</button>
                         </div>
-                        <div class="col-lg-3 mb-3">
+                        <div class="col-lg-4 mb-4">
                             <button type="button" class="btn btn-outline-info btn-block w-100" data-bs-toggle="modal" data-bs-target="#sampleHistoryModal">Sample History<span class="badge bg-danger" style="display: none;">!</span></button>
                         </div>
-                        <div class="col-lg-3 mb-3">
+                        {{-- <div class="col-lg-3 mb-3">
                             <form id="delete-form-${data_pasien.id}" action="analyst/worklist/${data_pasien.id}" method="POST" style="display: none;">
                                 @csrf
                                 @method('DELETE')
                             </form>
                             <button class="btn btn-outline-danger w-100" onclick="confirmDelete(${data_pasien.id})">Delete</button>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             `;
