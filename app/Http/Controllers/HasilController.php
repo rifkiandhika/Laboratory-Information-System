@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\SendHasilToLis;
 use App\Models\HasilPemeriksaan;
+use App\Models\historyPasien;
 use App\Models\pasien;
 use Exception;
 use Illuminate\Http\Request;
@@ -177,11 +178,20 @@ class HasilController extends Controller
             ];
         })->toArray();
 
+
+
         // === Gabungkan payload ===
         $payload = [
             'pasien' => $data_pasien,
             'hasil'  => $data_hasil,
         ];
+
+        historyPasien::create([
+            'no_lab'       => $pasien->no_lab,
+            'proses'       => 'Send Hasil',
+            'tempat'       => 'Lab',
+            'waktu_proses' => now(),
+        ]);
 
         // Kirim via queue
         SendHasilToLis::dispatch($payload);
