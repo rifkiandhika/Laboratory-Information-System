@@ -139,6 +139,9 @@ Route::get('signature/{filename}', function ($filename) {
 
 route::group(['prefix' => 'loket', 'middleware' => ['auth']], function () {
 
+    Route::post('/pasien/payload', [PasienController::class, 'kirimPayloadLab'])
+        ->name('pasien.payload');
+
     route::resource('pasien', pasienController::class);
     route::get('loket', [pasienController::class, 'index']);
     route::post('/pasien/kirimlab', [pasienController::class, 'kirimLab'])->name('pasien.kirimlab');
@@ -153,6 +156,8 @@ route::group(['prefix' => 'loket', 'middleware' => ['auth']], function () {
     Route::get('/pasien/edit/{no_lab}', [pasienController::class, 'edit'])->name('pasien.viewedit');
     Route::put('/pasien/{id}', [pasienController::class, 'update'])->name('pasien.updatedata');
     Route::post('pasien/checkin', [pasienController::class, 'checkin'])->name('pasien.checkin');
+
+
     // Route::post('pasien.update', [pasienController::class, 'update'])->name('pasien.update');
 });
 

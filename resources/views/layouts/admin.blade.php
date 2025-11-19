@@ -173,7 +173,7 @@
     <script src="{{ asset('assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js') }}"></script>
     <script src="{{ asset('assets/js/tables-datatables-advanced.js')}}"></script>
 
-    <script>
+    {{-- <script>
     document.addEventListener('contextmenu', e => e.preventDefault());
 
     document.addEventListener('keydown', e => {
@@ -187,7 +187,7 @@
         alert('Developer Tools terdeteksi! Tutup dulu DevTools-nya.');
     }
     }, 1000);
-    </script>
+    </script> --}}
 
 
     <script>

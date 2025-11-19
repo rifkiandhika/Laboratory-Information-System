@@ -187,8 +187,13 @@
                                             <td>
                                                 @if ($dc->status == 'Belum Dilayani')
                                                     <span class="badge bg-danger text-white">Waiting...</span>
+
+                                                @elseif ($dc->status == 'Telah Dikirim')
+                                                    <span class="badge bg-success text-white">Sent</span>
+
                                                 @endif
                                             </td>
+
                                             <td class="col-md-1">
                                                 <div class="dropdown">
                                                     <a href="#" class="text-secondary" id="aksiDropdown{{ $dc->id }}" data-bs-toggle="dropdown" aria-expanded="false">
@@ -203,12 +208,12 @@
                                                             </button>
                                                         </li>
                                                         <li>
-                                                            <button type="button" data-bs-target="#modalPembayaran"
-                                                                data-bs-toggle="modal" class="dropdown-item btn-payment"
-                                                                data-payment="{{ $dc->id }}">
-                                                                <i class="ti ti-cash-banknote me-2"></i> Payment
+                                                            <button class="dropdown-item text-primary btn-send-payload"
+                                                                data-no_lab="{{ $dc->no_lab }}">
+                                                                <i class="ti ti-send me-2"></i> Kirim Payload
                                                             </button>
                                                         </li>
+
                                                         <li>
                                                             <button class="dropdown-item disabled"
                                                                     onclick="showBarcodeModal('{{ $dc->no_lab }}')">
@@ -780,7 +785,56 @@
         });
     }
 </script>
+{{-- Send Payload --}}
 
+<script>
+    $(document).on('click', '.btn-send-payload', function () {
+    let no_lab = $(this).data('no_lab');
+
+    Swal.fire({
+        title: 'Kirim Data',
+        text: "Tambahkan note sebelum mengirim data:",
+        input: 'textarea',
+        inputPlaceholder: 'Contoh : dikirim oleh kurir',
+        showCancelButton: true,
+        confirmButtonText: 'Kirim',
+        cancelButtonText: 'Batal',
+        inputAttributes: {
+            'aria-label': 'Masukkan catatan payload'
+        },
+        preConfirm: (note) => {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: "{{ route('pasien.payload') }}",
+                    method: "POST",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        no_lab: no_lab,
+                        note_payload: note
+                    },
+                    success: function () {
+                        resolve();
+                    },
+                    error: function () {
+                        Swal.showValidationMessage('Terjadi kesalahan!');
+                    }
+                });
+            });
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Payload Berhasil Dikirim!',
+                timer: 1500
+            }).then(() => {
+                location.reload();
+            });
+        }
+    });
+});
+
+</script>
 
 {{-- edit --}}
 <script>

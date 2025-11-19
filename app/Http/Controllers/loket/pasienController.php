@@ -46,7 +46,9 @@ class pasienController extends Controller
         $data = pasien::where('status', 'Belum Dilayani')->count();
         $tanggal = pasien::whereDate('created_at', Carbon::today())->count();
         $dl = pasien::where('status', 'Telah Dikirim ke Lab')->count();
-        $data_pasien = pasien::where('status', 'Belum Dilayani')->orderBy('cito', 'desc')->paginate(20);
+        $data_pasien = pasien::whereIn('status', ['Belum Dilayani', 'Telah Dikirim'])
+            ->orderBy('cito', 'desc')
+            ->paginate(20);
         $payment = pasien::where('status', 'Telah Dibayar')->orderBy('cito', 'desc')->paginate(20);
         $dikembalikan = pasien::where('status', 'Dikembalikan Analyst')->orderBy('cito', 'desc')->paginate(20);
         broadcast(new DataUpdated($data));
@@ -696,7 +698,7 @@ class pasienController extends Controller
         // Tambahkan riwayat pasien
         HistoryPasien::create([
             'no_lab' => $request->no_lab,
-            'proses' => 'Payment',
+            'proses' => 'Dikirim ke ',
             'tempat' => 'Loket',
             'waktu_proses' => now(),
         ]);
@@ -724,10 +726,64 @@ class pasienController extends Controller
         ];
 
         // Dispatch job ke queue (jika digunakan)
-        SendPasienToLis::dispatch($payload);
+        // SendPasienToLis::dispatch($payload);
 
         toast('Pembayaran Berhasil', 'success');
         return redirect()->route('pasien.index');
+    }
+
+    public function kirimPayloadLab(Request $request)
+    {
+        $request->validate([
+            'no_lab' => 'required',
+            'note_payload' => 'nullable|string',
+        ]);
+
+
+
+        $pasien = Pasien::with(['pemeriksaan_pasien'])
+            ->where('no_lab', $request->no_lab)
+            ->firstOrFail();
+
+        $pasien->update(['status' => 'Telah Dikirim']);
+
+        // Simpan history proses
+        HistoryPasien::create([
+            'no_lab' => $request->no_lab,
+            'proses' => 'Send Payload',
+            'tempat' => 'Loket',
+            'note_payload' => $request->note_payload ?? null,
+            'waktu_proses' => now(),
+        ]);
+
+        // Siapkan payload
+        $payload = [
+            'no_lab' => $pasien->no_lab,
+            'no_rm' => $pasien->no_rm,
+            'cito' => $pasien->cito,
+            'nik' => $pasien->nik,
+            'jenis_pelayanan' => $pasien->jenis_pelayanan,
+            'nama' => $pasien->nama,
+            'lahir' => $pasien->lahir,
+            'jenis_kelamin' => $pasien->jenis_kelamin,
+            'no_telp' => $pasien->no_telp,
+            'kode_dokter' => $pasien->kode_dokter,
+            'dokter_external' => $pasien->dokter_external,
+            'asal_ruangan' => $pasien->asal_ruangan,
+            'diagnosa' => $pasien->diagnosa,
+            'tanggal_masuk' => $pasien->tanggal_masuk,
+            'alamat' => $pasien->alamat,
+            'tanggal' => $pasien->tanggal,
+            'status' => $pasien->status,
+            'note_payload' => $request->note_payload,
+            'pemeriksaan' => $pasien->pemeriksaan_pasien->map(fn($p) => $p->toArray()),
+        ];
+
+        // Kirim ke LIS
+        SendPasienToLis::dispatch($payload);
+
+        toast('Payload berhasil dikirim', 'success');
+        return back();
     }
 
 
