@@ -184,7 +184,7 @@ class HasilController extends Controller
         ];
 
         // Kirim via queue
-        // SendHasilToLis::dispatch($payload);
+        SendHasilToLis::dispatch($payload);
 
         return back()->with('success', '✅ Data pasien & semua hasil berhasil dikirim ke LIS.');
     }
