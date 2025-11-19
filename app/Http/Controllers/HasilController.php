@@ -186,6 +186,8 @@ class HasilController extends Controller
         // Kirim via queue
         SendHasilToLis::dispatch($payload);
 
-        return back()->with('success', '✅ Data pasien & semua hasil berhasil dikirim ke LIS.');
+
+        toast('Data pasien & semua hasil berhasil dikirim ke LIS.', 'success');
+        return back();
     }
 }
