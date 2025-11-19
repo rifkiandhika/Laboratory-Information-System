@@ -187,6 +187,10 @@
                                             <td>
                                                 @if ($dc->status == 'Belum Dilayani')
                                                     <span class="badge bg-danger text-white">Waiting...</span>
+
+                                                @elseif ($dc->status == 'Telah Dikirim')
+                                                    <span class="badge bg-success text-white">External</span>
+
                                                 @endif
                                             </td>
                                             <td class="col-md-1">
@@ -978,8 +982,15 @@
                     // Tambahkan detail pembayaran
                     detailContent += '</div>';
                     let pembayaranContent = `
+                    ${data_pasien.note_payload ? `
+                        <div class="alert alert-warning mb-3">
+                            <strong>Catatan :</strong><br>
+                            ${data_pasien.note_payload}
+                        </div>
+                    ` : ''}
                         <h5>Payment Details</h5>
                         <hr>
+                        
                         ${isMCUPackage && originalPackagePrice > packagePrice ? `
                             <div class="alert alert-info">
                                 <strong>Paket ${currentNoLab.includes('MCU') ? 'MCU' : 'Khusus'} - Diskon Khusus!</strong><br>

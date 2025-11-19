@@ -46,7 +46,9 @@ class pasienController extends Controller
         $data = pasien::where('status', 'Belum Dilayani')->count();
         $tanggal = pasien::whereDate('created_at', Carbon::today())->count();
         $dl = pasien::where('status', 'Telah Dikirim ke Lab')->count();
-        $data_pasien = pasien::where('status', 'Belum Dilayani')->orderBy('cito', 'desc')->paginate(20);
+        $data_pasien = pasien::whereIn('status', ['Belum Dilayani', 'Telah Dikirim'])
+            ->orderBy('cito', 'desc')
+            ->paginate(20);
         $payment = pasien::where('status', 'Telah Dibayar')->orderBy('cito', 'desc')->paginate(20);
         $dikembalikan = pasien::where('status', 'Dikembalikan Analyst')->orderBy('cito', 'desc')->paginate(20);
         broadcast(new DataUpdated($data));
