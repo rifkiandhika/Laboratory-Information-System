@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\loket;
 
 use App\Http\Controllers\Controller;
+use App\Models\DataAsuransi;
+use App\Models\DataBpjs;
 use App\Models\DataPasien;
 use App\Models\historyPasien;
 use App\Models\pasien;
@@ -16,7 +18,7 @@ class DataPasienController extends Controller
      */
     public function index()
     {
-        $data_pasien = DataPasien::paginate(10);
+        $data_pasien = DataPasien::get();
 
         return view('loket.data-pasien', compact('data_pasien'));
     }
@@ -41,10 +43,49 @@ class DataPasienController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $pasien = DataPasien::with(['dataBpjs', 'dataAsuransi'])->findOrFail($id);
+        return view('data_pasien.show', compact('pasien'));
     }
+
+    public function updated(Request $request, $id)
+    {
+        $pasien = DataPasien::findOrFail($id);
+        $pasien->update([
+            'uid'           => $request->no_rm,
+            'no_rm'         => $request->no_rm,
+            'nik'           => $request->nik,
+            'nama'          => $request->nama,
+            'lahir'         => $request->lahir,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'no_telp'       => $request->no_telp,
+            'alamat'        => $request->alamat,
+        ]);
+
+        $bpjs = DataBpjs::where('data_pasiens_id', $id)->first();
+        if ($bpjs && $request->filled('no_bpjs')) {
+            $bpjs->update(['no_bpjs' => $request->no_bpjs]);
+        }
+
+        $asuransiList = DataAsuransi::where('data_pasiens_id', $id)->get();
+
+        if ($asuransiList->count() && $request->filled('penjamin')) {
+            foreach ($asuransiList as $index => $asuransi) {
+                if (isset($request->penjamin[$index])) {
+                    $asuransi->update([
+                        'penjamin'    => $request->penjamin[$index],
+                        'no_penjamin' => $request->no_penjamin[$index] ?? null,
+                    ]);
+                }
+            }
+        }
+
+        toast('Berhasil memperbarui data pasien', 'success');
+        return redirect()->route('data-pasien.index');
+    }
+
+
 
     /**
      * Show the form for editing the specified resource.

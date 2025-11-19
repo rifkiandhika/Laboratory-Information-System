@@ -29,7 +29,7 @@ class resultController extends Controller
         // $dataPasien = pasien::where('status', 'Result Review')->orWhere('status', 'Spesiment')->where('cito', 0)->paginate(20);
         $dataPasien = pasien::whereIn('status', ['Result Review', 'diselesaikan'])
             ->orderBy('updated_at', 'desc')
-            ->paginate(20);
+            ->get();
 
         $dataHistory = historyPasien::where('proses', '=', 'order')->get();
         return view('analyst.result-review', compact('dataPasien', 'dataHistory'));
@@ -48,6 +48,44 @@ class resultController extends Controller
         toast('Pasien telah diselesaikan', 'success');
         return redirect()->route('result.index');
     }
+
+    public function updateTimeById(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'tanggal_masuk' => 'nullable|date',
+                'created_at' => 'nullable|date',
+                'updated_at' => 'nullable|date',
+            ]);
+
+            $pasien = pasien::find($id);
+
+            if (!$pasien) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Data tidak ditemukan'
+                ], 404);
+            }
+
+            // Update data
+            $pasien->tanggal_masuk = $request->tanggal_masuk;
+            $pasien->created_at = $request->created_at;
+            $pasien->updated_at = $request->updated_at;
+            $pasien->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Waktu berhasil diperbarui',
+                'data' => $pasien
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
 
     public function print($no_lab, Request $request)
     {
@@ -75,7 +113,7 @@ class resultController extends Controller
             }
         }
 
-        // Ambil dokter internal saja
+        // Ambil dokter internal
         $userDokter = null;
         $dokterName = null;
 
@@ -84,19 +122,22 @@ class resultController extends Controller
             $userDokter = User::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($dokterName))])->first();
         }
 
+        // Ambil analyst dari tabel pasien, bukan dari auth()->user()
+        $userAnalyst = null;
+        if ($data_pasien->analyst) {
+            $userAnalyst = User::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($data_pasien->analyst))])->first();
+        }
+
         return view('print-view.print-pasien', compact(
             'data_pasien',
             'note',
             'hasil_pemeriksaans',
             'nilai_rujukan_map',
             'userDokter',
-            'dokterName'
+            'dokterName',
+            'userAnalyst'
         ));
     }
-
-
-
-
 
     public function simpanKesimpulanSaran(Request $request)
     {
@@ -169,7 +210,15 @@ class resultController extends Controller
         $dokters_internal = Dokter::where('status', 'internal')->get();
         $dokters_external = Dokter::where('status', 'external')->get();
         $reports = Report::select('analyst')->distinct()->get();
-        return view('print-view.report', compact('departments', 'dokters_internal', 'dokters_external', 'reports'));
+
+        // ✅ Tambahkan list asal ruangan
+        $asal_ruangan = Report::select('asal_ruangan')
+            ->distinct()
+            ->whereNotNull('asal_ruangan')
+            ->orderBy('asal_ruangan')
+            ->pluck('asal_ruangan');
+
+        return view('print-view.report', compact('departments', 'dokters_internal', 'dokters_external', 'reports', 'asal_ruangan'));
     }
 
     public function getReportData(Request $request)
@@ -186,10 +235,12 @@ class resultController extends Controller
             $paymentMethods = array_map('strtolower', $request->input('payment_method', []));
             $mcuFilter = $request->input('mcu', []);
 
-            // ✅ PERBAIKAN: Pisahkan filter dokter internal dan external
             $doktersInternal = $request->input('dokter_internal', []);
             $doktersExternal = $request->input('dokter_external', []);
             $analystFilter = $request->input('analyst', []);
+
+            // ✅ Tambahkan filter asal ruangan
+            $asalRuanganFilter = $request->input('asal_ruangan', []);
 
             $query = Report::with([
                 'detailDepartment',
@@ -206,33 +257,28 @@ class resultController extends Controller
                 $query->whereIn(DB::raw('LOWER(payment_method)'), $paymentMethods);
             }
 
-            // ✅ PERBAIKAN: Filter dokter dengan logika terpisah
+            // Filter dokter
             if (!empty($doktersInternal) || !empty($doktersExternal)) {
                 $allowedDoctors = [];
 
-                // Jika dokter internal dipilih
                 if (!empty($doktersInternal) && !in_array('All', $doktersInternal)) {
                     $allowedDoctors = array_merge($allowedDoctors, $doktersInternal);
                 } elseif (in_array('All', $doktersInternal)) {
-                    // Jika "Semua" dipilih untuk internal, ambil semua dokter internal
                     $internalDoctors = dokter::where('status', 'internal')
                         ->pluck('nama_dokter')
                         ->toArray();
                     $allowedDoctors = array_merge($allowedDoctors, $internalDoctors);
                 }
 
-                // Jika dokter external dipilih
                 if (!empty($doktersExternal) && !in_array('All', $doktersExternal)) {
                     $allowedDoctors = array_merge($allowedDoctors, $doktersExternal);
                 } elseif (in_array('All', $doktersExternal)) {
-                    // Jika "Semua" dipilih untuk external, ambil semua dokter external
                     $externalDoctors = dokter::where('status', 'external')
                         ->pluck('nama_dokter')
                         ->toArray();
                     $allowedDoctors = array_merge($allowedDoctors, $externalDoctors);
                 }
 
-                // Jika ada dokter yang dipilih, filter berdasarkan daftar tersebut
                 if (!empty($allowedDoctors)) {
                     $query->whereIn('nama_dokter', array_unique($allowedDoctors));
                 }
@@ -252,31 +298,35 @@ class resultController extends Controller
                 $query->whereIn('analyst', $analystFilter);
             }
 
+            // ✅ Tambahkan filter asal ruangan
+            if (!empty($asalRuanganFilter) && !in_array('All', $asalRuanganFilter)) {
+                $query->whereIn('asal_ruangan', $asalRuanganFilter);
+            }
+
             $results = $query->get();
 
             $pivoted = [];
             $mcuParameters = [];
             $processedMcuLabs = [];
 
-            // Get all users for analyst lookup
             $users = User::select('id', 'name', 'fee', 'feemcu')->get()->keyBy('name');
 
             foreach ($results as $item) {
                 $deptId = $item->departments->id ?? $item->department;
                 $deptName = $item->departments->nama_department ?? 'Unknown';
                 $namaDokter = $item->nama_dokter ?? '-';
+                $asalRuangan = $item->asal_ruangan ?? '-'; // ✅ Ambil asal ruangan
 
-                // Get analyst info
                 $analystName = $item->analyst ?? '-';
                 $analystData = $users->get($analystName);
-                $analystFee = $analystData->fee ?? 0; // Default fee (5%)
-                $analystMcuFee = $analystData->feemcu ?? 0; // MCU fee (10%)
+                $analystFee = $analystData->fee ?? 0;
+                $analystMcuFee = $analystData->feemcu ?? 0;
 
-                // --- ✅ MCU Package ---
+                // MCU Package
                 if ($item->mcu_package_id && $item->mcuPackage) {
                     $packageName = $item->mcuPackage->nama_paket;
                     $packageId = $item->mcu_package_id;
-                    $packageKey = 'MCU_PACKAGE_' . $packageId . '||' . $namaDokter . '||' . $analystName;
+                    $packageKey = 'MCU_PACKAGE_' . $packageId . '||' . $namaDokter . '||' . $asalRuangan . '||' . $analystName; // ✅ Tambahkan asal_ruangan ke key
 
                     $uniquePatientKey = $packageKey . '||' . $item->no_lab;
                     if (in_array($uniquePatientKey, $processedMcuLabs)) {
@@ -292,7 +342,7 @@ class resultController extends Controller
                             'mcu_package_id' => $packageId,
                             'package_name' => $packageName,
                             'dokter' => $namaDokter,
-                            // default 0 semua
+                            'asal_ruangan' => $asalRuangan, // ✅ Tambahkan asal_ruangan
                             'jasa_dokter' => 0,
                             'jasa_bidan' => 0,
                             'jasa_perawat' => 0,
@@ -317,7 +367,6 @@ class resultController extends Controller
                         ];
                     }
 
-                    // tentukan jasa berdasarkan jabatan
                     if ($item->jabatan == 'dokter') {
                         $pivoted[$packageKey]['jasa_dokter'] = $item->mcuPackage->jasa_dokter ?? 0;
                     } elseif ($item->jabatan == 'bidan') {
@@ -325,7 +374,6 @@ class resultController extends Controller
                     } elseif ($item->jabatan == 'perawat') {
                         $pivoted[$packageKey]['jasa_perawat'] = $item->mcuPackage->jasa_perawat ?? 0;
                     }
-
 
                     $hargaPackage = $item->mcuPackage->harga_final ?? 0;
 
@@ -350,7 +398,7 @@ class resultController extends Controller
                             break;
                     }
 
-                    // MCU Parameters (display only)
+                    // MCU Parameters
                     if ($item->mcuPackage->mcuDetails) {
                         foreach ($item->mcuPackage->mcuDetails as $detail) {
                             $parameterKey = 'MCU_PARAM_' . $packageId . '_' . $detail->id;
@@ -363,6 +411,7 @@ class resultController extends Controller
                                     'mcu_package_id' => $packageId,
                                     'package_name' => $packageName,
                                     'dokter' => '-',
+                                    'asal_ruangan' => '-', // ✅ Tambahkan
                                     'jasa_dokter' => 0,
                                     'analyst' => '-',
                                     'analyst_fee_percent' => 0,
@@ -387,17 +436,14 @@ class resultController extends Controller
                         }
                     }
                 }
-                // --- ✅ Non-MCU ---
-                // --- ✅ Non-MCU ---
+                // Non-MCU
                 else {
                     $displayName = $item->nama_parameter;
                     $harga = $item->detailDepartment->harga ?? 0;
 
-                    // 🔍 Ambil dokter dari tabel berdasarkan nama
                     $dokter = dokter::where('nama_dokter', $item->nama_dokter)->first();
-                    $jabatan = strtolower($dokter->jabatan ?? 'dokter'); // default dokter
+                    $jabatan = strtolower($dokter->jabatan ?? 'dokter');
 
-                    // Tentukan jasa berdasarkan jabatan
                     if ($jabatan === 'bidan') {
                         $jasa = $item->detailDepartment->jasa_bidan ?? 0;
                     } elseif ($jabatan === 'perawat') {
@@ -410,7 +456,7 @@ class resultController extends Controller
                         $displayName = $item->detailDepartment->nama_pemeriksaan ?? 'Hematologi';
                     }
 
-                    $key = $deptId . '||' . $displayName . '||' . $namaDokter . '||' . $analystName;
+                    $key = $deptId . '||' . $displayName . '||' . $namaDokter . '||' . $asalRuangan . '||' . $analystName; // ✅ Tambahkan asal_ruangan ke key
 
                     if (!isset($pivoted[$key])) {
                         $pivoted[$key] = [
@@ -420,7 +466,8 @@ class resultController extends Controller
                             'mcu_package_id' => null,
                             'package_name' => null,
                             'dokter' => $namaDokter,
-                            'jasa_dokter' => $jasa, // ✅ sesuai jabatan
+                            'asal_ruangan' => $asalRuangan, // ✅ Tambahkan asal_ruangan
+                            'jasa_dokter' => $jasa,
                             'analyst' => $analystName,
                             'analyst_fee_percent' => $analystFee,
                             'is_department_header' => false,
@@ -469,7 +516,7 @@ class resultController extends Controller
 
             $pivoted = array_merge($pivoted, $mcuParameters);
 
-            // --- Grouping ---
+            // Grouping
             $grouped = collect($pivoted)->groupBy(function ($row) {
                 if ($row['is_mcu_package'] || $row['is_mcu_parameter']) {
                     return 'MCU-' . $row['mcu_package_id'];
@@ -491,6 +538,7 @@ class resultController extends Controller
                         'department' => 'MCU',
                         'department_id' => 999,
                         'dokter' => '-',
+                        'asal_ruangan' => '-', // ✅ Tambahkan
                         'jasa_dokter' => 0,
                         'analyst' => '-',
                         'analyst_fee_percent' => 0,
@@ -536,6 +584,7 @@ class resultController extends Controller
                     'department' => $deptName,
                     'department_id' => $firstItem['department_id'],
                     'dokter' => '-',
+                    'asal_ruangan' => '-', // ✅ Tambahkan
                     'jasa_dokter' => 0,
                     'analyst' => '-',
                     'analyst_fee_percent' => 0,
@@ -563,12 +612,13 @@ class resultController extends Controller
                 }
             }
 
-            // --- Total Row ---
+            // Total Row
             $totalRow = [
                 'test_name' => 'TOTAL',
                 'department' => '',
                 'department_id' => null,
                 'dokter' => '-',
+                'asal_ruangan' => '-', // ✅ Tambahkan
                 'jasa_dokter' => 0,
                 'analyst' => '-',
                 'analyst_fee_percent' => 0,

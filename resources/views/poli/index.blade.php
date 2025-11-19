@@ -60,7 +60,7 @@
                         </div>
 
                         <div class="card-body">
-                            <div class="table-scroll" style="width: 100%; max-height: 550px;">
+                            <div class="table-responsive">
                                 <table class="table table-striped table-bordered w-100 d-block d-md-table" id="myTable">
                                     <thead style="font-size: 12px;">
                                         <tr>

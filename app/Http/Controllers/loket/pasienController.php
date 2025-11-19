@@ -21,6 +21,8 @@ use App\Models\pemeriksaan_pasien;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Jobs\SendPasienToLis;
+use App\Models\DataAsuransi;
+use App\Models\DataBpjs;
 use App\Models\DataPasien;
 use App\Models\Department;
 use App\Models\DetailDepartment;
@@ -61,12 +63,10 @@ class pasienController extends Controller
         $data['departments']  = Department::with('pemeriksaan')->get();
 
         // filter dokter berdasarkan status
-        $data['dokterInternal'] = Dokter::with('polis')
-            ->where('status', 'internal')
+        $data['dokterInternal'] = Dokter::where('status', 'internal')
             ->get();
 
-        $data['dokterExternal'] = Dokter::with('polis')
-            ->where('status', 'external')
+        $data['dokterExternal'] = Dokter::where('status', 'external')
             ->get();
 
         // filter poli berdasarkan status
@@ -77,7 +77,6 @@ class pasienController extends Controller
             ->where('status', 'active')
             ->get();
 
-        // ✅ Generate nomor lab unik
         $tanggal = date('dmy');
         do {
             $random = str_pad(rand(0, 999), 3, '0', STR_PAD_LEFT);
@@ -85,6 +84,54 @@ class pasienController extends Controller
         } while (Pasien::where('no_lab', $noLab)->exists());
 
         $data['no_lab'] = $noLab;
+
+        $roomByDokter = [];
+
+
+        foreach ($data['dokterInternal'] as $dokter) {
+            $poliIds = json_decode($dokter->id_poli, true);
+            $poliNames = [];
+
+            if (is_array($poliIds)) {
+                foreach ($poliIds as $poliId) {
+                    $poli = Poli::find($poliId);
+                    if ($poli) {
+                        $poliNames[] = $poli->nama_poli;
+                    }
+                }
+            }
+
+            $roomByDokter[$dokter->id] = [
+                'nama' => $dokter->nama_dokter,
+                'jabatan' => $dokter->jabatan,
+                'status' => 'internal',
+                'ruangan' => $poliNames
+            ];
+        }
+
+
+        foreach ($data['dokterExternal'] as $dokter) {
+            $poliIds = json_decode($dokter->id_poli, true);
+            $poliNames = [];
+
+            if (is_array($poliIds)) {
+                foreach ($poliIds as $poliId) {
+                    $poli = Poli::find($poliId);
+                    if ($poli) {
+                        $poliNames[] = $poli->nama_poli;
+                    }
+                }
+            }
+
+            $roomByDokter[$dokter->id] = [
+                'nama' => $dokter->nama_dokter,
+                'jabatan' => $dokter->jabatan,
+                'status' => 'external',
+                'ruangan' => $poliNames
+            ];
+        }
+
+        $data['roomByDokter'] = $roomByDokter;
 
         return view('loket.tambah-pasien', $data);
     }
@@ -100,11 +147,12 @@ class pasienController extends Controller
             ]);
         }
 
+        // Pencarian hanya berdasarkan nik, nama, dan uid
         $pasiens = DataPasien::where('nik', 'LIKE', "%{$keyword}%")
             ->orWhere('nama', 'LIKE', "%{$keyword}%")
-            ->orWhere('no_rm', 'LIKE', "%{$keyword}%")
+            ->orWhere('uid', 'LIKE', "%{$keyword}%") // Tambahkan pencarian UID
             ->limit(10)
-            ->get(['id', 'nik', 'no_rm', 'nama', 'lahir', 'jenis_kelamin', 'no_telp', 'alamat']);
+            ->get(['id', 'nik', 'uid', 'no_rm', 'nama', 'lahir', 'jenis_kelamin', 'no_telp', 'alamat']); // no_rm tetap diambil
 
         return response()->json([
             'status' => 'success',
@@ -171,31 +219,27 @@ class pasienController extends Controller
      */
     public function store(Request $request)
     {
-        // flag cito
+        // dd($request->all());
         $cito = $request->cito ? 1 : 0;
 
-        // proses harga
         $harga = (int) str_replace('.', '', $request->hargapemeriksaan);
 
-        // dokter internal / eksternal
-        // $dokter = $request->dokter_internal ?: $request->dokter_external;
-
-        // Ambil no_lab dari form
         $noLab = $request->no_lab;
 
-        // Validasi jika no_lab sudah dipakai
         if (Pasien::where('no_lab', $noLab)->exists()) {
             return back()->withErrors([
                 'no_lab' => 'Nomor LAB sudah dipakai, silakan refresh halaman untuk mendapatkan nomor baru.'
             ])->withInput();
         }
 
-        // Simpan data pasien
+        $nik = trim($request->nik) ?: '000';
+        $norm = trim($request->norm) ?: '000';
+
         Pasien::create([
             'no_lab'          => $noLab,
-            'no_rm'           => $request->norm,
+            'no_rm'           => $norm,
             'cito'            => $cito,
-            'nik'             => $request->nik,
+            'nik'             => $nik,
             'jenis_pelayanan' => $request->jenispelayanan,
             'nama'            => $request->nama,
             'lahir'           => $request->tanggallahir,
@@ -205,22 +249,33 @@ class pasienController extends Controller
             'dokter_external' => $request->dokter_external,
             'asal_ruangan'    => $request->asal_ruangan,
             'diagnosa'        => $request->diagnosa,
-            'tanggal_masuk' => $request->filled('tanggal_masuk')
-                ? \Carbon\Carbon::parse($request->tanggal_masuk)
-                : now(),
             'alamat'          => $request->alamat,
             'tanggal'         => Carbon::today(),
+            'tanggal_masuk'   => now(),
         ]);
 
-        DataPasien::create([
-            'no_rm'           => $request->norm,
-            'nik'             => $request->nik,
-            'nama'            => $request->nama,
-            'lahir'           => $request->tanggallahir,
-            'jenis_kelamin'   => $request->jeniskelamin,
-            'no_telp'         => $request->notelepon,
-            'alamat'          => $request->alamat,
-        ]);
+        if ($nik !== '000') {
+            $existingDataPasien = DataPasien::where('no_rm', $request->norm)
+                ->orWhere('nik', $nik)
+                ->first();
+        } else {
+            // Jika NIK = '000', cek hanya berdasarkan no_rm saja
+            $existingDataPasien = DataPasien::where('no_rm', $request->norm)->first();
+        }
+
+        if (!$existingDataPasien) {
+            // Jika belum ada, baru buat baru
+            DataPasien::create([
+                'uid'             => $norm,
+                'no_rm'           => $norm,
+                'nik'             => $nik,
+                'nama'            => $request->nama,
+                'lahir'           => $request->tanggallahir,
+                'jenis_kelamin'   => $request->jeniskelamin,
+                'no_telp'         => $request->notelepon,
+                'alamat'          => $request->alamat,
+            ]);
+        }
 
         // Simpan pemeriksaan pasien
         foreach ($request->pemeriksaan as $pemeriksaan) {
@@ -261,6 +316,7 @@ class pasienController extends Controller
                     'id_parameter'   => $pemeriksaan,
                     'nama_parameter' => $data->nama_parameter,
                     'nama_dokter'    => $request->dokter_internal,
+                    'asal_ruangan'    => $request->asal_ruangan,
                     'dokter_external' => $request->dokter_external,
                     'mcu_package_id' => $request->mcu_package_id,
                     'quantity'       => 1,
@@ -283,6 +339,55 @@ class pasienController extends Controller
     }
 
 
+    private function generateUid($nama, $tanggalLahir)
+    {
+
+        $namaClean = preg_replace('/[^a-zA-Z]/', '', $nama);
+        $namaLength = strlen($namaClean);
+
+
+        $namaChars = '';
+        $positions = [];
+        for ($i = 0; $i < 3 && $i < $namaLength; $i++) {
+            do {
+                $pos = rand(0, $namaLength - 1);
+            } while (in_array($pos, $positions));
+            $positions[] = $pos;
+            $namaChars .= $namaClean[$pos];
+        }
+
+
+        $tanggalStr = str_replace(['-', '/', ' '], '', $tanggalLahir);
+        $tanggalNums = preg_replace('/[^0-9]/', '', $tanggalStr);
+        $tanggalLength = strlen($tanggalNums);
+
+
+        $tanggalChars = '';
+        $positions = [];
+        for ($i = 0; $i < 3 && $i < $tanggalLength; $i++) {
+            do {
+                $pos = rand(0, $tanggalLength - 1);
+            } while (in_array($pos, $positions));
+            $positions[] = $pos;
+            $tanggalChars .= $tanggalNums[$pos];
+        }
+
+
+        $random = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 4));
+
+
+        $parts = [$namaChars, $tanggalChars, $random];
+        shuffle($parts);
+
+        $uid = strtoupper(implode('', $parts));
+
+
+        while (DataPasien::where('uid', $uid)->exists()) {
+            $uid = strtoupper(substr(str_shuffle($uid . rand(1000, 9999)), 0, 10));
+        }
+
+        return $uid;
+    }
 
 
 
@@ -359,7 +464,7 @@ class pasienController extends Controller
         $pasien->update([
             'no_rm' => $request->norm,
             'cito' => $cito,
-            'nik' => $request->nik,
+            'nik' => $request->nik ?: '000',
             'jenis_pelayanan' => $request->jenispelayanan,
             'nama' => $request->nama,
             'lahir' => $request->tanggallahir,
@@ -370,11 +475,20 @@ class pasienController extends Controller
             'asal_ruangan' => $request->asal_ruangan,
             'diagnosa' => $request->diagnosa,
             'alamat' => $request->alamat,
-            'tanggal_masuk' => $request->filled('tanggal_masuk')
-                ? \Carbon\Carbon::parse($request->tanggal_masuk)
-                : ($pasien->tanggal_masuk ?? now()),
 
         ]);
+
+        $dataPasien = DataPasien::where('no_rm', $request->norm)->first();
+        if ($dataPasien) {
+            $dataPasien->update([
+                'nik'           => $request->nik ?: '000',
+                'nama'          => $request->nama,
+                'lahir'         => $request->tanggallahir,
+                'jenis_kelamin' => $request->jeniskelamin,
+                'no_telp'       => $request->notelepon,
+                'alamat'        => $request->alamat,
+            ]);
+        }
 
         if ($request->filled('no_pasien')) {
             $pembayaran = $pasien->pembayaran()->first();
@@ -490,6 +604,8 @@ class pasienController extends Controller
                 'spesimenthandling.details',
                 'hasil_pemeriksaan',
                 'mcuPackage',
+                'dataPasien.dataBpjs',
+                'dataPasien.dataAsuransi'
                 // 'obx'
             ])->first();
 
@@ -504,10 +620,14 @@ class pasienController extends Controller
 
             return response()->json(['status' => 'success', 'msg' => 'ok', 'data' => $data_pasien]);
         } catch (Exception $e) {
-
-            return response()->json(['status' => 'fail', 'msg' => 'Failed to fetch Data']);
+            return response()->json([
+                'status' => 'fail',
+                'msg' => $e->getMessage(),
+                'line' => $e->getLine()
+            ]);
         }
     }
+
 
     public function kirimLab(Request $request)
     {
@@ -525,10 +645,11 @@ class pasienController extends Controller
             ->update(['status' => 'lama']);
 
         // Simpan pembayaran
-        DB::table('pembayarans')->insert([
+        $pembayaran = pembayaran::create([
             'no_lab' => $request->no_lab,
             'petugas' => $request->petugas,
             'no_pasien' => $no_pasien,
+            'penjamin' => $request->penjamin,
             'metode_pembayaran' => $request->metode_pembayaran,
             'total_pembayaran_asli' => $request->total_pembayaran_asli,
             'total_pembayaran' => $request->total_pembayaran,
@@ -539,6 +660,38 @@ class pasienController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        $dataPasien = DataPasien::where('no_rm', $pasien->no_rm)->first();
+
+        if ($dataPasien) {
+            if (strtolower($request->metode_pembayaran) === 'bpjs') {
+                // Cek apakah sudah ada BPJS dengan nomor sama untuk pasien ini
+                $existingBpjs = DataBpjs::where('data_pasiens_id', $dataPasien->id)
+                    ->where('no_bpjs', $request->no_pasien)
+                    ->first();
+
+                if (!$existingBpjs) {
+                    DataBpjs::create([
+                        'data_pasiens_id' => $dataPasien->id,
+                        'no_bpjs' => $request->no_pasien ?? null,
+                    ]);
+                }
+            } elseif (strtolower($request->metode_pembayaran) === 'asuransi') {
+                // Cek apakah sudah ada Asuransi dengan nomor sama untuk pasien ini
+                $existingAsuransi = DataAsuransi::where('data_pasiens_id', $dataPasien->id)
+                    ->where('no_penjamin', $request->no_pasien)
+                    ->first();
+
+                if (!$existingAsuransi) {
+                    DataAsuransi::create([
+                        'data_pasiens_id' => $dataPasien->id,
+                        'penjamin' => $request->penjamin,
+                        'no_penjamin' => $request->no_pasien ?? null,
+                    ]);
+                }
+            }
+        }
+
 
         // Tambahkan riwayat pasien
         HistoryPasien::create([
@@ -570,12 +723,14 @@ class pasienController extends Controller
             'pemeriksaan' => $pasien->pemeriksaan_pasien->map(fn($p) => $p->toArray()),
         ];
 
-        // Dispatch job ke queue
+        // Dispatch job ke queue (jika digunakan)
         // SendPasienToLis::dispatch($payload);
 
         toast('Pembayaran Berhasil', 'success');
         return redirect()->route('pasien.index');
     }
+
+
 
 
     public function checkin(Request $request)

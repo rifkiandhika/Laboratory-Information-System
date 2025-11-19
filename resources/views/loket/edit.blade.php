@@ -44,7 +44,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div class="col-6 col-md-6">
+                                    {{-- <div class="col-6 col-md-6">
                                         <label for="basic-url" class="fw-bold">Tanggal Order</label>
                                         <div class="input-group mb-6">
                                             <input 
@@ -53,7 +53,7 @@
                                                 name="tanggal_masuk"
                                                 value="{{ old('tanggal_masuk', $data_pasien->tanggal_masuk ? \Carbon\Carbon::parse($data_pasien->tanggal_masuk)->format('Y-m-d\TH:i') : '') }}">
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="col-6 col-md-6">
                                         <label for="basic-url" class="fw-bold">No RM</label>
                                         <div class="input-group mb-6">
@@ -210,6 +210,14 @@
                                     </div>
                                 </div>
                                 <hr>
+
+                                {{-- Tampilkan peringatan jika status Result Review atau Diselesaikan --}}
+                                @if(isset($data_pasien) && in_array($data_pasien->status, ['Result Review', 'diselesaikan']))
+                                    <div class="alert alert-warning" role="alert">
+                                        <i class="ti ti-alert-circle me-2"></i>
+                                        <strong>Perhatian!</strong> Pemeriksaan tidak dapat diubah karena data pemeriksaan pasien sudah <strong>disimpan</strong>.
+                                    </div>
+                                @endif
                                 <div class="row" id="inspectionList">
                                     @foreach ($departments as $departement)
                                         <div class="col-xl-3 inspection-item">
@@ -217,6 +225,10 @@
                                                 <div class="heading heading-color btn-block mb-3">
                                                     <strong>{{ $departement->nama_department }}</strong>
                                                 </div>
+
+                                                @php
+                                                    $isDisabled = isset($data_pasien) && in_array($data_pasien->status, ['Result Review', 'diselesaikan']);
+                                                @endphp
 
                                                 @if($departement->statusdep === 'single')
                                                     {{-- SINGLE → langsung pakai judul --}}
@@ -305,6 +317,44 @@
 
 @endsection
 @push('script')
+
+<script>
+$(document).ready(function() {
+    @if(isset($data_pasien) && in_array($data_pasien->status, ['Result Review', 'diselesaikan']))
+        // Disable semua checkbox pemeriksaan
+        $('.child-pemeriksaan').prop('disabled', true);
+        $('.child-pemeriksaan').css('cursor', 'not-allowed');
+        $('.form-check-label').addClass('text-muted');
+        
+        // Disable search input juga (opsional)
+        $('#searchInspection').prop('disabled', true);
+        $('#searchInspection').attr('placeholder', 'Pencarian dinonaktifkan');
+    @endif
+    
+    // Hitung total harga saat pertama kali load
+    calculateTotalPrice();
+});
+
+// Fungsi untuk menghitung total harga
+function calculateTotalPrice() {
+    let totalHarga = 0;
+    $('.child-pemeriksaan:checked').each(function() {
+        totalHarga += parseFloat($(this).data('harga')) || 0;
+    });
+    $('#harga-pemeriksaan').val(totalHarga.toLocaleString('id-ID'));
+}
+
+// Override fungsi checkpemeriksaan
+function checkpemeriksaan(harga) {
+    @if(isset($data_pasien) && in_array($data_pasien->status, ['Result Review', 'Diselesaikan']))
+        // Jangan lakukan apa-apa jika status locked
+        return false;
+    @else
+        // Hitung ulang total harga
+        calculateTotalPrice();
+    @endif
+}
+</script>
 
     <script>
         $(document).ready(function() {

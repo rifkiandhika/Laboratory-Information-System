@@ -149,7 +149,7 @@ class analystDasboard extends Controller
                 $pasien->status = 'Check In Spesiment';
                 historyPasien::create([
                     'no_lab'       => $no_lab,
-                    'proses'       => 'Check In Spesiment',
+                    'proses'       => 'Worklist',
                     'tempat'       => 'Worklist',
                     'waktu_proses' => now(),
                 ]);

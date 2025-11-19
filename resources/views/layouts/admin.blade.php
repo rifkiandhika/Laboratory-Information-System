@@ -75,11 +75,15 @@
 
         <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
             <div class="app-brand demo ">
-              <a href="index-2.html" class="app-brand-link">
+              <a href="#" class="app-brand-link">
                 <span class="app-brand-logo demo">
           <img src="{{ asset('image/erecord.png') }}" width="60px"  alt="">
           </span>
-                <span class="app-brand-text demo menu-text fw-bold">LISM</span>
+                <span class="app-brand-text demo menu-text fw-bold" style="font-size: 0.75rem; line-height: 1.3;">
+                    Erecord Integrasi 
+                    <br>
+                    LIS
+                </span>
               </a>
 
               <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
@@ -169,6 +173,21 @@
     <script src="{{ asset('assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js') }}"></script>
     <script src="{{ asset('assets/js/tables-datatables-advanced.js')}}"></script>
 
+    <script>
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    document.addEventListener('keydown', e => {
+    if (e.key === 'F12') e.preventDefault();
+    if (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) e.preventDefault();
+    if (e.ctrlKey && ['U','S'].includes(e.key.toUpperCase())) e.preventDefault();
+    });
+
+    setInterval(() => {
+    if (window.outerWidth - window.innerWidth > 160 || window.outerHeight - window.innerHeight > 160) {
+        alert('Developer Tools terdeteksi! Tutup dulu DevTools-nya.');
+    }
+    }, 1000);
+    </script>
 
 
     <script>

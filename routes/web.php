@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\admin\AdminDeviceController;
+use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\admin\IpRangeController;
+use App\Http\Controllers\admin\LoginLogController;
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\icd10\icd10Controller;
@@ -18,6 +22,7 @@ use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\analyst\spesimentHendlingController;
 use App\Http\Controllers\analyst\vDokterController;
 use App\Http\Controllers\auth\AuthController;
+use App\Http\Controllers\auth\LocationController;
 use App\Http\Controllers\department\DepartmentController;
 use App\Http\Controllers\DokterController;
 use App\Http\Controllers\HasilController;
@@ -48,20 +53,56 @@ use Illuminate\Support\Facades\Response;
 
 
 
-Route::get('/test', function () {
-    return view('Note/test');
-});
-
-// Route::get('/print-view/print-pasien', function () {
-//     return view('print-view.print-pasien');
-// });
-Route::get('/', function () {
-    return redirect('/login');
-});
 
 route::resource('login', AuthController::class);
-route::post('login-proses', [AuthController::class, 'proses'])->name('login.proses');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/', function () {
+    return redirect()->route('login.index');
+});
+
+Route::get('/login', [AuthController::class, 'index'])->name('login.index');
+Route::post('/login', [AuthController::class, 'proses'])->name('login.proses');
+
+// Location verification routes (accessible before login)
+Route::post('/check-device', [LocationController::class, 'checkDevice'])->name('check.device');
+Route::get('/check-device-status', [AuthController::class, 'checkDeviceStatus'])->name('check.device.status');
+Route::post('/register-device', [LocationController::class, 'registerDevice'])->name('register.device');
+Route::post('/verify-location', [LocationController::class, 'verifyLocation'])->name('verifylocation');
+
+
+// Location verification routes (accessible before login)
+Route::post('/check-device', [LocationController::class, 'checkDevice'])->name('check.device');
+Route::post('/register-device', [LocationController::class, 'registerDevice'])->name('register.device');
+Route::post('/verify-location', [LocationController::class, 'verifyLocation'])->name('verifylocation');
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+
+    // Dashboard
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboardmon', [DashboardController::class, 'index'])->name('dashboard.index');
+
+    // Device Management
+    Route::prefix('devices')->name('devices.')->group(function () {
+        Route::get('/', [AdminDeviceController::class, 'index'])->name('index');
+        Route::post('/{id}/approve', [AdminDeviceController::class, 'approve'])->name('approve');
+        Route::post('/{id}/reject', [AdminDeviceController::class, 'reject'])->name('reject');
+        Route::post('/{id}/revoke', [AdminDeviceController::class, 'revoke'])->name('revoke');
+        Route::delete('/{id}', [AdminDeviceController::class, 'destroy'])->name('destroy');
+        Route::post('/bulk-approve', [AdminDeviceController::class, 'bulkApprove'])->name('bulk-approve');
+    });
+
+    // IP Range Management
+    Route::prefix('ip-ranges')->name('ip-ranges.')->group(function () {
+        Route::get('/', [IpRangeController::class, 'index'])->name('index');
+        Route::post('/', [IpRangeController::class, 'store'])->name('store');
+        Route::post('/{id}/toggle', [IpRangeController::class, 'toggle'])->name('toggle');
+        Route::delete('/{id}', [IpRangeController::class, 'destroy'])->name('destroy');
+    });
+
+    // Login Logs
+    Route::get('/login-logs', [LoginLogController::class, 'index'])->name('login-logs');
+});
 
 //admin
 route::middleware('auth')->group(function () {
@@ -80,7 +121,8 @@ route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class);
     Route::get('/package-details/{id}', [McuMcuPackageController::class, 'getPackageDetails'])->name('package-details');
 });
-// routes/web.php
+
+
 Route::get('signature/{filename}', function ($filename) {
     $path = storage_path('app/public/signatures/' . $filename);
 
@@ -105,6 +147,7 @@ route::group(['prefix' => 'loket', 'middleware' => ['auth']], function () {
     });
     Route::resource('report', ReportController::class);
     Route::resource('data-pasien', DataPasienController::class);
+    Route::put('/data_pasien/{id}', [DataPasienController::class, 'updated'])->name('data_pasien.updated');
     Route::get('get-icd10', [icd10Controller::class, 'geticd10'])->name('geticd10');
     Route::get('print/barcode/{no_lab}', [pasienController::class, 'previewPrint'])->name('print.barcode');
     Route::get('/pasien/edit/{no_lab}', [pasienController::class, 'edit'])->name('pasien.viewedit');
@@ -154,6 +197,7 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
     Route::post('report/data', [resultController::class, 'getReportData'])->name('result.data');
     Route::post('/hasil-pemeriksaans/kesimpulan-saran', [resultController::class, 'simpanKesimpulanSaran'])
         ->name('hasil_pemeriksaans.simpanKesimpulanSaran');
+
 
 
     // Route::get('/print', [resultController::class, 'print']);

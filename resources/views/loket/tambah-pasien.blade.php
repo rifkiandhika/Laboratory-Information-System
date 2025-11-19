@@ -44,7 +44,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-6 col-md-6">
+                                    {{-- <div class="col-6 col-md-6">
                                         <label for="basic-url" class="fw-bold">Tanggal Order</label>
                                         <div class="input-group mb-6">
                                             <input 
@@ -53,7 +53,7 @@
                                                 name="tanggal_masuk"
                                                 value="{{ old('tanggal_masuk', now()->format('Y-m-d\TH:i')) }}">
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     
                                     <div class="col-6 col-md-6">
                                         <label for="basic-url" class="fw-bold">Nomor Induk Kewarganegaraan</label>
@@ -84,7 +84,7 @@
                                     </div>
                                     <div class="col-md-6 mb-6">
                                         <label for="exampleFormControlSelect1" class="fw-bold">Gender<strong class="text-danger"> *</strong></label>
-                                        <select class="form-select" id="jeniskelamin"  name="jeniskelamin">
+                                        <select class="form-select" id="jeniskelamin" name="jeniskelamin">
                                             <option selected>Choose Gender</option>
                                             <option value="Laki-Laki">Laki-Laki</option>
                                             <option value="Perempuan">Perempuan</option>
@@ -100,34 +100,47 @@
                                         <textarea class="form-control ml-1" cols="119" rows="1" id="alamat" name="alamat" placeholder="Enter Address"></textarea>
                                     </div>
                                                                   
-                                    <div class="col-md-6 mb-6">
-                                        <label for="asal_ruangan" class="fw-bold">Room</label>
-                                            <select class="form-select" id="asal_ruangan" name="asal_ruangan">
-                                                <option value="" hidden>Choose...</option>
-                                                @foreach ($poliInternal as $poli)
-                                                <option value="{{ $poli->nama_poli }}">{{ $poli->nama_poli }}</option>
-                                                @endforeach
-                                                <option value="lainnya">Lainnya...</option>
-                                            </select>
-                                    </div>
-
-                                    <div class="col-md-6 mb-6">
-                                        <label for="doctorSelect" class="fw-bold">Doctor Internal / Pengirim</label>
+                                   <div class="col-md-6 mb-6">
+                                        <label for="doctorSelect" class="fw-bold">Doctor Internal <span class="text-muted">(pilih dokter terlebih dahulu)</span></label>
                                         <select class="form-select" id="doctorSelect" name="dokter_internal">
-                                            <option value="" hidden>Choose...</option>
+                                            <option value="" hidden>Choose Internal Doctor...</option>
                                             @foreach ($dokterInternal as $dokter)
-                                                <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }} ({{ $dokter->jabatan }})</option>
+                                                <option value="{{ $dokter->nama_dokter }}" data-dokter-id="{{ $dokter->id }}">
+                                                    {{ $dokter->nama_dokter }} ({{ $dokter->jabatan }})
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>
 
                                     <div class="col-md-6 mb-6">
-                                        <label for="externalDoctorSelect" class="fw-bold">Doctor External / Pengirim</label>
+                                        <label for="externalDoctorSelect" class="fw-bold">Doctor External <span class="text-muted">(pilih dokter terlebih dahulu)</span></label>
                                         <select class="form-select" id="externalDoctorSelect" name="dokter_external">
-                                            <option value="" hidden>Choose...</option>
+                                            <option value="" hidden>Choose External Doctor...</option>
                                             @foreach ($dokterExternal as $dokter)
-                                                <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }} ({{ $dokter->jabatan }})</option>
+                                                <option value="{{ $dokter->nama_dokter }}" data-dokter-id="{{ $dokter->id }}">
+                                                    {{ $dokter->nama_dokter }} ({{ $dokter->jabatan }})
+                                                </option>
                                             @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6 mb-6">
+                                        <label for="asal_ruangan" class="fw-bold">Room <span class="text-muted" id="roomHint">(otomatis terisi)</span></label>
+                                        
+                                        <!-- Input readonly (default) -->
+                                        <input type="text" 
+                                            class="form-control" 
+                                            id="asal_ruangan_input" 
+                                            name="asal_ruangan" 
+                                            readonly 
+                                            placeholder="Pilih dokter terlebih dahulu">
+                                        
+                                        <!-- Dropdown (hidden by default) -->
+                                        <select class="form-select" 
+                                                id="asal_ruangan_select" 
+                                                name="asal_ruangan_select" 
+                                                style="display: none;">
+                                            <option value="" hidden>Pilih salah satu ruangan...</option>
                                         </select>
                                     </div>
                                           
@@ -209,16 +222,30 @@
                                 </div>
                                 <hr>
                                 <div class="row" id="inspectionList">
-                                    @foreach ($departments as $departement)
+                                    @php
+                                        // Kelompokkan departments berdasarkan nama_department untuk menghindari duplikasi
+                                        $groupedDepartments = $departments->groupBy('nama_department');
+                                    @endphp
+
+                                    @foreach ($groupedDepartments as $namaDepartment => $deptGroup)
+                                        @php
+                                            // Ambil department pertama dari grup untuk mendapatkan data department
+                                            $departement = $deptGroup->first();
+                                            // Gabungkan semua detailDepartments dari department yang sama
+                                            $allDetails = $deptGroup->flatMap(function($dept) {
+                                                return $dept->detailDepartments;
+                                            });
+                                        @endphp
+                                        
                                         <div class="col-xl-3 inspection-item">
                                             <div class="parent-pemeriksaan">
                                                 <div class="heading heading-color btn-block mb-3">
-                                                    <strong>{{ $departement->nama_department }}</strong>
+                                                    <strong>{{ $namaDepartment }}</strong>
                                                 </div>
 
                                                 @if($departement->statusdep === 'single')
                                                     {{-- SINGLE → langsung pakai judul --}}
-                                                    @foreach ($departement->detailDepartments as $pemeriksaan)
+                                                    @foreach ($allDetails as $pemeriksaan)
                                                         @if ($pemeriksaan->status === 'active')
                                                             <div class="form-check">
                                                                 <input style="cursor: pointer"
@@ -241,7 +268,7 @@
                                                 @elseif($departement->statusdep === 'multi')
                                                     {{-- MULTI → group by judul, tampilkan nama_pemeriksaan --}}
                                                     @php
-                                                        $grouped = $departement->detailDepartments
+                                                        $grouped = $allDetails
                                                             ->where('status', 'active')
                                                             ->groupBy('judul');
                                                     @endphp
@@ -249,7 +276,7 @@
                                                     @foreach ($grouped as $judul => $listPemeriksaan)
                                                         <div class="mb-2">
                                                             <div style="margin-left: 12px">
-                                                            <strong>{{ $judul }}</strong>
+                                                                <strong>{{ $judul }}</strong>
                                                             </div>
                                                             @foreach ($listPemeriksaan as $pemeriksaan)
                                                                 <div class="form-check ms-3">
@@ -275,7 +302,6 @@
                                             <hr>
                                         </div>
                                     @endforeach
-
                                 </div>
                                 <hr>
                                 <div class="row pemeriksaan">
@@ -322,10 +348,142 @@
 
 @push('script')
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    const roomByDokter = @json($roomByDokter ?? []);
+    
+    const doctorSelectInternal = document.getElementById('doctorSelect');
+    const doctorSelectExternal = document.getElementById('externalDoctorSelect');
+    const asalRuanganInput = document.getElementById('asal_ruangan_input');
+    const asalRuanganSelect = document.getElementById('asal_ruangan_select');
+    const roomHint = document.getElementById('roomHint');
+    
+    console.log('Room by dokter:', roomByDokter);
+    
+    
+    function showInput() {
+        asalRuanganInput.style.display = 'block';
+        asalRuanganSelect.style.display = 'none';
+        asalRuanganInput.removeAttribute('name');
+        asalRuanganInput.setAttribute('name', 'asal_ruangan');
+        asalRuanganSelect.removeAttribute('name');
+    }
+    
+    function showSelect() {
+        asalRuanganInput.style.display = 'none';
+        asalRuanganSelect.style.display = 'block';
+        asalRuanganSelect.removeAttribute('name');
+        asalRuanganSelect.setAttribute('name', 'asal_ruangan');
+        asalRuanganInput.removeAttribute('name');
+    }
+    
+    function resetRoom() {
+        asalRuanganInput.value = '';
+        asalRuanganSelect.innerHTML = '<option value="" hidden>Pilih salah satu ruangan...</option>';
+        showInput();
+        roomHint.textContent = '(otomatis terisi)';
+    }
+    
+    
+    function handleDoctorSelection(dokterId, dokterStatus) {
+        if (!dokterId || dokterId === '') {
+            resetRoom();
+            return;
+        }
+        
+        
+        if (roomByDokter[dokterId]) {
+            const dokterData = roomByDokter[dokterId];
+            const ruanganList = dokterData.ruangan;
+            
+            if (ruanganList && ruanganList.length > 0) {
+                if (ruanganList.length === 1) {
+                    
+                    showInput();
+                    asalRuanganInput.value = ruanganList[0];
+                    roomHint.textContent = `(otomatis terisi - ${dokterStatus})`;
+                    
+                    if (typeof toastr !== 'undefined') {
+                        toastr.success(`Ruangan "${ruanganList[0]}" otomatis terisi`, 'Info');
+                    }
+                } else {
+                    
+                    showSelect();
+                    roomHint.textContent = `(pilih salah satu - ${dokterStatus})`;
+                    
+                    
+                    asalRuanganSelect.innerHTML = '<option value="" hidden>Pilih salah satu ruangan...</option>';
+                    
+                    ruanganList.forEach(function(namaRuangan) {
+                        const option = document.createElement('option');
+                        option.value = namaRuangan;
+                        option.textContent = namaRuangan;
+                        asalRuanganSelect.appendChild(option);
+                    });
+                    
+                    if (typeof toastr !== 'undefined') {
+                        toastr.info(`Dokter bertugas di ${ruanganList.length} ruangan. Silakan pilih salah satu.`, 'Pilih Ruangan');
+                    }
+                }
+            } else {
+                
+                showInput();
+                asalRuanganInput.value = dokterStatus === 'external' ? 'External / Luar RS' : 'Tidak ada ruangan terdaftar';
+                roomHint.textContent = `(${dokterStatus === 'external' ? 'dokter external' : 'tidak ada data'})`;
+                
+                if (typeof toastr !== 'undefined') {
+                    if (dokterStatus === 'external') {
+                        toastr.info('Dokter external tanpa ruangan spesifik', 'Info');
+                    } else {
+                        toastr.warning('Dokter ini belum memiliki ruangan terdaftar', 'Perhatian');
+                    }
+                }
+            }
+        } else {
+            resetRoom();
+        }
+    }
+    
+    
+    doctorSelectInternal.addEventListener('change', function() {
+        
+        doctorSelectExternal.value = '';
+        
+        const selectedOption = this.options[this.selectedIndex];
+        const dokterId = selectedOption.getAttribute('data-dokter-id');
+        
+        handleDoctorSelection(dokterId, 'internal');
+    });
+    
+    
+    doctorSelectExternal.addEventListener('change', function() {
+        
+        doctorSelectInternal.value = '';
+        
+        const selectedOption = this.options[this.selectedIndex];
+        const dokterId = selectedOption.getAttribute('data-dokter-id');
+        
+        handleDoctorSelection(dokterId, 'external');
+    });
+    
+    
+    doctorSelectInternal.addEventListener('focus', function() {
+        if (this.value === '') {
+            resetRoom();
+        }
+    });
+    
+    doctorSelectExternal.addEventListener('focus', function() {
+        if (this.value === '') {
+            resetRoom();
+        }
+    });
+});
+</script>
+<script>
 $(document).ready(function() {
     console.log('Memulai inisialisasi Select2 NIK...');
     
-    // Pastikan element ada
     if ($('#nik').length === 0) {
         console.error('Element #nik tidak ditemukan!');
         return;
@@ -333,10 +491,10 @@ $(document).ready(function() {
     
     // Inisialisasi Select2 untuk NIK
     $("#nik").select2({
-        placeholder: 'Ketik NIK, Nama, atau No RM (min 3 karakter)',
+        placeholder: 'Ketik NIK, Nama, atau UID (min 3 karakter)', // Update placeholder
         allowClear: true,
         minimumInputLength: 3,
-        tags: true, // Izinkan input manual
+        tags: true,
         language: {
             inputTooShort: function() {
                 return "Ketik minimal 3 karakter";
@@ -351,12 +509,10 @@ $(document).ready(function() {
         createTag: function(params) {
             var term = $.trim(params.term);
             
-            // Izinkan semua input angka (tidak harus 16 digit saat mengetik)
             if (!/^\d+$/.test(term)) {
-                return null; // Hanya tolak jika bukan angka
+                return null;
             }
             
-            // Tampilkan sebagai NIK baru
             if (term.length >= 3) {
                 return {
                     id: term,
@@ -394,10 +550,11 @@ $(document).ready(function() {
                 }
                 
                 let results = data.data.map(function(pasien) {
+                    // Tampilkan NIK, Nama, dan UID di dropdown
                     return {
                         id: pasien.nik,
-                        text: pasien.nik + ' - ' + pasien.nama + ' (RM: ' + pasien.no_rm + ')',
-                        pasienData: pasien
+                        text: pasien.nik + ' - ' + pasien.nama + ' (UID: ' + pasien.uid + ')',
+                        pasienData: pasien // Simpan semua data termasuk no_rm
                     };
                 });
                 
@@ -423,7 +580,6 @@ $(document).ready(function() {
             console.log('NIK Baru - Input Manual');
             clearFormFields();
             
-            // Optional: Tampilkan notifikasi
             if (typeof toastr !== 'undefined') {
                 toastr.info('Silakan isi data pasien baru', 'NIK Baru');
             }
@@ -435,7 +591,6 @@ $(document).ready(function() {
             console.log('Pasien ditemukan, mengisi form...');
             fillFormWithPasienData(data.pasienData);
             
-            // Optional: Tampilkan notifikasi
             if (typeof toastr !== 'undefined') {
                 toastr.success('Data pasien berhasil dimuat', 'Pasien Ditemukan');
             }
@@ -452,8 +607,9 @@ $(document).ready(function() {
     function fillFormWithPasienData(pasien) {
         console.log('Mengisi form dengan data:', pasien);
         
-        // Isi semua field
-        $('#norm').val(pasien.no_rm || '');
+        // Isi semua field termasuk no_rm dan uid
+        $('#norm').val(pasien.no_rm || ''); // no_rm tetap terisi otomatis
+        $('#uid').val(pasien.uid || ''); // uid juga terisi
         $('#nama').val(pasien.nama || '');
         $('#tanggallahir').val(pasien.lahir || '');
         $('#jeniskelamin').val(pasien.jenis_kelamin || 'Choose Gender');
@@ -462,9 +618,10 @@ $(document).ready(function() {
         
         // Disable field yang tidak boleh diubah untuk pasien lama
         $('#norm').prop('readonly', true);
+        $('#uid').prop('readonly', true);
         $('#nama').prop('readonly', true);
         $('#tanggallahir').prop('readonly', true);
-        $('#jeniskelamin').prop('disabled', true);
+        $('#jeniskelamin').prop('readonly', true);
         $('#notelepon').prop('readonly', true);
         $('#alamat').prop('readonly', true);
         
@@ -476,6 +633,7 @@ $(document).ready(function() {
         console.log('Mengosongkan form');
         
         $('#norm').val('');
+        $('#uid').val('');
         $('#nama').val('');
         $('#tanggallahir').val('');
         $('#jeniskelamin').val('Choose Gender');
@@ -484,6 +642,7 @@ $(document).ready(function() {
         
         // Enable semua field untuk pasien baru
         $('#norm').prop('readonly', false);
+        $('#uid').prop('readonly', false);
         $('#nama').prop('readonly', false);
         $('#tanggallahir').prop('readonly', false);
         $('#jeniskelamin').prop('disabled', false);

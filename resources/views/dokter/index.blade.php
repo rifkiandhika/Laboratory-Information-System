@@ -1,6 +1,8 @@
 <title>Dokter</title>
 @extends('layouts.admin')
 @section('content')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <section>
     <div class="content" id="scroll-content">
         <div class="container-fluid">
@@ -52,12 +54,9 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <label><b>Room</b></label>
-                                                        <select name="id_poli" class="form-control" required>
-                                                            <option value="" hidden>Room</option>
+                                                        <select name="id_poli[]" class="form-control" id="RoomAdd" multiple="multiple" required>
                                                             @foreach ($polis as $Poli)
-                                                                <option value="{{ $Poli->id }}">
-                                                                    {{ $Poli->nama_poli }}
-                                                                </option>
+                                                                <option value="{{ $Poli->id }}">{{ $Poli->nama_poli }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -135,7 +134,7 @@
                                                 <td>{{ $dokter->kode_dokter }}</td>
                                                 <td>{{ $dokter->nip }}</td>
                                                 <td>{{ $dokter->nama_dokter }}</td>
-                                                <td>{{ $dokter->polis->nama_poli }}</td>
+                                                <td>{{ $dokter->poli_names  }}</td>
                                                 <td>{{ $dokter->poli }}</td>
                                                 <td>{{ $dokter->jabatan }}</td>
                                                 <td>{{ $dokter->no_telp }}</td>
@@ -146,13 +145,13 @@
                                                         data-id="{{ $dokter->id }}"
                                                         data-kode="{{ $dokter->kode_dokter }}"
                                                         data-nama="{{ $dokter->nama_dokter }}"
-                                                        data-room="{{ $dokter->polis->id }}"
                                                         data-poli="{{ $dokter->poli }}"
                                                         data-nip="{{ $dokter->nip }}"
                                                         data-telp="{{ $dokter->no_telp }}"
                                                         data-email="{{ $dokter->email }}"
                                                         data-status="{{ $dokter->status }}"
-                                                        data-jabatan="{{ $dokter->jabatan }}">
+                                                        data-jabatan="{{ $dokter->jabatan }}"
+                                                        data-room="{{ $dokter->id_poli }}">
                                                         <i class="bi bi-pencil-square"></i> Edit
                                                     </button>
 
@@ -206,12 +205,9 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <label><b>Room</b></label>
-                                                        <select name="id_poli" id="Room" class="form-control" required>
-                                                            <option value="" hidden></option>
+                                                       <select name="id_poli[]" id="RoomEdit" class="form-control" multiple="multiple" required>
                                                             @foreach ($polis as $Poli)
-                                                                <option value="{{ $Poli->id }}">
-                                                                    {{ $Poli->nama_poli }}
-                                                                </option>
+                                                                <option value="{{ $Poli->id }}">{{ $Poli->nama_poli }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -222,7 +218,7 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <label><b>Jabatan</b></label>
-                                                        <select class="form-control" name="jabatan" id="Jabatan" required>
+                                                        <select class="form-control" name="jabatan" id="jabatan" required>
                                                             <option value="" hidden>Pilih Jabatan</option>
                                                             <option value="dokter">Dokter</option>
                                                             <option value="bidan">Bidan</option>
@@ -272,36 +268,94 @@
 
 @push('script')
 <script>
-    $(function() {
-        $(document).on('click', '.btn-edit', function() {
-            let id = $(this).data('id');
-            let kode = $(this).data('kode');
-            let nama = $(this).data('nama');
-            let poli = $(this).data('poli');
-            let room = $(this).data('room');
-            let nip = $(this).data('nip');
-            let telp = $(this).data('telp');
-            let email = $(this).data('email');
-            let status = $(this).data('status');
-            let jabatan = $(this).data('jabatan');
-
-            // Set nilai ke form edit
-            $('#kodedokter').val(kode);
-            $('#Nip').val(nip);
-            $('#namadokter').val(nama);
-            $('#Room').val(room);
-            $('#Poli').val(poli);
-            $('#telp').val(telp);
-            $('#email').val(email);
-            $('#EditStatus').val(status);
-            $('#Jabatan').val(jabatan);
-
-            // Update action form
-            $('#editFormdokter').attr('action', '/dokter/' + id);
-
-            // Show modal
-            $('#editDokter').modal('show');
+   $(document).ready(function() {
+    
+    // Inisialisasi Select2 untuk modal Add
+    $('#exampleModal').on('shown.bs.modal', function () {
+        $('#RoomAdd').select2({
+            placeholder: 'Pilih Room',
+            width: '100%',
+            allowClear: true,
+            dropdownParent: $('#exampleModal')
         });
-    })
+    });
+
+    // Inisialisasi Select2 untuk modal Edit
+    $('#editDokter').on('shown.bs.modal', function () {
+        $('#RoomEdit').select2({
+            placeholder: 'Pilih Room',
+            width: '100%',
+            allowClear: true,
+            dropdownParent: $('#editDokter')
+        });
+    });
+
+    // Destroy Select2 saat modal ditutup untuk mencegah duplikasi
+    $('#exampleModal').on('hidden.bs.modal', function () {
+        $('#RoomAdd').select2('destroy');
+    });
+
+    $('#editDokter').on('hidden.bs.modal', function () {
+        $('#RoomEdit').select2('destroy');
+    });
+
+    // Handle tombol edit
+    $(document).on('click', '.btn-edit', function() {
+        let id = $(this).data('id');
+        let kode = $(this).data('kode');
+        let nama = $(this).data('nama');
+        let poli = $(this).data('poli');
+        let room = $(this).data('room');
+        let nip = $(this).data('nip');
+        let telp = $(this).data('telp');
+        let email = $(this).data('email');
+        let status = $(this).data('status');
+        let jabatan = $(this).data('jabatan');
+
+        console.log('Raw room data:', room);
+        console.log('Type of room:', typeof room);
+
+        // Parse room data dengan lebih teliti
+        let selectedRooms = [];
+        
+        if (Array.isArray(room)) {
+            // Jika sudah array
+            selectedRooms = room.map(id => String(id));
+        } else if (typeof room === 'string') {
+            // Jika string, split by comma
+            selectedRooms = room.split(',').map(id => id.trim());
+        } else if (typeof room === 'object' && room !== null) {
+            // Jika object, convert ke array
+            selectedRooms = Object.values(room).map(id => String(id));
+        } else if (room) {
+            // Jika single value
+            selectedRooms = [String(room)];
+        }
+
+        console.log('Processed selected rooms:', selectedRooms);
+
+        // Set form values
+        $('#kodedokter').val(kode);
+        $('#Nip').val(nip);
+        $('#namadokter').val(nama);
+        $('#Poli').val(poli);
+        $('#telp').val(telp);
+        $('#email').val(email);
+        $('#EditStatus').val(status);
+        $('#jabatan').val(jabatan);
+
+        // Set form action
+        $('#editFormdokter').attr('action', '/dokter/' + id);
+
+        // Show modal terlebih dahulu
+        $('#editDokter').modal('show');
+
+        // Set room values setelah modal muncul dan Select2 diinisialisasi
+        setTimeout(function() {
+            $('#RoomEdit').val(selectedRooms).trigger('change');
+            console.log('Selected values set to:', $('#RoomEdit').val());
+        }, 150);
+    });
+});
 </script>
 @endpush

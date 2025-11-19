@@ -540,22 +540,22 @@
                         return `
                 <div class="preview-button" id="preview-button">
                     <div class="row">
-                        <div class="col-lg-3 mb-3">
+                        <div class="col-lg-4 mb-4">
                             <button type="button" id="manualButton" class="btn btn-outline-secondary btn-block w-100">Manual</button>
                         </div>
-                        <div class="col-lg-3 mb-3">
+                        <div class="col-lg-4 mb-4">
                             <button type="button" id="duploButton" class="btn btn-outline-primary btn-block w-100">Duplo</button>
                         </div>
-                        <div class="col-lg-3 mb-3">
+                        <div class="col-lg-4 mb-4">
                             <button type="button" class="btn btn-outline-info btn-block w-100" data-bs-toggle="modal" data-bs-target="#sampleHistoryModal">Sample History<span class="badge bg-danger" style="display: none;">!</span></button>
                         </div>
-                        <div class="col-lg-3 mb-3">
+                        {{-- <div class="col-lg-3 mb-3">
                             <form id="delete-form-${data_pasien.id}" action="analyst/worklist/${data_pasien.id}" method="POST" style="display: none;">
                                 @csrf
                                 @method('DELETE')
                             </form>
                             <button class="btn btn-outline-danger w-100" onclick="confirmDelete(${data_pasien.id})">Delete</button>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             `;
@@ -861,7 +861,7 @@
                         const UrineParams = [
                             {
  				                judul: 'Urine Lengkap',
-                                nama: 'Warna',
+                                nama: 'Warna Urine',
                                 display_name: 'Warna',
                                 satuan: '-',
                                 normal_min: 'L.- P.-',
@@ -917,7 +917,7 @@
                             },
                             {
  				                judul: 'Urine Lengkap',
-                                nama: 'Leukosit',
+                                nama: 'Leukosit (Strip)',
                                 display_name: 'Leukosit',
                                 satuan: '-',
                                 normal_min: 'L.- P.-',
@@ -1029,7 +1029,7 @@
                             },
                             {
  				                judul: 'Sedimen',
-                                nama: 'Eritrosit',
+                                nama: 'Eritrosit Urine',
                                 display_name: '- Eritrosit',
                                 satuan: '',
                                 normal_min: 'L.0 P.0',
@@ -1043,7 +1043,7 @@
                             },
                             {
  				                judul: 'Sedimen',
-                                nama: 'Leukosit_sedimen',
+                                nama: 'Leukosit Urine',
                                 display_name: '- Leukosit',
                                 satuan: '',
                                 normal_min: 'L.0 P.0',
@@ -1057,7 +1057,7 @@
                             },
                             {
  				                judul: 'Sedimen',
-                                nama: 'Epithel',
+                                nama: 'Epithel Urine',
                                 display_name: '- Epithel',
                                 satuan: '-',
                                 normal_min: 'L.- P.-',
@@ -1076,7 +1076,7 @@
                                 satuan: '-',
                                 normal_min: 'L.- P.-',
                                 normal_max: 'L.- P.-',
-                                nilai_rujukan: 'Tidak ada',
+                                nilai_rujukan: 'Negatif',
                                 nilai_kritis: 'L.- P.-',
                                 metode: '-',
                                 tipe_inputan : 'Dropdown',
@@ -1090,7 +1090,7 @@
                                 satuan: '-',
                                 normal_min: 'L.- P.-',
                                 normal_max: 'L.- P.-',
-                                nilai_rujukan: 'Tidak ada',
+                                nilai_rujukan: 'Negatif',
                                 nilai_kritis: 'L.- P.-',
                                 metode: '-',
                                 tipe_inputan : 'Dropdown',
@@ -1104,7 +1104,7 @@
                                 satuan: '-',
                                 normal_min: 'L.- P.-',
                                 normal_max: 'L.- P.-',
-                                nilai_rujukan: 'Tidak ada',
+                                nilai_rujukan: 'Negatif',
                                 nilai_kritis: 'L.- P.-',
                                 metode: '-',
                                 tipe_inputan : 'Dropdown',
@@ -1118,7 +1118,7 @@
                                 satuan: '-',
                                 normal_min: 'L.- P.-',
                                 normal_max: 'L.- P.-',
-                                nilai_rujukan: 'Tidak ada',
+                                nilai_rujukan: 'Negatif',
                                 nilai_kritis: 'L.- P.-',
                                 metode: '-',
                                 tipe_inputan : 'Dropdown',
@@ -1127,7 +1127,7 @@
                             },
                             {
  				                judul: 'Sedimen',
-                                nama: 'Lain-lain',
+                                nama: 'Sedimen-Lain-lain',
                                 display_name: '- Lain-lain',
                                 satuan: '-',
                                 normal_min: '',
@@ -1383,7 +1383,7 @@
                             },
                             {
                                 judul: 'Feses',
-                                nama: 'Warna',
+                                nama: 'Feses-Warna',
                                 display_name: 'Warna',
                                 satuan: '-',
                                 normal_min: '-',
@@ -1467,7 +1467,7 @@
                             },
                             {
                                 judul: 'Feses',
-                                nama: 'Leukosit',
+                                nama: 'Feses-Leukosit',
                                 display_name: 'Leukosit',
                                 satuan: '-',
                                 normal_min: '-',
@@ -1551,47 +1551,60 @@
                             };
                         }
 
-                        // Create a comprehensive map of OBX data from obrs relationship
                         const obxMap = {};
 
-                        data_pasien.obrs.forEach(obr => {
-                        if (!Array.isArray(obr.obx)) return;
-                        obr.obx.forEach(obx => {
-                            const name = (obx.identifier_name || '').toLowerCase().trim();
-                            const value = obx.identifier_value ?? obx.observation_value ?? ''; // <-- pake ?? bukan ||
-                            // skip jika kosong
-                            if (value === '' || value === null || value === undefined) return;
+                        if (data_pasien && Array.isArray(data_pasien.obrs)) {
+                            data_pasien.obrs.forEach(obr => {
+                                if (!Array.isArray(obr.obx)) return;
+                                obr.obx.forEach(obx => {
+                                    const name = (obx.identifier_name || '').toLowerCase().trim();
+                                    const value = obx.identifier_value ?? obx.observation_value ?? '';
+                                    
+                                    // skip jika kosong
+                                    if (value === '' || value === null || value === undefined) return;
 
-                            if (typeof value === 'string' && /^\^image\^|^data:image/i.test(value)) return;
+                                    if (typeof value === 'string' && /^\^image\^|^data:image/i.test(value)) return;
 
-                            if (!obxMap[name]) obxMap[name] = [];
-                            obxMap[name].push({
-                            value,
-                            unit: obx.identifier_unit,
-                            flags: obx.identifier_flags,
-                            id: obx.id,
-                            tanggal: obx.tanggal,
-                            raw: obx
+                                    if (!obxMap[name]) obxMap[name] = [];
+                                    obxMap[name].push({
+                                        value,
+                                        unit: obx.identifier_unit,
+                                        flags: obx.identifier_flags,
+                                        id: obx.id,
+                                        tanggal: obx.tanggal,
+                                        raw: obx
+                                    });
+                                });
                             });
-                        });
-                        });
 
-                        // sort tiap grup berdasarkan tanggal (fallback id) supaya urutan deterministik
-                        Object.keys(obxMap).forEach(k => {
-                        obxMap[k].sort((a,b) => {
-                            const ta = a.tanggal ? new Date(a.tanggal) : null;
-                            const tb = b.tanggal ? new Date(b.tanggal) : null;
-                            if (ta && tb) {
-                            const diff = ta - tb;
-                            if (diff !== 0) return diff;
-                            }
-                            return (a.id || 0) - (b.id || 0);
-                        });
-                        });
+                            // sort tiap grup berdasarkan tanggal (fallback id) supaya urutan deterministik
+                            Object.keys(obxMap).forEach(k => {
+                                obxMap[k].sort((a,b) => {
+                                    const ta = a.tanggal ? new Date(a.tanggal) : null;
+                                    const tb = b.tanggal ? new Date(b.tanggal) : null;
+                                    if (ta && tb) {
+                                        const diff = ta - tb;
+                                        if (diff !== 0) return diff;
+                                    }
+                                    return (a.id || 0) - (b.id || 0);
+                                });
+                            });
+                        }
 
                         function getObxValues(parameterName) {
                             const key = (parameterName || '').toLowerCase().trim();
                             const obxItems = [];
+
+                            // Guard clause: pastikan data_pasien dan obrs ada
+                            if (!data_pasien || !Array.isArray(data_pasien.obrs)) {
+                                console.warn('data_pasien.obrs tidak tersedia atau bukan array');
+                                return {
+                                    duplo_d1: '',
+                                    duplo_d2: '',
+                                    duplo_d3: '',
+                                    hasilUtama: ''
+                                };
+                            }
 
                             data_pasien.obrs.forEach(obr => {
                                 if (Array.isArray(obr.obx)) {
@@ -1603,8 +1616,6 @@
                                     });
                                 }
                             });
-
-                            // console.log('DEBUG', parameterName, obxItems); 
 
                             return {
                                 duplo_d1: obxItems[1] ?? '',
@@ -1939,6 +1950,14 @@
                                 rujukan: cleanValue(rujukanValue)
                             };
                         }
+                        let parameterCounter = 0;
+    
+                        function generateParameterUID(pemeriksaan, parameter, idx) {
+                            parameterCounter++;
+                            const cleanPemeriksaan = pemeriksaan.replace(/[^a-zA-Z0-9]/g, '_');
+                            const cleanParameter = parameter.replace(/[^a-zA-Z0-9]/g, '_');
+                            return `${cleanPemeriksaan}_${cleanParameter}_${idx}_${parameterCounter}`;
+                        }
 
                         const content = `
                         <form id="worklistForm" action="{{ route('worklist.store') }}" method="POST">
@@ -2005,7 +2024,7 @@
                                                     ${(() => {
                                                         // Cek apakah ada pemeriksaan hematologi di grup ini
                                                         const hasHematologi = e.pasiens.some(p => {
-                                                            const isHematologi = p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('hematologi');
+                                                            const isHematologi = p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('darah lengkap');
                                                             return isHematologi;
                                                         });
 
@@ -2042,109 +2061,117 @@
 
                                                         // Tambahkan di bagian atas sebelum if-else pemeriksaan
                                                         function renderSerologiSection({ e, idx, flag, params, judul, warna, defaultName }) {
-                                                        if (!flag) return '';
+                                                            if (!flag) return '';
 
-                                                        const pemeriksaan = e.pasiens.find(p =>
-                                                            p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes(judul.toLowerCase().split('_')[0])
-                                                        );
+                                                            const pemeriksaan = e.pasiens.find(p =>
+                                                                p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes(judul.toLowerCase().split('_')[0])
+                                                            );
 
-                                                        const namaPemeriksaan = pemeriksaan
-                                                            ? pemeriksaan.data_pemeriksaan.nama_pemeriksaan
-                                                            : defaultName;
+                                                            const namaPemeriksaan = pemeriksaan
+                                                                ? pemeriksaan.data_pemeriksaan.nama_pemeriksaan
+                                                                : defaultName;
 
-                                                        let html = `
-                                                            <tr class="section-title-header">
-                                                                <td colspan="8" class="fw-bold text-secondary ps-3"
-                                                                    style="background-color: #f8f9fa; border-left: 4px solid ${warna}; padding: 10px;">
-                                                                    ${judul}
-                                                                </td>
-                                                            </tr>
-                                                        `;
-
-                                                        html += params.map((param, paramIdx) => {
-                                                            const obxValues = getObxValues(param.nama);
-                                                            const rowId = `${judul}_${idx}_${paramIdx}`;
-                                                            const label = param.display_name || param.nama || '-';
-
-                                                            // 🔧 helper untuk membuat field sesuai tipe input
-                                                            const renderField = (name, value, extraClass = '') => {
-                                                                if (param.tipe_inputan === 'Dropdown') {
-                                                                    return `
-                                                                        <select name="${name}[]" class="form-select ${extraClass} w-60 p-0" disabled>
-                                                                            <option value="" selected hidden></option>
-                                                                            ${param.opsi_output.split(';').map(opt => `
-                                                                                <option value="${opt.trim()}" ${value === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
-                                                                            `).join('')}
-                                                                        </select>
-                                                                    `;
-                                                                } else {
-                                                                    return `
-                                                                        <input type="text" name="${name}[]" 
-                                                                            class="form-control ${extraClass} w-60 p-0 text-center" 
-                                                                            disabled value="${value || ''}" />
-                                                                    `;
-                                                                }
-                                                            };
-
-                                                            return `
-                                                                <tr data-id="${rowId}" data-parameter="${param.nama}" class="serologi-row">
-                                                                    <td class="col-2 ps-4">
-                                                                        <strong>${label}</strong>
-                                                                        ${param.nilai_rujukan ? `<small class="text-muted d-block">${param.nilai_rujukan}</small>` : ''}
-                                                                        <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaan}" />
-                                                                        <input type="hidden" name="judul[]" value="${judul}" />
-                                                                        <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                                        <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
-                                                                        <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan}" />
-                                                                        <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
-                                                                    </td>
-
-                                                                    <!-- hasil utama -->
-                                                                    <td class="col-2">
-                                                                        ${renderField('hasil', obxValues.hasilUtama || param.default, 'manualInput')}
-                                                                    </td>
-
-                                                                    <!-- tombol switch -->
-                                                                    <td class="col-1 text-center">
-                                                                        <button type="button" class="btn btn-outline-secondary btn-sm switch-btn">
-                                                                            <i class="ti ti-switch-2"></i>
-                                                                        </button>
-                                                                    </td>
-
-                                                                    <!-- duplo D1 -->
-                                                                    <td class="col-2 duplo d1-column text-center" style="display:none;">
-                                                                        ${renderField('duplo_d1', obxValues.duplo_d1, 'd1')}
-                                                                    </td>
-
-                                                                    <!-- duplo D2 -->
-                                                                    <td class="col-2 duplo d2-column text-center" style="display:none;">
-                                                                        ${renderField('duplo_d2', obxValues.duplo_d2, 'd2')}
-                                                                    </td>
-
-                                                                    <!-- duplo D3 -->
-                                                                    <td class="col-2 duplo d3-column text-center" style="display:none;">
-                                                                        ${renderField('duplo_d3', obxValues.duplo_d3, 'd3')}
-                                                                    </td>
-
-                                                                    <!-- flag -->
-                                                                    <td class="col-3 flag-cell"></td>
-
-                                                                    <!-- satuan -->
-                                                                    <td>
-                                                                        <input type="hidden" name="satuan[]" value="${param.satuan || ''}" />
-                                                                        ${param.satuan || ''}
+                                                            let html = `
+                                                                <tr class="section-title-header">
+                                                                    <td colspan="8" class="fw-bold text-secondary ps-3"
+                                                                        style="background-color: #f8f9fa; border-left: 4px solid ${warna}; padding: 10px;">
+                                                                        ${judul}
                                                                     </td>
                                                                 </tr>
                                                             `;
-                                                        }).join('');
 
-                                                        return html;
-                                                    }
+                                                            html += params.map((param, paramIdx) => {
+                                                                const obxValues = getObxValues(param.nama);
+                                                                const rowId = `${judul}_${idx}_${paramIdx}`;
+                                                                const label = param.display_name || param.nama || '-';
+                                                                
+                                                                // ★ TAMBAHAN: Generate UID unik untuk setiap parameter serologi
+                                                                const uniqueID = generateParameterUID(judul, param.nama, paramIdx);
 
-                                                        
+                                                                // ★ PERBAIKAN: Ubah renderField untuk menggunakan UID
+                                                                const renderField = (name, value, extraClass = '') => {
+                                                                    if (param.tipe_inputan === 'Dropdown') {
+                                                                        return `
+                                                                            <select name="${name}[${uniqueID}]" class="form-select ${extraClass} w-60 p-0" disabled>
+                                                                                <option value="" selected hidden></option>
+                                                                                ${param.opsi_output.split(';').map(opt => `
+                                                                                    <option value="${opt.trim()}" ${value === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
+                                                                                `).join('')}
+                                                                            </select>
+                                                                        `;
+                                                                    } else {
+                                                                        return `
+                                                                            <input type="text" name="${name}[${uniqueID}]" 
+                                                                                class="form-control ${extraClass} w-60 p-0 text-center" 
+                                                                                disabled value="${value || ''}" />
+                                                                        `;
+                                                                    }
+                                                                };
+
+                                                                return `
+                                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="serologi-row">
+                                                                        <td class="col-2 ps-4">
+                                                                            <strong>${label}</strong>
+                                                                            ${param.nilai_rujukan ? `<small class="text-muted d-block">${param.nilai_rujukan}</small>` : ''}
+                                                                            
+                                                                            <!-- ★ PERBAIKAN: Tambah UID sebagai master key -->
+                                                                            <input type="hidden" name="uid[]" value="${uniqueID}" />
+                                                                            
+                                                                            <!-- ★ PERBAIKAN: Semua field sekarang menggunakan UID sebagai key -->
+                                                                            <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${namaPemeriksaan}" />
+                                                                            <input type="hidden" name="judul[${uniqueID}]" value="${judul}" />
+                                                                            <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                                            <input type="hidden" name="metode[${uniqueID}]" value="${param.metode ?? ''}" />
+                                                                            <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${param.nilai_rujukan}" />
+                                                                            <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
+                                                                        </td>
+
+                                                                        <!-- hasil utama -->
+                                                                        <td class="col-2" required>
+                                                                            ${renderField('hasil', obxValues.hasilUtama || param.default, 'manualInput')}
+                                                                        </td>
+
+                                                                        <!-- tombol switch -->
+                                                                        <td class="col-1 text-center">
+                                                                            <button type="button" class="btn btn-outline-secondary btn-sm switch-btn">
+                                                                                <i class="ti ti-switch-2"></i>
+                                                                            </button>
+                                                                        </td>
+
+                                                                        <!-- duplo D1 -->
+                                                                        <td class="col-2 duplo d1-column text-center" style="display:none;">
+                                                                            ${renderField('duplo_d1', obxValues.duplo_d1, 'd1')}
+                                                                        </td>
+
+                                                                        <!-- duplo D2 -->
+                                                                        <td class="col-2 duplo d2-column text-center" style="display:none;">
+                                                                            ${renderField('duplo_d2', obxValues.duplo_d2, 'd2')}
+                                                                        </td>
+
+                                                                        <!-- duplo D3 -->
+                                                                        <td class="col-2 duplo d3-column text-center" style="display:none;">
+                                                                            ${renderField('duplo_d3', obxValues.duplo_d3, 'd3')}
+                                                                        </td>
+
+                                                                        <!-- flag -->
+                                                                        <td class="col-3 flag-cell">
+                                                                            <input type="hidden" name="flag[${uniqueID}]" value="" />
+                                                                        </td>
+
+                                                                        <!-- satuan -->
+                                                                        <td>
+                                                                            <input type="hidden" name="satuan[${uniqueID}]" value="${param.satuan || ''}" />
+                                                                            ${param.satuan || ''}
+                                                                        </td>
+                                                                    </tr>
+                                                                `;
+                                                            }).join('');
+
+                                                            return html;
+                                                        }
                                                         if (hasHematologi) {
                                                             const hematologiPemeriksaan = e.pasiens.find(p => 
-                                                                p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('hematologi')
+                                                                p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('darah lengkap')
                                                             );
                                                             const judulHematologi = e.pasiens.find(p => p.data_pemeriksaan?.judul)?.data_pemeriksaan?.judul || '';
                                                             const namaPemeriksaanHematologi = hematologiPemeriksaan ? hematologiPemeriksaan.data_pemeriksaan.nama_pemeriksaan : 'Hematologi Lengkap';
@@ -2162,25 +2189,28 @@
                                                             }
                                                             
                                                             html += hematologiParams.map((param, paramIdx) => {
+                                                                
                                                                 const obxValues = getObxValues(param.nama);
                                                                 const rowId = `hematologi_${idx}_${paramIdx}`;
+                                                                const uniqueID = generateParameterUID('Hematologi', param.nama, paramIdx);
                                                                 const initialFlag = getInitialFlagContent(obxValues.hasilUtama, param.nama, true, false);
                                                                 const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
                                                                 
                                                                 return `
-                                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" class="hematologi-row">
+                                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="hematologi-row">
                                                                         <td class="col-2 ${judulHematologi ? 'ps-4' : ''}" ${judulHematologi ? 'style="border-left: 2px solid #e9ecef;"' : ''}>
                                                                             <strong>${param.display_name}</strong>
                                                                             <small class="text-muted d-block">${normalValues.display}</small>
-                                                                            <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanHematologi}" />
-                                                                            ${judulHematologi ? `<input type="hidden" name="judul[]" value="${judulHematologi}" />` : ''}
-                                                                            <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                                            <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
-                                                                            <input type="hidden" name="nilai_rujukan[]" value="${normalValues.rujukan}" />
-                                                                            <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                                            <input type="hidden" name="uid[]" value="${uniqueID}" />
+                                                                            <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${namaPemeriksaanHematologi}" />
+                                                                            ${judulHematologi ? `<input type="hidden" name="judul[${uniqueID}]" value="${judulHematologi}" />` : ''}
+                                                                            <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                                            <input type="hidden" name="metode[${uniqueID}]" value="${param.metode ?? ''}" />
+                                                                            <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${normalValues.rujukan}" />
+                                                                            <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                                                         </td>
                                                                         <td class="col-2">
-                                                                            <input type="number" name="hasil[]" 
+                                                                            <input type="number" name="hasil[${uniqueID}]" 
                                                                                 class="form-control manualInput w-60 p-0 text-center" 
                                                                                 value="${obxValues.hasilUtama || ''}" 
                                                                                 step="0.01" placeholder="" required />
@@ -2192,26 +2222,26 @@
                                                                             </button>
                                                                         </td>
                                                                         <td class="col-2 duplo d1-column text-center" style="display: none;">
-                                                                            <input type="number" name="duplo_d1[]" 
+                                                                            <input type="number" name="duplo_d1[${uniqueID}]" 
                                                                                 class="form-control d1 w-60 p-0 text-center" 
                                                                                 disabled value="${obxValues.duplo_d1 || ''}" step="0.01" />
                                                                         </td>
                                                                         <td class="col-2 duplo d2-column" style="display: none;">
-                                                                            <input type="number" name="duplo_d2[]" 
+                                                                            <input type="number" name="duplo_d2[${uniqueID}]" 
                                                                                 class="form-control d2 w-60 p-0 text-center" 
                                                                                 disabled value="${obxValues.duplo_d2 || ''}" step="0.01" />
                                                                         </td>
                                                                         <td class="col-2 duplo d3-column" style="display: none;">
-                                                                            <input type="number" name="duplo_d3[]" 
+                                                                            <input type="number" name="duplo_d3[${uniqueID}]" 
                                                                                 class="form-control d3 w-50 p-0 text-center" 
                                                                                 disabled value="${obxValues.duplo_d3 || ''}" step="0.01" />
                                                                         </td>
                                                                         <td class="col-3 flag-cell">
                                                                             ${initialFlag}
-                                                                            <input type="hidden" name="flag[]" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
+                                                                            <input type="hidden" name="flag[${uniqueID}]" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
                                                                         </td>
                                                                         <td>
-                                                                            <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
+                                                                            <input type="hidden" name="satuan[${uniqueID}]" class="form-control w-100 p-0" 
                                                                                 value="${param.satuan}" readonly />
                                                                             ${param.satuan}
                                                                         </td>
@@ -2244,24 +2274,26 @@
                                                             html += WidalParams.map((param, paramIdx) => {
                                                                 const obxValues = getObxValues(param.nama);
                                                                 const rowId = `widal_${idx}_${paramIdx}`;
+                                                                const uniqueID = generateParameterUID('Widal', param.nama, paramIdx);
                                                                 const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
                                                                 
                                                                 return `
-                                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" class="widal-row">
+                                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="widal-row">
                                                                         <td class="col-2 ${judulWidal ? 'ps-4' : ''}" ${judulWidal ? 'style="border-left: 2px solid #e9ecef;"' : ''}>
                                                                             <strong>${param.display_name}</strong>
                                                                             <small class="text-muted d-block">${normalValues.display}</small>
-                                                                            <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanWidal}" />
-                                                                            ${judulWidal ? `<input type="hidden" name="judul[]" value="${judulWidal}" />` : ''}
-                                                                            <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                                            <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
-                                                                            <input type="hidden" name="nilai_rujukan[]" value="${normalValues.rujukan}" />
-                                                                            <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                                            <input type="hidden" name="uid[]" value="${uniqueID}" />
+                                                                            <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${namaPemeriksaanWidal}" />
+                                                                            ${judulWidal ? `<input type="hidden" name="judul[${uniqueID}]" value="${judulWidal}" />` : ''}
+                                                                            <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                                            <input type="hidden" name="metode[${uniqueID}]" value="${param.metode ?? ''}" />
+                                                                            <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${normalValues.rujukan}" />
+                                                                            <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                                                         </td>
                                                                         <td class="col-2">
-                                                                            <select name="hasil[]" 
+                                                                            <select name="hasil[${uniqueID}]" 
                                                                                 class="form-select manualInput w-60 p-0" 
-                                                                                disabled>
+                                                                                disabled required>
                                                                                 ${param.opsi_output.split(';').map(opt => `
                                                                                     <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>
                                                                                         ${opt.trim()}
@@ -2276,7 +2308,7 @@
                                                                             </button>
                                                                         </td>
                                                                         <td class="col-2 duplo d1-column text-center" style="display: block;">
-                                                                            <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                            <select name="duplo_d1[${uniqueID}]" class="form-select d1 w-60 p-0" disabled>
                                                                                 ${param.opsi_output.split(';').map(opt => `
                                                                                     <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>
                                                                                         ${opt.trim()}
@@ -2285,7 +2317,7 @@
                                                                             </select>
                                                                         </td>
                                                                         <td class="col-2 duplo d2-column" style="display: none;">
-                                                                            <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                                            <select name="duplo_d2[${uniqueID}]" class="form-select d2 w-60 p-0" disabled>
                                                                                 ${param.opsi_output.split(';').map(opt => `
                                                                                     <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>
                                                                                         ${opt.trim()}
@@ -2294,7 +2326,7 @@
                                                                             </select>
                                                                         </td>
                                                                         <td class="col-2 duplo d3-column" style="display: none;">
-                                                                            <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                            <select name="duplo_d3[${uniqueID}]" class="form-select d3 w-50 p-0" disabled>
                                                                                 ${param.opsi_output.split(';').map(opt => `
                                                                                     <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>
                                                                                         ${opt.trim()}
@@ -2306,7 +2338,7 @@
                                                                             <!-- Untuk widal tidak ada flag normal/abnormal -->
                                                                         </td>
                                                                         <td>
-                                                                            <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
+                                                                            <input type="hidden" name="satuan[${uniqueID}]" class="form-control w-100 p-0" 
                                                                                 value="${param.satuan}" readonly />
                                                                             ${param.satuan}
                                                                         </td>
@@ -2358,33 +2390,35 @@
                                                                         null, 
                                                                         data_pasien.jenis_kelamin
                                                                     );
+                                                                    const uniqueID = generateParameterUID('Urine_' + judulGroup, param.nama, paramIdx);
                                                                     
                                                                     const normalValues = getUrineNormalValues(param, data_pasien.jenis_kelamin);
                                                                     const displayRujukan = normalValues.rujukan || '';
 
                                                                     return `
-                                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" class="urine-row">
+                                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="urine-row">
                                                                             <td class="col-2 ps-4" style="border-left: 2px solid #e9ecef;">
                                                                                 <strong>${param.display_name}</strong>
                                                                                 ${displayRujukan 
                                                                                     ? `<small class="text-muted d-block">${displayRujukan}</small>` 
                                                                                     : ''}
 
-                                                                                <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanUrine}" />
-                                                                                <input type="hidden" name="judul[]" value="${param.judul}" />
-                                                                                <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                                                <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
-                                                                                <input type="hidden" name="nilai_rujukan[]" value="${displayRujukan}" />
-                                                                                <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                                                <input type="hidden" name="uid[]" value="${uniqueID}" />
+                                                                                <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${namaPemeriksaanUrine}" />
+                                                                                <input type="hidden" name="judul[${uniqueID}]" value="${param.judul}" />
+                                                                                <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                                                <input type="hidden" name="metode[${uniqueID}]" value="${param.metode ?? ''}" />
+                                                                                <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${displayRujukan}" />
+                                                                                <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                                                             </td>
 
                                                                             <td class="col-2">
                                                                                 ${param.tipe_inputan.toLowerCase() === 'text' ? `
-                                                                                    <input type="text" name="hasil[]" 
+                                                                                    <input type="text" name="hasil[${uniqueID}]" 
                                                                                         class="form-control manualInput w-60 p-0 text-center" 
-                                                                                        disabled value="${obxValues.hasilUtama || param.default || ''}" />
+                                                                                        disabled required value="${obxValues.hasilUtama || param.default || ''}" />
                                                                                 ` : `
-                                                                                    <select name="hasil[]" class="form-select manualInput w-60 p-0" disabled>
+                                                                                    <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0" required disabled>
                                                                                         ${param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" 
                                                                                                 ${(obxValues.hasilUtama || param.default) === opt.trim() ? 'selected' : ''}>
@@ -2404,11 +2438,11 @@
 
                                                                             <td class="col-2 duplo d1-column text-center" style="display: none;">
                                                                                 ${param.tipe_inputan.toLowerCase() === 'text' ? `
-                                                                                    <input type="text" name="duplo_d1[]" 
+                                                                                    <input type="text" name="duplo_d1[${uniqueID}]" 
                                                                                         class="form-control d1 w-60 p-0 text-center" 
                                                                                         disabled value="${obxValues.duplo_d1 || ''}" />
                                                                                 ` : `
-                                                                                    <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                                    <select name="duplo_d1[${uniqueID}]" class="form-select d1 w-60 p-0" disabled>
                                                                                         ${param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>
                                                                                                 ${opt.trim()}
@@ -2420,11 +2454,11 @@
 
                                                                             <td class="col-2 duplo d2-column" style="display: none;">
                                                                                 ${param.tipe_inputan.toLowerCase() === 'text' ? `
-                                                                                    <input type="text" name="duplo_d2[]" 
+                                                                                    <input type="text" name="duplo_d2[${uniqueID}]" 
                                                                                         class="form-control d2 w-60 p-0 text-center" 
                                                                                         disabled value="${obxValues.duplo_d2 || ''}" />
                                                                                 ` : `
-                                                                                    <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                                                    <select name="duplo_d2[${uniqueID}]" class="form-select d2 w-60 p-0" disabled>
                                                                                         ${param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>
                                                                                                 ${opt.trim()}
@@ -2436,11 +2470,11 @@
 
                                                                             <td class="col-2 duplo d3-column" style="display: none;">
                                                                                 ${param.tipe_inputan.toLowerCase() === 'text' ? `
-                                                                                    <input type="text" name="duplo_d3[]" 
+                                                                                    <input type="text" name="duplo_d3[${uniqueID}]" 
                                                                                         class="form-control d3 w-50 p-0 text-center" 
                                                                                         disabled value="${obxValues.duplo_d3 || ''}" />
                                                                                 ` : `
-                                                                                    <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                                    <select name="duplo_d3[${uniqueID}]" class="form-select d3 w-50 p-0" disabled>
                                                                                         ${param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>
                                                                                                 ${opt.trim()}
@@ -2452,12 +2486,12 @@
 
                                                                             <td class="col-3 flag-cell">
                                                                                 ${initialFlag}
-                                                                                <input type="hidden" name="flag[]" 
+                                                                                <input type="hidden" name="flag[${uniqueID}]" 
                                                                                     value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
                                                                             </td>
 
                                                                             <td>
-                                                                                <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
+                                                                                <input type="hidden" name="satuan[${uniqueID}]" class="form-control w-100 p-0" 
                                                                                     value="${param.satuan}" readonly />
                                                                                 ${param.satuan}
                                                                             </td>
@@ -2493,27 +2527,29 @@
                                                                 html += MicrobiologiParams.map((param, paramIdx) => {
                                                                     const obxValues = getObxValues(param.nama);
                                                                     const rowId = `mikrobiologi_${idx}_${paramIdx}`;
+                                                                    const uniqueID = generateParameterUID('Mikrobiologi', param.nama, paramIdx);
                                                                     const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
                                                                     const label = param.judul || param.display_name || param.nama || '-';
 
                                                                     return `
-                                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" class="mikrobiologi-row">
+                                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="mikrobiologi-row">
                                                                             <td class="col-2 ps-4" style="border-left: 2px solid #e9ecef;">
                                                                                 <strong>${label}</strong>
                                                                                 ${param.nilai_rujukan !== '-' && param.nilai_rujukan !== '' ? 
                                                                                     `<small class="text-muted d-block">${param.nilai_rujukan ?? ''}</small>` : ''}
-                                                                                <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanMikrobiologi}" />
-                                                                                <input type="hidden" name="judul[]" value="${judulMikrobiologi}" />
-                                                                                <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                                                <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
-                                                                                <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan ?? '-'}" />
-                                                                                <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                                                <input type="hidden" name="uid[]" value="${uniqueID}" />
+                                                                                <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${namaPemeriksaanMikrobiologi}" />
+                                                                                <input type="hidden" name="judul[${uniqueID}]" value="${judulMikrobiologi}" />
+                                                                                <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                                                <input type="hidden" name="metode[${uniqueID}]" value="${param.metode ?? ''}" />
+                                                                                <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${param.nilai_rujukan ?? '-'}" />
+                                                                                <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                                                             </td>
                                                                             <td class="col-2">
                                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                                    <input type="text" name="hasil[]" class="form-control manualInput w-60 p-0 text-center" disabled value="${obxValues.hasilUtama || ''}" />
+                                                                                    <input type="text" name="hasil[${uniqueID}]" class="form-control manualInput w-60 p-0 text-center" required disabled value="${obxValues.hasilUtama || ''}" />
                                                                                 ` : `
-                                                                                    <select name="hasil[]" class="form-select manualInput w-60 p-0" disabled>
+                                                                                    <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0" required disabled>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2527,9 +2563,9 @@
                                                                             </td>
                                                                             <td class="col-2 duplo d1-column text-center" style="display: none;">
                                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                                    <input type="text" name="duplo_d1[]" class="form-control d1 w-60 p-0 text-center" disabled value="${obxValues.duplo_d1 || ''}" />
+                                                                                    <input type="text" name="duplo_d1[${uniqueID}]" class="form-control d1 w-60 p-0 text-center" disabled value="${obxValues.duplo_d1 || ''}" />
                                                                                 ` : `
-                                                                                    <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                                    <select name="duplo_d1[${uniqueID}]" class="form-select d1 w-60 p-0" disabled>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2538,9 +2574,9 @@
                                                                             </td>
                                                                             <td class="col-2 duplo d2-column" style="display: none;">
                                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                                    <input type="text" name="duplo_d2[]" class="form-control d2 w-60 p-0 text-center" disabled value="${obxValues.duplo_d2 || ''}" />
+                                                                                    <input type="text" name="duplo_d2[${uniqueID}]" class="form-control d2 w-60 p-0 text-center" disabled value="${obxValues.duplo_d2 || ''}" />
                                                                                 ` : `
-                                                                                    <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                                                    <select name="duplo_d2[${uniqueID}]" class="form-select d2 w-60 p-0" disabled>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2549,9 +2585,9 @@
                                                                             </td>
                                                                             <td class="col-2 duplo d3-column" style="display: none;">
                                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                                    <input type="text" name="duplo_d3[]" class="form-control d3 w-50 p-0 text-center" disabled value="${obxValues.duplo_d3 || ''}" />
+                                                                                    <input type="text" name="duplo_d3[${uniqueID}]" class="form-control d3 w-50 p-0 text-center" disabled value="${obxValues.duplo_d3 || ''}" />
                                                                                 ` : `
-                                                                                    <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                                    <select name="duplo_d3[${uniqueID}]" class="form-select d3 w-50 p-0" disabled>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2560,7 +2596,7 @@
                                                                             </td>
                                                                             <td class="col-3 flag-cell"></td>
                                                                             <td>
-                                                                                <input type="hidden" name="satuan[]" value="${param.satuan || ''}" readonly />
+                                                                                <input type="hidden" name="satuan[${uniqueID}]" value="${param.satuan || ''}" readonly />
                                                                                 ${param.satuan || ''}
                                                                             </td>
                                                                         </tr>
@@ -2591,27 +2627,29 @@
                                                                 html += PreparatBasahParams.map((param, paramIdx) => {
                                                                     const obxValues = getObxValues(param.nama);
                                                                     const rowId = `preparatbasah_${idx}_${paramIdx}`;
+                                                                    const uniqueID = generateParameterUID('PreparatBasah', param.nama, paramIdx);
                                                                     const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
                                                                     const label = param.judul || param.display_name || param.nama || '-';
 
                                                                     return `
-                                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" class="preparatbasah-row">
+                                                                        <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="preparatbasah-row">
                                                                             <td class="col-2 ps-4" style="border-left: 2px solid #e9ecef;">
                                                                                 <strong>${label}</strong>
                                                                                 ${param.nilai_rujukan !== '-' && param.nilai_rujukan !== '' ? 
                                                                                     `<small class="text-muted d-block">${param.nilai_rujukan ?? ''}</small>` : ''}
-                                                                                <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanPreparatBasah}" />
-                                                                                <input type="hidden" name="judul[]" value="${judulPreparatBasah}" />
-                                                                                <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                                                <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
-                                                                                <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan ?? '-'}" />
-                                                                                <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                                                <input type="hidden" name="uid[]" value="${uniqueID}" />
+                                                                                <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${namaPemeriksaanPreparatBasah}" />
+                                                                                <input type="hidden" name="judul[${uniqueID}]" value="${judulPreparatBasah}" />
+                                                                                <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                                                <input type="hidden" name="metode[${uniqueID}]" value="${param.metode ?? ''}" />
+                                                                                <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${param.nilai_rujukan ?? '-'}" />
+                                                                                <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                                                             </td>
                                                                             <td class="col-2">
                                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                                    <input type="text" name="hasil[]" class="form-control manualInput w-60 p-0 text-center" disabled value="${obxValues.hasilUtama || ''}" />
+                                                                                    <input type="text" name="hasil[${uniqueID}]" class="form-control manualInput w-60 p-0 text-center" required disabled value="${obxValues.hasilUtama || ''}" />
                                                                                 ` : `
-                                                                                    <select name="hasil[]" class="form-select manualInput w-60 p-0" disabled>
+                                                                                    <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0" required disabled>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2625,9 +2663,10 @@
                                                                             </td>
                                                                             <td class="col-2 duplo d1-column text-center" style="display: none;">
                                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                                    <input type="text" name="duplo_d1[]" class="form-control d1 w-60 p-0 text-center" disabled value="${obxValues.duplo_d1 || ''}" />
+                                                                                    <input type="text" name="duplo_d1[${uniqueID}]" class="form-control d1 w-60 p-0 text-center" disabled value="${obxValues.duplo_d1 || ''}" />
                                                                                 ` : `
-                                                                                    <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                                    <select name="duplo_d1[${uniqueID}]" class="form-select d1 w-60 p-0" disabled>
+                                                                                        <option value="" selected hidden>Pilih...</option>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2636,9 +2675,10 @@
                                                                             </td>
                                                                             <td class="col-2 duplo d2-column" style="display: none;">
                                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                                    <input type="text" name="duplo_d2[]" class="form-control d2 w-60 p-0 text-center" disabled value="${obxValues.duplo_d2 || ''}" />
+                                                                                    <input type="text" name="duplo_d2[${uniqueID}]" class="form-control d2 w-60 p-0 text-center" disabled value="${obxValues.duplo_d2 || ''}" />
                                                                                 ` : `
-                                                                                    <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                                                    <select name="duplo_d2[${uniqueID}]" class="form-select d2 w-60 p-0" disabled>
+                                                                                        <option value="" selected hidden>Pilih...</option>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2647,9 +2687,10 @@
                                                                             </td>
                                                                             <td class="col-2 duplo d3-column" style="display: none;">
                                                                                 ${param.tipe_inputan === 'Text' ? `
-                                                                                    <input type="text" name="duplo_d3[]" class="form-control d3 w-50 p-0 text-center" disabled value="${obxValues.duplo_d3 || ''}" />
+                                                                                    <input type="text" name="duplo_d3[${uniqueID}]" class="form-control d3 w-50 p-0 text-center" disabled value="${obxValues.duplo_d3 || ''}" />
                                                                                 ` : `
-                                                                                    <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                                    <select name="duplo_d3[${uniqueID}]" class="form-select d3 w-50 p-0" disabled>
+                                                                                        <option value="" selected hidden>Pilih...</option>
                                                                                         ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                             <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>
                                                                                         `).join('') : '<option value="">Pilih...</option>'}
@@ -2658,7 +2699,7 @@
                                                                             </td>
                                                                             <td class="col-3 flag-cell"></td>
                                                                             <td>
-                                                                                <input type="hidden" name="satuan[]" value="${param.satuan || ''}" readonly />
+                                                                                <input type="hidden" name="satuan[${uniqueID}]" value="${param.satuan || ''}" readonly />
                                                                                 ${param.satuan || ''}
                                                                             </td>
                                                                         </tr>
@@ -2691,31 +2732,33 @@
                                                                 const obxValues = getObxValues(param.nama);
                                                                 const rowId = `feses_${idx}_${paramIdx}`;
                                                                 const normalValues = getNormalValues(param, data_pasien.jenis_kelamin);
+                                                                const uniqueID = generateParameterUID('Feses', param.nama, paramIdx);
 
                                                                 const label = param.display_name || param.nama || '-';
 
                                                                 return `
-                                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" class="feses-row">
+                                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="feses-row">
                                                                         <td class="col-2 ps-4" style="border-left: 2px solid #e9ecef;">
                                                                             <strong>${label}</strong>
                                                                             ${param.nilai_rujukan !== '-' && param.nilai_rujukan !== '' ? 
                                                                                 `<small class="text-muted d-block">${param.nilai_rujukan ?? ''}</small>` : ''}
 
-                                                                            <input type="hidden" name="nama_pemeriksaan[]" value="${namaPemeriksaanFeses}" />
-                                                                            <input type="hidden" name="judul[]" value="${judulFeses}" />
-                                                                            <input type="hidden" name="parameter_name[]" value="${param.nama}" />
-                                                                            <input type="hidden" name="metode[]" value="${param.metode ?? ''}" />
-                                                                            <input type="hidden" name="nilai_rujukan[]" value="${param.nilai_rujukan ?? '-'}" />
-                                                                            <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
+                                                                            <input type="hidden" name="uid[]" value="${uniqueID}" />
+                                                                            <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${namaPemeriksaanFeses}" />
+                                                                            <input type="hidden" name="judul[${uniqueID}]" value="${judulFeses}" />
+                                                                            <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                                            <input type="hidden" name="metode[${uniqueID}]" value="${param.metode ?? ''}" />
+                                                                            <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${param.nilai_rujukan ?? '-'}" />
+                                                                            <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
                                                                         </td>
 
                                                                         <td class="col-2">
                                                                             ${param.tipe_inputan === 'Text' ? `
-                                                                                <input type="text" name="hasil[]" 
+                                                                                <input type="text" name="hasil[${uniqueID}]" 
                                                                                     class="form-control manualInput w-60 p-0 text-center" 
-                                                                                    disabled value="${obxValues.hasilUtama || param.default || ''}" />
+                                                                                    disabled required value="${obxValues.hasilUtama || param.default || ''}" />
                                                                             ` : `
-                                                                                <select name="hasil[]" class="form-select manualInput w-60 p-0" disabled>
+                                                                                <select name="hasil[${uniqueID}]" class="form-select manualInput w-60 p-0" required disabled>
                                                                                     ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${(obxValues.hasilUtama || param.default) === opt.trim() ? 'selected' : ''}>
                                                                                             ${opt.trim()}
@@ -2734,9 +2777,9 @@
 
                                                                         <td class="col-2 duplo d1-column text-center" style="display: none;">
                                                                             ${param.tipe_inputan === 'Text' ? `
-                                                                                <input type="text" name="duplo_d1[]" class="form-control d1 w-60 p-0 text-center" disabled value="${obxValues.duplo_d1 || ''}" />
+                                                                                <input type="text" name="duplo_d1[${uniqueID}]" class="form-control d1 w-60 p-0 text-center" disabled value="${obxValues.duplo_d1 || ''}" />
                                                                             ` : `
-                                                                                <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                                <select name="duplo_d1[${uniqueID}]" class="form-select d1 w-60 p-0" disabled>
                                                                                     ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>
                                                                                             ${opt.trim()}
@@ -2748,9 +2791,9 @@
 
                                                                         <td class="col-2 duplo d2-column" style="display: none;">
                                                                             ${param.tipe_inputan === 'Text' ? `
-                                                                                <input type="text" name="duplo_d2[]" class="form-control d2 w-60 p-0 text-center" disabled value="${obxValues.duplo_d2 || ''}" />
+                                                                                <input type="text" name="duplo_d2[${uniqueID}]" class="form-control d2 w-60 p-0 text-center" disabled value="${obxValues.duplo_d2 || ''}" />
                                                                             ` : `
-                                                                                <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                                                <select name="duplo_d2[${uniqueID}]" class="form-select d2 w-60 p-0" disabled>
                                                                                     ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>
                                                                                             ${opt.trim()}
@@ -2762,9 +2805,9 @@
 
                                                                         <td class="col-2 duplo d3-column" style="display: none;">
                                                                             ${param.tipe_inputan === 'Text' ? `
-                                                                                <input type="text" name="duplo_d3[]" class="form-control d3 w-50 p-0 text-center" disabled value="${obxValues.duplo_d3 || ''}" />
+                                                                                <input type="text" name="duplo_d3[${uniqueID}]" class="form-control d3 w-50 p-0 text-center" disabled value="${obxValues.duplo_d3 || ''}" />
                                                                             ` : `
-                                                                                <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                                <select name="duplo_d3[${uniqueID}]" class="form-select d3 w-50 p-0" disabled>
                                                                                     ${param.opsi_output ? param.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>
                                                                                             ${opt.trim()}
@@ -2777,7 +2820,7 @@
                                                                         <td class="col-3 flag-cell"></td>
 
                                                                         <td>
-                                                                            <input type="hidden" name="satuan[]" class="form-control w-100 p-0" value="${param.satuan || ''}" readonly />
+                                                                            <input type="hidden" name="satuan[${uniqueID}]" class="form-control w-100 p-0" value="${param.satuan || ''}" readonly />
                                                                             ${param.satuan || ''}
                                                                         </td>
                                                                     </tr>
@@ -2843,34 +2886,35 @@
                                                             
                                                             window.saveTempData = function(noLab, forceAll = false) {
                                                                 if (!noLab) {
-                                                                    
                                                                     return;
                                                                 }
                                                                 
                                                                 const data = [];
                                                                 
                                                                 document.querySelectorAll('[data-id][data-parameter]').forEach(row => {
+                                                                    // Cari semua kemungkinan input hasil
                                                                     const hasilInput = row.querySelector('.hasil-input');
                                                                     const hasilSelect = row.querySelector('.hasil-select');
+                                                                    const manualInput = row.querySelector('.manualInput'); // Tambahan untuk menangkap semua .manualInput
                                                                     const d1 = row.querySelector('.d1');
                                                                     const d2 = row.querySelector('.d2');
                                                                     const d3 = row.querySelector('.d3');
-                                                                    const flagInput = row.querySelector('input[name="flag[]"]');
                                                                     
-                                                                    
+                                                                    // Ambil nilai hasil dari input yang visible
                                                                     let hasil = '';
-                                                                    if (hasilInput) {
+                                                                    if (hasilInput && hasilInput.style.display !== 'none') {
                                                                         hasil = hasilInput.value || '';
-                                                                    } else if (hasilSelect) {
+                                                                    } else if (hasilSelect && hasilSelect.style.display !== 'none') {
                                                                         hasil = hasilSelect.value || '';
+                                                                    } else if (manualInput && manualInput.style.display !== 'none') {
+                                                                        hasil = manualInput.value || '';
                                                                     }
                                                                     
                                                                     const d1Val = d1?.value || '';
                                                                     const d2Val = d2?.value || '';
                                                                     const d3Val = d3?.value || '';
-                                                                
                                                                     
-                                                                
+                                                                    // Simpan jika ada data terisi
                                                                     if (forceAll || hasil || d1Val || d2Val || d3Val) {
                                                                         const rowData = {
                                                                             id: row.getAttribute('data-id'),
@@ -2879,111 +2923,105 @@
                                                                             duplo_d1: d1Val,
                                                                             duplo_d2: d2Val,
                                                                             duplo_d3: d3Val
-                                                                
                                                                         };
                                                                         data.push(rowData);
                                                                     }
                                                                 });
                                                                 
-                                                                
                                                                 if (data.length > 0) {
                                                                     sessionStorage.setItem(`temp_lab_${noLab}`, JSON.stringify(data));
-                                                                
-                                                                } else {
-                                                                    
-                                                                    const prevData = sessionStorage.getItem(`temp_lab_${noLab}`);
-                                                                    if (prevData) {
-                                                            
-                                                                        
-                                                                    } else {
-                                                            
-                                                                    }
+                                                                    console.log(`Saved ${data.length} rows for ${noLab}`);
                                                                 }
                                                             };
                                                             
                                                             
                                                             window.loadTempData = function(noLab) {
                                                                 if (!noLab) {
-                                                                    
                                                                     return;
                                                                 }
                                                                 
                                                                 const saved = sessionStorage.getItem(`temp_lab_${noLab}`);
                                                                 if (!saved) {
-                                                                    
                                                                     return;
                                                                 }
                                                                 
                                                                 try {
                                                                     const data = JSON.parse(saved);
                                                                     
-                                                                    
-                                                                    
                                                                     setTimeout(() => {
                                                                         let loadedCount = 0;
-                                                                        let notFoundCount = 0;
                                                                         
-                                                                        
+                                                                        // Buat map dari row yang ada saat ini
                                                                         const currentRows = new Map();
                                                                         document.querySelectorAll('[data-id][data-parameter]').forEach(row => {
                                                                             const key = `${row.getAttribute('data-id')}-${row.getAttribute('data-parameter')}`;
                                                                             currentRows.set(key, row);
                                                                         });
                                                                         
-                                                                        
-                                                                        
-                                                                        data.forEach((savedRow, idx) => {
+                                                                        // Load data ke setiap row
+                                                                        data.forEach((savedRow) => {
                                                                             const key = `${savedRow.id}-${savedRow.parameter}`;
                                                                             const row = currentRows.get(key);
                                                                             
                                                                             if (!row) {
-                                                                                notFoundCount++;
-                                                                                if (idx === 0) {
-                                                                        
-                                                                                }
                                                                                 return;
                                                                             }
                                                                             
+                                                                            // Cari semua kemungkinan input hasil
                                                                             const hasilInput = row.querySelector('.hasil-input');
                                                                             const hasilSelect = row.querySelector('.hasil-select');
+                                                                            const manualInput = row.querySelector('.manualInput');
                                                                             
+                                                                            // Load hasil ke input yang visible
                                                                             if (hasilInput && hasilInput.style.display !== 'none' && savedRow.hasil !== '') {
                                                                                 hasilInput.value = savedRow.hasil;
                                                                                 loadedCount++;
-                                                                                
                                                                                 hasilInput.dispatchEvent(new Event('input', { bubbles: true }));
                                                                             }
                                                                             if (hasilSelect && hasilSelect.style.display !== 'none' && savedRow.hasil !== '') {
                                                                                 hasilSelect.value = savedRow.hasil;
                                                                                 loadedCount++;
-                                                                                
                                                                                 hasilSelect.dispatchEvent(new Event('change', { bubbles: true }));
                                                                             }
+                                                                            if (manualInput && manualInput.style.display !== 'none' && savedRow.hasil !== '') {
+                                                                                manualInput.value = savedRow.hasil;
+                                                                                loadedCount++;
+                                                                                
+                                                                                // Trigger event yang sesuai dengan tipe input
+                                                                                if (manualInput.tagName === 'SELECT') {
+                                                                                    manualInput.dispatchEvent(new Event('change', { bubbles: true }));
+                                                                                } else {
+                                                                                    manualInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                                                                }
+                                                                            }
                                                                             
+                                                                            // Load duplo values
                                                                             const d1 = row.querySelector('.d1');
                                                                             const d2 = row.querySelector('.d2');
                                                                             const d3 = row.querySelector('.d3');
+                                                                            
                                                                             if (d1 && savedRow.duplo_d1 !== '') {
                                                                                 d1.value = savedRow.duplo_d1;
-                                                                        
+                                                                                if (d1.tagName === 'SELECT') {
+                                                                                    d1.dispatchEvent(new Event('change', { bubbles: true }));
+                                                                                }
                                                                             }
                                                                             if (d2 && savedRow.duplo_d2 !== '') {
                                                                                 d2.value = savedRow.duplo_d2;
-                                                                        
+                                                                                if (d2.tagName === 'SELECT') {
+                                                                                    d2.dispatchEvent(new Event('change', { bubbles: true }));
+                                                                                }
                                                                             }
                                                                             if (d3 && savedRow.duplo_d3 !== '') {
                                                                                 d3.value = savedRow.duplo_d3;
-                                                                        
+                                                                                if (d3.tagName === 'SELECT') {
+                                                                                    d3.dispatchEvent(new Event('change', { bubbles: true }));
+                                                                                }
                                                                             }
                                                                         });
                                                                         
                                                                         if (loadedCount > 0) {
-                                                                        
-                                                                        } else {
-                                                                        
-                                                                        }
-                                                                        
-                                                                        if (notFoundCount > 0) {
+                                                                            console.log(`Loaded ${loadedCount} values for ${noLab}`);
                                                                         }
                                                                     }, 300);
                                                                 } catch (error) {
@@ -2992,11 +3030,9 @@
                                                             };
                                                             
                                                             if (!window.autoSaveSetupDone) {
-                                                                
                                                                 let autoSaveTimer;
                                                                 
-                                                                $(document).on('input change', '.hasil-input, .hasil-select, .d1, .d2, .d3', function(e) {
-                                                                    
+                                                                $(document).on('input change', '.hasil-input, .hasil-select, .manualInput, .d1, .d2, .d3', function(e) {
                                                                     if (!window.currentActiveLab) {
                                                                         return;
                                                                     }
@@ -3008,6 +3044,7 @@
                                                                 });
                                                                 
                                                                 window.autoSaveSetupDone = true;
+                                                                console.log('Auto-save setup complete for input and select fields');
                                                             }
                                                             
                                                             window.clearTempData = function(noLab) {
@@ -3042,13 +3079,14 @@
                                                             
                                                             
                                                             let html = '';
+                                                            let lastJudul = null;
                                                             
                                                             // Tampilkan setiap parameter dengan header judulnya masing-masing
                                                             e.pasiens.forEach((p, pIdx) => {
                                                                 const judul = p.data_pemeriksaan?.judul;
                                                                 
                                                                 // Tampilkan header judul untuk setiap parameter (jika ada judul)
-                                                                if (judul && judul !== p.data_pemeriksaan.nama_pemeriksaan) {
+                                                                if (judul && judul !== p.data_pemeriksaan.nama_pemeriksaan && judul !== lastJudul) {
                                                                     html += `
                                                                         <tr class="individual-title-header">
                                                                             <td colspan="8" class="fw-bold text-dark ps-3" style="background-color: #f1f3f4; border-left: 4px solid #6c757d; padding: 10px;">
@@ -3056,6 +3094,7 @@
                                                                             </td>
                                                                         </tr>
                                                                     `;
+                                                                    lastJudul = judul; 
                                                                 }
                                                                 
                                                                 // Tampilkan parameter dengan indentasi jika ada judul
@@ -3070,6 +3109,7 @@
                                                                     p.data_pemeriksaan.nilai_rujukan,
                                                                     data_pasien.jenis_kelamin
                                                                 );
+                                                                const uniqueID = generateParameterUID(p.data_pemeriksaan.nama_pemeriksaan, p.data_pemeriksaan.nama_parameter, pIdx);
                                                                 
                                                                 const nilaiRujukanDisplay = getNilaiRujukanDisplay(
                                                                     p.data_pemeriksaan.nilai_rujukan,
@@ -3080,36 +3120,38 @@
                                                                 const hasHeader = judul && judul !== p.data_pemeriksaan.nama_pemeriksaan;
                                                                 
                                                                 html += `
-                                                                    <tr data-id="${rowId}" data-parameter="${p.data_pemeriksaan.nama_parameter}">
+                                                                    <tr data-id="${rowId}" data-parameter="${p.data_pemeriksaan.nama_parameter}" data-uid="${uniqueID}">
                                                                         <td class="col-2 ${hasHeader ? 'ps-4' : ''}" ${hasHeader ? 'style="border-left: 2px solid #e9ecef;"' : ''}>
                                                                             <strong>${hasHeader ? p.data_pemeriksaan.nama_parameter : p.data_pemeriksaan.nama_pemeriksaan}</strong>
                                                                             ${nilaiRujukanDisplay ? `<br><small class="text-muted">${nilaiRujukanDisplay}</small>` : ''}
-                                                                            <input type="hidden" name="nama_pemeriksaan[]" 
+                                                                            <input type="hidden" name="uid[${uniqueID}]" value="${uniqueID}" />
+                                                                            <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" 
                                                                                 value="${p.data_pemeriksaan.nama_pemeriksaan}" />
-                                                                            <input type="hidden" name="judul[]" value="${judul || ''}" />
-                                                                            <input type="hidden" name="parameter_name[]" 
+                                                                            <input type="hidden" name="judul[${uniqueID}]" value="${judul || ''}" />
+                                                                            <input type="hidden" name="parameter_name[${uniqueID}]" 
                                                                                 value="${p.data_pemeriksaan.nama_parameter}" />
-                                                                            <input type="hidden" name="nilai_rujukan[]" value="${p.data_pemeriksaan.nilai_rujukan || ''}" />
-                                                                            <input type="hidden" name="department[]" value="${e.data_departement.nama_department}" />
-                                                                            <input type="hidden" name="metode[]" value="${p.data_pemeriksaan.metode ?? ''}" />
+                                                                            <input type="hidden" name="nilai_rujukan[${uniqueID}]" value="${p.data_pemeriksaan.nilai_rujukan || ''}" />
+                                                                            <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
+                                                                            <input type="hidden" name="metode[${uniqueID}]" value="${p.data_pemeriksaan.metode ?? ''}" />
                                                                         </td>
                                                                         <td class="col-2">
                                                                             <!-- Input Text -->
                                                                             <input 
                                                                                 type="text" 
-                                                                                name="hasil[]" 
+                                                                                name="hasil[${uniqueID}]" 
                                                                                 class="form-control manualInput w-60 p-0 hasil-input text-center" 
                                                                                 value="${obxValues.hasilUtama || ''}" 
-                                                                                disabled 
+                                                                                disabled  required
                                                                                 style="display: ${p.data_pemeriksaan.tipe_inputan === 'Text' ? 'block' : 'none'}" 
                                                                             />
                                                                             <!-- Select Dropdown -->
                                                                             <select 
-                                                                                name="hasil[]" 
+                                                                                name="hasil[${uniqueID}]" 
                                                                                 class="form-select manualInput w-60 p-0 hasil-select" 
-                                                                                disabled 
+                                                                                disabled required
                                                                                 style="display: ${p.data_pemeriksaan.tipe_inputan === 'Dropdown' ? 'block' : 'none'}"
                                                                             >
+                                                                            <option value="" selected hidden>Pilih...</option>
                                                                                 ${p.data_pemeriksaan.tipe_inputan === 'Dropdown' && p.data_pemeriksaan.opsi_output ? 
                                                                                     p.data_pemeriksaan.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${obxValues.hasilUtama === opt.trim() ? 'selected' : ''}>
@@ -3130,7 +3172,8 @@
                                                                             ${
                                                                                 p.data_pemeriksaan.tipe_inputan === 'Dropdown' && p.data_pemeriksaan.opsi_output ?
                                                                                 `
-                                                                                <select name="duplo_d1[]" class="form-select d1 w-60 p-0" disabled>
+                                                                                <select name="duplo_d1[${uniqueID}]" class="form-select d1 w-60 p-0" disabled>
+                                                                                    <option value="" selected hidden>Pilih...</option>
                                                                                     ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${obxValues.duplo_d1 === opt.trim() ? 'selected' : ''}>
                                                                                             ${opt.trim()}
@@ -3140,7 +3183,7 @@
                                                                                 `
                                                                                 :
                                                                                 `
-                                                                                <input type="number" name="duplo_d1[]" 
+                                                                                <input type="number" name="duplo_d1[${uniqueID}]" 
                                                                                     class="form-control d1 w-60 p-0 text-center" 
                                                                                     disabled value="${obxValues.duplo_d1 || ''}" />
                                                                                 `
@@ -3150,7 +3193,8 @@
                                                                             ${
                                                                                 p.data_pemeriksaan.tipe_inputan === 'Dropdown' && p.data_pemeriksaan.opsi_output ?
                                                                                 `
-                                                                                <select name="duplo_d2[]" class="form-select d2 w-60 p-0" disabled>
+                                                                                <select name="duplo_d2[${uniqueID}]" class="form-select d2 w-60 p-0" disabled>
+                                                                                    <option value="" selected hidden>Pilih...</option>
                                                                                     ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${obxValues.duplo_d2 === opt.trim() ? 'selected' : ''}>
                                                                                             ${opt.trim()}
@@ -3160,7 +3204,7 @@
                                                                                 `
                                                                                 :
                                                                                 `
-                                                                                <input type="number" name="duplo_d2[]" 
+                                                                                <input type="number" name="duplo_d2[${uniqueID}]" 
                                                                                     class="form-control d2 w-60 p-0 text-center" 
                                                                                     disabled value="${obxValues.duplo_d2 || ''}" />
                                                                                 `
@@ -3170,7 +3214,8 @@
                                                                             ${
                                                                                 p.data_pemeriksaan.tipe_inputan === 'Dropdown' && p.data_pemeriksaan.opsi_output ?
                                                                                 `
-                                                                                <select name="duplo_d3[]" class="form-select d3 w-50 p-0" disabled>
+                                                                                <select name="duplo_d3[${uniqueID}]" class="form-select d3 w-50 p-0" disabled>
+                                                                                    <option value="" selected hidden>Pilih...</option>
                                                                                     ${p.data_pemeriksaan.opsi_output.split(';').map(opt => `
                                                                                         <option value="${opt.trim()}" ${obxValues.duplo_d3 === opt.trim() ? 'selected' : ''}>
                                                                                             ${opt.trim()}
@@ -3180,7 +3225,7 @@
                                                                                 `
                                                                                 :
                                                                                 `
-                                                                                <input type="number" name="duplo_d3[]" 
+                                                                                <input type="number" name="duplo_d3[${uniqueID}]" 
                                                                                     class="form-control d3 w-50 p-0 text-center" 
                                                                                     disabled value="${obxValues.duplo_d3 || ''}" />
                                                                                 `
@@ -3188,10 +3233,10 @@
                                                                         </td>
                                                                         <td class="col-3 flag-cell">
                                                                             ${initialFlag}
-                                                                            <input type="hidden" name="flag[]" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
+                                                                            <input type="hidden" name="flag[${uniqueID}]" value="${initialFlag.replace(/<[^>]*>?/gm, '')}" />
                                                                         </td>
                                                                         <td>
-                                                                            <input type="hidden" name="satuan[]" class="form-control w-100 p-0" 
+                                                                            <input type="hidden" name="satuan[${uniqueID}]" class="form-control w-100 p-0" 
                                                                                 value="${p.data_pemeriksaan.nilai_satuan || ''}" readonly />
                                                                             ${p.data_pemeriksaan.nilai_satuan || ''}
                                                                         </td>
@@ -3307,13 +3352,13 @@
                                 const isHematologi = row && row.classList.contains('hematologi-row');
                                 const isWidal = row && row.classList.contains('widal-row');
                                 const isUrine = row && row.classList.contains('urine-row');
+                                const uid = row?.getAttribute('data-uid'); // TAMBAHKAN INI
 
-                                let flagText = ''; // untuk simpan teks flag (Normal / Low / High)
-                                let showStar = false; // untuk menentukan apakah perlu bintang
+                                let flagText = '';
+                                let showStar = false;
 
                                 if (isWidal) {
-                                    // Widal tidak ada flag
-                                    flagCell.innerHTML = `<input type="hidden" name="flag[]" value="" />`;
+                                    flagCell.innerHTML = `<input type="hidden" name="flag[${uid}]" value="" />`;
                                     return;
                                 }
 
@@ -3331,7 +3376,6 @@
                                                 flagText = 'Normal';
                                             }
                                             
-                                            // Cek threshold bintang untuk hematologi
                                             showStar = checkStarThresholdHematologi(numValue, parameter, data_pasien.jenis_kelamin);
                                         }
                                     } else if (isUrine && parameter) {
@@ -3347,12 +3391,11 @@
                                                 flagText = 'Normal';
                                             }
                                             
-                                            // Cek threshold bintang untuk urine
                                             showStar = checkStarThresholdUrine(numValue, parameter, data_pasien.jenis_kelamin);
                                         }
                                     } else {
                                         // Umum (non-hematologi/urine)
-                                        const nilaiRujukanInput = row.querySelector('input[name="nilai_rujukan[]"]');
+                                        const nilaiRujukanInput = row.querySelector('input[name^="nilai_rujukan"]');
                                         const nilaiRujukan = nilaiRujukanInput ? nilaiRujukanInput.value : null;
 
                                         if (nilaiRujukan && data_pasien.jenis_kelamin) {
@@ -3366,7 +3409,6 @@
                                             }
 
                                             if (genderCode) {
-                                                // Hapus bagian dalam kurung untuk parsing normal range
                                                 const cleanNilaiRujukan = nilaiRujukan.replace(/\([^)]*\)/, '').trim();
                                                 const parts = cleanNilaiRujukan.split(' ');
                                                 let targetRange = null;
@@ -3414,14 +3456,13 @@
                                                     flagText = 'Normal';
                                                 }
                                                 
-                                                // Cek apakah perlu bintang untuk kasus umum
                                                 showStar = checkStarThreshold(numValue, nilaiRujukan, genderCode);
                                             }
                                         }
                                     }
                                 }
 
-                                // Render ulang isi cell dengan flag + hidden input
+                                // Render ulang dengan UID yang benar
                                 if (flagText) {
                                     let icon = '';
                                     if (flagText === 'Low') {
@@ -3437,31 +3478,38 @@
                                     
                                     flagCell.innerHTML = `
                                         ${icon} ${flagWithStar}
-                                        <input type="hidden" name="flag[]" value="${flagWithStar}">
+                                        <input type="hidden" name="flag[${uid}]" class="flag-value" value="${flagWithStar}">
                                     `;
+                                    
+                                    console.log(`Flag set to: ${flagWithStar} for UID: ${uid}, parameter: ${parameter}`);
                                 } else {
                                     flagCell.innerHTML = `
-                                        <input type="hidden" name="flag[]" value="">
+                                        <input type="hidden" name="flag[${uid}]" class="flag-value" value="">
                                     `;
                                 }
                             }
 
                             function setupFlagEventListeners() {
-                                // Hapus event listener dari semua input terlebih dahulu
-                                const allInputs = document.querySelectorAll('.manualInput, .d1, .d2, .d3');
+                                // Hapus event listener lama
+                                const allInputs = document.querySelectorAll('.hasil-input, .hasil-select, .manualInput, .d1, .d2, .d3');
                                 allInputs.forEach(input => {
                                     input.removeEventListener('input', inputHandler);
                                     input.removeEventListener('change', inputHandler);
                                 });
 
-                                // HANYA tambahkan event listener untuk field HASIL (.manualInput)
-                                const hasilInputs = document.querySelectorAll('.manualInput');
+                                // Tambahkan event listener untuk SEMUA input hasil yang visible
+                                const hasilInputs = document.querySelectorAll('.hasil-input, .hasil-select, .manualInput');
                                 hasilInputs.forEach(input => {
-                                    input.addEventListener('input', inputHandler);
-                                    input.addEventListener('change', inputHandler); // Untuk select elements
+                                    // Cek apakah input visible
+                                    if (input.style.display !== 'none') {
+                                        if (input.tagName === 'SELECT') {
+                                            input.addEventListener('change', inputHandler);
+                                        } else {
+                                            input.addEventListener('input', inputHandler);
+                                        }
+                                    }
                                 });
                                 
-                                console.log(`Setup flag event listeners ONLY for ${hasilInputs.length} HASIL inputs`);
                             }
 
 
@@ -3470,9 +3518,16 @@
                                 const flagCell = row.querySelector('.flag-cell');
                                 const parameter = row.dataset.parameter;
 
-                                // Pastikan ini adalah input HASIL
-                                if (this.classList.contains('manualInput')) {
-                                    updateFlag(this.value, flagCell, parameter);
+                                // Pastikan ini adalah input HASIL yang visible
+                                if (this.classList.contains('manualInput') || 
+                                    this.classList.contains('hasil-input') || 
+                                    this.classList.contains('hasil-select')) {
+                                    
+                                    // Hanya update flag jika input ini visible
+                                    if (this.style.display !== 'none') {
+                                        updateFlag(this.value, flagCell, parameter);
+                                        console.log(`Flag updated for ${parameter}: ${this.value}`);
+                                    }
                                 }
                             }
 
@@ -3734,21 +3789,185 @@
                                 updateMasterSwitchIndicator();
                             }
 
+                            function validateAllInputs() {
+                                let isValid = true;
+                                let emptyFields = [];
+                                let emptyCount = 0;
+
+                                // Cek semua row pemeriksaan
+                                document.querySelectorAll('tr[data-parameter]').forEach(row => {
+                                    const parameter = row.getAttribute('data-parameter');
+                                    const uid = row.getAttribute('data-uid');
+                                    
+                                    // Ambil input yang visible (aktif)
+                                    const hasilInput = row.querySelector('.hasil-input');
+                                    const hasilSelect = row.querySelector('.hasil-select');
+                                    const manualInput = row.querySelector('.manualInput');
+                                    
+                                    let activeInput = null;
+                                    let isEmpty = false;
+                                    
+                                    // Tentukan input mana yang aktif
+                                    if (hasilInput && hasilInput.style.display !== 'none') {
+                                        activeInput = hasilInput;
+                                        isEmpty = !hasilInput.value || hasilInput.value.trim() === '';
+                                    } else if (hasilSelect && hasilSelect.style.display !== 'none') {
+                                        activeInput = hasilSelect;
+                                        isEmpty = !hasilSelect.value || hasilSelect.value === '';
+                                    } else if (manualInput && manualInput.style.display !== 'none') {
+                                        activeInput = manualInput;
+                                        if (manualInput.tagName === 'SELECT') {
+                                            isEmpty = !manualInput.value || manualInput.value === '';
+                                        } else {
+                                            isEmpty = !manualInput.value || manualInput.value.trim() === '';
+                                        }
+                                    }
+                                    
+                                    // Jika ada input yang kosong
+                                    if (isEmpty && activeInput) {
+                                        isValid = false;
+                                        emptyCount++;
+                                        
+                                        // Highlight field yang kosong
+                                        activeInput.classList.add('is-invalid');
+                                        activeInput.style.borderColor = '#dc3545';
+                                        activeInput.style.borderWidth = '2px';
+                                        
+                                        // Simpan info parameter yang kosong
+                                        const parameterName = row.querySelector('td strong')?.textContent || parameter;
+                                        emptyFields.push(parameterName);
+                                        
+                                        // Scroll ke field pertama yang kosong
+                                        if (emptyCount === 1) {
+                                            activeInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        }
+                                    } else if (activeInput) {
+                                        // Remove highlight jika sudah terisi
+                                        activeInput.classList.remove('is-invalid');
+                                        activeInput.style.borderColor = '';
+                                        activeInput.style.borderWidth = '';
+                                    }
+                                });
+                                
+                                return { isValid, emptyFields, emptyCount };
+                            }
+
+                            // Fungsi untuk remove highlight saat user mulai mengisi
+                            function setupInputValidation() {
+                                document.querySelectorAll('.hasil-input, .hasil-select, .manualInput').forEach(input => {
+                                    input.addEventListener('input', function() {
+                                        if (this.value && this.value.trim() !== '') {
+                                            this.classList.remove('is-invalid');
+                                            this.style.borderColor = '';
+                                            this.style.borderWidth = '';
+                                        }
+                                    });
+                                    
+                                    input.addEventListener('change', function() {
+                                        if (this.value && this.value.trim() !== '') {
+                                            this.classList.remove('is-invalid');
+                                            this.style.borderColor = '';
+                                            this.style.borderWidth = '';
+                                        }
+                                    });
+                                });
+                            }
+
+                            // Panggil setup validation
+                            setupInputValidation();
+
                             // Event listener untuk tombol verifikasi
                             if (verifikasiHasilBtn) {
-                                verifikasiHasilBtn.addEventListener('click', () => {
-                                    document.getElementById('worklistForm').action = "{{ route('worklist.store') }}";
-                                    document.getElementById('worklistForm').submit();
+                                verifikasiHasilBtn.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    
+                                    // Validasi semua input
+                                    const validation = validateAllInputs();
+                                    
+                                    if (!validation.isValid) {
+                                        // Tampilkan pesan error dengan daftar field yang kosong
+                                        let errorMessage = `Terdapat ${validation.emptyCount} parameter yang belum diisi:\n\n`;
+                                        
+                                        // Batasi tampilan maksimal 10 field
+                                        const displayFields = validation.emptyFields.slice(0, 10);
+                                        errorMessage += displayFields.map((field, index) => `${index + 1}. ${field}`).join('\n');
+                                        
+                                        if (validation.emptyFields.length > 10) {
+                                            errorMessage += `\n... dan ${validation.emptyFields.length - 10} parameter lainnya`;
+                                        }
+                                        
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Data Belum Lengkap!',
+                                            text: errorMessage,
+                                            confirmButtonText: 'OK, Saya Akan Melengkapi',
+                                            confirmButtonColor: '#dc3545',
+                                            customClass: {
+                                                popup: 'swal-wide'
+                                            }
+                                        });
+                                        
+                                        return false;
+                                    }
+                                    
+                                    // Jika validasi berhasil, tampilkan konfirmasi
+                                    Swal.fire({
+                                        title: 'Konfirmasi Verifikasi Hasil',
+                                        text: `Apakah Anda yakin data ${validation.emptyCount === 0 ? 'semua' : ''} parameter sudah benar?`,
+                                        icon: 'question',
+                                        showCancelButton: true,
+                                        confirmButtonColor: '#3085d6',
+                                        cancelButtonColor: '#6c757d',
+                                        confirmButtonText: 'Ya, Verifikasi!',
+                                        cancelButtonText: 'Cek Kembali'
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            document.getElementById('worklistForm').action = "{{ route('worklist.store') }}";
+                                            document.getElementById('worklistForm').submit();
+                                        }
+                                    });
                                 });
                             }
 
                             if (verifikasiDokterBtn) {
                                 verifikasiDokterBtn.addEventListener('click', (e) => {
-                                    e.preventDefault(); // supaya langsung tidak submit
-
+                                    e.preventDefault();
+                                    
+                                    // Validasi semua input
+                                    const validation = validateAllInputs();
+                                    
+                                    if (!validation.isValid) {
+                                        // Tampilkan pesan error
+                                        let errorMessage = `Terdapat ${validation.emptyCount} parameter yang belum diisi:\n\n`;
+                                        
+                                        const displayFields = validation.emptyFields.slice(0, 10);
+                                        errorMessage += displayFields.map((field, index) => `${index + 1}. ${field}`).join('\n');
+                                        
+                                        if (validation.emptyFields.length > 10) {
+                                            errorMessage += `\n... dan ${validation.emptyFields.length - 10} parameter lainnya`;
+                                        }
+                                        
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Data Belum Lengkap!',
+                                            text: errorMessage,
+                                            confirmButtonText: 'OK, Saya Akan Melengkapi',
+                                            confirmButtonColor: '#dc3545',
+                                            customClass: {
+                                                popup: 'swal-wide'
+                                            }
+                                        });
+                                        
+                                        return false;
+                                    }
+                                    
+                                    // Jika validasi berhasil
                                     Swal.fire({
                                         title: 'Konfirmasi Verifikasi',
-                                        text: "Apakah Anda yakin ingin memverifikasi ke Dokter PK?",
+                                        html: `
+                                            <p>Apakah Anda yakin ingin memverifikasi ke Dokter PK?</p>
+                                            <p class="text-muted small">Semua ${validation.emptyCount === 0 ? Object.keys(validation).length : 'parameter'} telah terisi</p>
+                                        `,
                                         icon: 'warning',
                                         showCancelButton: true,
                                         confirmButtonColor: '#3085d6',
@@ -3757,7 +3976,6 @@
                                         cancelButtonText: 'Batal'
                                     }).then((result) => {
                                         if (result.isConfirmed) {
-                                            // Jika user klik "Ya"
                                             document.getElementById('worklistForm').action = `worklist/checkin/${data_pasien.id}`;
                                             document.getElementById('worklistForm').submit();
                                         }
@@ -3865,207 +4083,243 @@
 
 
         function populateModal(spesimen, scollection, shandling, history, data_pemeriksaan_pasien, hasil) {
-    const accordion = document.getElementById('sampleHistoryAccordion');
-    let accordionContent = '';
+            const accordion = document.getElementById('sampleHistoryAccordion');
+            let accordionContent = '';
 
-    // ========== Inspection Details ==========
-    accordionContent += `<h5 class="title mt-3">Inspection Details</h5><hr><div class="row">`;
-    data_pemeriksaan_pasien.forEach(e => {
-        accordionContent += `
-            <input type="hidden" name="no_lab" value="${e.no_lab}">
-            <div class="col-12 col-md-6" id="${e.id_departement}">
-                <h6>${e.data_departement.nama_department}</h6>
-                <ol>
-        `;
-        e.pasiens.forEach(p => {
-            accordionContent += `<li>${p.data_pemeriksaan.nama_pemeriksaan}</li>`;
-        });
-        accordionContent += `</ol><hr></div>`;
-    });
-    accordionContent += `</div>`;
-
-    // ========== History ==========
-    accordionContent += `
-        <h5>History</h5>
-        <ul class="step-wizard-list mt-4">
-            ${history.map((h, index) => {
-                let createdAt = new Date(h.created_at);
-                let formattedDate = createdAt.toLocaleString('id-ID', {
-                    year: 'numeric',
-                    month: 'numeric',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                return `
-                    <li class="step-wizard-item">
-                        <span class="progress-count">${index + 1}</span>
-                        <span class="progress-label">${h.proses}</span>
-                        <span class="progress-label">${formattedDate}</span>
-                    </li>
+            // ========== Inspection Details ==========
+            accordionContent += `<h5 class="title mt-3">Inspection Details</h5><hr><div class="row">`;
+            data_pemeriksaan_pasien.forEach(e => {
+                accordionContent += `
+                    <input type="hidden" name="no_lab" value="${e.no_lab}">
+                    <div class="col-12 col-md-6" id="${e.id_departement}">
+                        <h6>${e.data_departement.nama_department}</h6>
+                        <ol>
                 `;
-            }).join('')}
-        </ul>
-    `;
+                e.pasiens.forEach(p => {
+                    accordionContent += `<li>${p.data_pemeriksaan.nama_pemeriksaan}</li>`;
+                });
+                accordionContent += `</ol><hr></div>`;
+            });
+            accordionContent += `</div>`;
 
-    // ========== Spesimen Collection ==========
-    let collectionSpecimens = spesimen.filter(e => e.spesiment === "Spesiment Collection");
-    if (collectionSpecimens.length > 0) {
-        accordionContent += `<h5 class="title mt-3">Spesiment Collection</h5><hr>`;
-        accordionContent += `<div class="accordion" id="accordionCollection">`;
-        collectionSpecimens.forEach(e => {
-            accordionContent += generateAccordionHTML(e, scollection, shandling, "collection");
-        });
-        accordionContent += `</div>`;
-    }
+            // ========== History ==========
+            accordionContent += `
+                <h5>History</h5>
+                <ul class="step-wizard-list mt-4">
+                    ${history.map((h, index) => {
+                        let createdAt = new Date(h.created_at);
+                        let formattedDate = createdAt.toLocaleString('id-ID', {
+                            year: 'numeric',
+                            month: 'numeric',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        return `
+                            <li class="step-wizard-item">
+                                <span class="progress-count">${index + 1}</span>
+                                <span class="progress-label">${h.proses}</span>
+                                <span class="progress-label">${formattedDate}</span>
+                            </li>
+                        `;
+                    }).join('')}
+                </ul>
+            `;
 
-    // ========== Spesimen Handlings ==========
-    let handlingSpecimens = spesimen.filter(e => e.spesiment === "Spesiment Handlings");
-    if (handlingSpecimens.length > 0) {
-        accordionContent += `<h5 class="title mt-3">Spesiment Handlings</h5><hr>`;
-        accordionContent += `<div class="accordion" id="accordionHandling">`;
-        handlingSpecimens.forEach(e => {
-            accordionContent += generateAccordionHTML(e, scollection, shandling, "handling");
-        });
-        accordionContent += `</div>`;
-    }
+            // ========== Spesimen Collection ==========
+            let collectionSpecimens = spesimen.filter(e => e.spesiment === "Spesiment Collection");
+            // Filter hanya yang memiliki data di scollection
+            let collectionWithData = collectionSpecimens.filter(e => {
+                return scollection.some(item => 
+                    item.no_lab === e.laravel_through_key &&
+                    item.tabung === e.tabung &&
+                    item.kode === e.kode
+                );
+            });
 
-    // ========== Notes Doctor & Analyst ==========
-    const historyItem = history.find(h => h.proses === 'Dikembalikan oleh dokter');
-    if (historyItem && historyItem.note) {
-        accordionContent += `
-            <div class="d-flex justify-content-between mt-3">
-                <div class="doctor-note" style="width: 48%;">
-                    <label class="fw-bold mt-2">Catatan (Doctor)</label>
-                    <textarea class="form-control" rows="3" disabled>${historyItem.note}</textarea>
-                </div>
-                <div class="analyst-note" style="width: 48%;">
-                    <label class="fw-bold mt-2">Catatan (Analyst)</label>
-                    <textarea class="form-control" rows="3" disabled>${hasil.length > 0 && hasil[0].note ? hasil[0].note : '-'}</textarea>
-                </div>
-            </div>
-        `;
-    }
-
-    // render ke modal
-    accordion.innerHTML = accordionContent;
-}
-
-
-// ===================================
-// versi generateAccordionHTML terbaru
-// ===================================
-function generateAccordionHTML(e, scollection, shandling, type) {
-    let details = '';
-    let hasData = false;
-    let noteText = '';
-    let kapasitas, serumh, clotact, serum;
-
-    let dataItem = null;
-
-    if (type === "collection") {
-        dataItem = scollection.find(item =>
-            item.no_lab === e.laravel_through_key &&
-            item.tabung === e.tabung &&
-            item.kode === e.kode
-        );
-    } else if (type === "handling") {
-        dataItem = shandling.find(item =>
-            item.no_lab === e.laravel_through_key &&
-            item.tabung === e.tabung &&
-            item.kode === e.kode
-        );
-    }
-
-    if (dataItem) {
-        hasData  = true;
-        noteText = dataItem.note || '';
-        kapasitas = dataItem.kapasitas;
-        serumh   = dataItem.serumh;
-        clotact  = dataItem.clotact;
-        serum    = dataItem.serum;
-    }
-
-    const uniqId = `${e.tabung}-${e.kode}`.replace(/\s+/g, '');
-
-    if (e.details && e.details.length > 0) {
-        details = `<div class="detail-container col-12 col-md-6">`;
-        e.details.forEach(detail => {
-            const imageUrl = `/gambar/${detail.gambar}`;
-            let isChecked = '';
-            let isDisabled = '';
-
-            if (hasData) {
-                if (type === "collection") {
-                    if (e.tabung === 'K3-EDTA') {
-                        isChecked = kapasitas == detail.id ? 'checked' : '';
-                        isDisabled = 'disabled';
-                    } else if (e.tabung === 'CLOTH-ACTIVATOR') {
-                        isChecked = serumh == detail.id ? 'checked' : '';
-                        isDisabled = 'disabled';
-                    } else if (e.tabung === 'CLOTH-ACT') {
-                        isChecked = clotact == detail.id ? 'checked' : '';
-                        isDisabled = 'disabled';
-                    }
-                } else if (type === "handling") {
-                    // FIX: Handle both CLOTH-ACTIVATOR and CLOT-ACTIVATOR
-                    if (e.tabung === 'CLOTH-ACTIVATOR' || e.tabung === 'CLOT-ACTIVATOR') {
-                        isChecked = parseInt(serum) === parseInt(detail.id) ? 'checked' : '';
-                        isDisabled = 'disabled';
-                    }
-                }
-            } else {
-                if (detail.nama_parameter.toLowerCase().includes('normal')) {
-                    isChecked = 'checked';
-                }
-                isDisabled = '';
+            if (collectionWithData.length > 0) {
+                accordionContent += `<h5 class="title mt-3">Spesiment Collection</h5><hr>`;
+                accordionContent += `<div class="accordion" id="accordionCollection">`;
+                collectionWithData.forEach(e => {
+                    accordionContent += generateAccordionHTML(e, scollection, shandling, "collection");
+                });
+                accordionContent += `</div>`;
             }
 
-            const radioName = (type === "handling") ? `serum[${e.kode}]` : `${e.tabung}_${e.kode}`;
+            // ========== Spesimen Handlings ==========
+            let handlingSpecimens = spesimen.filter(e => e.spesiment === "Spesiment Handlings");
+            // Filter hanya yang memiliki data di shandling
+            let handlingWithData = handlingSpecimens.filter(e => {
+                return shandling.some(item => 
+                    item.no_lab === e.laravel_through_key &&
+                    item.tabung === e.tabung &&
+                    item.kode === e.kode
+                );
+            });
 
-            details += `
-            <div class="detail-item">
-                <div class="detail-text">${detail.nama_parameter}</div>
-                <div class="detail-image-container">
-                    <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>
-                </div>
-                <div class="detail-radio-container">
-                    <input type="radio" name="${radioName}" value="${detail.id}" ${isChecked} ${isDisabled}/>
+            if (handlingWithData.length > 0) {
+                accordionContent += `<h5 class="title mt-3">Spesiment Handlings</h5><hr>`;
+                accordionContent += `<div class="accordion" id="accordionHandling">`;
+                handlingWithData.forEach(e => {
+                    accordionContent += generateAccordionHTML(e, scollection, shandling, "handling");
+                });
+                accordionContent += `</div>`;
+            }
+
+            // ========== Info jika hanya ada 1 data spesimen ==========
+            const totalSpecimensWithData = collectionWithData.length + handlingWithData.length;
+            if (totalSpecimensWithData === 1) {
+                let specimenInfo = '';
+                if (collectionWithData.length === 1) {
+                    const spec = collectionWithData[0];
+                    specimenInfo = `Spesiment Collection - Tabung ${spec.tabung} (${spec.kode})`;
+                } else if (handlingWithData.length === 1) {
+                    const spec = handlingWithData[0];
+                    specimenInfo = `Spesiment Handlings - Tabung ${spec.tabung} (${spec.kode})`;
+                }
+                accordionContent += `
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle"></i> Hanya terdapat 1 data spesimen: <strong>${specimenInfo}</strong>
+                    </div>
+                `;
+            }
+
+            // ========== Notes Doctor & Analyst ==========
+            const historyItem = history.find(h => h.proses === 'Dikembalikan oleh dokter');
+            if (historyItem && historyItem.note) {
+                accordionContent += `
+                    <div class="d-flex justify-content-between mt-3">
+                        <div class="doctor-note" style="width: 48%;">
+                            <label class="fw-bold mt-2">Catatan (Doctor)</label>
+                            <textarea class="form-control" rows="3" disabled>${historyItem.note}</textarea>
+                        </div>
+                        <div class="analyst-note" style="width: 48%;">
+                            <label class="fw-bold mt-2">Catatan (Analyst)</label>
+                            <textarea class="form-control" rows="3" disabled>${hasil.length > 0 && hasil[0].note ? hasil[0].note : '-'}</textarea>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // render ke modal
+            accordion.innerHTML = accordionContent;
+        }
+
+
+        // ===================================
+        // versi generateAccordionHTML terbaru
+        // ===================================
+        function generateAccordionHTML(e, scollection, shandling, type) {
+            let details = '';
+            let hasData = false;
+            let noteText = '';
+            let kapasitas, serumh, clotact, serum;
+
+            let dataItem = null;
+
+            if (type === "collection") {
+                dataItem = scollection.find(item =>
+                    item.no_lab === e.laravel_through_key &&
+                    item.tabung === e.tabung &&
+                    item.kode === e.kode
+                );
+            } else if (type === "handling") {
+                dataItem = shandling.find(item =>
+                    item.no_lab === e.laravel_through_key &&
+                    item.tabung === e.tabung &&
+                    item.kode === e.kode
+                );
+            }
+
+            if (dataItem) {
+                hasData  = true;
+                noteText = dataItem.note || '';
+                kapasitas = dataItem.kapasitas;
+                serumh   = dataItem.serumh;
+                clotact  = dataItem.clotact;
+                serum    = dataItem.serum;
+            }
+
+            const uniqId = `${e.tabung}-${e.kode}`.replace(/\s+/g, '');
+
+            if (e.details && e.details.length > 0) {
+                details = `<div class="detail-container col-12 col-md-6">`;
+                e.details.forEach(detail => {
+                    const imageUrl = `/gambar/${detail.gambar}`;
+                    let isChecked = '';
+                    let isDisabled = '';
+
+                    if (hasData) {
+                        if (type === "collection") {
+                            if (e.tabung === 'K3-EDTA') {
+                                isChecked = kapasitas == detail.id ? 'checked' : '';
+                                isDisabled = 'disabled';
+                            } else if (e.tabung === 'CLOTH-ACTIVATOR') {
+                                isChecked = serumh == detail.id ? 'checked' : '';
+                                isDisabled = 'disabled';
+                            } else if (e.tabung === 'CLOTH-ACT') {
+                                isChecked = clotact == detail.id ? 'checked' : '';
+                                isDisabled = 'disabled';
+                            }
+                        } else if (type === "handling") {
+                            // FIX: Handle both CLOTH-ACTIVATOR and CLOT-ACTIVATOR
+                            if (e.tabung === 'CLOTH-ACTIVATOR' || e.tabung === 'CLOT-ACTIVATOR') {
+                                isChecked = parseInt(serum) === parseInt(detail.id) ? 'checked' : '';
+                                isDisabled = 'disabled';
+                            }
+                        }
+                    } else {
+                        if (detail.nama_parameter.toLowerCase().includes('normal')) {
+                            isChecked = 'checked';
+                        }
+                        isDisabled = '';
+                    }
+
+                    const radioName = (type === "handling") ? `serum[${e.kode}]` : `${e.tabung}_${e.kode}`;
+
+                    details += `
+                    <div class="detail-item">
+                        <div class="detail-text">${detail.nama_parameter}</div>
+                        <div class="detail-image-container">
+                            <img src="${imageUrl}" alt="${detail.nama_parameter}" width="35" class="detail-image"/>
+                        </div>
+                        <div class="detail-radio-container">
+                            <input type="radio" name="${radioName}" value="${detail.id}" ${isChecked} ${isDisabled}/>
+                        </div>
+                    </div>`;
+                });
+                details += `</div>`;
+            }
+
+            let noteHTML = '';
+            if (type === "handling") {
+                noteHTML = `
+                    <input type="hidden" name="kode[]" value="${e.kode}">
+                    <p class="mb-0"><strong>Catatan</strong></p>
+                    <textarea class="form-control" name="note[${e.kode}]" rows="3" disabled>${noteText}</textarea>
+                `;
+            } else {
+                noteHTML = `
+                    <p class="mb-0"><strong>Catatan</strong></p>
+                    <textarea class="form-control" rows="3" disabled>${noteText || '-'}</textarea>
+                `;
+            }
+
+            return `
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading${uniqId}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${uniqId}">
+                        Tabung ${e.tabung} (${e.kode})
+                    </button>
+                </h2>
+                <div id="collapse${uniqId}" class="accordion-collapse collapse" aria-labelledby="heading${uniqId}">
+                    <div class="accordion-body">
+                        <div class="container">${details}</div>
+                        ${noteHTML}
+                    </div>
                 </div>
             </div>`;
-        });
-        details += `</div>`;
-    }
-
-    let noteHTML = '';
-    if (type === "handling") {
-        noteHTML = `
-            <input type="hidden" name="kode[]" value="${e.kode}">
-            <p class="mb-0"><strong>Catatan</strong></p>
-            <textarea class="form-control" name="note[${e.kode}]" rows="3" disabled>${noteText}</textarea>
-        `;
-    } else {
-        noteHTML = `
-            <p class="mb-0"><strong>Catatan</strong></p>
-            <textarea class="form-control" rows="3" disabled>${noteText || '-'}</textarea>
-        `;
-    }
-
-    return `
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="heading${uniqId}">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${uniqId}">
-                Tabung ${e.tabung} (${e.kode})
-            </button>
-        </h2>
-        <div id="collapse${uniqId}" class="accordion-collapse collapse" aria-labelledby="heading${uniqId}">
-            <div class="accordion-body">
-                <div class="container">${details}</div>
-                ${noteHTML}
-            </div>
-        </div>
-    </div>`;
-}
+        }
         });
         });
     </script>

@@ -15,9 +15,20 @@ class admin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(!empty(auth()->user()) && auth()->user()->role === 'admin'){
+        // Pastikan sudah login
+        if (!auth()->check()) {
+            return redirect()->route('login')
+                ->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        $user = auth()->user();
+
+        // Hanya izinkan superadmin
+        if ($user->hasRole('Superadmin')) {
             return $next($request);
         }
-        return redirect("/");
+
+        // Jika bukan superadmin
+        abort(403, 'Anda tidak memiliki akses ke halaman ini.');
     }
 }
