@@ -1,11 +1,11 @@
 @extends('layouts.admin')
-@section('title', 'Laporan')
+@section('title', 'Laporan Pemeriksaan')
 @section('content')
 <link rel="stylesheet" href="{{ asset('css/form.css') }}">
 <div class="content" id="scroll-content">
     <div class="container-fluid">
         <div class="d-sm-flex mt-3">
-            <h1 class="h3 mb-0 text-gray-600">Laporan</h1>
+            <h1 class="h3 mb-0 text-gray-600">Laporan Pemeriksaan</h1>
         </div>
 
         <div class="card">
@@ -14,7 +14,7 @@
                     @csrf
                     <div class="row g-3">
                         <!-- Tanggal Awal -->
-                        <div class="col-12 col-md-6 col-lg-2">
+                        <div class="col-12 col-md-6 col-lg-3">
                             <label for="tanggal_awal" class="form-label">
                                 <b>Tanggal Awal</b><span class="text-danger"> *</span>
                             </label>
@@ -22,7 +22,7 @@
                         </div>
 
                         <!-- Tanggal Akhir -->
-                        <div class="col-12 col-md-6 col-lg-2">
+                        <div class="col-12 col-md-6 col-lg-3">
                             <label for="tanggal_akhir" class="form-label">
                                 <b>Tanggal Akhir</b><span class="text-danger"> *</span>
                             </label>
@@ -30,7 +30,7 @@
                         </div>
 
                         <!-- Department -->
-                        <div class="col-12 col-md-6 col-lg-2 pt-1">
+                        <div class="col-12 col-md-6 col-lg-3 pt-1">
                            <label for="department"><b>Departemen</b><strong class="text-danger"> *</strong></label>
                             <select id="department" class="form-control select2" multiple>
                                 <option value="All">Semua</option>
@@ -40,18 +40,8 @@
                             </select>
                         </div>
 
-                        <!-- MCU -->
-                        <div class="col-12 col-md-6 col-lg-2">
-                            <label for="mcu" class="form-label"><b>MCU</b><span class="text-danger"> *</span></label>
-                            <select id="mcu" name="mcu" class="form-control select2" multiple>
-                                <option value="All">Semua</option>
-                                <option value="1">MCU</option>
-                                <option value="0">Non MCU</option>
-                            </select>
-                        </div>
-
                         <!-- Payment -->
-                        <div class="col-12 col-md-6 col-lg-2">
+                        <div class="col-12 col-md-6 col-lg-3">
                             <label for="payment" class="form-label">
                                 <b>Metode Pembayaran</b><span class="text-danger"> *</span>
                             </label>
@@ -63,49 +53,8 @@
                             </select>
                         </div>
 
-                        <!-- Dokter -->
-                        <div class="col-12 col-md-6 col-lg-2">
-                            <label for="dokter_internal" class="form-label"><b>Dokter Internal</b> <span class="text-danger"> *</span></label>
-                            <select id="dokter_internal" name="dokter_internal[]" class="form-control select2" multiple>
-                                <option value="All">Semua</option>
-                                @foreach($dokters_internal as $dokter)
-                                    <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="col-12 col-md-6 col-lg-2">
-                            <label for="dokter_external" class="form-label"><b>Dokter External</b> <span class="text-danger"> *</span></label>
-                            <select id="dokter_external" name="dokter_external[]" class="form-control select2" multiple>
-                                <option value="All">Semua</option>
-                                @foreach($dokters_external as $dokter)
-                                    <option value="{{ $dokter->nama_dokter }}">{{ $dokter->nama_dokter }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="col-12 col-md-6 col-lg-2">
-                            <label for="asal_ruangan" class="form-label"><b>Asal Ruangan</b> <span class="text-danger"> *</span></label>
-                            <select id="asal_ruangan" name="asal_ruangan[]" class="form-control select2" multiple>
-                                <option value="All">Semua</option>
-                                @foreach($asal_ruangan as $ruangan)
-                                    <option value="{{ $ruangan }}">{{ $ruangan }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="col-12 col-md-6 col-lg-2">
-                            <label for="analyst" class="form-label"><b>Analis</b> <span class="text-danger"> *</span></label>
-                            <select id="analyst" name="analyst[]" class="form-control select2" multiple>
-                                <option value="All">Semua</option>
-                                @foreach($reports as $report)
-                                    <option value="{{ $report->analyst }}">{{ $report->analyst }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
                         <!-- Tombol Aksi -->
-                        <div class="col-12 col-md-12 col-lg-3 d-flex align-items-end">
+                        <div class="col-6 col-md-6 col-lg-6 d-flex align-items-end">
                             <div class="d-flex w-100 flex-wrap gap-2">
                                 <button type="submit" class="btn btn-info flex-grow-1">Tampilkan</button>
                                 <button type="reset" class="btn btn-secondary flex-grow-1">Reset</button>
@@ -120,14 +69,9 @@
                 <table class="table report-table table-responsive table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th rowspan="2">DATA LAPORAN</th>
-                            <th rowspan="2">DOKTER</th>
-                            <th rowspan="2">ASAL RUANGAN</th>
-                            <th rowspan="2">FEE DOKTER / Pengirim</th>
-                            <th rowspan="2">ANALIS</th>
-                            <th rowspan="2">FEE ANALIS</th>
+                            <th rowspan="2">NAMA PEMERIKSAAN</th>
                             <th colspan="3" class="payment-header" data-type="BPJS">BPJS</th>
-                            <th colspan="3"class="payment-header" data-type="ASURANSI">ASURANSI</th>
+                            <th colspan="3" class="payment-header" data-type="ASURANSI">ASURANSI</th>
                             <th colspan="3" class="payment-header" data-type="UMUM">UMUM</th>
                         </tr>
                         <tr>
@@ -144,7 +88,7 @@
                     </thead>
                     <tbody id="reportTableBody">
                         <tr>
-                            <td colspan="15" class="text-center text-muted">
+                            <td colspan="10" class="text-center text-muted">
                                 Silakan pilih filter dan tekan <strong>Tampilkan</strong> untuk menampilkan laporan.
                             </td>
                         </tr>
@@ -154,12 +98,68 @@
         </div>
     </div>
 </div>
+
+<style>
+.payment-header[data-type="BPJS"],
+.payment-header[data-type="ASURANSI"],
+.payment-header[data-type="UMUM"] {
+    display: none;
+}
+
+.sub-header[data-type="BPJS"],
+.sub-header[data-type="ASURANSI"],
+.sub-header[data-type="UMUM"] {
+    display: none;
+}
+
+.cell-bpjs,
+.cell-asuransi,
+.cell-umum {
+    display: none;
+}
+
+.payment-header[data-type="BPJS"].show,
+.payment-header[data-type="ASURANSI"].show,
+.payment-header[data-type="UMUM"].show {
+    display: table-cell !important;
+}
+
+.sub-header[data-type="BPJS"].show,
+.sub-header[data-type="ASURANSI"].show,
+.sub-header[data-type="UMUM"].show {
+    display: table-cell !important;
+}
+
+.cell-bpjs.show,
+.cell-asuransi.show,
+.cell-umum.show {
+    display: table-cell !important;
+}
+
+.department-header {
+    background-color: #e9ecef;
+    font-weight: bold;
+}
+
+.mcu-package-header {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    border-left: 3px solid #007bff;
+}
+
+.mcu-parameter {
+    background-color: #fdfdfd;
+    font-style: italic;
+    color: #666;
+}
+</style>
+
 @endsection
 
 @push('script')
 <script>
 $(document).ready(function () {
-    $('#department, #payment, #dokter_internal, #dokter_external, #mcu, #analyst, #asal_ruangan').select2({ 
+    $('#department, #payment').select2({ 
         placeholder: 'Pilih...', 
         allowClear: true 
     });
@@ -171,7 +171,7 @@ $(document).ready(function () {
 
     $('#filterForm').on('reset', function () {
         setTimeout(() => {
-            $('#department, #payment, #mcu, #dokter_internal, #dokter_external, #analyst, #asal_ruangan').val(null).trigger('change');
+            $('#department, #payment').val(null).trigger('change');
             $('#tanggal_awal').val(hariPertama.toISOString().split('T')[0]);
             $('#tanggal_akhir').val(hariIni.toISOString().split('T')[0]);
         }, 100);
@@ -181,33 +181,21 @@ $(document).ready(function () {
 function muatDataLaporan() {
     const pilihanPembayaran = ($('#payment').val() || []).map(p => p.toLowerCase());
     const semuaTerpilih = pilihanPembayaran.includes('all');
-    const pilihanMcu = $('#mcu').val() || [];
-    const pilihanAnalyst = $('#analyst').val() || [];
     
-    // ✅ PERBAIKAN: Pisahkan filter dokter internal dan external
-    const pilihanDokterInternal = $('#dokter_internal').val() || [];
-    const pilihanDokterExternal = $('#dokter_external').val() || [];
-    const pilihanAsalRuangan = $('#asal_ruangan').val() || [];
-
     toggleKolomPembayaran(pilihanPembayaran, semuaTerpilih);
 
     const formData = {
         tanggal_awal: $('#tanggal_awal').val() || hariPertama.toISOString().split('T')[0],
         tanggal_akhir: $('#tanggal_akhir').val() || hariIni.toISOString().split('T')[0],
         department: $('#department').val(),
-        mcu: pilihanMcu,
-        dokter_internal: pilihanDokterInternal, // ✅ Kirim dokter internal terpisah
-        dokter_external: pilihanDokterExternal, // ✅ Kirim dokter external terpisah
-        analyst: pilihanAnalyst,
-        asal_ruangan: pilihanAsalRuangan,
         payment_method: pilihanPembayaran,
         _token: $('meta[name="csrf-token"]').attr('content') || '{{ csrf_token() }}'
     };
 
-    $('#reportTableBody').html('<tr><td colspan="14" class="text-center">Memuat data...</td></tr>');
+    $('#reportTableBody').html('<tr><td colspan="10" class="text-center">Memuat data...</td></tr>');
 
     $.ajax({
-        url: '{{ route("result.data") }}',
+        url: '{{ route("result.data.simple") }}',
         type: 'POST',
         data: formData,
         dataType: 'json',
@@ -216,7 +204,7 @@ function muatDataLaporan() {
                 tampilkanTabelLaporan(response.data, pilihanPembayaran, semuaTerpilih);
             } else {
                 $('#reportTableBody').html(
-                    '<tr><td colspan="14" class="text-center text-danger">Error: ' + response.message + '</td></tr>'
+                    '<tr><td colspan="10" class="text-center text-danger">Error: ' + response.message + '</td></tr>'
                 );
             }
         },
@@ -224,13 +212,12 @@ function muatDataLaporan() {
             console.log('AJAX Error:', error);
             console.log('Response:', xhr.responseText);
             $('#reportTableBody').html(
-                '<tr><td colspan="14" class="text-center text-danger">Error memuat data: ' + error + '</td></tr>'
+                '<tr><td colspan="10" class="text-center text-danger">Error memuat data: ' + error + '</td></tr>'
             );
         }
     });
 }
 
-
 function toggleKolomPembayaran(pilihanPembayaran, semuaTerpilih) {
     const semuaJenis = ['bpjs', 'asuransi', 'umum'];
 
@@ -238,163 +225,17 @@ function toggleKolomPembayaran(pilihanPembayaran, semuaTerpilih) {
         const jenisUpper = jenis.toUpperCase();
         
         if (semuaTerpilih || pilihanPembayaran.includes(jenis)) {
-            // Tampilkan header utama
             $(`.payment-header[data-type="${jenisUpper}"]`).addClass('show').show();
-            // Tampilkan sub-header
             $(`.sub-header[data-type="${jenisUpper}"]`).addClass('show').show();
-            // Tampilkan cell data
             $(`.cell-${jenis}`).addClass('show').show();
         } else {
-            // Sembunyikan header utama
             $(`.payment-header[data-type="${jenisUpper}"]`).removeClass('show').hide();
-            // Sembunyikan sub-header
             $(`.sub-header[data-type="${jenisUpper}"]`).removeClass('show').hide();
-            // Sembunyikan cell data
             $(`.cell-${jenis}`).removeClass('show').hide();
         }
     });
-
-    // Update colspan untuk header yang masih terlihat
-    updateColspan();
 }
 
-function updateColspan() {
-    const visiblePaymentTypes = [];
-    const pilihanPembayaran = ($('#payment').val() || []).map(p => p.toLowerCase());
-    const semuaTerpilih = pilihanPembayaran.includes('all');
-    
-    ['bpjs', 'asuransi', 'umum'].forEach(jenis => {
-        if (semuaTerpilih || pilihanPembayaran.includes(jenis)) {
-            visiblePaymentTypes.push(jenis);
-        }
-    });
-
-    // Update colspan untuk setiap payment header yang terlihat
-    visiblePaymentTypes.forEach(jenis => {
-        const jenisUpper = jenis.toUpperCase();
-        $(`.payment-header[data-type="${jenisUpper}"]`).attr('colspan', '3');
-    });
-}
-
-
-
-// ===== PERBAIKAN UTAMA =====
-
-// 1. Perbaiki CSS untuk header dan sub-header tabel
-// Tambahkan CSS ini di bagian atas atau di file CSS terpisah
-const additionalCSS = `
-<style>
-.payment-header[data-type="BPJS"] {
-    display: none;
-}
-.payment-header[data-type="ASURANSI"] {
-    display: none;
-}
-.payment-header[data-type="UMUM"] {
-    display: none;
-}
-
-.sub-header[data-type="BPJS"] {
-    display: none;
-}
-.sub-header[data-type="ASURANSI"] {
-    display: none;
-}
-.sub-header[data-type="UMUM"] {
-    display: none;
-}
-
-.cell-bpjs {
-    display: none;
-}
-.cell-asuransi {
-    display: none;
-}
-.cell-umum {
-    display: none;
-}
-
-/* Tampilkan kolom yang aktif */
-.payment-header[data-type="BPJS"].show {
-    display: table-cell !important;
-}
-.payment-header[data-type="ASURANSI"].show {
-    display: table-cell !important;
-}
-.payment-header[data-type="UMUM"].show {
-    display: table-cell !important;
-}
-
-.sub-header[data-type="BPJS"].show {
-    display: table-cell !important;
-}
-.sub-header[data-type="ASURANSI"].show {
-    display: table-cell !important;
-}
-.sub-header[data-type="UMUM"].show {
-    display: table-cell !important;
-}
-
-.cell-bpjs.show {
-    display: table-cell !important;
-}
-.cell-asuransi.show {
-    display: table-cell !important;
-}
-.cell-umum.show {
-    display: table-cell !important;
-}
-</style>
-`;
-
-// 2. Perbaiki fungsi toggleKolomPembayaran
-function toggleKolomPembayaran(pilihanPembayaran, semuaTerpilih) {
-    const semuaJenis = ['bpjs', 'asuransi', 'umum'];
-
-    semuaJenis.forEach(jenis => {
-        const jenisUpper = jenis.toUpperCase();
-        
-        if (semuaTerpilih || pilihanPembayaran.includes(jenis)) {
-            // Tampilkan header utama
-            $(`.payment-header[data-type="${jenisUpper}"]`).addClass('show').show();
-            // Tampilkan sub-header
-            $(`.sub-header[data-type="${jenisUpper}"]`).addClass('show').show();
-            // Tampilkan cell data
-            $(`.cell-${jenis}`).addClass('show').show();
-        } else {
-            // Sembunyikan header utama
-            $(`.payment-header[data-type="${jenisUpper}"]`).removeClass('show').hide();
-            // Sembunyikan sub-header
-            $(`.sub-header[data-type="${jenisUpper}"]`).removeClass('show').hide();
-            // Sembunyikan cell data
-            $(`.cell-${jenis}`).removeClass('show').hide();
-        }
-    });
-
-    // Update colspan untuk header yang masih terlihat
-    updateColspan();
-}
-
-// 3. Fungsi baru untuk update colspan
-function updateColspan() {
-    const visiblePaymentTypes = [];
-    const pilihanPembayaran = ($('#payment').val() || []).map(p => p.toLowerCase());
-    const semuaTerpilih = pilihanPembayaran.includes('all');
-    
-    ['bpjs', 'asuransi', 'umum'].forEach(jenis => {
-        if (semuaTerpilih || pilihanPembayaran.includes(jenis)) {
-            visiblePaymentTypes.push(jenis);
-        }
-    });
-
-    // Update colspan untuk setiap payment header yang terlihat
-    visiblePaymentTypes.forEach(jenis => {
-        const jenisUpper = jenis.toUpperCase();
-        $(`.payment-header[data-type="${jenisUpper}"]`).attr('colspan', '3');
-    });
-}
-
-// 4. Perbaiki fungsi tampilkanTabelLaporan
 function tampilkanTabelLaporan(data, pilihanPembayaran, semuaTerpilih) {
     let tableHTML = '';
 
@@ -408,13 +249,12 @@ function tampilkanTabelLaporan(data, pilihanPembayaran, semuaTerpilih) {
         let testNameStyle = '';
         const isHematologi = row.department_id == 1;
 
-        // Styling berdasarkan jenis row
         if (row.is_department_header) {
             testNameClass = 'department-header';
             testNameStyle = 'font-weight: bold; background-color: #e9ecef; padding: 8px;';
         } else if (row.is_mcu_package) {
             testNameClass = 'mcu-package-header';
-            testNameStyle = 'font-weight: bold; background-color: #f8f9fa; padding-left: 15px; border-left: 3px solid #007bff;';
+            testNameStyle = 'font-weight: bold; background-color: #f8f9fa; padding-left: 15px;';
         } else if (row.is_mcu_parameter) {
             testNameClass = 'mcu-parameter';
             testNameStyle = 'padding-left: 40px; font-style: italic; color: #666; background-color: #fdfdfd;';
@@ -423,7 +263,6 @@ function tampilkanTabelLaporan(data, pilihanPembayaran, semuaTerpilih) {
             testNameStyle = 'padding-left: 20px; background-color: #fafafa;';
         }
 
-        // Nama yang akan ditampilkan
         let namaTampilan = row.test_name;
         if (row.is_mcu_parameter && row.parameter_name) {
             namaTampilan = row.parameter_name;
@@ -431,82 +270,6 @@ function tampilkanTabelLaporan(data, pilihanPembayaran, semuaTerpilih) {
 
         const kontenNamaTes = isHematologi ? `<strong>${namaTampilan}</strong>` : namaTampilan;
         tableHTML += `<td class="${testNameClass}" style="${testNameStyle}">${kontenNamaTes}</td>`;
-
-        // MCU Parameter - kosongkan semua kolom kecuali nama
-        if (row.is_mcu_parameter) {
-            tableHTML += `<td style="${testNameStyle}">-</td>`; // dokter
-            tableHTML += `<td style="${testNameStyle}">-</td>`; // asal ruangan
-            tableHTML += `<td style="${testNameStyle}">-</td>`; // fee dokter
-            tableHTML += `<td style="${testNameStyle}">-</td>`; // analis
-            tableHTML += `<td style="${testNameStyle}">-</td>`; // fee analis
-
-            ['bpjs', 'asuransi', 'umum'].forEach(jenis => {
-                tableHTML += `<td class="cell-${jenis}" style="${testNameStyle}">-</td>`;
-                tableHTML += `<td class="cell-${jenis}" style="${testNameStyle}">-</td>`;
-                tableHTML += `<td class="cell-${jenis}" style="${testNameStyle}">-</td>`;
-            });
-
-            tableHTML += '</tr>';
-            return;
-        }
-
-        // Department Header
-        if (row.is_department_header) {
-            tableHTML += `<td style="${testNameStyle}">-</td>`;
-            tableHTML += `<td style="${testNameStyle}">-</td>`;
-            tableHTML += `<td style="${testNameStyle}">-</td>`;
-            tableHTML += `<td style="${testNameStyle}">-</td>`;
-            tableHTML += `<td style="${testNameStyle}">-</td>`;
-
-            ['bpjs', 'asuransi', 'umum'].forEach(jenis => {
-                tableHTML += `<td class="cell-${jenis}" style="${testNameStyle}">-</td>`;
-                tableHTML += `<td class="cell-${jenis}" style="${testNameStyle}">-</td>`;
-                tableHTML += `<td class="cell-${jenis}" style="${testNameStyle}">-</td>`;
-            });
-
-            tableHTML += '</tr>';
-            return;
-        }
-
-        // Regular subheader kosong
-        if (row.is_subheader && (!row.dokter || row.dokter === '-') &&
-            (!row.bpjs_qty && !row.asuransi_qty && !row.umum_qty)) {
-            tableHTML += `<td style="${testNameStyle}">-</td>`;
-            tableHTML += `<td style="${testNameStyle}">-</td>`;
-            tableHTML += `<td style="${testNameStyle}">-</td>`;
-            tableHTML += `<td style="${testNameStyle}">-</td>`;
-            tableHTML += `<td style="${testNameStyle}">-</td>`;
-
-            ['bpjs', 'asuransi', 'umum'].forEach(jenis => {
-                tableHTML += `<td class="cell-${jenis}" style="${testNameStyle}">-</td>`;
-                tableHTML += `<td class="cell-${jenis}" style="${testNameStyle}">-</td>`;
-                tableHTML += `<td class="cell-${jenis}" style="${testNameStyle}">-</td>`;
-            });
-
-            tableHTML += '</tr>';
-            return;
-        }
-
-        // ✅ PERBAIKAN: Gabungkan nama dokter internal dan external
-        let namaDokter = '-';
-        if (row.dokter && row.dokter !== '-' && row.dokter !== null) {
-            namaDokter = row.dokter;
-        } else if (row.dokter_external && row.dokter_external !== '-' && row.dokter_external !== null) {
-            namaDokter = row.dokter_external;
-        }
-
-        const asalRuangan = row.asal_ruangan || '-'; 
-        const feeDokter = row.jasa_dokter && row.jasa_dokter > 0 ? formatMataUang(row.jasa_dokter) : '-';
-        const namaAnalis = row.analyst || '-';
-
-        const totalFeeAnalis = (row.bpjs_analyst_fee || 0) + (row.asuransi_analyst_fee || 0) + (row.umum_analyst_fee || 0);
-        const feeAnalis = totalFeeAnalis > 0 ? formatMataUang(totalFeeAnalis) : '-';
-
-        tableHTML += `<td style="${testNameStyle}">${namaDokter}</td>`;
-        tableHTML += `<td style="${testNameStyle}">${asalRuangan}</td>`;
-        tableHTML += `<td style="${testNameStyle}">${feeDokter}</td>`;
-        tableHTML += `<td style="${testNameStyle}">${namaAnalis}</td>`;
-        tableHTML += `<td style="${testNameStyle}">${feeAnalis}</td>`;
 
         ['bpjs', 'asuransi', 'umum'].forEach(jenis => {
             const qty = row[`${jenis}_qty`] || 0;
@@ -531,16 +294,6 @@ function tampilkanTabelLaporan(data, pilihanPembayaran, semuaTerpilih) {
 
         tableHTML += `<tr style="${styleTotal}">`;
         tableHTML += `<td style="${styleTotal}"><strong>TOTAL</strong></td>`;
-        tableHTML += `<td style="${styleTotal}">-</td>`;
-        tableHTML += `<td style="${styleTotal}">-</td>`;
-        tableHTML += `<td style="${styleTotal}">-</td>`;
-        tableHTML += `<td style="${styleTotal}">-</td>`;
-
-        const totalFeeAnalisKeseluruhan = (dataTotal.bpjs_analyst_fee || 0) +
-                                         (dataTotal.asuransi_analyst_fee || 0) +
-                                         (dataTotal.umum_analyst_fee || 0);
-
-        tableHTML += `<td style="${styleTotal}"><strong>${totalFeeAnalisKeseluruhan > 0 ? formatMataUang(totalFeeAnalisKeseluruhan) : '-'}</strong></td>`;
 
         ['bpjs', 'asuransi', 'umum'].forEach(jenis => {
             const nilaiTotal = dataTotal[`${jenis}_total`] || 0;
@@ -554,11 +307,8 @@ function tampilkanTabelLaporan(data, pilihanPembayaran, semuaTerpilih) {
     }
 
     $('#reportTableBody').html(tableHTML);
-
-    // 🔑 PENTING: Setelah render tabel, terapkan filter
     toggleKolomPembayaran(pilihanPembayaran, semuaTerpilih);
 }
-
 
 function formatAngka(angka) {
     if (angka == 0) return '-';
@@ -569,10 +319,8 @@ function formatMataUang(jumlah) {
     if (jumlah == 0) return '-';
     return 'Rp ' + new Intl.NumberFormat('id-ID').format(jumlah);
 }
-</script>
 
-
-<script>
+// Print & Export Functions
 $('#btnPrint').on('click', function() {
     tampilkanModalCetak();
 });
@@ -590,7 +338,7 @@ function tampilkanModalCetak() {
                         <div class="row">
                             <div class="col-12 mb-3">
                                 <label for="printTitle" class="form-label">Judul Laporan:</label>
-                                <input type="text" class="form-control" id="printTitle" value="Laporan Review Hasil">
+                                <input type="text" class="form-control" id="printTitle" value="Laporan Pemeriksaan">
                             </div>
                             <div class="col-12 mb-3">
                                 <label class="form-label">Pilih Aksi:</label>
@@ -615,25 +363,8 @@ function tampilkanModalCetak() {
     $('#printModal').modal('show');
 }
 
-// 🔹 Hitung total Fee Dokter
-function hitungTotalFeeDokter() {
-    let total = 0;
-    $('#reportTableBody tr').each(function() {
-        const $cells = $(this).find('td');
-        if ($cells.length > 0) {
-            const feeDokterText = $cells.eq(3).text().trim(); // kolom ke-3 = Fee Dokter
-            if (feeDokterText.includes('Rp ')) {
-                const nilai = parseInt(feeDokterText.replace('Rp ', '').replace(/\./g, ''));
-                if (!isNaN(nilai)) total += nilai;
-            }
-        }
-    });
-    return total;
-}
-
-// Fungsi untuk cetak langsung
 function cetakLaporan() {
-    const judul = $('#printTitle').val() || 'Laporan Review Hasil';
+    const judul = $('#printTitle').val() || 'Laporan Pemeriksaan';
     const rentangTanggal = getRentangTanggalTeks();
     const filter = getTeksFilter();
     const kontenTabel = getTabelTerformatUntukCetak();
@@ -679,17 +410,15 @@ function cetakLaporan() {
     setTimeout(() => { jendelaCetak.print(); jendelaCetak.close(); }, 250);
 }
 
-// Fungsi untuk unduh Excel
 function unduhExcel() {
     try {
-        const judul = $('#printTitle').val() || 'Laporan Review Hasil';
+        const judul = $('#printTitle').val() || 'Laporan Pemeriksaan';
         const rentangTanggal = getRentangTanggalTeks();
         const pilihanPembayaran = ($('#payment').val() || []).map(p => String(p).toLowerCase());
         const semuaTerpilih = pilihanPembayaran.includes('all');
         const wb = XLSX.utils.book_new();
         const data = [];
 
-        // Header data
         data.push([judul]);
         data.push([rentangTanggal]);
         data.push(['']);
@@ -697,9 +426,8 @@ function unduhExcel() {
         data.push([getTeksFilter().replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')]);
         data.push(['']);
 
-        // Setup header rows
-        const headerRow1 = ['DATA LAPORAN', 'DOKTER', 'FEE DOKTER', 'ANALIS', 'FEE ANALIS'];
-        const headerRow2 = ['', '', '', '', '', ''];
+        const headerRow1 = ['NAMA PEMERIKSAAN'];
+        const headerRow2 = [''];
 
         if (semuaTerpilih || pilihanPembayaran.includes('bpjs')) {
             headerRow1.push('BPJS', '', '');
@@ -717,34 +445,22 @@ function unduhExcel() {
         data.push(headerRow1);
         data.push(headerRow2);
 
-        // Process table rows
         $('#reportTableBody tr').each(function() {
             const $row = $(this);
             const $cells = $row.find('td');
             
-            // Skip empty rows
             if ($cells.length === 0) return;
 
             const row = [];
-            const isTotal = String($row.find('td:first').text().trim()).toUpperCase() === 'TOTAL';
 
             $cells.each(function(index) {
                 if ($(this).is(':visible')) {
                     let cellValue = '';
                     
                     try {
-                        // Get raw text and ensure it's a string
                         let rawText = String($(this).text().trim() || '');
 
-                        // Special handling for Fee Dokter in TOTAL row
-                        if (isTotal && index === 3) {
-                            const totalFeeDokter = hitungTotalFeeDokter();
-                            rawText = String(totalFeeDokter > 0 ? totalFeeDokter : '');
-                        }
-
-                        // Process currency values
                         if (rawText.includes('Rp ')) {
-                            // Remove currency formatting
                             let numericValue = rawText.replace('Rp ', '').replace(/\./g, '').trim();
                             
                             if (numericValue === '-' || numericValue === '') {
@@ -754,69 +470,52 @@ function unduhExcel() {
                                 cellValue = isNaN(parsed) ? '' : parsed;
                             }
                         } else {
-                            // For non-currency values, keep as string
                             cellValue = rawText;
                         }
 
                     } catch (error) {
                         console.warn('Error processing cell at index', index, ':', error);
-                        cellValue = ''; // Fallback to empty string
+                        cellValue = '';
                     }
 
                     row.push(cellValue);
                 }
             });
 
-            // Only add non-empty rows
             if (row.some(cell => cell !== '')) {
                 data.push(row);
             }
         });
 
-        // Create worksheet
         const ws = XLSX.utils.aoa_to_sheet(data);
         
-        // Set column widths
         ws['!cols'] = [
-            { wch: 25 }, // DATA LAPORAN
-            { wch: 20 }, // DOKTER
-            { wch: 20 }, // Asal Ruangan
-            { wch: 15 }, // FEE DOKTER
-            { wch: 15 }, // ANALIS
-            { wch: 15 }, // FEE ANALIS
-            { wch: 10 }, // QTY columns
-            { wch: 15 }, // HARGA columns
-            { wch: 15 }, // TOTAL columns
-            { wch: 10 }, // Additional QTY
-            { wch: 15 }, // Additional HARGA
-            { wch: 15 }, // Additional TOTAL
-            { wch: 10 }, // Additional QTY
-            { wch: 15 }, // Additional HARGA
-            { wch: 15 }  // Additional TOTAL
+            { wch: 30 },
+            { wch: 10 },
+            { wch: 15 },
+            { wch: 15 },
+            { wch: 10 },
+            { wch: 15 },
+            { wch: 15 },
+            { wch: 10 },
+            { wch: 15 },
+            { wch: 15 }
         ];
 
-        // Add worksheet to workbook
-        XLSX.utils.book_append_sheet(wb, ws, 'Review Hasil');
+        XLSX.utils.book_append_sheet(wb, ws, 'Laporan Pemeriksaan');
 
-        // Generate filename
         const safeJudul = judul.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
         const tanggal = new Date().toISOString().slice(0, 10);
         const namaFile = `${safeJudul}_${tanggal}.xlsx`;
 
-        // Save file
         XLSX.writeFile(wb, namaFile);
-
-        // Hide modal
         $('#printModal').modal('hide');
-
-        console.log('Excel file generated successfully:', namaFile);
 
     } catch (error) {
         console.error('Error in unduhExcel:', error);
         alert('Terjadi kesalahan saat membuat file Excel. Silakan coba lagi.');
     }
 }
-
 
 function getRentangTanggalTeks() {
     const tanggalMulai = $('#tanggal_awal').val();
@@ -854,7 +553,7 @@ function getTabelTerformatUntukCetak() {
     const pilihanPembayaran = ($('#payment').val() || []).map(p => p.toLowerCase());
     const semuaTerpilih = pilihanPembayaran.includes('all');
     let tableHTML = '<table class="report-table"><thead><tr>';
-    tableHTML += '<th rowspan="2">DATA LAPORAN</th><th rowspan="2">DOKTER</th><th rowspan="2">FEE DOKTER</th><th rowspan="2">ANALIS</th><th rowspan="2">FEE ANALIS</th>';
+    tableHTML += '<th rowspan="2">NAMA PEMERIKSAAN</th>';
     
     if (semuaTerpilih || pilihanPembayaran.includes('bpjs')) {
         tableHTML += '<th colspan="3">BPJS</th>';
@@ -888,14 +587,10 @@ function getTabelTerformatUntukCetak() {
         else if (namaTes.toUpperCase() === 'TOTAL') rowClass = ' class="total-row"';
         
         tableHTML += `<tr${rowClass}>`;
-        $row.find('td').each(function(index) {
+        $row.find('td').each(function() {
             const $cell = $(this);
             if ($cell.is(':visible')) {
                 let nilaiSel = $cell.text().trim();
-                if (namaTes.toUpperCase() === 'TOTAL' && index === 3) {
-                    const totalFeeDokter = hitungTotalFeeDokter();
-                    nilaiSel = totalFeeDokter > 0 ? 'Rp ' + totalFeeDokter.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : '-';
-                }
                 const classSel = (nilaiSel === '-' || nilaiSel === '') ? 'empty-cell' : '';
                 tableHTML += `<td class="${classSel}">${nilaiSel}</td>`;
             }
@@ -907,7 +602,6 @@ function getTabelTerformatUntukCetak() {
     return tableHTML;
 }
 
-// Inisialisasi default tanggal
 const hariIni = new Date();
 const hariPertama = new Date(hariIni.getFullYear(), hariIni.getMonth(), 1);
 $(document).ready(function() {
@@ -918,12 +612,6 @@ $(document).ready(function() {
 });
 </script>
 
-<!-- For Excel export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
-
-<!-- For PDF export -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
 @endpush

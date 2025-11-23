@@ -12,21 +12,6 @@ class Report extends Model
     protected $guarded = [];
     protected $table = 'reports';
 
-    protected $fillable = [
-        'nolab',
-        'department',
-        'id_parameter',
-        'payment_method',
-        'nama_parameter',
-        'quantity',
-        'price',
-        'total',
-        'tanggal',
-        'nama_dokter',
-        'mcu_package_id',
-        'dokter_external',
-        'asal_ruangan'
-    ];
     public function detailDepartment()
     {
         return $this->belongsTo(DetailDepartment::class, 'id_parameter');

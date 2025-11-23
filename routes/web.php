@@ -26,14 +26,17 @@ use App\Http\Controllers\auth\LocationController;
 use App\Http\Controllers\department\DepartmentController;
 use App\Http\Controllers\DokterController;
 use App\Http\Controllers\HasilController;
+use App\Http\Controllers\HasilImageController;
 use App\Http\Controllers\loket\DataPasienController;
 use App\Http\Controllers\mcu\McuPackageController as McuMcuPackageController;
 use App\Http\Controllers\McuPackageController;
+use App\Http\Controllers\PatientReportController;
 use App\Http\Controllers\pemeriksaan\PemeriksaanController;
 use App\Http\Controllers\poli\PoliController;
 use App\Http\Controllers\report\ReportController;
 use App\Http\Controllers\rolepermission\PermissionController;
 use App\Http\Controllers\rolepermission\RoleController;
+use App\Http\Controllers\SimpleReportController;
 use App\Http\Controllers\user\UserController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
@@ -179,6 +182,8 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
     Route::post('/worklist/end/{id}', [worklistController::class, 'end'])->name('worklist.end');
     Route::post('/worklist/update-hasil/{no_lab}', [WorklistController::class, 'updateHasil'])
         ->name('worklist.update-hasil');
+    Route::post('worklist/upload-images', [HasilImageController::class, 'uploadImages']);
+    Route::delete('worklist/delete-image/{id}', [HasilImageController::class, 'deleteImage']);
     Route::post('/hasil/kirim/{no_lab}', [HasilController::class, 'kirimHasil'])->name('hasil.kirim');
     // Route Dokter
     Route::resource('vdokter', vDokterController::class);
@@ -200,6 +205,13 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
     Route::post('report/data', [resultController::class, 'getReportData'])->name('result.data');
     Route::post('/hasil-pemeriksaans/kesimpulan-saran', [resultController::class, 'simpanKesimpulanSaran'])
         ->name('hasil_pemeriksaans.simpanKesimpulanSaran');
+
+
+    Route::get('/laporan-pemeriksaan', [SimpleReportController::class, 'index'])->name('report.simple');
+    Route::post('/laporan-pemeriksaan/data', [SimpleReportController::class, 'getSimpleReportData'])->name('result.data.simple');
+    // Route untuk laporan data pasien
+    Route::get('/laporan-pasien', [PatientReportController::class, 'index'])->name('patient.report');
+    Route::post('/laporan-pasien/data', [PatientReportController::class, 'getPatientReportData'])->name('patient.report.data');
 
 
 

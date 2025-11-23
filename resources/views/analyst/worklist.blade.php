@@ -353,6 +353,39 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="modal fade" id="imagesModal" tabindex="-1"
+                                aria-labelledby="imagesModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="imagesModalLabel">Upload Images</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!-- Hidden input untuk menyimpan nolab -->
+                                            <input type="hidden" id="currentNoLab" value="">
+                                            
+                                            <div id="imageUploadContainer">
+                                                <!-- Form upload akan ditambahkan di sini -->
+                                            </div>
+                                            <button type="button" class="btn btn-primary btn-sm mt-2" id="addMoreImageBtn">
+                                                <i class="bi bi-plus-circle"></i> Tambah Image Lagi
+                                            </button>
+                                            
+                                            <!-- Preview Images yang sudah diupload -->
+                                            <div class="mt-3" id="uploadedImagesPreview" style="display: none;">
+                                                <h6>Images yang sudah diupload:</h6>
+                                                <div class="row" id="previewContainer"></div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-success" id="saveImagesBtn">Simpan Semua</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -550,6 +583,16 @@
                             <button type="button" class="btn btn-outline-info btn-block w-100" data-bs-toggle="modal" data-bs-target="#sampleHistoryModal">Sample History<span class="badge bg-danger" style="display: none;">!</span></button>
                         </div>
                         <div class="col-lg-3 mb-3">
+<<<<<<< Updated upstream
+=======
+                            <button type="button" class="btn btn-outline-warning btn-block w-100" data-bs-toggle="modal" 
+                                    data-bs-target="#imagesModal">
+                                Image
+                                <span class="badge bg-danger ml-2" id="imageCountBadge" style="display: none; border-radius: 100%;"> 0</span>
+                            </button>
+                        </div>
+                        {{-- <div class="col-lg-3 mb-3">
+>>>>>>> Stashed changes
                             <form id="delete-form-${data_pasien.id}" action="analyst/worklist/${data_pasien.id}" method="POST" style="display: none;">
                                 @csrf
                                 @method('DELETE')
@@ -4323,4 +4366,438 @@
         });
         });
     </script>
+   <script>
+document.addEventListener('DOMContentLoaded', function() {
+    let imageCounter = 0;
+    let uploadedImages = [];
+    let currentNoLab = '';
+
+    const imagesModal = document.getElementById('imagesModal');
+    
+    // Event saat modal dibuka - ambil nolab dan load existing images
+    imagesModal.addEventListener('shown.bs.modal', function() {
+        const nolabInput = document.querySelector('input[name="no_lab"]');
+        if (nolabInput) {
+            currentNoLab = nolabInput.value;
+            document.getElementById('currentNoLab').value = currentNoLab;
+            loadExistingImages(currentNoLab);
+        }
+        
+        if (imageCounter === 0) {
+            addImageUploadForm();
+        }
+    });
+
+    imagesModal.addEventListener('hidden.bs.modal', function() {
+        resetModal();
+    });
+
+    // Fungsi untuk load existing images dari database
+    function loadExistingImages(nolab) {
+        fetch(`/api/get-images/${nolab}`)
+            .then(response => response.json())
+            .then(res => {
+                if (res.status === 'success' && res.data.length > 0) {
+                    uploadedImages = res.data.map(img => ({
+                        id: img.id,
+                        nolab: img.nolab,
+                        preview: `/${img.image}`,
+                        description: img.description || '',
+                        isExisting: true
+                    }));
+                    updatePreviewContainer();
+                    updateBadge(uploadedImages.length);
+                    document.getElementById('uploadedImagesPreview').style.display = 'block';
+                } else {
+                    uploadedImages = [];
+                    document.getElementById('uploadedImagesPreview').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading images:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Memuat Images',
+                    text: 'Terjadi kesalahan saat memuat images',
+                    confirmButtonColor: '#d33'
+                });
+            });
+    }
+
+    // Fungsi untuk menambah form upload
+    function addImageUploadForm() {
+        imageCounter++;
+        const formId = `imageForm_${imageCounter}`;
+        
+        const formHTML = `
+            <div class="card mb-3" id="${formId}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">Image #${imageCounter}</h6>
+                        <button type="button" class="btn btn-danger btn-sm remove-image-form" data-form-id="${formId}">
+                            <i class="bi bi-trash"></i> Hapus
+                        </button>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Pilih Image</label>
+                        <input type="file" class="form-control image-input" 
+                               accept="image/*" data-counter="${imageCounter}">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Keterangan (Optional)</label>
+                        <input type="text" class="form-control image-description" 
+                               placeholder="Masukkan keterangan image">
+                    </div>
+                    <div class="preview-area" style="display: none;">
+                        <img src="" class="img-thumbnail preview-img" style="max-height: 200px;">
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('imageUploadContainer').insertAdjacentHTML('beforeend', formHTML);
+        
+        const newInput = document.querySelector(`#${formId} .image-input`);
+        newInput.addEventListener('change', function(e) {
+            previewImage(e.target, formId);
+        });
+        
+        const removeBtn = document.querySelector(`#${formId} .remove-image-form`);
+        removeBtn.addEventListener('click', function() {
+            removeImageForm(formId);
+        });
+    }
+
+    // Fungsi untuk preview image
+    function previewImage(input, formId) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const form = document.getElementById(formId);
+                const previewArea = form.querySelector('.preview-area');
+                const previewImg = form.querySelector('.preview-img');
+                
+                previewImg.src = e.target.result;
+                previewArea.style.display = 'block';
+            };
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Fungsi untuk menghapus form
+    function removeImageForm(formId) {
+        const form = document.getElementById(formId);
+        if (form) {
+            form.remove();
+            updateImageCounter();
+        }
+    }
+
+    document.getElementById('addMoreImageBtn').addEventListener('click', function() {
+        addImageUploadForm();
+    });
+
+    // Event listener untuk tombol simpan - DENGAN SWEETALERT2
+    document.getElementById('saveImagesBtn').addEventListener('click', function() {
+        const forms = document.querySelectorAll('#imageUploadContainer .card');
+        const formData = new FormData();
+        const nolab = document.getElementById('currentNoLab').value;
+        
+        if (!nolab) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'No Lab tidak ditemukan!',
+                confirmButtonColor: '#d33',
+                customClass: {
+                    container: 'swal-high-zindex'
+                }
+            });
+            return;
+        }
+        
+        let validImages = 0;
+        formData.append('nolab', nolab);
+
+        forms.forEach((form, index) => {
+            const fileInput = form.querySelector('.image-input');
+            const description = form.querySelector('.image-description').value;
+            
+            if (fileInput.files && fileInput.files[0]) {
+                formData.append(`images[${index}]`, fileInput.files[0]);
+                formData.append(`descriptions[${index}]`, description);
+                validImages++;
+            }
+        });
+
+        if (validImages === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Perhatian',
+                text: 'Pilih minimal 1 image untuk diupload!',
+                confirmButtonColor: '#3085d6'
+            });
+            return;
+        }
+
+        // Show loading dengan SweetAlert2
+        Swal.fire({
+            title: 'Uploading...',
+            html: `Sedang mengupload ${validImages} image(s)`,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        // Upload ke server
+        fetch('/analyst/worklist/upload-images', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Tambahkan images baru ke array
+                data.data.forEach(img => {
+                    uploadedImages.push({
+                        id: img.id,
+                        nolab: img.nolab,
+                        preview: `/${img.image}`,
+                        description: img.description || '',
+                        isExisting: true
+                    });
+                });
+                
+                updatePreviewContainer();
+                updateBadge(uploadedImages.length);
+                document.getElementById('uploadedImagesPreview').style.display = 'block';
+                
+                // Reset forms
+                document.getElementById('imageUploadContainer').innerHTML = '';
+                imageCounter = 0;
+                
+                // Success alert
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: `${validImages} image(s) berhasil diupload`,
+                    confirmButtonColor: '#28a745',
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Upload Gagal',
+                    text: data.message || 'Terjadi kesalahan saat upload',
+                    confirmButtonColor: '#d33'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Upload Gagal',
+                text: 'Terjadi kesalahan saat mengupload images',
+                confirmButtonColor: '#d33'
+            });
+        });
+    });
+
+    // Update preview container
+    function updatePreviewContainer() {
+        const container = document.getElementById('previewContainer');
+        container.innerHTML = '';
+        
+        uploadedImages.forEach((img, index) => {
+            const col = document.createElement('div');
+            col.className = 'col-md-4 mb-3';
+            col.innerHTML = `
+                <div class="card">
+                    <img src="${img.preview}" class="card-img-top" style="height: 150px; object-fit: cover;">
+                    <div class="card-body p-2">
+                        <small class="text-muted d-block">${img.description || 'No description'}</small>
+                        <small class="text-info d-block">NoLab: ${img.nolab}</small>
+                        <button class="btn btn-danger btn-sm w-100 mt-1" onclick="removeUploadedImage(${index}, ${img.isExisting ? img.id : 'null'})">
+                            <i class="bi bi-trash"></i> Hapus
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(col);
+        });
+    }
+
+    // Hapus uploaded image - DENGAN SWEETALERT2
+    window.removeUploadedImage = function(index, imageId) {
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: "Image yang dihapus tidak dapat dikembalikan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if (imageId) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Menghapus...',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    
+                    // Hapus dari database
+                    fetch(`/analyst/worklist/delete-image/${imageId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            uploadedImages.splice(index, 1);
+                            updatePreviewContainer();
+                            updateBadge(uploadedImages.length);
+                            
+                            if (uploadedImages.length === 0) {
+                                document.getElementById('uploadedImagesPreview').style.display = 'none';
+                            }
+                            
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Terhapus!',
+                                text: 'Image berhasil dihapus',
+                                confirmButtonColor: '#28a745',
+                                timer: 2000,
+                                timerProgressBar: true
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal Menghapus',
+                                text: data.message || 'Terjadi kesalahan',
+                                confirmButtonColor: '#d33'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal Menghapus',
+                            text: 'Terjadi kesalahan saat menghapus image',
+                            confirmButtonColor: '#d33'
+                        });
+                    });
+                } else {
+                    uploadedImages.splice(index, 1);
+                    updatePreviewContainer();
+                    updateBadge(uploadedImages.length);
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Terhapus!',
+                        text: 'Image berhasil dihapus',
+                        confirmButtonColor: '#28a745',
+                        timer: 1500,
+                        timerProgressBar: true
+                    });
+                }
+            }
+        });
+    };
+
+    // Update badge counter
+    function updateBadge(count) {
+        const badge = document.getElementById('imageCountBadge');
+        if (count > 0) {
+            badge.textContent = count;
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    // Update counter saat form dihapus
+    function updateImageCounter() {
+        const forms = document.querySelectorAll('#imageUploadContainer .card');
+        forms.forEach((form, index) => {
+            form.querySelector('h6').textContent = `Image #${index + 1}`;
+        });
+    }
+
+    // Reset modal
+    function resetModal() {
+        document.getElementById('imageUploadContainer').innerHTML = '';
+        imageCounter = 0;
+    }
+});
+</script>
+
+<style>
+.preview-area {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.image-input {
+    cursor: pointer;
+}
+
+#imageUploadContainer .card {
+    border-left: 3px solid #0d6efd;
+}
+
+#previewContainer .card {
+    transition: transform 0.2s;
+}
+
+#previewContainer .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+#uploadedImagesPreview {
+    border-top: 2px solid #dee2e6;
+    padding-top: 15px;
+}
+/* Force SweetAlert2 to be on top of everything */
+.swal2-container {
+    z-index: 999999 !important;
+}
+
+.swal-high-zindex {
+    z-index: 999999 !important;
+}
+
+/* Override Bootstrap modal z-index if needed */
+.modal {
+    z-index: 1050 !important;
+}
+
+.modal-backdrop {
+    z-index: 1040 !important;
+}
+
+/* Ensure SweetAlert backdrop is also high */
+div:where(.swal2-container) {
+    z-index: 999999 !important;
+}
+</style>
 @endpush
