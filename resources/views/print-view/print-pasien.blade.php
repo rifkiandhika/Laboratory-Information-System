@@ -312,7 +312,7 @@
                             <td><b>{{ $data_pasien->nama ?? '-'}}</b></td> 
                             <td>Tanggal Transaksi</td> 
                             <td>:</td> 
-                            <td>{{ $data_pasien->tanggal_masuk ?? '-'}}</td> 
+                            <td>{{ $data_pasien->tanggal_masuk ? \Carbon\Carbon::parse($data_pasien->tanggal_masuk)->format('d-m-Y H:i:s') : '-' }}</td>
                         </tr> 
                         <tr> 
                             @php
@@ -325,7 +325,7 @@
                             <td> {{ $umur->y }} Tahun {{ $umur->m }} Bulan {{ $umur->d }} Hari  </td> 
                             <td>Tanggal Diterima</td> 
                             <td>:</td> 
-                            <td>{{ $data_pasien->created_at ?? '-'}}</td> 
+                            <td>{{ $data_pasien->created_at ? $data_pasien->created_at->format('d-m-Y H:i:s') : '-' }}</td>
                         </tr> 
                         <tr> 
                             <td>Jenis Kelamin</td> 
@@ -333,7 +333,7 @@
                             <td>{{ $data_pasien->jenis_kelamin ?? '-'}}</td> 
                             <td>Tanggal Selesai</td> 
                             <td>:</td> 
-                            <td>{{ $data_pasien->updated_at ?? '-'}}</td> 
+                            <td>{{ $data_pasien->updated_at ? $data_pasien->updated_at->format('d-m-Y H:i:s') : '-' }}</td>
                         </tr> 
                         <tr> 
                             <td>Asal Pasien</td> 
