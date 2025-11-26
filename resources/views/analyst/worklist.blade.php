@@ -415,9 +415,6 @@
                                                 <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
                                                     <span class="carousel-control-next-icon"></span>
                                                 </button>
-                                                <button onclick="downloadCurrentImage()" class="btn btn-success">
-                                                    <i class="bi bi-download"></i> Download
-                                                </button>
                                                 {{-- <button onclick="printCurrentImage()" class="btn btn-info">
                                                     <i class="bi bi-printer"></i> Print
                                                 </button> --}}
@@ -427,7 +424,10 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-danger" id="deleteCurrentImage">
-                                                <i class="bi bi-trash"></i> Hapus Image Ini
+                                                <i class="ti ti-trash"></i> Hapus Gambar Ini
+                                            </button>
+                                            <button onclick="downloadCurrentImage()" class="btn btn-success">
+                                                <i class="ti ti-download"></i> Download
                                             </button>
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                         </div>
