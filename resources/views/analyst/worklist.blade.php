@@ -415,6 +415,12 @@
                                                 <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
                                                     <span class="carousel-control-next-icon"></span>
                                                 </button>
+                                                <button onclick="downloadCurrentImage()" class="btn btn-success">
+                                                    <i class="bi bi-download"></i> Download
+                                                </button>
+                                                {{-- <button onclick="printCurrentImage()" class="btn btn-info">
+                                                    <i class="bi bi-printer"></i> Print
+                                                </button> --}}
                                             </div>
                                             
                                             <div class="carousel-indicators" id="carouselIndicators"></div>
@@ -4575,9 +4581,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                 lastModified: Date.now()
                             });
                             
-                            // console.log('Original size:', (file.size / 1024).toFixed(2), 'KB');
-                            // console.log('Compressed size:', (compressedFile.size / 1024).toFixed(2), 'KB');
-                            
                             resolve(compressedFile);
                         } else {
                             reject(new Error('Canvas to Blob conversion failed'));
@@ -4907,6 +4910,134 @@ document.addEventListener('DOMContentLoaded', function() {
         isDragging = false;
         currentImg = null;
     }
+
+    // ============================================================
+    //                  DOWNLOAD FUNCTIONALITY
+    // ============================================================
+    window.downloadCurrentImage = function() {
+        const currentImg = uploadedImages[currentCarouselIndex];
+        if (!currentImg) return;
+        
+        const link = document.createElement('a');
+        link.href = currentImg.preview;
+        link.download = `${currentNoLab}_image_${currentCarouselIndex + 1}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Show notification
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+        });
+        Toast.fire({
+            icon: 'success',
+            title: 'Image berhasil diunduh'
+        });
+    };
+
+    // ============================================================
+    //                  PRINT FUNCTIONALITY
+    // ============================================================
+    window.printCurrentImage = function() {
+        const currentImg = uploadedImages[currentCarouselIndex];
+        if (!currentImg) return;
+        
+        // Create print window
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Print Image - ${currentNoLab}</title>
+                <style>
+                    @media print {
+                        @page {
+                            margin: 0.5cm;
+                            size: auto;
+                        }
+                        body {
+                            margin: 0;
+                            padding: 20px;
+                        }
+                    }
+                    body {
+                        font-family: Arial, sans-serif;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        padding: 20px;
+                    }
+                    .header {
+                        text-align: center;
+                        margin-bottom: 20px;
+                        width: 100%;
+                    }
+                    .header h2 {
+                        margin: 5px 0;
+                        color: #333;
+                    }
+                    .image-container {
+                        max-width: 100%;
+                        text-align: center;
+                    }
+                    img {
+                        max-width: 100%;
+                        height: auto;
+                        border: 1px solid #ddd;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    }
+                    .description {
+                        margin-top: 15px;
+                        padding: 10px;
+                        background: #f8f9fa;
+                        border-radius: 5px;
+                        text-align: center;
+                        max-width: 800px;
+                    }
+                    .footer {
+                        margin-top: 20px;
+                        font-size: 12px;
+                        color: #666;
+                        text-align: center;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h2>Lab Image</h2>
+                    <p><strong>No Lab:</strong> ${currentNoLab}</p>
+                    <p><strong>Image:</strong> ${currentCarouselIndex + 1} of ${uploadedImages.length}</p>
+                </div>
+                <div class="image-container">
+                    <img src="${currentImg.preview}" alt="Lab Image">
+                </div>
+                ${currentImg.description ? `
+                    <div class="description">
+                        <strong>Keterangan:</strong><br>
+                        ${currentImg.description}
+                    </div>
+                ` : ''}
+                <div class="footer">
+                    <p>Printed on ${new Date().toLocaleString('id-ID')}</p>
+                </div>
+            </body>
+            </html>
+        `);
+        
+        // Wait for image to load then print
+        printWindow.document.close();
+        printWindow.onload = function() {
+            setTimeout(() => {
+                printWindow.print();
+                // Close window after printing (optional)
+                // printWindow.close();
+            }, 250);
+        };
+    };
 
     // Delete current image in carousel
     document.getElementById('deleteCurrentImage')?.addEventListener('click', function() {
