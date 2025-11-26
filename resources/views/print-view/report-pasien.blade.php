@@ -53,6 +53,15 @@
                             </select>
                         </div>
 
+                        <div class="col-12 col-md-6 col-lg-2">
+                            <label for="dokter" class="form-label">
+                                <b>Dokter Pengirim</b>
+                            </label>
+                            <select id="dokter" name="dokter[]" class="form-control select2" multiple>
+                                <option value="all">Semua</option>
+                            </select>
+                        </div>
+
                         <!-- Nama Pasien -->
                         <div class="col-12 col-md-6 col-lg-2">
                             <label for="nama_pasien" class="form-label">
@@ -94,6 +103,7 @@
                                 <th>Umur</th>
                                 <th>Pemeriksaan</th>
                                 <th>Departemen</th>
+                                <th>Dokter</th>
                                 <th>Payment Method</th>
                                 <th>Qty</th>
                                 <th>Harga</th>
@@ -163,10 +173,14 @@
 @push('script')
 <script>
 $(document).ready(function () {
-    $('#department, #payment').select2({ 
+    // Initialize select2
+    $('#department, #payment, #dokter').select2({ 
         placeholder: 'Pilih...', 
         allowClear: true 
     });
+
+    // ✅ TAMBAHAN BARU: Load dokter list
+    loadDokterList();
 
     $('#filterForm').on('submit', function (e) {
         e.preventDefault();
@@ -175,7 +189,7 @@ $(document).ready(function () {
 
     $('#filterForm').on('reset', function () {
         setTimeout(() => {
-            $('#department, #payment').val(null).trigger('change');
+            $('#department, #payment, #dokter').val(null).trigger('change');
             $('#nama_pasien').val('');
             $('#no_lab').val('');
             $('#tanggal_awal').val(hariPertama.toISOString().split('T')[0]);
@@ -184,18 +198,44 @@ $(document).ready(function () {
     });
 });
 
+function loadDokterList() {
+    $.ajax({
+        url: '{{ route("patient.report.dokter.list") }}',
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                const $select = $('#dokter');
+                response.data.forEach(function(dokter) {
+                    const badge = dokter.tipe === 'Internal' 
+                        ? '<span style="color: #0d6efd;">●</span>' 
+                        : '<span style="color: #dc3545;">●</span>';
+                    $select.append(new Option(
+                        `${dokter.nama} (${dokter.tipe})`, 
+                        dokter.nama
+                    ));
+                });
+            }
+        },
+        error: function(error) {
+            console.error('Error loading dokter list:', error);
+        }
+    });
+}
+
 function muatDataLaporan() {
     const formData = {
         tanggal_awal: $('#tanggal_awal').val() || hariPertama.toISOString().split('T')[0],
         tanggal_akhir: $('#tanggal_akhir').val() || hariIni.toISOString().split('T')[0],
         department: $('#department').val(),
         payment_method: ($('#payment').val() || []).map(p => p.toLowerCase()),
+        dokter: $('#dokter').val() || [], // ✅ TAMBAHAN BARU
         nama_pasien: $('#nama_pasien').val(),
         no_lab: $('#no_lab').val(),
         _token: $('meta[name="csrf-token"]').attr('content') || '{{ csrf_token() }}'
     };
 
-    $('#reportTableBody').html('<tr><td colspan="12" class="text-center">Memuat data...</td></tr>');
+    $('#reportTableBody').html('<tr><td colspan="13" class="text-center">Memuat data...</td></tr>');
 
     $.ajax({
         url: '{{ route("patient.report.data") }}',
@@ -207,7 +247,7 @@ function muatDataLaporan() {
                 tampilkanTabelLaporan(response.data);
             } else {
                 $('#reportTableBody').html(
-                    '<tr><td colspan="12" class="text-center text-danger">Error: ' + response.message + '</td></tr>'
+                    '<tr><td colspan="13" class="text-center text-danger">Error: ' + response.message + '</td></tr>'
                 );
             }
         },
@@ -215,7 +255,7 @@ function muatDataLaporan() {
             console.log('AJAX Error:', error);
             console.log('Response:', xhr.responseText);
             $('#reportTableBody').html(
-                '<tr><td colspan="12" class="text-center text-danger">Error memuat data: ' + error + '</td></tr>'
+                '<tr><td colspan="13" class="text-center text-danger">Error memuat data: ' + error + '</td></tr>'
             );
         }
     });
@@ -227,28 +267,31 @@ function tampilkanTabelLaporan(data) {
     let grandTotal = 0;
 
     if (data.length === 0) {
-        tableHTML = '<tr><td colspan="12" class="text-center text-muted">Tidak ada data yang ditemukan.</td></tr>';
+        tableHTML = '<tr><td colspan="13" class="text-center text-muted">Tidak ada data yang ditemukan.</td></tr>';
     } else {
         data.forEach(row => {
             if (row.is_patient_header) {
-                // Header Pasien
                 tableHTML += `<tr class="patient-header">`;
-                tableHTML += `<td colspan="12"><strong>No Lab: ${row.no_lab} | Pasien: ${row.nama_pasien} | Jenis Kelamin: ${row.jenis_kelamin} | Umur: ${row.umur} tahun | Tanggal: ${row.tanggal_formatted}</strong></td>`;
+                tableHTML += `<td colspan="13"><strong>No Lab: ${row.no_lab} | Pasien: ${row.nama_pasien} | Jenis Kelamin: ${row.jenis_kelamin} | Umur: ${row.umur} tahun | Tanggal: ${row.tanggal_formatted}</strong></td>`;
                 tableHTML += `</tr>`;
             } else if (row.is_total_patient) {
-                // Total per Pasien
                 tableHTML += `<tr style="background-color: #f1f3f5;">`;
-                tableHTML += `<td colspan="11" class="text-end"><strong>Total Pasien:</strong></td>`;
+                tableHTML += `<td colspan="12" class="text-end"><strong>Total Pasien:</strong></td>`;
                 tableHTML += `<td class="text-end"><strong>${formatMataUang(row.total_pasien)}</strong></td>`;
                 tableHTML += `</tr>`;
             } else if (row.is_grand_total) {
-                // Grand Total
                 tableHTML += `<tr class="total-row">`;
-                tableHTML += `<td colspan="11" class="text-end"><strong>GRAND TOTAL:</strong></td>`;
+                tableHTML += `<td colspan="12" class="text-end"><strong>GRAND TOTAL:</strong></td>`;
                 tableHTML += `<td class="text-end"><strong>${formatMataUang(row.grand_total)}</strong></td>`;
                 tableHTML += `</tr>`;
             } else {
-                // Data Pemeriksaan
+                // ✅ TAMBAHAN BARU: Tampilkan dokter dengan badge
+                let dokterDisplay = row.nama_dokter;
+                if (row.tipe_dokter) {
+                    const badgeColor = row.tipe_dokter === 'Internal' ? 'primary' : 'danger';
+                    dokterDisplay += ` <span class="badge bg-${badgeColor}">${row.tipe_dokter}</span>`;
+                }
+                
                 tableHTML += `<tr>`;
                 tableHTML += `<td class="text-center">${no++}</td>`;
                 tableHTML += `<td class="text-center">${row.tanggal_formatted}</td>`;
@@ -258,6 +301,7 @@ function tampilkanTabelLaporan(data) {
                 tableHTML += `<td class="text-center">${row.umur}</td>`;
                 tableHTML += `<td>${row.nama_pemeriksaan}</td>`;
                 tableHTML += `<td class="text-center">${row.department}</td>`;
+                tableHTML += `<td class="text-center">${dokterDisplay}</td>`; // ✅ TAMBAHAN BARU
                 tableHTML += `<td class="text-center">${row.payment_method.toUpperCase()}</td>`;
                 tableHTML += `<td class="text-center">${row.quantity}</td>`;
                 tableHTML += `<td class="text-end">${formatMataUang(row.harga)}</td>`;
@@ -468,6 +512,7 @@ function getRentangTanggalTeks() {
 function getTeksFilter() {
     const departemen = $('#department').val();
     const pembayaran = $('#payment').val();
+    const dokter = $('#dokter').val(); // ✅ TAMBAHAN BARU
     const namaPasien = $('#nama_pasien').val();
     const noLab = $('#no_lab').val();
     
@@ -486,6 +531,10 @@ function getTeksFilter() {
     if (pembayaran && pembayaran.length > 0) {
         const namaPembayaran = pembayaran.map(p => p.toUpperCase());
         teksFilter += ` Payment: ${namaPembayaran.join(', ')} |`;
+    }
+    
+    if (dokter && dokter.length > 0 && !dokter.includes('all')) {
+        teksFilter += ` Dokter: ${dokter.join(', ')} |`;
     }
     
     if (namaPasien) {

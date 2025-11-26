@@ -212,6 +212,8 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
     // Route untuk laporan data pasien
     Route::get('/laporan-pasien', [PatientReportController::class, 'index'])->name('patient.report');
     Route::post('/laporan-pasien/data', [PatientReportController::class, 'getPatientReportData'])->name('patient.report.data');
+    Route::get('/patient-report/dokter-list', [PatientReportController::class, 'getDokterList'])
+        ->name('patient.report.dokter.list');
 
 
 

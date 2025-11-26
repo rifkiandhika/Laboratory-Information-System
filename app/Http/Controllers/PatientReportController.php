@@ -39,6 +39,7 @@ class PatientReportController extends Controller
             $paymentMethods = array_map('strtolower', $request->input('payment_method', []));
             $namaPasien = $request->input('nama_pasien');
             $noLab = $request->input('no_lab');
+            $dokter = $request->input('dokter', []); // ✅ TAMBAHAN BARU
 
             // Query Reports dengan join ke Pasien
             $query = Report::with([
@@ -68,6 +69,14 @@ class PatientReportController extends Controller
             // Filter no lab
             if (!empty($noLab)) {
                 $query->where('reports.nolab', 'LIKE', '%' . $noLab . '%');
+            }
+
+            // ✅ TAMBAHAN BARU: Filter Dokter (Internal + External)
+            if (!empty($dokter) && !in_array('all', $dokter)) {
+                $query->where(function ($q) use ($dokter) {
+                    $q->whereIn('reports.nama_dokter', $dokter)
+                        ->orWhereIn('reports.dokter_external', $dokter);
+                });
             }
 
             // Order by no_lab dan tanggal
@@ -102,11 +111,9 @@ class PatientReportController extends Controller
                 $namaPemeriksaan = '';
 
                 if ($item->mcu_package_id && $item->mcuPackage) {
-                    // MCU Package
                     $namaPemeriksaan = $item->mcuPackage->nama_paket;
                     $harga = $item->mcuPackage->harga_final ?? 0;
                 } else {
-                    // Non-MCU
                     $namaPemeriksaan = $item->nama_parameter;
                     $harga = $item->detailDepartment->harga ?? 0;
 
@@ -117,10 +124,24 @@ class PatientReportController extends Controller
 
                 $total = $item->quantity * $harga;
 
+                // ✅ TAMBAHAN BARU: Tentukan nama dokter dan tipe
+                $namaDokter = '-';
+                $tipeDokter = '';
+
+                if (!empty($item->nama_dokter)) {
+                    $namaDokter = $item->nama_dokter;
+                    $tipeDokter = 'Internal';
+                } elseif (!empty($item->dokter_external)) {
+                    $namaDokter = $item->dokter_external;
+                    $tipeDokter = 'External';
+                }
+
                 $groupedByPatient[$noLab]['tests'][] = [
                     'nama_pemeriksaan' => $namaPemeriksaan,
                     'department' => $item->departments->nama_department ?? 'Unknown',
                     'payment_method' => $item->payment_method,
+                    'nama_dokter' => $namaDokter,
+                    'tipe_dokter' => $tipeDokter,
                     'quantity' => $item->quantity,
                     'harga' => $harga,
                     'total' => $total,
@@ -138,7 +159,6 @@ class PatientReportController extends Controller
 
                 $totalPasien = 0;
 
-                // Tambahkan data pemeriksaan
                 foreach ($tests as $test) {
                     $final[] = [
                         'no_lab' => $info['no_lab'],
@@ -149,6 +169,8 @@ class PatientReportController extends Controller
                         'nama_pemeriksaan' => $test['nama_pemeriksaan'],
                         'department' => $test['department'],
                         'payment_method' => $test['payment_method'],
+                        'nama_dokter' => $test['nama_dokter'],
+                        'tipe_dokter' => $test['tipe_dokter'],
                         'quantity' => $test['quantity'],
                         'harga' => $test['harga'],
                         'total' => $test['total'],
@@ -160,7 +182,6 @@ class PatientReportController extends Controller
                     $totalPasien += $test['total'];
                 }
 
-                // Tambahkan total per pasien
                 $final[] = [
                     'total_pasien' => $totalPasien,
                     'is_patient_header' => false,
@@ -171,7 +192,6 @@ class PatientReportController extends Controller
                 $grandTotal += $totalPasien;
             }
 
-            // Tambahkan grand total
             if (!empty($final)) {
                 $final[] = [
                     'grand_total' => $grandTotal,
@@ -192,6 +212,51 @@ class PatientReportController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan pada server: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    public function getDokterList()
+    {
+        try {
+            // Get dokter internal
+            $dokterInternal = Report::whereNotNull('nama_dokter')
+                ->where('nama_dokter', '!=', '')
+                ->distinct()
+                ->pluck('nama_dokter')
+                ->map(function ($nama) {
+                    return [
+                        'nama' => $nama,
+                        'tipe' => 'Internal'
+                    ];
+                });
+
+            // Get dokter external
+            $dokterExternal = Report::whereNotNull('dokter_external')
+                ->where('dokter_external', '!=', '')
+                ->distinct()
+                ->pluck('dokter_external')
+                ->map(function ($nama) {
+                    return [
+                        'nama' => $nama,
+                        'tipe' => 'External'
+                    ];
+                });
+
+            // Gabungkan dan sort
+            $allDokter = $dokterInternal->concat($dokterExternal)
+                ->sortBy('nama')
+                ->values();
+
+            return response()->json([
+                'success' => true,
+                'data' => $allDokter
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Get Dokter List Error: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
             ], 500);
         }
     }

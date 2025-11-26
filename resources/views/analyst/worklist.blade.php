@@ -353,27 +353,23 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal fade" id="imagesModal" tabindex="-1"
-                                aria-labelledby="imagesModalLabel" aria-hidden="true">
+                            {{-- Images Modal --}}
+                            <!-- Modal Upload Images -->
+                            <div class="modal fade" id="imagesModal" tabindex="-1">
                                 <div class="modal-dialog modal-lg">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="imagesModalLabel">Upload Images</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
+                                            <h5 class="modal-title">Upload Images</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <!-- Hidden input untuk menyimpan nolab -->
                                             <input type="hidden" id="currentNoLab" value="">
                                             
-                                            <div id="imageUploadContainer">
-                                                <!-- Form upload akan ditambahkan di sini -->
-                                            </div>
+                                            <div id="imageUploadContainer"></div>
                                             <button type="button" class="btn btn-primary btn-sm mt-2" id="addMoreImageBtn">
                                                 <i class="bi bi-plus-circle"></i> Tambah Image Lagi
                                             </button>
                                             
-                                            <!-- Preview Images yang sudah diupload -->
                                             <div class="mt-3" id="uploadedImagesPreview" style="display: none;">
                                                 <h6>Images yang sudah diupload:</h6>
                                                 <div class="row" id="previewContainer"></div>
@@ -382,6 +378,52 @@
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                             <button type="button" class="btn btn-success" id="saveImagesBtn">Simpan Semua</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Modal Carousel dengan Zoom -->
+                            <div class="modal fade image-carousel-modal" id="imageCarouselModal" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Preview Images</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body position-relative">
+                                            <div class="image-counter" id="imageCounter">1 / 1</div>
+                                            
+                                            <div class="zoom-controls">
+                                                <button class="btn btn-sm btn-light" onclick="zoomIn()">
+                                                    <i class="ti ti-zoom-in"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-light" onclick="zoomOut()">
+                                                    <i class="ti ti-zoom-out"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-light" onclick="resetZoom()">
+                                                    <i class="ti ti-refresh"></i>
+                                                </button>
+                                            </div>
+                                            
+                                            <div id="imageCarousel" class="carousel slide" data-bs-ride="false">
+                                                <div class="carousel-inner" id="carouselInner"></div>
+                                                
+                                                <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
+                                                    <span class="carousel-control-prev-icon"></span>
+                                                </button>
+                                                <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
+                                                    <span class="carousel-control-next-icon"></span>
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="carousel-indicators" id="carouselIndicators"></div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-danger" id="deleteCurrentImage">
+                                                <i class="bi bi-trash"></i> Hapus Image Ini
+                                            </button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                         </div>
                                     </div>
                                 </div>
@@ -2963,7 +3005,7 @@
                                                                 
                                                                 if (data.length > 0) {
                                                                     sessionStorage.setItem(`temp_lab_${noLab}`, JSON.stringify(data));
-                                                                    console.log(`Saved ${data.length} rows for ${noLab}`);
+                                                                    // console.log(`Saved ${data.length} rows for ${noLab}`);
                                                                 }
                                                             };
                                                             
@@ -3054,7 +3096,7 @@
                                                                         });
                                                                         
                                                                         if (loadedCount > 0) {
-                                                                            console.log(`Loaded ${loadedCount} values for ${noLab}`);
+                                                                            // console.log(`Loaded ${loadedCount} values for ${noLab}`);
                                                                         }
                                                                     }, 300);
                                                                 } catch (error) {
@@ -3077,7 +3119,7 @@
                                                                 });
                                                                 
                                                                 window.autoSaveSetupDone = true;
-                                                                console.log('Auto-save setup complete for input and select fields');
+                                                                // console.log('Auto-save setup complete for input and select fields');
                                                             }
                                                             
                                                             window.clearTempData = function(noLab) {
@@ -3514,7 +3556,7 @@
                                         <input type="hidden" name="flag[${uid}]" class="flag-value" value="${flagWithStar}">
                                     `;
                                     
-                                    console.log(`Flag set to: ${flagWithStar} for UID: ${uid}, parameter: ${parameter}`);
+                                    // console.log(`Flag set to: ${flagWithStar} for UID: ${uid}, parameter: ${parameter}`);
                                 } else {
                                     flagCell.innerHTML = `
                                         <input type="hidden" name="flag[${uid}]" class="flag-value" value="">
@@ -3559,7 +3601,7 @@
                                     // Hanya update flag jika input ini visible
                                     if (this.style.display !== 'none') {
                                         updateFlag(this.value, flagCell, parameter);
-                                        console.log(`Flag updated for ${parameter}: ${this.value}`);
+                                        // console.log(`Flag updated for ${parameter}: ${this.value}`);
                                     }
                                 }
                             }
@@ -3645,7 +3687,7 @@
                                             targetClass = 'd1';
                                             masterSwitchState = 1;
                                         } else {
-                                            console.log('D1 belum aktif');
+                                            // console.log('D1 belum aktif');
                                             return;
                                         }
                                         break;
@@ -3719,7 +3761,7 @@
                                     }
                                 });
                                 
-                                console.log(`Switched all parameters from ${sourceClass} to ${targetClass}`);
+                                // console.log(`Switched all parameters from ${sourceClass} to ${targetClass}`);
                             }
 
                             function updateMasterSwitchIndicator() {
@@ -3786,7 +3828,7 @@
                                         targetClass = 'd1';
                                         masterSwitchState = 1;
                                     } else {
-                                        console.log('Belum ada duplo stage yang aktif');
+                                        // console.log('Belum ada duplo stage yang aktif');
                                         return;
                                     }
                                 } else {
@@ -4356,15 +4398,26 @@
         });
         });
     </script>
-   <script>
+  <script>
 document.addEventListener('DOMContentLoaded', function() {
     let imageCounter = 0;
     let uploadedImages = [];
     let currentNoLab = '';
+    let currentZoomLevel = 1;
+    let currentCarouselIndex = 0;
+    
+    // Variables untuk drag/pan
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let translateX = 0;
+    let translateY = 0;
+    let currentImg = null;
 
     const imagesModal = document.getElementById('imagesModal');
+    const carouselModal = new bootstrap.Modal(document.getElementById('imageCarouselModal'));
     
-    // Event saat modal dibuka - ambil nolab dan load existing images
+    // Event saat modal dibuka
     imagesModal.addEventListener('shown.bs.modal', function() {
         const nolabInput = document.querySelector('input[name="no_lab"]');
         if (nolabInput) {
@@ -4382,7 +4435,7 @@ document.addEventListener('DOMContentLoaded', function() {
         resetModal();
     });
 
-    // Fungsi untuk load existing images dari database
+    // Load existing images
     function loadExistingImages(nolab) {
         fetch(`/api/get-images/${nolab}`)
             .then(response => response.json())
@@ -4403,18 +4456,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('uploadedImagesPreview').style.display = 'none';
                 }
             })
-            .catch(error => {
-                console.error('Error loading images:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal Memuat Images',
-                    text: 'Terjadi kesalahan saat memuat images',
-                    confirmButtonColor: '#d33'
-                });
-            });
+            .catch(error => console.error('Error:', error));
     }
 
-    // Fungsi untuk menambah form upload
+    // Add form upload
     function addImageUploadForm() {
         imageCounter++;
         const formId = `imageForm_${imageCounter}`;
@@ -4430,13 +4475,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <div class="mb-2">
                         <label class="form-label">Pilih Image</label>
-                        <input type="file" class="form-control image-input" 
-                               accept="image/*" data-counter="${imageCounter}">
+                        <input type="file" class="form-control image-input" accept="image/*">
+                        <small class="text-muted d-block mt-1">
+                            <i class="bi bi-info-circle"></i> Gambar akan dikompres otomatis (Max 2MB)
+                        </small>
                     </div>
                     <div class="mb-2">
                         <label class="form-label">Keterangan (Optional)</label>
-                        <input type="text" class="form-control image-description" 
-                               placeholder="Masukkan keterangan image">
+                        <input type="text" class="form-control image-description" placeholder="Masukkan keterangan">
                     </div>
                     <div class="preview-area" style="display: none;">
                         <img src="" class="img-thumbnail preview-img" style="max-height: 200px;">
@@ -4458,53 +4504,116 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Fungsi untuk preview image
     function previewImage(input, formId) {
         if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const form = document.getElementById(formId);
+            const previewArea = form.querySelector('.preview-area');
+            const previewImg = form.querySelector('.preview-img');
+            
+            // Compress image before preview
+            compressImage(file, 0.7, 1920, 1080).then(compressedFile => {
+                // Replace original file with compressed file
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(compressedFile);
+                input.files = dataTransfer.files;
+                
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewArea.style.display = 'block';
+                };
+                reader.readAsDataURL(compressedFile);
+            }).catch(error => {
+                console.error('Error compressing image:', error);
+                // Fallback to original if compression fails
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewArea.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    }
+    
+    // ============================================================
+    //                  IMAGE COMPRESSION FUNCTION
+    // ============================================================
+    function compressImage(file, quality = 0.7, maxWidth = 1920, maxHeight = 1080) {
+        return new Promise((resolve, reject) => {
             const reader = new FileReader();
             
             reader.onload = function(e) {
-                const form = document.getElementById(formId);
-                const previewArea = form.querySelector('.preview-area');
-                const previewImg = form.querySelector('.preview-img');
+                const img = new Image();
                 
-                previewImg.src = e.target.result;
-                previewArea.style.display = 'block';
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    // Calculate new dimensions
+                    if (width > maxWidth || height > maxHeight) {
+                        const ratio = Math.min(maxWidth / width, maxHeight / height);
+                        width = width * ratio;
+                        height = height * ratio;
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Convert canvas to blob
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            // Create new File object
+                            const compressedFile = new File([blob], file.name, {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            });
+                            
+                            // console.log('Original size:', (file.size / 1024).toFixed(2), 'KB');
+                            // console.log('Compressed size:', (compressedFile.size / 1024).toFixed(2), 'KB');
+                            
+                            resolve(compressedFile);
+                        } else {
+                            reject(new Error('Canvas to Blob conversion failed'));
+                        }
+                    }, 'image/jpeg', quality);
+                };
+                
+                img.onerror = function() {
+                    reject(new Error('Image load error'));
+                };
+                
+                img.src = e.target.result;
             };
             
-            reader.readAsDataURL(input.files[0]);
-        }
+            reader.onerror = function() {
+                reject(new Error('FileReader error'));
+            };
+            
+            reader.readAsDataURL(file);
+        });
     }
 
-    // Fungsi untuk menghapus form
     function removeImageForm(formId) {
-        const form = document.getElementById(formId);
-        if (form) {
-            form.remove();
-            updateImageCounter();
-        }
+        document.getElementById(formId)?.remove();
     }
 
-    document.getElementById('addMoreImageBtn').addEventListener('click', function() {
-        addImageUploadForm();
-    });
+    document.getElementById('addMoreImageBtn').addEventListener('click', addImageUploadForm);
 
-    // Event listener untuk tombol simpan - DENGAN SWEETALERT2
+    // Upload images
     document.getElementById('saveImagesBtn').addEventListener('click', function() {
         const forms = document.querySelectorAll('#imageUploadContainer .card');
         const formData = new FormData();
         const nolab = document.getElementById('currentNoLab').value;
         
         if (!nolab) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'No Lab tidak ditemukan!',
-                confirmButtonColor: '#d33',
-                customClass: {
-                    container: 'swal-high-zindex'
-                }
-            });
+            Swal.fire('Error', 'No Lab tidak ditemukan!', 'error');
             return;
         }
         
@@ -4523,27 +4632,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         if (validImages === 0) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Perhatian',
-                text: 'Pilih minimal 1 image untuk diupload!',
-                confirmButtonColor: '#3085d6'
-            });
+            Swal.fire('Warning', 'Pilih minimal 1 image!', 'warning');
             return;
         }
 
-        // Show loading dengan SweetAlert2
         Swal.fire({
             title: 'Uploading...',
             html: `Sedang mengupload ${validImages} image(s)`,
             allowOutsideClick: false,
-            allowEscapeKey: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
+            didOpen: () => Swal.showLoading()
         });
         
-        // Upload ke server
         fetch('/analyst/worklist/upload-images', {
             method: 'POST',
             body: formData,
@@ -4554,7 +4653,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                // Tambahkan images baru ke array
                 data.data.forEach(img => {
                     uploadedImages.push({
                         id: img.id,
@@ -4568,41 +4666,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 updatePreviewContainer();
                 updateBadge(uploadedImages.length);
                 document.getElementById('uploadedImagesPreview').style.display = 'block';
-                
-                // Reset forms
                 document.getElementById('imageUploadContainer').innerHTML = '';
                 imageCounter = 0;
                 
-                // Success alert
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: `${validImages} image(s) berhasil diupload`,
-                    confirmButtonColor: '#28a745',
-                    timer: 2000,
-                    timerProgressBar: true
-                });
+                Swal.fire('Success!', `${validImages} image(s) berhasil diupload`, 'success');
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Upload Gagal',
-                    text: data.message || 'Terjadi kesalahan saat upload',
-                    confirmButtonColor: '#d33'
-                });
+                Swal.fire('Error', data.message || 'Upload gagal', 'error');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Upload Gagal',
-                text: 'Terjadi kesalahan saat mengupload images',
-                confirmButtonColor: '#d33'
-            });
+            Swal.fire('Error', 'Terjadi kesalahan', 'error');
         });
     });
 
-    // Update preview container
+    // Update preview container dengan carousel trigger
     function updatePreviewContainer() {
         const container = document.getElementById('previewContainer');
         container.innerHTML = '';
@@ -4611,12 +4689,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const col = document.createElement('div');
             col.className = 'col-md-4 mb-3';
             col.innerHTML = `
-                <div class="card">
+                <div class="card preview-image-card" onclick="openCarousel(${index})">
+                    <div class="image-number-badge">${index + 1}</div>
                     <img src="${img.preview}" class="card-img-top" style="height: 150px; object-fit: cover;">
+                    <div class="image-overlay">
+                        <i class="bi bi-eye-fill"></i>
+                    </div>
                     <div class="card-body p-2">
                         <small class="text-muted d-block">${img.description || 'No description'}</small>
-                        <small class="text-info d-block">NoLab: ${img.nolab}</small>
-                        <button class="btn btn-danger btn-sm w-100 mt-1" onclick="removeUploadedImage(${index}, ${img.isExisting ? img.id : 'null'})">
+                        <button class="btn btn-danger btn-sm w-100 mt-1" onclick="event.stopPropagation(); confirmDeleteImage(${index}, ${img.id})">
                             <i class="bi bi-trash"></i> Hapus
                         </button>
                     </div>
@@ -4626,11 +4707,218 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Hapus uploaded image - DENGAN SWEETALERT2
-    window.removeUploadedImage = function(index, imageId) {
+    // Open carousel modal
+    window.openCarousel = function(startIndex) {
+        currentCarouselIndex = startIndex;
+        buildCarousel();
+        carouselModal.show();
+        
+        const carousel = bootstrap.Carousel.getInstance(document.getElementById('imageCarousel')) || 
+                        new bootstrap.Carousel(document.getElementById('imageCarousel'));
+        carousel.to(startIndex);
+    };
+
+    // Build carousel
+    function buildCarousel() {
+        const carouselInner = document.getElementById('carouselInner');
+        const indicators = document.getElementById('carouselIndicators');
+        
+        carouselInner.innerHTML = '';
+        indicators.innerHTML = '';
+        
+        uploadedImages.forEach((img, index) => {
+            const item = document.createElement('div');
+            item.className = `carousel-item ${index === currentCarouselIndex ? 'active' : ''}`;
+            item.innerHTML = `
+                <img src="${img.preview}" class="d-block" data-index="${index}">
+                ${img.description ? `<div class="image-description-box">${img.description}</div>` : ''}
+            `;
+            carouselInner.appendChild(item);
+            
+            const indicator = document.createElement('button');
+            indicator.type = 'button';
+            indicator.setAttribute('data-bs-target', '#imageCarousel');
+            indicator.setAttribute('data-bs-slide-to', index);
+            if (index === currentCarouselIndex) indicator.className = 'active';
+            indicators.appendChild(indicator);
+        });
+        
+        // Add drag event listeners to all images
+        document.querySelectorAll('.carousel-item img').forEach(img => {
+            img.addEventListener('mousedown', handleMouseDown);
+            img.addEventListener('mousemove', handleMouseMove);
+            img.addEventListener('mouseup', handleMouseUp);
+            img.addEventListener('mouseleave', handleMouseUp);
+            img.addEventListener('click', toggleZoom);
+            
+            // Touch events for mobile
+            img.addEventListener('touchstart', handleTouchStart);
+            img.addEventListener('touchmove', handleTouchMove);
+            img.addEventListener('touchend', handleTouchEnd);
+        });
+        
+        updateImageCounter();
+    }
+
+    // Update counter
+    function updateImageCounter() {
+        document.getElementById('imageCounter').textContent = 
+            `${currentCarouselIndex + 1} / ${uploadedImages.length}`;
+    }
+
+    // Carousel slide event
+    document.getElementById('imageCarousel')?.addEventListener('slid.bs.carousel', function(e) {
+        currentCarouselIndex = e.to;
+        updateImageCounter();
+        resetZoom();
+        
+        // Reset drag position saat pindah slide
+        translateX = 0;
+        translateY = 0;
+        isDragging = false;
+        currentImg = null;
+    });
+
+    // Zoom functions
+    window.toggleZoom = function(event) {
+        const img = event.target;
+        
+        // Jika sudah zoom, toggle off
+        if (img.classList.contains('zoomed')) {
+            img.classList.remove('zoomed');
+            currentZoomLevel = 1;
+            translateX = 0;
+            translateY = 0;
+            img.style.transform = 'scale(1)';
+        } else {
+            // Zoom in
+            img.classList.add('zoomed');
+            currentZoomLevel = 2;
+            img.style.transform = `scale(${currentZoomLevel}) translate(${translateX}px, ${translateY}px)`;
+        }
+    };
+
+    window.zoomIn = function() {
+        const activeImg = document.querySelector('.carousel-item.active img');
+        if (!activeImg) return;
+        
+        currentZoomLevel = Math.min(currentZoomLevel + 0.5, 4);
+        activeImg.classList.add('zoomed');
+        updateTransform(activeImg);
+    };
+
+    window.zoomOut = function() {
+        const activeImg = document.querySelector('.carousel-item.active img');
+        if (!activeImg) return;
+        
+        currentZoomLevel = Math.max(currentZoomLevel - 0.5, 1);
+        
+        if (currentZoomLevel === 1) {
+            activeImg.classList.remove('zoomed');
+            translateX = 0;
+            translateY = 0;
+        }
+        
+        updateTransform(activeImg);
+    };
+
+    window.resetZoom = function() {
+        const activeImg = document.querySelector('.carousel-item.active img');
+        if (!activeImg) return;
+        
+        currentZoomLevel = 1;
+        translateX = 0;
+        translateY = 0;
+        activeImg.classList.remove('zoomed');
+        activeImg.style.transform = 'scale(1)';
+    };
+    
+    function updateTransform(img) {
+        img.style.transform = `scale(${currentZoomLevel}) translate(${translateX}px, ${translateY}px)`;
+    }
+    
+    // ============================================================
+    //                  DRAG/PAN FUNCTIONALITY
+    // ============================================================
+    
+    function handleMouseDown(e) {
+        const img = e.target;
+        if (!img.classList.contains('zoomed')) return;
+        
+        isDragging = true;
+        currentImg = img;
+        startX = e.clientX - translateX;
+        startY = e.clientY - translateY;
+        
+        // Disable carousel controls saat drag
+        document.querySelectorAll('.carousel-control-prev, .carousel-control-next').forEach(btn => {
+            btn.style.pointerEvents = 'none';
+        });
+    }
+    
+    function handleMouseMove(e) {
+        if (!isDragging || !currentImg) return;
+        
+        e.preventDefault();
+        
+        translateX = e.clientX - startX;
+        translateY = e.clientY - startY;
+        
+        updateTransform(currentImg);
+    }
+    
+    function handleMouseUp() {
+        if (isDragging) {
+            isDragging = false;
+            currentImg = null;
+            
+            // Re-enable carousel controls
+            document.querySelectorAll('.carousel-control-prev, .carousel-control-next').forEach(btn => {
+                btn.style.pointerEvents = 'auto';
+            });
+        }
+    }
+    
+    // Touch events for mobile
+    function handleTouchStart(e) {
+        const img = e.target;
+        if (!img.classList.contains('zoomed')) return;
+        
+        isDragging = true;
+        currentImg = img;
+        const touch = e.touches[0];
+        startX = touch.clientX - translateX;
+        startY = touch.clientY - translateY;
+    }
+    
+    function handleTouchMove(e) {
+        if (!isDragging || !currentImg) return;
+        
+        e.preventDefault();
+        
+        const touch = e.touches[0];
+        translateX = touch.clientX - startX;
+        translateY = touch.clientY - startY;
+        
+        updateTransform(currentImg);
+    }
+    
+    function handleTouchEnd() {
+        isDragging = false;
+        currentImg = null;
+    }
+
+    // Delete current image in carousel
+    document.getElementById('deleteCurrentImage')?.addEventListener('click', function() {
+        const currentImg = uploadedImages[currentCarouselIndex];
+        confirmDeleteImage(currentCarouselIndex, currentImg.id);
+    });
+
+    // Confirm delete
+    window.confirmDeleteImage = function(index, imageId) {
         Swal.fire({
-            title: 'Apakah Anda yakin?',
-            text: "Image yang dihapus tidak dapat dikembalikan!",
+            title: 'Yakin hapus image?',
+            text: "Image tidak dapat dikembalikan!",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
@@ -4639,100 +4927,61 @@ document.addEventListener('DOMContentLoaded', function() {
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                if (imageId) {
-                    // Show loading
-                    Swal.fire({
-                        title: 'Menghapus...',
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-                    
-                    // Hapus dari database
-                    fetch(`/analyst/worklist/delete-image/${imageId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            uploadedImages.splice(index, 1);
-                            updatePreviewContainer();
-                            updateBadge(uploadedImages.length);
-                            
-                            if (uploadedImages.length === 0) {
-                                document.getElementById('uploadedImagesPreview').style.display = 'none';
-                            }
-                            
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Terhapus!',
-                                text: 'Image berhasil dihapus',
-                                confirmButtonColor: '#28a745',
-                                timer: 2000,
-                                timerProgressBar: true
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal Menghapus',
-                                text: data.message || 'Terjadi kesalahan',
-                                confirmButtonColor: '#d33'
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Gagal Menghapus',
-                            text: 'Terjadi kesalahan saat menghapus image',
-                            confirmButtonColor: '#d33'
-                        });
-                    });
-                } else {
-                    uploadedImages.splice(index, 1);
-                    updatePreviewContainer();
-                    updateBadge(uploadedImages.length);
-                    
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Terhapus!',
-                        text: 'Image berhasil dihapus',
-                        confirmButtonColor: '#28a745',
-                        timer: 1500,
-                        timerProgressBar: true
-                    });
-                }
+                deleteImage(index, imageId);
             }
         });
     };
 
-    // Update badge counter
-    function updateBadge(count) {
-        const badge = document.getElementById('imageCountBadge');
-        if (count > 0) {
-            badge.textContent = count;
-            badge.style.display = 'inline-block';
-        } else {
-            badge.style.display = 'none';
-        }
-    }
-
-    // Update counter saat form dihapus
-    function updateImageCounter() {
-        const forms = document.querySelectorAll('#imageUploadContainer .card');
-        forms.forEach((form, index) => {
-            form.querySelector('h6').textContent = `Image #${index + 1}`;
+    function deleteImage(index, imageId) {
+        Swal.fire({
+            title: 'Menghapus...',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+        
+        fetch(`/analyst/worklist/delete-image/${imageId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                uploadedImages.splice(index, 1);
+                updatePreviewContainer();
+                updateBadge(uploadedImages.length);
+                
+                if (uploadedImages.length === 0) {
+                    document.getElementById('uploadedImagesPreview').style.display = 'none';
+                    carouselModal.hide();
+                } else {
+                    buildCarousel();
+                    if (currentCarouselIndex >= uploadedImages.length) {
+                        currentCarouselIndex = uploadedImages.length - 1;
+                    }
+                }
+                
+                Swal.fire('Terhapus!', 'Image berhasil dihapus', 'success');
+            } else {
+                Swal.fire('Error', 'Gagal menghapus image', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Error', 'Terjadi kesalahan', 'error');
         });
     }
 
-    // Reset modal
+    function updateBadge(count) {
+        const badge = document.getElementById('imageCountBadge');
+        if (badge) {
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'inline-block' : 'none';
+        }
+    }
+
     function resetModal() {
         document.getElementById('imageUploadContainer').innerHTML = '';
         imageCounter = 0;
@@ -4789,5 +5038,151 @@ document.addEventListener('DOMContentLoaded', function() {
 div:where(.swal2-container) {
     z-index: 999999 !important;
 }
+.image-carousel-modal .modal-dialog {
+            max-width: 90%;
+            height: 90vh;
+        }
+        
+        .image-carousel-modal .modal-content {
+            height: 100%;
+        }
+        
+        .image-carousel-modal .carousel-inner {
+            height: calc(100% - 120px);
+        }
+        
+        .image-carousel-modal .carousel-item {
+            height: 100%;
+        }
+        
+        .image-carousel-modal .carousel-item img {
+            max-height: 70vh;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+            margin: 0 auto;
+            cursor: zoom-in;
+            transition: transform 0.3s ease;
+            user-select: none;
+        }
+        
+        .image-carousel-modal .carousel-item img.zoomed {
+            cursor: grab;
+            transform: scale(2);
+        }
+        
+        .image-carousel-modal .carousel-item img.zoomed:active {
+            cursor: grabbing;
+        }
+        
+        .carousel-item {
+            overflow: hidden;
+        }
+        
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 5%;
+        }
+        
+        .carousel-indicators {
+            bottom: -40px;
+        }
+        
+        .image-counter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            z-index: 10;
+            font-size: 14px;
+        }
+        
+        .image-description-box {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            max-width: 80%;
+            text-align: center;
+        }
+        
+        .zoom-controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+        }
+        
+        .zoom-controls button {
+            margin: 0 5px;
+        }
+
+        /* Preview Grid Styles */
+        .preview-image-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .preview-image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        
+        .preview-image-card img {
+            transition: transform 0.3s ease;
+        }
+        
+        .preview-image-card:hover img {
+            transform: scale(1.1);
+        }
+        
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .preview-image-card:hover .image-overlay {
+            opacity: 1;
+        }
+        
+        .image-overlay i {
+            color: white;
+            font-size: 40px;
+        }
+        
+        .image-number-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            z-index: 1;
+        }
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            filter: brightness(0) saturate(0) invert(50%);
+        }
+
 </style>
 @endpush
