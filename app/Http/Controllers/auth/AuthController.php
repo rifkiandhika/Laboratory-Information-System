@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\ClinicLocation;
 use App\Models\LocationLoginLog;
+use App\Models\User;
 use App\Models\WhitelistedDevice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -95,8 +96,10 @@ class AuthController extends Controller
             'ip' => $request->ip(),
         ]);
 
+        $user = User::where('username', $request->username)->first();
+
         LocationLoginLog::create([
-            'user_id' => null,
+            'user_id' => $user?->id,
             'clinic_location_id' => 1,
             'user_latitude' => $request->latitude ?? 0,
             'user_longitude' => $request->longitude ?? 0,
