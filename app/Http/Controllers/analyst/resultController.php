@@ -211,7 +211,7 @@ class resultController extends Controller
         $dokters_external = Dokter::where('status', 'external')->get();
         $reports = Report::select('analyst')->distinct()->get();
 
-        // ✅ Tambahkan list asal ruangan
+
         $asal_ruangan = Report::select('asal_ruangan')
             ->distinct()
             ->whereNotNull('asal_ruangan')
@@ -238,8 +238,6 @@ class resultController extends Controller
             $doktersInternal = $request->input('dokter_internal', []);
             $doktersExternal = $request->input('dokter_external', []);
             $analystFilter = $request->input('analyst', []);
-
-            // ✅ Tambahkan filter asal ruangan
             $asalRuanganFilter = $request->input('asal_ruangan', []);
 
             $query = Report::with([
@@ -257,31 +255,33 @@ class resultController extends Controller
                 $query->whereIn(DB::raw('LOWER(payment_method)'), $paymentMethods);
             }
 
-            // Filter dokter
+
             if (!empty($doktersInternal) || !empty($doktersExternal)) {
-                $allowedDoctors = [];
+                $query->where(function ($q) use ($doktersInternal, $doktersExternal) {
+                    // Filter Dokter Internal
+                    if (!empty($doktersInternal) && !in_array('All', $doktersInternal)) {
+                        $q->orWhereIn('nama_dokter', $doktersInternal);
+                    } elseif (!empty($doktersInternal) && in_array('All', $doktersInternal)) {
+                        $internalDoctors = dokter::where('status', 'internal')
+                            ->pluck('nama_dokter')
+                            ->toArray();
+                        if (!empty($internalDoctors)) {
+                            $q->orWhereIn('nama_dokter', $internalDoctors);
+                        }
+                    }
 
-                if (!empty($doktersInternal) && !in_array('All', $doktersInternal)) {
-                    $allowedDoctors = array_merge($allowedDoctors, $doktersInternal);
-                } elseif (in_array('All', $doktersInternal)) {
-                    $internalDoctors = dokter::where('status', 'internal')
-                        ->pluck('nama_dokter')
-                        ->toArray();
-                    $allowedDoctors = array_merge($allowedDoctors, $internalDoctors);
-                }
-
-                if (!empty($doktersExternal) && !in_array('All', $doktersExternal)) {
-                    $allowedDoctors = array_merge($allowedDoctors, $doktersExternal);
-                } elseif (in_array('All', $doktersExternal)) {
-                    $externalDoctors = dokter::where('status', 'external')
-                        ->pluck('nama_dokter')
-                        ->toArray();
-                    $allowedDoctors = array_merge($allowedDoctors, $externalDoctors);
-                }
-
-                if (!empty($allowedDoctors)) {
-                    $query->whereIn('nama_dokter', array_unique($allowedDoctors));
-                }
+                    // Filter Dokter External - GUNAKAN KOLOM dokter_external
+                    if (!empty($doktersExternal) && !in_array('All', $doktersExternal)) {
+                        $q->orWhereIn('dokter_external', $doktersExternal);
+                    } elseif (!empty($doktersExternal) && in_array('All', $doktersExternal)) {
+                        $externalDoctors = dokter::where('status', 'external')
+                            ->pluck('nama_dokter')
+                            ->toArray();
+                        if (!empty($externalDoctors)) {
+                            $q->orWhereIn('dokter_external', $externalDoctors);
+                        }
+                    }
+                });
             }
 
             if (!empty($mcuFilter) && !in_array('All', $mcuFilter)) {
@@ -298,7 +298,6 @@ class resultController extends Controller
                 $query->whereIn('analyst', $analystFilter);
             }
 
-            // ✅ Tambahkan filter asal ruangan
             if (!empty($asalRuanganFilter) && !in_array('All', $asalRuanganFilter)) {
                 $query->whereIn('asal_ruangan', $asalRuanganFilter);
             }
@@ -314,8 +313,10 @@ class resultController extends Controller
             foreach ($results as $item) {
                 $deptId = $item->departments->id ?? $item->department;
                 $deptName = $item->departments->nama_department ?? 'Unknown';
-                $namaDokter = $item->nama_dokter ?? '-';
-                $asalRuangan = $item->asal_ruangan ?? '-'; // ✅ Ambil asal ruangan
+
+
+                $namaDokter = $item->nama_dokter ?? $item->dokter_external ?? '-';
+                $asalRuangan = $item->asal_ruangan ?? '-';
 
                 $analystName = $item->analyst ?? '-';
                 $analystData = $users->get($analystName);
@@ -326,7 +327,7 @@ class resultController extends Controller
                 if ($item->mcu_package_id && $item->mcuPackage) {
                     $packageName = $item->mcuPackage->nama_paket;
                     $packageId = $item->mcu_package_id;
-                    $packageKey = 'MCU_PACKAGE_' . $packageId . '||' . $namaDokter . '||' . $asalRuangan . '||' . $analystName; // ✅ Tambahkan asal_ruangan ke key
+                    $packageKey = 'MCU_PACKAGE_' . $packageId . '||' . $namaDokter . '||' . $asalRuangan . '||' . $analystName;
 
                     $uniquePatientKey = $packageKey . '||' . $item->no_lab;
                     if (in_array($uniquePatientKey, $processedMcuLabs)) {
@@ -342,7 +343,8 @@ class resultController extends Controller
                             'mcu_package_id' => $packageId,
                             'package_name' => $packageName,
                             'dokter' => $namaDokter,
-                            'asal_ruangan' => $asalRuangan, // ✅ Tambahkan asal_ruangan
+                            'dokter_external' => $item->dokter_external ?? null,
+                            'asal_ruangan' => $asalRuangan,
                             'jasa_dokter' => 0,
                             'jasa_bidan' => 0,
                             'jasa_perawat' => 0,
@@ -411,7 +413,8 @@ class resultController extends Controller
                                     'mcu_package_id' => $packageId,
                                     'package_name' => $packageName,
                                     'dokter' => '-',
-                                    'asal_ruangan' => '-', // ✅ Tambahkan
+                                    'dokter_external' => null,
+                                    'asal_ruangan' => '-',
                                     'jasa_dokter' => 0,
                                     'analyst' => '-',
                                     'analyst_fee_percent' => 0,
@@ -441,7 +444,9 @@ class resultController extends Controller
                     $displayName = $item->nama_parameter;
                     $harga = $item->detailDepartment->harga ?? 0;
 
-                    $dokter = dokter::where('nama_dokter', $item->nama_dokter)->first();
+                    $dokter = dokter::where('nama_dokter', $item->nama_dokter)
+                        ->orWhere('nama_dokter', $item->dokter_external)
+                        ->first();
                     $jabatan = strtolower($dokter->jabatan ?? 'dokter');
 
                     if ($jabatan === 'bidan') {
@@ -456,7 +461,7 @@ class resultController extends Controller
                         $displayName = $item->detailDepartment->nama_pemeriksaan ?? 'Hematologi';
                     }
 
-                    $key = $deptId . '||' . $displayName . '||' . $namaDokter . '||' . $asalRuangan . '||' . $analystName; // ✅ Tambahkan asal_ruangan ke key
+                    $key = $deptId . '||' . $displayName . '||' . $namaDokter . '||' . $asalRuangan . '||' . $analystName;
 
                     if (!isset($pivoted[$key])) {
                         $pivoted[$key] = [
@@ -466,7 +471,8 @@ class resultController extends Controller
                             'mcu_package_id' => null,
                             'package_name' => null,
                             'dokter' => $namaDokter,
-                            'asal_ruangan' => $asalRuangan, // ✅ Tambahkan asal_ruangan
+                            'dokter_external' => $item->dokter_external ?? null, // ✅ Kirim data external
+                            'asal_ruangan' => $asalRuangan,
                             'jasa_dokter' => $jasa,
                             'analyst' => $analystName,
                             'analyst_fee_percent' => $analystFee,
@@ -538,7 +544,8 @@ class resultController extends Controller
                         'department' => 'MCU',
                         'department_id' => 999,
                         'dokter' => '-',
-                        'asal_ruangan' => '-', // ✅ Tambahkan
+                        'dokter_external' => null,
+                        'asal_ruangan' => '-',
                         'jasa_dokter' => 0,
                         'analyst' => '-',
                         'analyst_fee_percent' => 0,
@@ -584,7 +591,8 @@ class resultController extends Controller
                     'department' => $deptName,
                     'department_id' => $firstItem['department_id'],
                     'dokter' => '-',
-                    'asal_ruangan' => '-', // ✅ Tambahkan
+                    'dokter_external' => null,
+                    'asal_ruangan' => '-',
                     'jasa_dokter' => 0,
                     'analyst' => '-',
                     'analyst_fee_percent' => 0,
@@ -618,7 +626,8 @@ class resultController extends Controller
                 'department' => '',
                 'department_id' => null,
                 'dokter' => '-',
-                'asal_ruangan' => '-', // ✅ Tambahkan
+                'dokter_external' => null,
+                'asal_ruangan' => '-',
                 'jasa_dokter' => 0,
                 'analyst' => '-',
                 'analyst_fee_percent' => 0,

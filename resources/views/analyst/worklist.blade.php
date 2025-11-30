@@ -353,6 +353,87 @@
                                     </div>
                                 </div>
                             </div>
+                            {{-- Images Modal --}}
+                            <!-- Modal Upload Images -->
+                            <div class="modal fade" id="imagesModal" tabindex="-1">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Upload Images</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input type="hidden" id="currentNoLab" value="">
+                                            
+                                            <div id="imageUploadContainer"></div>
+                                            <button type="button" class="btn btn-primary btn-sm mt-2" id="addMoreImageBtn">
+                                                <i class="bi bi-plus-circle"></i> Tambah Image Lagi
+                                            </button>
+                                            
+                                            <div class="mt-3" id="uploadedImagesPreview" style="display: none;">
+                                                <h6>Images yang sudah diupload:</h6>
+                                                <div class="row" id="previewContainer"></div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-success" id="saveImagesBtn">Simpan Semua</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Modal Carousel dengan Zoom -->
+                            <div class="modal fade image-carousel-modal" id="imageCarouselModal" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Preview Images</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body position-relative">
+                                            <div class="image-counter" id="imageCounter">1 / 1</div>
+                                            
+                                            <div class="zoom-controls">
+                                                <button class="btn btn-sm btn-light" onclick="zoomIn()">
+                                                    <i class="ti ti-zoom-in"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-light" onclick="zoomOut()">
+                                                    <i class="ti ti-zoom-out"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-light" onclick="resetZoom()">
+                                                    <i class="ti ti-refresh"></i>
+                                                </button>
+                                            </div>
+                                            
+                                            <div id="imageCarousel" class="carousel slide" data-bs-ride="false">
+                                                <div class="carousel-inner" id="carouselInner"></div>
+                                                
+                                                <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
+                                                    <span class="carousel-control-prev-icon"></span>
+                                                </button>
+                                                <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
+                                                    <span class="carousel-control-next-icon"></span>
+                                                </button>
+                                                {{-- <button onclick="printCurrentImage()" class="btn btn-info">
+                                                    <i class="bi bi-printer"></i> Print
+                                                </button> --}}
+                                            </div>
+                                            
+                                            <div class="carousel-indicators" id="carouselIndicators"></div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-danger" id="deleteCurrentImage">
+                                                <i class="ti ti-trash"></i> Hapus Gambar Ini
+                                            </button>
+                                            <button onclick="downloadCurrentImage()" class="btn btn-success">
+                                                <i class="ti ti-download"></i> Download
+                                            </button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -540,22 +621,22 @@
                         return `
                 <div class="preview-button" id="preview-button">
                     <div class="row">
-                        <div class="col-lg-4 mb-4">
+                        <div class="col-lg-3 mb-3">
                             <button type="button" id="manualButton" class="btn btn-outline-secondary btn-block w-100">Manual</button>
                         </div>
-                        <div class="col-lg-4 mb-4">
+                        <div class="col-lg-3 mb-3">
                             <button type="button" id="duploButton" class="btn btn-outline-primary btn-block w-100">Duplo</button>
                         </div>
-                        <div class="col-lg-4 mb-4">
+                        <div class="col-lg-3 mb-3">
                             <button type="button" class="btn btn-outline-info btn-block w-100" data-bs-toggle="modal" data-bs-target="#sampleHistoryModal">Sample History<span class="badge bg-danger" style="display: none;">!</span></button>
                         </div>
-                        {{-- <div class="col-lg-3 mb-3">
-                            <form id="delete-form-${data_pasien.id}" action="analyst/worklist/${data_pasien.id}" method="POST" style="display: none;">
-                                @csrf
-                                @method('DELETE')
-                            </form>
-                            <button class="btn btn-outline-danger w-100" onclick="confirmDelete(${data_pasien.id})">Delete</button>
-                        </div> --}}
+                        <div class="col-lg-3 mb-3">
+                            <button type="button" class="btn btn-outline-warning btn-block w-100" data-bs-toggle="modal" 
+                                    data-bs-target="#imagesModal">
+                                Image
+                                <span class="badge bg-danger ml-2" id="imageCountBadge" style="display: none; border-radius: 100%;"> 0</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -917,7 +998,7 @@
                             },
                             {
  				                judul: 'Urine Lengkap',
-                                nama: 'Leukosit (Strip)',
+                                nama: 'Urine Makro',
                                 display_name: 'Leukosit',
                                 satuan: '-',
                                 normal_min: 'L.- P.-',
@@ -1043,7 +1124,7 @@
                             },
                             {
  				                judul: 'Sedimen',
-                                nama: 'Leukosit Urine',
+                                nama: 'Sedimen Urine',
                                 display_name: '- Leukosit',
                                 satuan: '',
                                 normal_min: 'L.0 P.0',
@@ -2930,7 +3011,7 @@
                                                                 
                                                                 if (data.length > 0) {
                                                                     sessionStorage.setItem(`temp_lab_${noLab}`, JSON.stringify(data));
-                                                                    console.log(`Saved ${data.length} rows for ${noLab}`);
+                                                                    // console.log(`Saved ${data.length} rows for ${noLab}`);
                                                                 }
                                                             };
                                                             
@@ -3021,7 +3102,7 @@
                                                                         });
                                                                         
                                                                         if (loadedCount > 0) {
-                                                                            console.log(`Loaded ${loadedCount} values for ${noLab}`);
+                                                                            // console.log(`Loaded ${loadedCount} values for ${noLab}`);
                                                                         }
                                                                     }, 300);
                                                                 } catch (error) {
@@ -3044,7 +3125,7 @@
                                                                 });
                                                                 
                                                                 window.autoSaveSetupDone = true;
-                                                                console.log('Auto-save setup complete for input and select fields');
+                                                                // console.log('Auto-save setup complete for input and select fields');
                                                             }
                                                             
                                                             window.clearTempData = function(noLab) {
@@ -3481,7 +3562,7 @@
                                         <input type="hidden" name="flag[${uid}]" class="flag-value" value="${flagWithStar}">
                                     `;
                                     
-                                    console.log(`Flag set to: ${flagWithStar} for UID: ${uid}, parameter: ${parameter}`);
+                                    // console.log(`Flag set to: ${flagWithStar} for UID: ${uid}, parameter: ${parameter}`);
                                 } else {
                                     flagCell.innerHTML = `
                                         <input type="hidden" name="flag[${uid}]" class="flag-value" value="">
@@ -3526,7 +3607,7 @@
                                     // Hanya update flag jika input ini visible
                                     if (this.style.display !== 'none') {
                                         updateFlag(this.value, flagCell, parameter);
-                                        console.log(`Flag updated for ${parameter}: ${this.value}`);
+                                        // console.log(`Flag updated for ${parameter}: ${this.value}`);
                                     }
                                 }
                             }
@@ -3612,7 +3693,7 @@
                                             targetClass = 'd1';
                                             masterSwitchState = 1;
                                         } else {
-                                            console.log('D1 belum aktif');
+                                            // console.log('D1 belum aktif');
                                             return;
                                         }
                                         break;
@@ -3686,7 +3767,7 @@
                                     }
                                 });
                                 
-                                console.log(`Switched all parameters from ${sourceClass} to ${targetClass}`);
+                                // console.log(`Switched all parameters from ${sourceClass} to ${targetClass}`);
                             }
 
                             function updateMasterSwitchIndicator() {
@@ -3753,7 +3834,7 @@
                                         targetClass = 'd1';
                                         masterSwitchState = 1;
                                     } else {
-                                        console.log('Belum ada duplo stage yang aktif');
+                                        // console.log('Belum ada duplo stage yang aktif');
                                         return;
                                     }
                                 } else {
@@ -4323,4 +4404,916 @@
         });
         });
     </script>
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+    let imageCounter = 0;
+    let uploadedImages = [];
+    let currentNoLab = '';
+    let currentZoomLevel = 1;
+    let currentCarouselIndex = 0;
+    
+    // Variables untuk drag/pan
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let translateX = 0;
+    let translateY = 0;
+    let currentImg = null;
+
+    const imagesModal = document.getElementById('imagesModal');
+    const carouselModal = new bootstrap.Modal(document.getElementById('imageCarouselModal'));
+    
+    // Event saat modal dibuka
+    imagesModal.addEventListener('shown.bs.modal', function() {
+        const nolabInput = document.querySelector('input[name="no_lab"]');
+        if (nolabInput) {
+            currentNoLab = nolabInput.value;
+            document.getElementById('currentNoLab').value = currentNoLab;
+            loadExistingImages(currentNoLab);
+        }
+        
+        if (imageCounter === 0) {
+            addImageUploadForm();
+        }
+    });
+
+    imagesModal.addEventListener('hidden.bs.modal', function() {
+        resetModal();
+    });
+
+    // Load existing images
+    function loadExistingImages(nolab) {
+        fetch(`/api/get-images/${nolab}`)
+            .then(response => response.json())
+            .then(res => {
+                if (res.status === 'success' && res.data.length > 0) {
+                    uploadedImages = res.data.map(img => ({
+                        id: img.id,
+                        nolab: img.nolab,
+                        preview: `/${img.image}`,
+                        description: img.description || '',
+                        isExisting: true
+                    }));
+                    updatePreviewContainer();
+                    updateBadge(uploadedImages.length);
+                    document.getElementById('uploadedImagesPreview').style.display = 'block';
+                } else {
+                    uploadedImages = [];
+                    document.getElementById('uploadedImagesPreview').style.display = 'none';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // Add form upload
+    function addImageUploadForm() {
+        imageCounter++;
+        const formId = `imageForm_${imageCounter}`;
+        
+        const formHTML = `
+            <div class="card mb-3" id="${formId}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">Image #${imageCounter}</h6>
+                        <button type="button" class="btn btn-danger btn-sm remove-image-form" data-form-id="${formId}">
+                            <i class="bi bi-trash"></i> Hapus
+                        </button>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Pilih Image</label>
+                        <input type="file" class="form-control image-input" accept="image/*">
+                        <small class="text-muted d-block mt-1">
+                            <i class="bi bi-info-circle"></i> Gambar akan dikompres otomatis (Max 2MB)
+                        </small>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Keterangan (Optional)</label>
+                        <input type="text" class="form-control image-description" placeholder="Masukkan keterangan">
+                    </div>
+                    <div class="preview-area" style="display: none;">
+                        <img src="" class="img-thumbnail preview-img" style="max-height: 200px;">
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('imageUploadContainer').insertAdjacentHTML('beforeend', formHTML);
+        
+        const newInput = document.querySelector(`#${formId} .image-input`);
+        newInput.addEventListener('change', function(e) {
+            previewImage(e.target, formId);
+        });
+        
+        const removeBtn = document.querySelector(`#${formId} .remove-image-form`);
+        removeBtn.addEventListener('click', function() {
+            removeImageForm(formId);
+        });
+    }
+
+    function previewImage(input, formId) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const form = document.getElementById(formId);
+            const previewArea = form.querySelector('.preview-area');
+            const previewImg = form.querySelector('.preview-img');
+            
+            // Compress image before preview
+            compressImage(file, 0.7, 1920, 1080).then(compressedFile => {
+                // Replace original file with compressed file
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(compressedFile);
+                input.files = dataTransfer.files;
+                
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewArea.style.display = 'block';
+                };
+                reader.readAsDataURL(compressedFile);
+            }).catch(error => {
+                console.error('Error compressing image:', error);
+                // Fallback to original if compression fails
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewArea.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    }
+    
+    // ============================================================
+    //                  IMAGE COMPRESSION FUNCTION
+    // ============================================================
+    function compressImage(file, quality = 0.7, maxWidth = 1920, maxHeight = 1080) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const img = new Image();
+                
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    // Calculate new dimensions
+                    if (width > maxWidth || height > maxHeight) {
+                        const ratio = Math.min(maxWidth / width, maxHeight / height);
+                        width = width * ratio;
+                        height = height * ratio;
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Convert canvas to blob
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            // Create new File object
+                            const compressedFile = new File([blob], file.name, {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            });
+                            
+                            resolve(compressedFile);
+                        } else {
+                            reject(new Error('Canvas to Blob conversion failed'));
+                        }
+                    }, 'image/jpeg', quality);
+                };
+                
+                img.onerror = function() {
+                    reject(new Error('Image load error'));
+                };
+                
+                img.src = e.target.result;
+            };
+            
+            reader.onerror = function() {
+                reject(new Error('FileReader error'));
+            };
+            
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function removeImageForm(formId) {
+        document.getElementById(formId)?.remove();
+    }
+
+    document.getElementById('addMoreImageBtn').addEventListener('click', addImageUploadForm);
+
+    // Upload images
+    document.getElementById('saveImagesBtn').addEventListener('click', function() {
+        const forms = document.querySelectorAll('#imageUploadContainer .card');
+        const formData = new FormData();
+        const nolab = document.getElementById('currentNoLab').value;
+        
+        if (!nolab) {
+            Swal.fire('Error', 'No Lab tidak ditemukan!', 'error');
+            return;
+        }
+        
+        let validImages = 0;
+        formData.append('nolab', nolab);
+
+        forms.forEach((form, index) => {
+            const fileInput = form.querySelector('.image-input');
+            const description = form.querySelector('.image-description').value;
+            
+            if (fileInput.files && fileInput.files[0]) {
+                formData.append(`images[${index}]`, fileInput.files[0]);
+                formData.append(`descriptions[${index}]`, description);
+                validImages++;
+            }
+        });
+
+        if (validImages === 0) {
+            Swal.fire('Warning', 'Pilih minimal 1 image!', 'warning');
+            return;
+        }
+
+        Swal.fire({
+            title: 'Uploading...',
+            html: `Sedang mengupload ${validImages} image(s)`,
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+        
+        fetch('/analyst/worklist/upload-images', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                data.data.forEach(img => {
+                    uploadedImages.push({
+                        id: img.id,
+                        nolab: img.nolab,
+                        preview: `/${img.image}`,
+                        description: img.description || '',
+                        isExisting: true
+                    });
+                });
+                
+                updatePreviewContainer();
+                updateBadge(uploadedImages.length);
+                document.getElementById('uploadedImagesPreview').style.display = 'block';
+                document.getElementById('imageUploadContainer').innerHTML = '';
+                imageCounter = 0;
+                
+                Swal.fire('Success!', `${validImages} image(s) berhasil diupload`, 'success');
+            } else {
+                Swal.fire('Error', data.message || 'Upload gagal', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Error', 'Terjadi kesalahan', 'error');
+        });
+    });
+
+    // Update preview container dengan carousel trigger
+    function updatePreviewContainer() {
+        const container = document.getElementById('previewContainer');
+        container.innerHTML = '';
+        
+        uploadedImages.forEach((img, index) => {
+            const col = document.createElement('div');
+            col.className = 'col-md-4 mb-3';
+            col.innerHTML = `
+                <div class="card preview-image-card" onclick="openCarousel(${index})">
+                    <div class="image-number-badge">${index + 1}</div>
+                    <img src="${img.preview}" class="card-img-top" style="height: 150px; object-fit: cover;">
+                    <div class="image-overlay">
+                        <i class="bi bi-eye-fill"></i>
+                    </div>
+                    <div class="card-body p-2">
+                        <small class="text-muted d-block">${img.description || 'No description'}</small>
+                        <button class="btn btn-danger btn-sm w-100 mt-1" onclick="event.stopPropagation(); confirmDeleteImage(${index}, ${img.id})">
+                            <i class="bi bi-trash"></i> Hapus
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(col);
+        });
+    }
+
+    // Open carousel modal
+    window.openCarousel = function(startIndex) {
+        currentCarouselIndex = startIndex;
+        buildCarousel();
+        carouselModal.show();
+        
+        const carousel = bootstrap.Carousel.getInstance(document.getElementById('imageCarousel')) || 
+                        new bootstrap.Carousel(document.getElementById('imageCarousel'));
+        carousel.to(startIndex);
+    };
+
+    // Build carousel
+    function buildCarousel() {
+        const carouselInner = document.getElementById('carouselInner');
+        const indicators = document.getElementById('carouselIndicators');
+        
+        carouselInner.innerHTML = '';
+        indicators.innerHTML = '';
+        
+        uploadedImages.forEach((img, index) => {
+            const item = document.createElement('div');
+            item.className = `carousel-item ${index === currentCarouselIndex ? 'active' : ''}`;
+            item.innerHTML = `
+                <img src="${img.preview}" class="d-block" data-index="${index}">
+                ${img.description ? `<div class="image-description-box">${img.description}</div>` : ''}
+            `;
+            carouselInner.appendChild(item);
+            
+            const indicator = document.createElement('button');
+            indicator.type = 'button';
+            indicator.setAttribute('data-bs-target', '#imageCarousel');
+            indicator.setAttribute('data-bs-slide-to', index);
+            if (index === currentCarouselIndex) indicator.className = 'active';
+            indicators.appendChild(indicator);
+        });
+        
+        // Add drag event listeners to all images
+        document.querySelectorAll('.carousel-item img').forEach(img => {
+            img.addEventListener('mousedown', handleMouseDown);
+            img.addEventListener('mousemove', handleMouseMove);
+            img.addEventListener('mouseup', handleMouseUp);
+            img.addEventListener('mouseleave', handleMouseUp);
+            img.addEventListener('click', toggleZoom);
+            
+            // Touch events for mobile
+            img.addEventListener('touchstart', handleTouchStart);
+            img.addEventListener('touchmove', handleTouchMove);
+            img.addEventListener('touchend', handleTouchEnd);
+        });
+        
+        updateImageCounter();
+    }
+
+    // Update counter
+    function updateImageCounter() {
+        document.getElementById('imageCounter').textContent = 
+            `${currentCarouselIndex + 1} / ${uploadedImages.length}`;
+    }
+
+    // Carousel slide event
+    document.getElementById('imageCarousel')?.addEventListener('slid.bs.carousel', function(e) {
+        currentCarouselIndex = e.to;
+        updateImageCounter();
+        resetZoom();
+        
+        // Reset drag position saat pindah slide
+        translateX = 0;
+        translateY = 0;
+        isDragging = false;
+        currentImg = null;
+    });
+
+    // Zoom functions
+    window.toggleZoom = function(event) {
+        const img = event.target;
+        
+        // Jika sudah zoom, toggle off
+        if (img.classList.contains('zoomed')) {
+            img.classList.remove('zoomed');
+            currentZoomLevel = 1;
+            translateX = 0;
+            translateY = 0;
+            img.style.transform = 'scale(1)';
+        } else {
+            // Zoom in
+            img.classList.add('zoomed');
+            currentZoomLevel = 2;
+            img.style.transform = `scale(${currentZoomLevel}) translate(${translateX}px, ${translateY}px)`;
+        }
+    };
+
+    window.zoomIn = function() {
+        const activeImg = document.querySelector('.carousel-item.active img');
+        if (!activeImg) return;
+        
+        currentZoomLevel = Math.min(currentZoomLevel + 0.5, 4);
+        activeImg.classList.add('zoomed');
+        updateTransform(activeImg);
+    };
+
+    window.zoomOut = function() {
+        const activeImg = document.querySelector('.carousel-item.active img');
+        if (!activeImg) return;
+        
+        currentZoomLevel = Math.max(currentZoomLevel - 0.5, 1);
+        
+        if (currentZoomLevel === 1) {
+            activeImg.classList.remove('zoomed');
+            translateX = 0;
+            translateY = 0;
+        }
+        
+        updateTransform(activeImg);
+    };
+
+    window.resetZoom = function() {
+        const activeImg = document.querySelector('.carousel-item.active img');
+        if (!activeImg) return;
+        
+        currentZoomLevel = 1;
+        translateX = 0;
+        translateY = 0;
+        activeImg.classList.remove('zoomed');
+        activeImg.style.transform = 'scale(1)';
+    };
+    
+    function updateTransform(img) {
+        img.style.transform = `scale(${currentZoomLevel}) translate(${translateX}px, ${translateY}px)`;
+    }
+    
+    // ============================================================
+    //                  DRAG/PAN FUNCTIONALITY
+    // ============================================================
+    
+    function handleMouseDown(e) {
+        const img = e.target;
+        if (!img.classList.contains('zoomed')) return;
+        
+        isDragging = true;
+        currentImg = img;
+        startX = e.clientX - translateX;
+        startY = e.clientY - translateY;
+        
+        // Disable carousel controls saat drag
+        document.querySelectorAll('.carousel-control-prev, .carousel-control-next').forEach(btn => {
+            btn.style.pointerEvents = 'none';
+        });
+    }
+    
+    function handleMouseMove(e) {
+        if (!isDragging || !currentImg) return;
+        
+        e.preventDefault();
+        
+        translateX = e.clientX - startX;
+        translateY = e.clientY - startY;
+        
+        updateTransform(currentImg);
+    }
+    
+    function handleMouseUp() {
+        if (isDragging) {
+            isDragging = false;
+            currentImg = null;
+            
+            // Re-enable carousel controls
+            document.querySelectorAll('.carousel-control-prev, .carousel-control-next').forEach(btn => {
+                btn.style.pointerEvents = 'auto';
+            });
+        }
+    }
+    
+    // Touch events for mobile
+    function handleTouchStart(e) {
+        const img = e.target;
+        if (!img.classList.contains('zoomed')) return;
+        
+        isDragging = true;
+        currentImg = img;
+        const touch = e.touches[0];
+        startX = touch.clientX - translateX;
+        startY = touch.clientY - translateY;
+    }
+    
+    function handleTouchMove(e) {
+        if (!isDragging || !currentImg) return;
+        
+        e.preventDefault();
+        
+        const touch = e.touches[0];
+        translateX = touch.clientX - startX;
+        translateY = touch.clientY - startY;
+        
+        updateTransform(currentImg);
+    }
+    
+    function handleTouchEnd() {
+        isDragging = false;
+        currentImg = null;
+    }
+
+    // ============================================================
+    //                  DOWNLOAD FUNCTIONALITY
+    // ============================================================
+    window.downloadCurrentImage = function() {
+        const currentImg = uploadedImages[currentCarouselIndex];
+        if (!currentImg) return;
+        
+        const link = document.createElement('a');
+        link.href = currentImg.preview;
+        link.download = `${currentNoLab}_image_${currentCarouselIndex + 1}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Show notification
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+        });
+        Toast.fire({
+            icon: 'success',
+            title: 'Image berhasil diunduh'
+        });
+    };
+
+    // ============================================================
+    //                  PRINT FUNCTIONALITY
+    // ============================================================
+    window.printCurrentImage = function() {
+        const currentImg = uploadedImages[currentCarouselIndex];
+        if (!currentImg) return;
+        
+        // Create print window
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Print Image - ${currentNoLab}</title>
+                <style>
+                    @media print {
+                        @page {
+                            margin: 0.5cm;
+                            size: auto;
+                        }
+                        body {
+                            margin: 0;
+                            padding: 20px;
+                        }
+                    }
+                    body {
+                        font-family: Arial, sans-serif;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        padding: 20px;
+                    }
+                    .header {
+                        text-align: center;
+                        margin-bottom: 20px;
+                        width: 100%;
+                    }
+                    .header h2 {
+                        margin: 5px 0;
+                        color: #333;
+                    }
+                    .image-container {
+                        max-width: 100%;
+                        text-align: center;
+                    }
+                    img {
+                        max-width: 100%;
+                        height: auto;
+                        border: 1px solid #ddd;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    }
+                    .description {
+                        margin-top: 15px;
+                        padding: 10px;
+                        background: #f8f9fa;
+                        border-radius: 5px;
+                        text-align: center;
+                        max-width: 800px;
+                    }
+                    .footer {
+                        margin-top: 20px;
+                        font-size: 12px;
+                        color: #666;
+                        text-align: center;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h2>Lab Image</h2>
+                    <p><strong>No Lab:</strong> ${currentNoLab}</p>
+                    <p><strong>Image:</strong> ${currentCarouselIndex + 1} of ${uploadedImages.length}</p>
+                </div>
+                <div class="image-container">
+                    <img src="${currentImg.preview}" alt="Lab Image">
+                </div>
+                ${currentImg.description ? `
+                    <div class="description">
+                        <strong>Keterangan:</strong><br>
+                        ${currentImg.description}
+                    </div>
+                ` : ''}
+                <div class="footer">
+                    <p>Printed on ${new Date().toLocaleString('id-ID')}</p>
+                </div>
+            </body>
+            </html>
+        `);
+        
+        // Wait for image to load then print
+        printWindow.document.close();
+        printWindow.onload = function() {
+            setTimeout(() => {
+                printWindow.print();
+                // Close window after printing (optional)
+                // printWindow.close();
+            }, 250);
+        };
+    };
+
+    // Delete current image in carousel
+    document.getElementById('deleteCurrentImage')?.addEventListener('click', function() {
+        const currentImg = uploadedImages[currentCarouselIndex];
+        confirmDeleteImage(currentCarouselIndex, currentImg.id);
+    });
+
+    // Confirm delete
+    window.confirmDeleteImage = function(index, imageId) {
+        Swal.fire({
+            title: 'Yakin hapus image?',
+            text: "Image tidak dapat dikembalikan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteImage(index, imageId);
+            }
+        });
+    };
+
+    function deleteImage(index, imageId) {
+        Swal.fire({
+            title: 'Menghapus...',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+        
+        fetch(`/analyst/worklist/delete-image/${imageId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                uploadedImages.splice(index, 1);
+                updatePreviewContainer();
+                updateBadge(uploadedImages.length);
+                
+                if (uploadedImages.length === 0) {
+                    document.getElementById('uploadedImagesPreview').style.display = 'none';
+                    carouselModal.hide();
+                } else {
+                    buildCarousel();
+                    if (currentCarouselIndex >= uploadedImages.length) {
+                        currentCarouselIndex = uploadedImages.length - 1;
+                    }
+                }
+                
+                Swal.fire('Terhapus!', 'Image berhasil dihapus', 'success');
+            } else {
+                Swal.fire('Error', 'Gagal menghapus image', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Error', 'Terjadi kesalahan', 'error');
+        });
+    }
+
+    function updateBadge(count) {
+        const badge = document.getElementById('imageCountBadge');
+        if (badge) {
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'inline-block' : 'none';
+        }
+    }
+
+    function resetModal() {
+        document.getElementById('imageUploadContainer').innerHTML = '';
+        imageCounter = 0;
+    }
+});
+</script>
+
+<style>
+.preview-area {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.image-input {
+    cursor: pointer;
+}
+
+#imageUploadContainer .card {
+    border-left: 3px solid #0d6efd;
+}
+
+#previewContainer .card {
+    transition: transform 0.2s;
+}
+
+#previewContainer .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+#uploadedImagesPreview {
+    border-top: 2px solid #dee2e6;
+    padding-top: 15px;
+}
+/* Force SweetAlert2 to be on top of everything */
+.swal2-container {
+    z-index: 999999 !important;
+}
+
+.swal-high-zindex {
+    z-index: 999999 !important;
+}
+
+/* Override Bootstrap modal z-index if needed */
+.modal {
+    z-index: 1050 !important;
+}
+
+.modal-backdrop {
+    z-index: 1040 !important;
+}
+
+/* Ensure SweetAlert backdrop is also high */
+div:where(.swal2-container) {
+    z-index: 999999 !important;
+}
+.image-carousel-modal .modal-dialog {
+            max-width: 90%;
+            height: 90vh;
+        }
+        
+        .image-carousel-modal .modal-content {
+            height: 100%;
+        }
+        
+        .image-carousel-modal .carousel-inner {
+            height: calc(100% - 120px);
+        }
+        
+        .image-carousel-modal .carousel-item {
+            height: 100%;
+        }
+        
+        .image-carousel-modal .carousel-item img {
+            max-height: 70vh;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+            margin: 0 auto;
+            cursor: zoom-in;
+            transition: transform 0.3s ease;
+            user-select: none;
+        }
+        
+        .image-carousel-modal .carousel-item img.zoomed {
+            cursor: grab;
+            transform: scale(2);
+        }
+        
+        .image-carousel-modal .carousel-item img.zoomed:active {
+            cursor: grabbing;
+        }
+        
+        .carousel-item {
+            overflow: hidden;
+        }
+        
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 5%;
+        }
+        
+        .carousel-indicators {
+            bottom: -40px;
+        }
+        
+        .image-counter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            z-index: 10;
+            font-size: 14px;
+        }
+        
+        .image-description-box {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            max-width: 80%;
+            text-align: center;
+        }
+        
+        .zoom-controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+        }
+        
+        .zoom-controls button {
+            margin: 0 5px;
+        }
+
+        /* Preview Grid Styles */
+        .preview-image-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .preview-image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        
+        .preview-image-card img {
+            transition: transform 0.3s ease;
+        }
+        
+        .preview-image-card:hover img {
+            transform: scale(1.1);
+        }
+        
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .preview-image-card:hover .image-overlay {
+            opacity: 1;
+        }
+        
+        .image-overlay i {
+            color: white;
+            font-size: 40px;
+        }
+        
+        .image-number-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            z-index: 1;
+        }
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            filter: brightness(0) saturate(0) invert(50%);
+        }
+
+</style>
 @endpush

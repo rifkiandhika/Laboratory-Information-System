@@ -157,6 +157,38 @@
         </a>
     </li>
 @endcanany
+{{-- Report Section --}}
+@role('Superadmin')
+    <li class="menu-item {{ Request::is('analyst/report', 'analyst/laporan-pemeriksaan', 'analyst/laporan-pasien') ? 'open active' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons ti ti-report"></i>
+            <div data-i18n="Report">Report</div>
+        </a>
+
+        <ul class="menu-sub">
+            <li class="menu-item {{ Request::is('analyst/report') ? 'active' : '' }}">
+                <a href="{{ route('result.report') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-home"></i>
+                    <div data-i18n="Report">Report</div>
+                </a>
+            </li>
+
+            <li class="menu-item {{ Request::is('analyst/laporan-pemeriksaan') ? 'active' : '' }}">
+                <a href="{{ route('report.simple') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-devices"></i>
+                    <div data-i18n="Report Data">Report Data</div>
+                </a>
+            </li>
+
+            <li class="menu-item {{ Request::is('analyst/laporan-pasien') ? 'active' : '' }}">
+                <a href="{{ route('patient.report') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-world"></i>
+                    <div data-i18n="Patient Report">Patient Report</div>
+                </a>
+            </li>
+        </ul>
+    </li>
+@endrole
 
 {{-- Setting Section --}}
 @canany(['read_department','create_department','update_department','delete_department',

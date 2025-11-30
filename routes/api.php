@@ -10,6 +10,7 @@ use App\Http\Controllers\analyst\worklistController;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\department\DepartmentController;
 use App\Http\Controllers\HasilController;
+use App\Http\Controllers\HasilImageController;
 use App\Http\Controllers\mcu\McuPackageController;
 use App\Models\DataAsuransi;
 use App\Models\DataBpjs;
@@ -59,6 +60,8 @@ Route::get('/qc/{id}', [QcController::class, 'getQcUnified']);
 Route::get('/get-parameters/{qcId}', [QcController::class, 'getParameters']);
 
 Route::get('/get-penjamin', [pasienController::class, 'getPenjamin']);
+Route::get('/get-images/{nolab}', [HasilImageController::class, 'getImages']);
+
 
 
 Route::middleware('verify.api.token')->group(function () {

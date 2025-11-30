@@ -163,10 +163,6 @@
               <!-- Card Header - Dropdown -->
               <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                   <h6 class="m-0 font-weight-bold" style="color: #96B6C5;">Result Pasien</h6>
-                  
-                @hasanyrole('Superadmin')
-                  <a href="{{ route('result.report') }}" class="btn btn-primary">Report</a>
-                @endhasanyrole
               </div>
               
               <!-- Card Body -->
