@@ -66,6 +66,84 @@
             background-color: #f8f9fa !important;
             padding: 3px !important;
         }
+        
+        /* Style untuk halaman gambar */
+        .page-break {
+            page-break-before: always;
+            break-before: page;
+        }
+        
+        .images-page {
+            padding: 20px;
+        }
+        
+        .images-page-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-bottom: 2px solid #333;
+        }
+        
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .image-item {
+            position: relative;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            page-break-inside: avoid;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .image-wrapper {
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+            position: relative;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-item img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .image-number {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 1;
+        }
+
+        .image-description {
+            padding: 15px;
+            font-size: 12px;
+            color: #333;
+            border-top: 2px solid #eee;
+            min-height: 50px;
+            background: #f8f9fa;
+        }
 
         @media print {
             body {
@@ -118,6 +196,19 @@
             .printable-icon {
                 font-weight: bold;
                 font-size: 12px !important;
+            }
+            
+            .page-break {
+                page-break-before: always;
+                break-before: page;
+            }
+            
+            .images-page {
+                page-break-before: always;
+            }
+            
+            .image-item {
+                page-break-inside: avoid;
             }
         }
 
@@ -229,36 +320,12 @@
             font-family: "Courier New", Courier, monospace;
             white-space: pre;
         }
-
-        .content {
-            padding: 20px;
-            height: 1200px;
-        }
-
-        .footer-en {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 60px;
-            padding: 15px;
-        }
-
-        .footer-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #555;
-            font-size: 14px;
-        }
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 </head>
 <body>
-    <div>
+    <!-- HALAMAN 1: HASIL PEMERIKSAAN -->
+    <div class="results-page">
         <div class="header text-sm pb-1 mb-2" style="margin-bottom: 10px;">
             <div class="d-flex justify-content-between align-items-center" style="width: 100%; text-align: center;">
                 <div style="flex: 1; text-align: left;">
@@ -360,6 +427,7 @@
         
         <div class="hasil-pemeriksaan p-0">
             <p class="calibri m-0 p-0 text-center" style="font-size: 18px"><b>HASIL LABORATORIUM</b></p>
+            
             <div id="tabel-pemeriksaan" class="table-responsive">
                 <table class="table table-sm table-borderless table-striped" id="worklistTable">
                     <thead style="border-top: 1px solid black; border-bottom: 1px solid black">
@@ -375,7 +443,7 @@
                     <tbody id="hasil-tbody">
                         @foreach ($hasil_pemeriksaans->groupBy('department') as $department => $hasil_group)
                             <tr>
-                                <th colspan="6" style="font-size: 14px; font-weight: 900;">
+                                <th colspan="6" style="font-size: 14px;">
                                     <b><strong>{{ strtoupper($department) }}</strong></b>
                                 </th>
                             </tr>
@@ -418,30 +486,6 @@
                                             'PCT' => '0.15-0.50',
                                             'P-LCC' => '30-90',
                                             'P-LCR' => '13-43',
-                                            'Salmonella Typhi H' => 'Negatif',
-                                            'Salmonella Typhi O' => 'Negatif',
-                                            'Salmonella Paratyphi AO' => 'Negatif',
-                                            'Salmonella Paratyphi BO' => 'Negatif',
-                                            'Warna' => 'Kuning',
-                                            'Kekeruhan' => 'Jernih',
-                                            'Berat Jenis' => '1.003-1.035',
-                                            'PH' => '4.5-8.0',
-                                            'Leukosit' => 'Negatif',
-                                            'Nitrit' => 'Negatif',
-                                            'Protein' => 'Negatif',
-                                            'Glukosa' => 'Negatif',
-                                            'Keton' => 'Negatif',
-                                            'Urobilinogen' => 'Negatif',
-                                            'Bilirubin' => 'Negatif',
-                                            'Blood' => 'Negatif',
-                                            'Eritrosit' => '0-2 /lpb',
-                                            'Leukosit_sedimen' => '0-5 /lpb',
-                                            'Epithel' => 'Tidak ada - Sedikit',
-                                            'Silinder' => 'Tidak ada',
-                                            'Kristal' => 'Tidak ada',
-                                            'Bakteri' => 'Tidak ada',
-                                            'Jamur' => 'Tidak ada',
-                                            'Lain-lain' => '-'
                                         ];
 
                                         $jenis_kelamin = strtolower($data_pasien->jenis_kelamin);
@@ -493,7 +537,6 @@
                                             'P-LCR' => 'P-LCR',
                                         ];
 
-                                        // Tentukan flag mana yang digunakan
                                         $displayFlag = ($hasil->is_switched == 1) ? $hasil->flag_dx : $hasil->flag;
                                     @endphp
 
@@ -566,7 +609,6 @@
 
         <div class="footer-container d-flex justify-content-between align-items-start">
             @if($dokterName && $userDokter && $userDokter->signature && $userDokter->status === 'active')
-                <!-- KIRI: Dokter Internal -->
                 <div class="doctor-info">
                     <h6 style="margin-left: 15px;">Dokter Pemeriksa</h6>
                     <div style="text-align: left; margin-left: 15px;">
@@ -582,7 +624,6 @@
                     </div>
                 </div>
 
-                <!-- KANAN: Analis dari tabel pasien -->
                 @if($userAnalyst && $userAnalyst->status === 'active')
                 <div class="user-info text-end">
                     <h6 style="margin-right: 60px;">Analis Pemeriksa</h6>
@@ -602,7 +643,6 @@
                 </div>
                 @endif
             @else
-                <!-- Kalau tidak ada dokter/signature, hanya tampilkan analyst -->
                 @if($userAnalyst && $userAnalyst->status === 'active')
                 <div class="doctor-info text-end w-100">
                     <h6 style="margin-right: 60px;">Analis Pemeriksa</h6>
@@ -638,7 +678,142 @@
                 </tr>
             @endif
         </table>
-
     </div>
+
+    <!-- HALAMAN 2: GAMBAR (Hanya tampil jika withImages = true dan ada gambar) -->
+    @if($withImages && isset($images) && $images->count() > 0)
+    <div class="page-break images-page">
+        <div class="header text-sm pb-1 mb-2" style="margin-bottom: 10px;">
+            <div class="d-flex justify-content-between align-items-center" style="width: 100%; text-align: center;">
+                <div style="flex: 1; text-align: left;">
+                    <img src="{{ asset('image/YKU.png') }}" alt="Yayasan" style="width: 180px; opacity: 65%;">
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <img src="{{ asset('image/KRIMS-1.png') }}" alt="Klinik Utama Muslimat Singosari" style="width: 250px; opacity: 80%;">
+                </div>
+                <div style="flex: 1; text-align: right;">
+                    <img src="{{ asset('image/LASKESI.png') }}" alt="Laskesi" style="width: 180px; opacity: 65%;">
+                </div>
+            </div>
+
+            <div style="margin-top: 8px;">
+                <table style="width: 100%; text-align: center;">
+                    <tr>
+                        <th style="padding: 0 10px;">
+                            <span class="icon"><i class="ti ti-mail"></i></span>
+                            <span class="text">rs.muslimatsingosari@gmail.com</span>
+                        </th>
+                        <th style="padding: 0 10px;">
+                            <span class="icon"><i class="ti ti-map-pin"></i></span>
+                            <span class="text">Jl. Ronggolawe 24 Singosari Malang, 65153</span>
+                        </th>
+                        <th style="padding: 0 10px;">
+                            <span class="icon"><i class="ti ti-phone"></i></span>
+                            <span class="text">+62 341 458344</span>
+                        </th>
+                    </tr>
+                </table>
+            </div>
+
+            <hr style="border-top: 1px solid black; margin-top: 5px;">
+        </div>
+
+        <!-- Info Pasien Ringkas -->
+        <div style="margin-bottom: 20px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+            <table class="table table-borderless table-sm mb-0" style="width:100%;"> 
+                <tr> 
+                    <td style="width:120px;">No. RM</td> 
+                    <td style="width:10px;">:</td> 
+                    <td style="width:200px;">{{ $data_pasien->no_rm ?? '-'}}</td> 
+                    <td style="width:150px;">No. Laboratorium</td> 
+                    <td style="width:10px;">:</td> 
+                    <td style="width:150px;">{{ $data_pasien->no_lab ?? '-' }}</td> 
+                </tr> 
+                <tr> 
+                    <td>Nama Pasien</td> 
+                    <td>:</td> 
+                    <td><b>{{ $data_pasien->nama ?? '-'}}</b></td> 
+                    <td>Tanggal Transaksi</td> 
+                    <td>:</td> 
+                    <td>{{ $data_pasien->tanggal_masuk ?? '-'}}</td> 
+                </tr> 
+                <tr> 
+                    @php
+                        $lahir = \Carbon\Carbon::parse($data_pasien->lahir);
+                        $sekarang = \Carbon\Carbon::now();
+                        $umur = $lahir->diff($sekarang);
+                    @endphp
+                    <td>Umur</td> 
+                    <td>:</td> 
+                    <td> {{ $umur->y }} Tahun {{ $umur->m }} Bulan {{ $umur->d }} Hari  </td> 
+                    <td>Tanggal Diterima</td> 
+                    <td>:</td> 
+                    <td>{{ $data_pasien->created_at ?? '-'}}</td> 
+                </tr> 
+                <tr> 
+                    <td>Jenis Kelamin</td> 
+                    <td>:</td> 
+                    <td>{{ $data_pasien->jenis_kelamin ?? '-'}}</td> 
+                    <td>Tanggal Selesai</td> 
+                    <td>:</td> 
+                    <td>{{ $data_pasien->updated_at ?? '-'}}</td> 
+                </tr> 
+                <tr> 
+                    <td>Asal Pasien</td> 
+                    <td>:</td> 
+                    <td>{{ $data_pasien->asal_ruangan }}</td> 
+                    <td>Dokter External / Pengirim</td> 
+                    <td>:</td> 
+                    <td>{{ $data_pasien->dokter_external ?? '-'}}</td> 
+                </tr> 
+                <tr> 
+                    <td>Dokter Internal / Pengirim</td> 
+                    <td>:</td> 
+                    <td colspan="4">{{ $data_pasien->kode_dokter ?? '-'}}</td> 
+                </tr> 
+                <tr> 
+                    <td>Alamat Pasien</td> 
+                    <td>:</td> 
+                    <td colspan="4">{{ $data_pasien->alamat ?? '-'}}</td> 
+                </tr> 
+            </table> 
+        </div>
+
+        <!-- Judul Halaman Gambar -->
+        <div class="images-page-title">
+            <i class="ti ti-photo"></i> DOKUMENTASI GAMBAR PEMERIKSAAN LABORATORIUM
+        </div>
+
+        <!-- Grid Gambar -->
+        <div class="images-grid">
+            @foreach($images as $index => $image)
+            <div class="image-item">
+                <div class="image-number">Gambar {{ $index + 1 }}</div>
+                <div class="image-wrapper">
+                    <img src="{{ asset($image->image) }}" alt="Lab Image {{ $index + 1 }}">
+                </div>
+                @if($image->description)
+                <div class="image-description">
+                    <strong>Keterangan:</strong><br>
+                    {{ $image->description }}
+                </div>
+                @else
+                <div class="image-description">
+                    <strong>Keterangan:</strong> -
+                </div>
+                @endif
+            </div>
+            @endforeach
+        </div>
+
+        <!-- Footer untuk halaman gambar -->
+        <div style="margin-top: 30px; text-align: center; font-size: 10px; color: #666;">
+            <hr style="border-top: 1px solid #ddd; margin: 20px 0;">
+            <p>Dokumentasi Pemeriksaan Laboratorium - {{ $data_pasien->no_lab ?? '' }}</p>
+            <p>Dicetak pada: {{ date('d/m/Y H:i:s') }}</p>
+        </div>
+    </div>
+    @endif
+
 </body>
 </html>

@@ -7,6 +7,7 @@ use App\Jobs\SendHasilToLis;
 use App\Models\Department;
 use App\Models\dokter;
 use App\Models\HasilPemeriksaan;
+use App\Models\HasilpemeriksaanImage;
 use App\Models\historyPasien;
 use App\Models\pasien;
 use App\Models\pemeriksaan_pasien;
@@ -27,6 +28,7 @@ class resultController extends Controller
     public function index()
     {
         // $dataPasien = pasien::where('status', 'Result Review')->orWhere('status', 'Spesiment')->where('cito', 0)->paginate(20);
+
         $dataPasien = pasien::whereIn('status', ['Result Review', 'diselesaikan'])
             ->orderBy('updated_at', 'desc')
             ->get();
@@ -91,6 +93,9 @@ class resultController extends Controller
     {
         $note = $request->input('note', '');
 
+        // Cek apakah user ingin print dengan gambar
+        $withImages = $request->has('with_images') && $request->get('with_images') == '1';
+
         $data_pasien = pasien::where('no_lab', $no_lab)->with([
             'dpp.pasiens' => function ($query) use ($no_lab) {
                 $query->where('no_lab', $no_lab);
@@ -122,11 +127,16 @@ class resultController extends Controller
             $userDokter = User::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($dokterName))])->first();
         }
 
-        // Ambil analyst dari tabel pasien, bukan dari auth()->user()
+        // Ambil analyst dari tabel pasien
         $userAnalyst = null;
         if ($data_pasien->analyst) {
             $userAnalyst = User::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($data_pasien->analyst))])->first();
         }
+
+        // Selalu ambil gambar untuk keperluan halaman kedua
+        $images = HasilpemeriksaanImage::where('nolab', $no_lab)
+            ->orderBy('created_at', 'asc')
+            ->get();
 
         return view('print-view.print-pasien', compact(
             'data_pasien',
@@ -135,7 +145,9 @@ class resultController extends Controller
             'nilai_rujukan_map',
             'userDokter',
             'dokterName',
-            'userAnalyst'
+            'userAnalyst',
+            'images',
+            'withImages'
         ));
     }
 

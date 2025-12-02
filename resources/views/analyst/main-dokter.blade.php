@@ -199,6 +199,79 @@
                     </div>
                 </div>
             </div>
+            <!-- Modal Upload Images -->
+            <div class="modal fade" id="imagesModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">View Images</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="currentNoLab" value="">
+                        
+                        <div class="mt-3" id="uploadedImagesPreview" style="display: none;">
+                            <h6>Images:</h6>
+                            <div class="row" id="previewContainer"></div>
+                        </div>
+                        
+                        <div id="noImagesMessage" style="display: none; text-align: center; padding: 20px;">
+                            <i class="bi bi-image" style="font-size: 48px; color: #ccc;"></i>
+                            <p class="text-muted mt-2">Tidak ada gambar tersedia</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Carousel dengan Zoom -->
+        <div class="modal fade image-carousel-modal" id="imageCarouselModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Preview Images</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body position-relative">
+                        <div class="image-counter" id="imageCounter">1 / 1</div>
+                        
+                        <div class="zoom-controls">
+                            <button class="btn btn-sm btn-light" onclick="zoomIn()">
+                                <i class="ti ti-zoom-in"></i>
+                            </button>
+                            <button class="btn btn-sm btn-light" onclick="zoomOut()">
+                                <i class="ti ti-zoom-out"></i>
+                            </button>
+                            <button class="btn btn-sm btn-light" onclick="resetZoom()">
+                                <i class="ti ti-refresh"></i>
+                            </button>
+                        </div>
+                        
+                        <div id="imageCarousel" class="carousel slide" data-bs-ride="false">
+                            <div class="carousel-inner" id="carouselInner"></div>
+                            
+                            <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon"></span>
+                            </button>
+                        </div>
+                        
+                        <div class="carousel-indicators" id="carouselIndicators"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button onclick="downloadCurrentImage()" class="btn btn-success">
+                            <i class="ti ti-download"></i> Download
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
             </div>
         </div>
         </div>
@@ -587,8 +660,15 @@
             return `
                 <div class="preview-button" id="preview-button">
                     <div class="row">
-                        <div class="col-lg-12 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <button type="button" class="btn btn-outline-info btn-block w-100" data-bs-toggle="modal" data-bs-target="#sampleHistoryModal">Sample History<span class="badge bg-danger" style="display: none;">!</span></button>
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <button type="button" class="btn btn-outline-warning btn-block w-100" data-bs-toggle="modal" 
+                                    data-bs-target="#imagesModal">
+                                Image
+                                <span class="badge bg-danger ml-2" id="imageCountBadge" style="display: none; border-radius: 100%;"> 0</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -686,684 +766,683 @@
 
     // Tambahkan parameter Urine
     const UrineParams = [
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Warna',
-            display_name: 'Warna',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: '-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Kuning;Kuning Pucat;Kuning Tua;Kuning kecokelatan;Orange;Merah;Coklat',
-            default: 'Kuning' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Kekeruhan',
-            display_name: 'Kekeruhan',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'L.- P.-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Jernih;Agak Keruh;Keruh;Sangat keruh',
-            default: 'Jernih' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Berat Jenis',
-            display_name: 'Berat Jenis',
-            satuan: '-',
-            normal_min: 'L.1,003 P.1,003',
-            normal_max: 'L.1,035 P.1,035',
-            nilai_rujukan: 'L.1,003-1,035 P.1,003-1,035',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : '<1.005;1.005;1.010;1.015;1.020;1.025;1.030',
-            default: '1.015' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'PH',
-            display_name: 'pH',
-            satuan: '-',
-            normal_min: 'L.4,5 P.4,5',
-            normal_max: 'L.8,0 P.8,0',
-            nilai_rujukan: 'L.4,5-8,0 P.4,5-8,0',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : '4.5;5.0;5.5;6.0;6.5;7.0;7.5;8.0;8.5;9.0',
-            default: '6.0' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Leukosit',
-            display_name: 'Leukosit',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'L.- P.-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
-            default: 'Negatif' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Nitrit',
-            display_name: 'Nitrit',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'L.- P.-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Protein',
-            display_name: 'Protein',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'L.- P.-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Glukosa',
-            display_name: 'Glukosa',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'L.- P.-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Keton',
-            display_name: 'Keton',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'L.- P.-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif'  
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Urobilinogen',
-            display_name: 'Urobilinogen',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'L.- P.-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++)',
-            default: 'Negatif' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Bilirubin',
-            display_name: 'Bilirubin',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'L.- P.-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif' 
-        },
-        {
-            judul: 'Urine Lengkap',
-            nama: 'Blood',
-            display_name: 'Blood',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'L.- P.-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif' 
-        },
-        {
-            judul: 'Sedimen',
-            nama: 'Eritrosit',
-            display_name: '- Eritrosit',
-            satuan: '',
-            normal_min: 'L.0 P.0',
-            normal_max: 'L.2 P.2',
-            nilai_rujukan: 'L.0-2 P.0-2',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Text',
-            opsi_output : '',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Sedimen',
-            nama: 'Leukosit_sedimen',
-            display_name: '- Leukosit',
-            satuan: '',
-            normal_min: 'L.0 P.0',
-            normal_max: 'L.5 P.5',
-            nilai_rujukan: 'L.0-5 P.0-5',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Text',
-            opsi_output : '',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Sedimen',
-            nama: 'Epithel',
-            display_name: '- Epithel',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'Tidak ada - Sedikit',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Text',
-            opsi_output : 'Tidak ada;Sedikit;Sedang;Banyak',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Sedimen',
-            nama: 'Silinder',
-            display_name: '- Silinder',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'Tidak ada',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Sedimen',
-            nama: 'Kristal',
-            display_name: '- Kristal',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'Tidak ada',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Tidak ada;Asam urat;Kalsium oksalat;Fosfat amorf;Lainnya',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Sedimen',
-            nama: 'Bakteri',
-            display_name: '- Bakteri',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'Tidak ada',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Sedimen',
-            nama: 'Jamur',
-            display_name: '- Jamur',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: 'Tidak ada',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Sedimen',
-            nama: 'Lain-lain',
-            display_name: '- Lain-lain',
-            satuan: '-',
-            normal_min: '',
-            normal_max: '',
-            nilai_rujukan: '',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Text',
-            opsi_output : '',
-            default: ''
-        }
-    ];
-    // Parameter Miccrobiologi
-    const MicrobiologiParams = [
-        {
-            judul: '',
-            nama: 'Preparat Gram',
-            display_name: 'Preparat Gram',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: '-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Ditemukan Kuman;Tidak Ditemukan Kuman' 
-        },
-        {
-            judul: '',
-            nama: 'Batang Gram Negatif',
-            display_name: 'Batang Gram Negatif',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: '-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
-        },
-        {
-            judul: '',
-            nama: 'Batang Gram Positif',
-            display_name: 'Batang Gram Positif',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: '-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
-        },
-        {
-            judul: '',
-            nama: 'Coccus Gram Negatif',
-            display_name: 'Coccus Gram Negatif',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: '-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++'
-        },
-        {
-            judul: '',
-            nama: 'Coccus Gram Positif',
-            display_name: 'Coccus Gram Positif',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: '-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
-        }
-    ];
-    const PreparatBasahParams = [
-        {
-            judul: '',
-            nama: 'Preparat Basah',
-            display_name: 'Preparat Basah',
-            satuan: '-',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: '-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Dropdown',
-            opsi_output : 'Tidak Ditemukan Jamur;Ditemukan Jamur Berbentuk Hifa' 
-        },
-        {
-            judul: '',
-            nama: 'Leukosit',
-            display_name: 'Leukosit',
-            satuan: '/LP',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: '-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Text',
-            opsi_output : '',
-        },
-        {
-            judul: '',
-            nama: 'Epithel',
-            display_name: 'Epithel',
-            satuan: '/LP',
-            normal_min: 'L.- P.-',
-            normal_max: 'L.- P.-',
-            nilai_rujukan: '-',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan : 'Text',
-            opsi_output : '',
-        }
-    ];
-    const DengueParams =  [
-        {
-            judul: 'Dengue_IgG/IgM',
-            nama: 'Dengue_IgG',
-            display_name: 'Dengue IgG',
-            satuan: '-',
-            normal_min: '—',
-            normal_max: '—',
-            nilai_rujukan: 'Negatif',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;Positif(+)',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Dengue_IgG/IgM',
-            nama: 'Dengue_IgM',
-            display_name: 'Dengue IgM',
-            satuan: '-',
-            normal_min: '—',
-            normal_max: '—',
-            nilai_rujukan: 'Negatif',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;Positif(+)',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Dengue_IgG/IgM',
-            nama: 'COI_IgG',
-            display_name: 'Cutoff Index IgG (COI)',
-            satuan: '',
-            normal_min: '0.00',
-            normal_max: '∞',
-            nilai_rujukan: '< 1.00',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Text',
-            opsi_output: '',
-            default: ''
-        },
-        {
-            judul: 'Dengue_IgG/IgM',
-            nama: 'COI_IgM',
-            display_name: 'Cutoff Index IgM (COI)',
-            satuan: '',
-            normal_min: '0.00',
-            normal_max: '∞',
-            nilai_rujukan: '< 1.00',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Text',
-            opsi_output: '',
-            default: ''
-        }
-    ];
-    const NS1Params =  [
-        {
-            judul: 'Dengue_Ns1',
-            nama: 'Dengue_Ns1',
-            display_name: 'Dengue_Ns1',
-            satuan: '-',
-            normal_min: '—',
-            normal_max: '—',
-            nilai_rujukan: 'Negatif',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;Positif(+)',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Dengue_Ns1',
-            nama: 'COI_Ns1',
-            display_name: 'Cutoff Index (COI)',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: '<1.00',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Text',
-            opsi_output: '-',
-            default: ''
-        }
-    ];
-    const TifoidParams = [
-        {
-            judul: 'Typhoid_IgG/IgM',
-            nama: 'Typhoid_IgM',
-            display_name: 'Typhoid IgM',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Negatif',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;Positif(+)',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Typhoid_IgG/IgM',
-            nama: 'Typhoid_IgG',
-            display_name: 'Typhoid IgG',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Negatif',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;Positif(+)',
-            default: 'Negatif'
-        }
-    ];
-    const FesesParams = [
-        {
-            judul: 'Feses',
-            nama: 'Konsistensi',
-            display_name: 'Konsistensi',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Lunak',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Lunak;Padat;Setengah cair;Cair',
-            default: 'Lunak'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Warna',
-            display_name: 'Warna',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Coklat',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Coklat;Coklat kekuningan;Coklat kehijauan;Hitam;Pucat;Merah',
-            default: 'Coklat'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Lendir',
-            display_name: 'Lendir',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Negatif',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Darah',
-            display_name: 'Darah',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Negatif',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Telur Cacing',
-            display_name: 'Telur Cacing',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Tidak ditemukan',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Tidak ditemukan;Ascaris;Trichuris;Hookworm;Oxyuris;Lainnya',
-            default: 'Tidak ditemukan'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Kista Protozoa',
-            display_name: 'Kista Protozoa',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Tidak ditemukan',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Tidak ditemukan;Entamoeba histolytica;Entamoeba coli;Giardia lamblia;Lainnya',
-            default: 'Tidak ditemukan'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Trofozoit',
-            display_name: 'Trofozoit',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Tidak ditemukan',
-            tipe_inputan: 'Dropdown',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            opsi_output: 'Tidak ditemukan;Entamoeba histolytica;Giardia lamblia;Lainnya',
-            default: 'Tidak ditemukan'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Leukosit',
-            display_name: 'Leukosit',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: '0-1/lpb',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Text',
-            opsi_output: '',
-            default: '0-1/lpb'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Eritrosit',
-            display_name: 'Eritrosit',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: '0/lpb',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Text',
-            opsi_output: '',
-            default: '0/lpb'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Lemak',
-            display_name: 'Lemak',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Negatif',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Sisa Makanan',
-            display_name: 'Sisa Makanan',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: 'Negatif',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Dropdown',
-            opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
-            default: 'Negatif'
-        },
-        {
-            judul: 'Feses',
-            nama: 'Lain-lain',
-            display_name: 'Lain-lain',
-            satuan: '-',
-            normal_min: '-',
-            normal_max: '-',
-            nilai_rujukan: '',
-            nilai_kritis: 'L.- P.-',
-            metode: '-',
-            tipe_inputan: 'Text',
-            opsi_output: '',
-            default: ''
-        },
-    ];
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Warna Urine',
+                    display_name: 'Warna',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Kuning;Kuning Pucat;Kuning Tua;Kuning kecokelatan;Orange;Merah;Coklat',
+                    default: 'Kuning' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Kekeruhan',
+                    display_name: 'Kekeruhan',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'L.- P.-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Jernih;Agak Keruh;Keruh;Sangat keruh',
+                    default: 'Jernih' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Berat Jenis',
+                    display_name: 'Berat Jenis',
+                    satuan: '-',
+                    normal_min: 'L.1,003 P.1,003',
+                    normal_max: 'L.1,035 P.1,035',
+                    nilai_rujukan: 'L.1,003-1,035 P.1,003-1,035',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : '<1.005;1.005;1.010;1.015;1.020;1.025;1.030',
+                    default: '1.015' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'PH',
+                    display_name: 'pH',
+                    satuan: '-',
+                    normal_min: 'L.4,5 P.4,5',
+                    normal_max: 'L.8,0 P.8,0',
+                    nilai_rujukan: 'L.4,5-8,0 P.4,5-8,0',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : '4.5;5.0;5.5;6.0;6.5;7.0;7.5;8.0;8.5;9.0',
+                    default: '6.0' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Urine Makro',
+                    display_name: 'Leukosit',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'L.- P.-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
+                    default: 'Negatif' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Nitrit',
+                    display_name: 'Nitrit',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'L.- P.-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Protein',
+                    display_name: 'Protein',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'L.- P.-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Glukosa',
+                    display_name: 'Glukosa',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'L.- P.-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Keton',
+                    display_name: 'Keton',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'L.- P.-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif'  
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Urobilinogen',
+                    display_name: 'Urobilinogen',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'L.- P.-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++)',
+                    default: 'Negatif' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Bilirubin',
+                    display_name: 'Bilirubin',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'L.- P.-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif' 
+                },
+                {
+                    judul: 'Urine Lengkap',
+                    nama: 'Blood',
+                    display_name: 'Blood',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'L.- P.-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif' 
+                },
+                {
+                    judul: 'Sedimen',
+                    nama: 'Eritrosit Urine',
+                    display_name: '- Eritrosit',
+                    satuan: '',
+                    normal_min: 'L.0 P.0',
+                    normal_max: 'L.2 P.2',
+                    nilai_rujukan: 'L.0-2 P.0-2',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Text',
+                    opsi_output : '',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Sedimen',
+                    nama: 'Sedimen Urine',
+                    display_name: '- Leukosit',
+                    satuan: '',
+                    normal_min: 'L.0 P.0',
+                    normal_max: 'L.5 P.5',
+                    nilai_rujukan: 'L.0-5 P.0-5',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Text',
+                    opsi_output : '',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Sedimen',
+                    nama: 'Epithel Urine',
+                    display_name: '- Epithel',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'Tidak ada - Sedikit',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Text',
+                    opsi_output : 'Tidak ada;Sedikit;Sedang;Banyak',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Sedimen',
+                    nama: 'Silinder',
+                    display_name: '- Silinder',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Sedimen',
+                    nama: 'Kristal',
+                    display_name: '- Kristal',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Tidak ada;Asam urat;Kalsium oksalat;Fosfat amorf;Lainnya',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Sedimen',
+                    nama: 'Bakteri',
+                    display_name: '- Bakteri',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++);Positif(++++)',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Sedimen',
+                    nama: 'Jamur',
+                    display_name: '- Jamur',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Negatif;Positif;Positif(+);Positif(++);Positif(+++)',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Sedimen',
+                    nama: 'Sedimen-Lain-lain',
+                    display_name: '- Lain-lain',
+                    satuan: '-',
+                    normal_min: '',
+                    normal_max: '',
+                    nilai_rujukan: '',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Text',
+                    opsi_output : '',
+                    default: ''
+                }
+            ];
+            const MicrobiologiParams = [
+                {
+                    judul: '',
+                    nama: 'Preparat Gram',
+                    display_name: 'Preparat Gram',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Ditemukan Kuman;Tidak Ditemukan Kuman' 
+                },
+                {
+                    judul: '',
+                    nama: 'Batang Gram Negatif',
+                    display_name: 'Batang Gram Negatif',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
+                },
+                {
+                    judul: '',
+                    nama: 'Batang Gram Positif',
+                    display_name: 'Batang Gram Positif',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
+                },
+                {
+                    judul: '',
+                    nama: 'Coccus Gram Negatif',
+                    display_name: 'Coccus Gram Negatif',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++'
+                },
+                {
+                    judul: '',
+                    nama: 'Coccus Gram Positif',
+                    display_name: 'Coccus Gram Positif',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : '-;Positif +;Positif ++;Positif +++;Positif ++++' 
+                }
+            ];
+            const PreparatBasahParams = [
+                {
+                    judul: 'Preparat Basah',
+                    nama: 'Preparat Basah',
+                    display_name: 'Preparat Basah',
+                    satuan: '-',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Dropdown',
+                    opsi_output : 'Tidak Ditemukan Jamur;Ditemukan Jamur Berbentuk Hifa' 
+                },
+                {
+                    judul: '',
+                    nama: 'Leukosit',
+                    display_name: 'Leukosit',
+                    satuan: '/LP',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Text',
+                    opsi_output : '',
+                },
+                {
+                    judul: '',
+                    nama: 'Epithel',
+                    display_name: 'Epithel',
+                    satuan: '/LP',
+                    normal_min: 'L.- P.-',
+                    normal_max: 'L.- P.-',
+                    nilai_rujukan: '-',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan : 'Text',
+                    opsi_output : '',
+                }
+            ];
+            const DengueParams =  [
+                {
+                    judul: 'Dengue_IgG/IgM',
+                    nama: 'Dengue_IgG',
+                    display_name: 'Dengue IgG',
+                    satuan: '-',
+                    normal_min: '—',
+                    normal_max: '—',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;Positif(+)',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Dengue_IgG/IgM',
+                    nama: 'Dengue_IgM',
+                    display_name: 'Dengue IgM',
+                    satuan: '-',
+                    normal_min: '—',
+                    normal_max: '—',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;Positif(+)',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Dengue_IgG/IgM',
+                    nama: 'COI_IgG',
+                    display_name: 'Cutoff Index IgG (COI)',
+                    satuan: '',
+                    normal_min: '0.00',
+                    normal_max: '∞',
+                    nilai_rujukan: '< 1.00',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Text',
+                    opsi_output: '',
+                    default: ''
+                },
+                {
+                    judul: 'Dengue_IgG/IgM',
+                    nama: 'COI_IgM',
+                    display_name: 'Cutoff Index IgM (COI)',
+                    satuan: '',
+                    normal_min: '0.00',
+                    normal_max: '∞',
+                    nilai_rujukan: '< 1.00',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Text',
+                    opsi_output: '',
+                    default: ''
+                }
+            ];
+            const NS1Params =  [
+                {
+                    judul: 'Dengue_Ns1',
+                    nama: 'Dengue_Ns1',
+                    display_name: 'Dengue_Ns1',
+                    satuan: '-',
+                    normal_min: '—',
+                    normal_max: '—',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;Positif(+)',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Dengue_Ns1',
+                    nama: 'COI_Ns1',
+                    display_name: 'Cutoff Index (COI)',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: '<1.00',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Text',
+                    opsi_output: '-',
+                    default: ''
+                }
+            ];
+            const TifoidParams = [
+                {
+                    judul: 'Typhoid_IgG/IgM',
+                    nama: 'Typhoid_IgM',
+                    display_name: 'Typhoid IgM',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;Positif(+)',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Typhoid_IgG/IgM',
+                    nama: 'Typhoid_IgG',
+                    display_name: 'Typhoid IgG',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;Positif(+)',
+                    default: 'Negatif'
+                }
+            ];
+            const FesesParams = [
+                {
+                    judul: 'Feses',
+                    nama: 'Konsistensi',
+                    display_name: 'Konsistensi',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Lunak',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Lunak;Padat;Setengah cair;Cair',
+                    default: 'Lunak'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Feses-Warna',
+                    display_name: 'Warna',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Coklat',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Coklat;Coklat kekuningan;Coklat kehijauan;Hitam;Pucat;Merah',
+                    default: 'Coklat'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Lendir',
+                    display_name: 'Lendir',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Darah',
+                    display_name: 'Darah',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Telur Cacing',
+                    display_name: 'Telur Cacing',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Tidak ditemukan',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Tidak ditemukan;Ascaris;Trichuris;Hookworm;Oxyuris;Lainnya',
+                    default: 'Tidak ditemukan'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Kista Protozoa',
+                    display_name: 'Kista Protozoa',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Tidak ditemukan',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Tidak ditemukan;Entamoeba histolytica;Entamoeba coli;Giardia lamblia;Lainnya',
+                    default: 'Tidak ditemukan'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Trofozoit',
+                    display_name: 'Trofozoit',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Tidak ditemukan',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Tidak ditemukan;Entamoeba histolytica;Giardia lamblia;Lainnya',
+                    default: 'Tidak ditemukan'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Feses-Leukosit',
+                    display_name: 'Leukosit',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: '0-1/lpb',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Text',
+                    opsi_output: '',
+                    default: '0-1/lpb'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Eritrosit',
+                    display_name: 'Eritrosit',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: '0/lpb',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Text',
+                    opsi_output: '',
+                    default: '0/lpb'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Lemak',
+                    display_name: 'Lemak',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Sisa Makanan',
+                    display_name: 'Sisa Makanan',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: 'Negatif',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Dropdown',
+                    opsi_output: 'Negatif;Positif(+);Positif(++);Positif(+++) ',
+                    default: 'Negatif'
+                },
+                {
+                    judul: 'Feses',
+                    nama: 'Lain-lain',
+                    display_name: 'Lain-lain',
+                    satuan: '-',
+                    normal_min: '-',
+                    normal_max: '-',
+                    nilai_rujukan: '',
+                    nilai_kritis: 'L.- P.-',
+                    metode: '-',
+                    tipe_inputan: 'Text',
+                    opsi_output: '',
+                    default: ''
+                },
+            ];
 
    // Buat map dari data hasil pemeriksaan yang ada di database
     const hasilMap = {};
@@ -1514,7 +1593,6 @@
                             <th class="col-2">PARAMETER</th>
                             <th class="col-2">HASIL</th>
                             <th class="col-1"></th>
-                            <th class="col-2 duplo dx-column">DX</th>
                             <th class="col-2 duplo d1-column" style="display: ${duploStatus.hasD1 ? 'table-cell' : 'none'};">D1</th>
                             <th class="col-2 duplo d2-column" style="display: ${duploStatus.hasD2 ? 'table-cell' : 'none'};">D2</th>
                             <th class="col-2 duplo d3-column" style="display: ${duploStatus.hasD3 ? 'table-cell' : 'none'};">D3</th>
@@ -1545,7 +1623,6 @@
                                             <th class="col-2">PARAMETER</th>
                                             <th class="col-2">HASIL</th>
                                             <th class="col-1"></th>
-                                            <th class="col-2 duplo dx-column">DX</th>
                                             <th class="col-2 duplo d1-column" style="display: ${duploStatus.hasD1 ? 'table-cell' : 'none'};">D1</th>
                                             <th class="col-2 duplo d2-column" style="display: ${duploStatus.hasD2 ? 'table-cell' : 'none'};">D2</th>
                                             <th class="col-2 duplo d3-column" style="display: ${duploStatus.hasD3 ? 'table-cell' : 'none'};">D3</th>
@@ -1557,7 +1634,7 @@
                                         ${(() => {
                                             // Cek apakah ada pemeriksaan hematologi di grup ini
                                             const hasHematologi = e.pasiens.some(p => 
-                                                p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('hematologi')
+                                                p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('darah lengkap')
                                             );
                                             
                                             // Cek apakah ada pemeriksaan widal di grup ini
@@ -1572,11 +1649,17 @@
                                             );
 
                                             const hasMikrobiologi = e.pasiens.some(p => {
-                                                const isMikrobiologi = p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('microbiologi');
+                                                const isMikrobiologi = p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('preparat gram');
                                                 return isMikrobiologi;
                                                 // console.log('Nama pemeriksaan:', p.data_pemeriksaan.nama_pemeriksaan.toLowerCase());
                                             });
 
+                                            const hasPreparatBasah = e.pasiens.some(p => {
+                                                return (
+                                                    p.data_pemeriksaan.nama_pemeriksaan?.toLowerCase().includes('preparat basah') ||
+                                                    p.data_pemeriksaan.nama_parameter?.toLowerCase().includes('preparat_basah')
+                                                );
+                                            });
 
                                             const hasFeses = e.pasiens.some(p => p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('feses'));
                                             const hasDengue = e.pasiens.some(p => p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('dengue_igg/igm'));
@@ -1653,20 +1736,6 @@
                                                                         data-index="${paramIdx}" data-switch-index="0">
                                                                     <i class="ti ti-switch-2"></i>
                                                                 </button>
-                                                            </td>
-
-                                                            <!-- Duplo DX -->
-                                                            <td class="col-2 text-center">
-                                                                <div class="d-flex align-items-center justify-content-center gap-1">
-                                                                    ${renderField('duplo_dx', obxValues.duplo_dx, 'dx')}
-                                                                    <input type="hidden" name="is_switched[]" value="${Number(obxValues.switched) === 1 ? 1 : 0}">
-                                                                    ${obxValues.switched ? `
-                                                                        <div class='checkbox-r-container d-flex align-items-center gap-1'>
-                                                                            <input type='checkbox' class='checkbox-r form-check-input' checked disabled>
-                                                                            <span class='text-danger fw-bold'>R</span>
-                                                                        </div>
-                                                                    ` : ''}
-                                                                </div>
                                                             </td>
 
                                                             <!-- Duplo D1 -->
@@ -2823,9 +2892,626 @@ window.getTableContent = getTableContent;
     });
     });
 </script>
+ <script>
+document.addEventListener('DOMContentLoaded', function() {
+    let uploadedImages = [];
+    let currentNoLab = '';
+    let currentZoomLevel = 1;
+    let currentCarouselIndex = 0;
+    
+    // Variables untuk drag/pan
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let translateX = 0;
+    let translateY = 0;
+    let currentImg = null;
 
+    const imagesModal = document.getElementById('imagesModal');
+    const carouselModal = new bootstrap.Modal(document.getElementById('imageCarouselModal'));
+    
+    // Event saat modal dibuka
+    imagesModal.addEventListener('shown.bs.modal', function() {
+        const nolabInput = document.querySelector('input[name="no_lab"]');
+        if (nolabInput) {
+            currentNoLab = nolabInput.value;
+            document.getElementById('currentNoLab').value = currentNoLab;
+            loadExistingImages(currentNoLab);
+        }
+    });
 
+    imagesModal.addEventListener('hidden.bs.modal', function() {
+        resetModal();
+    });
 
+    // Load existing images
+    function loadExistingImages(nolab) {
+        fetch(`/api/get-images/${nolab}`)
+            .then(response => response.json())
+            .then(res => {
+                if (res.status === 'success' && res.data.length > 0) {
+                    uploadedImages = res.data.map(img => ({
+                        id: img.id,
+                        nolab: img.nolab,
+                        preview: `/${img.image}`,
+                        description: img.description || '',
+                        isExisting: true
+                    }));
+                    updatePreviewContainer();
+                    updateBadge(uploadedImages.length);
+                    document.getElementById('uploadedImagesPreview').style.display = 'block';
+                    document.getElementById('noImagesMessage').style.display = 'none';
+                } else {
+                    uploadedImages = [];
+                    document.getElementById('uploadedImagesPreview').style.display = 'none';
+                    document.getElementById('noImagesMessage').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('noImagesMessage').style.display = 'block';
+            });
+    }
 
-<script src="{{ asset('../js/ak.js') }}"></script>
+    // Update preview container dengan carousel trigger (TANPA TOMBOL HAPUS)
+    function updatePreviewContainer() {
+        const container = document.getElementById('previewContainer');
+        container.innerHTML = '';
+        
+        uploadedImages.forEach((img, index) => {
+            const col = document.createElement('div');
+            col.className = 'col-md-4 mb-3';
+            col.innerHTML = `
+                <div class="card preview-image-card" onclick="openCarousel(${index})" style="cursor: pointer;">
+                    <div class="image-number-badge">${index + 1}</div>
+                    <img src="${img.preview}" class="card-img-top" style="height: 150px; object-fit: cover;">
+                    <div class="image-overlay">
+                        <i class="bi bi-eye-fill"></i>
+                    </div>
+                    <div class="card-body p-2">
+                        <small class="text-muted d-block">${img.description || 'No description'}</small>
+                    </div>
+                </div>
+            `;
+            container.appendChild(col);
+        });
+    }
+
+    // Open carousel modal
+    window.openCarousel = function(startIndex) {
+        currentCarouselIndex = startIndex;
+        buildCarousel();
+        carouselModal.show();
+        
+        const carousel = bootstrap.Carousel.getInstance(document.getElementById('imageCarousel')) || 
+                        new bootstrap.Carousel(document.getElementById('imageCarousel'));
+        carousel.to(startIndex);
+    };
+
+    // Build carousel
+    function buildCarousel() {
+        const carouselInner = document.getElementById('carouselInner');
+        const indicators = document.getElementById('carouselIndicators');
+        
+        carouselInner.innerHTML = '';
+        indicators.innerHTML = '';
+        
+        uploadedImages.forEach((img, index) => {
+            const item = document.createElement('div');
+            item.className = `carousel-item ${index === currentCarouselIndex ? 'active' : ''}`;
+            item.innerHTML = `
+                <img src="${img.preview}" class="d-block" data-index="${index}">
+                ${img.description ? `<div class="image-description-box">${img.description}</div>` : ''}
+            `;
+            carouselInner.appendChild(item);
+            
+            const indicator = document.createElement('button');
+            indicator.type = 'button';
+            indicator.setAttribute('data-bs-target', '#imageCarousel');
+            indicator.setAttribute('data-bs-slide-to', index);
+            if (index === currentCarouselIndex) indicator.className = 'active';
+            indicators.appendChild(indicator);
+        });
+        
+        // Add drag event listeners to all images
+        document.querySelectorAll('.carousel-item img').forEach(img => {
+            img.addEventListener('mousedown', handleMouseDown);
+            img.addEventListener('mousemove', handleMouseMove);
+            img.addEventListener('mouseup', handleMouseUp);
+            img.addEventListener('mouseleave', handleMouseUp);
+            img.addEventListener('click', toggleZoom);
+            
+            // Touch events for mobile
+            img.addEventListener('touchstart', handleTouchStart);
+            img.addEventListener('touchmove', handleTouchMove);
+            img.addEventListener('touchend', handleTouchEnd);
+        });
+        
+        updateImageCounter();
+    }
+
+    // Update counter
+    function updateImageCounter() {
+        document.getElementById('imageCounter').textContent = 
+            `${currentCarouselIndex + 1} / ${uploadedImages.length}`;
+    }
+
+    // Carousel slide event
+    document.getElementById('imageCarousel')?.addEventListener('slid.bs.carousel', function(e) {
+        currentCarouselIndex = e.to;
+        updateImageCounter();
+        resetZoom();
+        
+        // Reset drag position saat pindah slide
+        translateX = 0;
+        translateY = 0;
+        isDragging = false;
+        currentImg = null;
+    });
+
+    // Zoom functions
+    window.toggleZoom = function(event) {
+        const img = event.target;
+        
+        // Jika sudah zoom, toggle off
+        if (img.classList.contains('zoomed')) {
+            img.classList.remove('zoomed');
+            currentZoomLevel = 1;
+            translateX = 0;
+            translateY = 0;
+            img.style.transform = 'scale(1)';
+        } else {
+            // Zoom in
+            img.classList.add('zoomed');
+            currentZoomLevel = 2;
+            img.style.transform = `scale(${currentZoomLevel}) translate(${translateX}px, ${translateY}px)`;
+        }
+    };
+
+    window.zoomIn = function() {
+        const activeImg = document.querySelector('.carousel-item.active img');
+        if (!activeImg) return;
+        
+        currentZoomLevel = Math.min(currentZoomLevel + 0.5, 4);
+        activeImg.classList.add('zoomed');
+        updateTransform(activeImg);
+    };
+
+    window.zoomOut = function() {
+        const activeImg = document.querySelector('.carousel-item.active img');
+        if (!activeImg) return;
+        
+        currentZoomLevel = Math.max(currentZoomLevel - 0.5, 1);
+        
+        if (currentZoomLevel === 1) {
+            activeImg.classList.remove('zoomed');
+            translateX = 0;
+            translateY = 0;
+        }
+        
+        updateTransform(activeImg);
+    };
+
+    window.resetZoom = function() {
+        const activeImg = document.querySelector('.carousel-item.active img');
+        if (!activeImg) return;
+        
+        currentZoomLevel = 1;
+        translateX = 0;
+        translateY = 0;
+        activeImg.classList.remove('zoomed');
+        activeImg.style.transform = 'scale(1)';
+    };
+    
+    function updateTransform(img) {
+        img.style.transform = `scale(${currentZoomLevel}) translate(${translateX}px, ${translateY}px)`;
+    }
+    
+    // ============================================================
+    //                  DRAG/PAN FUNCTIONALITY
+    // ============================================================
+    
+    function handleMouseDown(e) {
+        const img = e.target;
+        if (!img.classList.contains('zoomed')) return;
+        
+        isDragging = true;
+        currentImg = img;
+        startX = e.clientX - translateX;
+        startY = e.clientY - translateY;
+        
+        // Disable carousel controls saat drag
+        document.querySelectorAll('.carousel-control-prev, .carousel-control-next').forEach(btn => {
+            btn.style.pointerEvents = 'none';
+        });
+    }
+    
+    function handleMouseMove(e) {
+        if (!isDragging || !currentImg) return;
+        
+        e.preventDefault();
+        
+        translateX = e.clientX - startX;
+        translateY = e.clientY - startY;
+        
+        updateTransform(currentImg);
+    }
+    
+    function handleMouseUp() {
+        if (isDragging) {
+            isDragging = false;
+            currentImg = null;
+            
+            // Re-enable carousel controls
+            document.querySelectorAll('.carousel-control-prev, .carousel-control-next').forEach(btn => {
+                btn.style.pointerEvents = 'auto';
+            });
+        }
+    }
+    
+    // Touch events for mobile
+    function handleTouchStart(e) {
+        const img = e.target;
+        if (!img.classList.contains('zoomed')) return;
+        
+        isDragging = true;
+        currentImg = img;
+        const touch = e.touches[0];
+        startX = touch.clientX - translateX;
+        startY = touch.clientY - translateY;
+    }
+    
+    function handleTouchMove(e) {
+        if (!isDragging || !currentImg) return;
+        
+        e.preventDefault();
+        
+        const touch = e.touches[0];
+        translateX = touch.clientX - startX;
+        translateY = touch.clientY - startY;
+        
+        updateTransform(currentImg);
+    }
+    
+    function handleTouchEnd() {
+        isDragging = false;
+        currentImg = null;
+    }
+
+    // ============================================================
+    //                  DOWNLOAD FUNCTIONALITY
+    // ============================================================
+    window.downloadCurrentImage = function() {
+        const currentImg = uploadedImages[currentCarouselIndex];
+        if (!currentImg) return;
+        
+        const link = document.createElement('a');
+        link.href = currentImg.preview;
+        link.download = `${currentNoLab}_image_${currentCarouselIndex + 1}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Show notification
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+        });
+        Toast.fire({
+            icon: 'success',
+            title: 'Image berhasil diunduh'
+        });
+    };
+
+    // ============================================================
+    //                  PRINT FUNCTIONALITY
+    // ============================================================
+    window.printCurrentImage = function() {
+        const currentImg = uploadedImages[currentCarouselIndex];
+        if (!currentImg) return;
+        
+        // Create print window
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Print Image - ${currentNoLab}</title>
+                <style>
+                    @media print {
+                        @page {
+                            margin: 0.5cm;
+                            size: auto;
+                        }
+                        body {
+                            margin: 0;
+                            padding: 20px;
+                        }
+                    }
+                    body {
+                        font-family: Arial, sans-serif;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        padding: 20px;
+                    }
+                    .header {
+                        text-align: center;
+                        margin-bottom: 20px;
+                        width: 100%;
+                    }
+                    .header h2 {
+                        margin: 5px 0;
+                        color: #333;
+                    }
+                    .image-container {
+                        max-width: 100%;
+                        text-align: center;
+                    }
+                    img {
+                        max-width: 100%;
+                        height: auto;
+                        border: 1px solid #ddd;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    }
+                    .description {
+                        margin-top: 15px;
+                        padding: 10px;
+                        background: #f8f9fa;
+                        border-radius: 5px;
+                        text-align: center;
+                        max-width: 800px;
+                    }
+                    .footer {
+                        margin-top: 20px;
+                        font-size: 12px;
+                        color: #666;
+                        text-align: center;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h2>Lab Image</h2>
+                    <p><strong>No Lab:</strong> ${currentNoLab}</p>
+                    <p><strong>Image:</strong> ${currentCarouselIndex + 1} of ${uploadedImages.length}</p>
+                </div>
+                <div class="image-container">
+                    <img src="${currentImg.preview}" alt="Lab Image">
+                </div>
+                ${currentImg.description ? `
+                    <div class="description">
+                        <strong>Keterangan:</strong><br>
+                        ${currentImg.description}
+                    </div>
+                ` : ''}
+                <div class="footer">
+                    <p>Printed on ${new Date().toLocaleString('id-ID')}</p>
+                </div>
+            </body>
+            </html>
+        `);
+        
+        // Wait for image to load then print
+        printWindow.document.close();
+        printWindow.onload = function() {
+            setTimeout(() => {
+                printWindow.print();
+            }, 250);
+        };
+    };
+
+    function updateBadge(count) {
+        const badge = document.getElementById('imageCountBadge');
+        if (badge) {
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'inline-block' : 'none';
+        }
+    }
+
+    function resetModal() {
+        uploadedImages = [];
+    }
+});
+</script>
+
+<style>
+.preview-area {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.image-input {
+    cursor: pointer;
+}
+
+#imageUploadContainer .card {
+    border-left: 3px solid #0d6efd;
+}
+
+#previewContainer .card {
+    transition: transform 0.2s;
+}
+
+#previewContainer .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+#uploadedImagesPreview {
+    border-top: 2px solid #dee2e6;
+    padding-top: 15px;
+}
+/* Force SweetAlert2 to be on top of everything */
+.swal2-container {
+    z-index: 999999 !important;
+}
+
+.swal-high-zindex {
+    z-index: 999999 !important;
+}
+
+/* Override Bootstrap modal z-index if needed */
+.modal {
+    z-index: 1050 !important;
+}
+
+.modal-backdrop {
+    z-index: 1040 !important;
+}
+
+/* Ensure SweetAlert backdrop is also high */
+div:where(.swal2-container) {
+    z-index: 999999 !important;
+}
+.image-carousel-modal .modal-dialog {
+            max-width: 90%;
+            height: 90vh;
+        }
+        
+        .image-carousel-modal .modal-content {
+            height: 100%;
+        }
+        
+        .image-carousel-modal .carousel-inner {
+            height: calc(100% - 120px);
+        }
+        
+        .image-carousel-modal .carousel-item {
+            height: 100%;
+        }
+        
+        .image-carousel-modal .carousel-item img {
+            max-height: 70vh;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+            margin: 0 auto;
+            cursor: zoom-in;
+            transition: transform 0.3s ease;
+            user-select: none;
+        }
+        
+        .image-carousel-modal .carousel-item img.zoomed {
+            cursor: grab;
+            transform: scale(2);
+        }
+        
+        .image-carousel-modal .carousel-item img.zoomed:active {
+            cursor: grabbing;
+        }
+        
+        .carousel-item {
+            overflow: hidden;
+        }
+        
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 5%;
+        }
+        
+        .carousel-indicators {
+            bottom: -40px;
+        }
+        
+        .image-counter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            z-index: 10;
+            font-size: 14px;
+        }
+        
+        .image-description-box {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            max-width: 80%;
+            text-align: center;
+        }
+        
+        .zoom-controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+        }
+        
+        .zoom-controls button {
+            margin: 0 5px;
+        }
+
+        /* Preview Grid Styles */
+        .preview-image-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .preview-image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        
+        .preview-image-card img {
+            transition: transform 0.3s ease;
+        }
+        
+        .preview-image-card:hover img {
+            transform: scale(1.1);
+        }
+        
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .preview-image-card:hover .image-overlay {
+            opacity: 1;
+        }
+        
+        .image-overlay i {
+            color: white;
+            font-size: 40px;
+        }
+        
+        .image-number-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            z-index: 1;
+        }
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            filter: brightness(0) saturate(0) invert(50%);
+        }
+
+</style>
 @endpush
