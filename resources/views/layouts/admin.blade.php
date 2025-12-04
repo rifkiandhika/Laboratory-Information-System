@@ -227,7 +227,7 @@
         }
     </script>
 
-<script>
+{{-- <script>
   function confirmVerify(id) {
     Swal.fire({
         title: 'Apakah Anda yakin?',
@@ -257,25 +257,139 @@
         }
     });
 }
-</script>
+</script> --}}
 
 <script>
-  function confirmDokter(id) {
-      Swal.fire({
-          title: 'Apakah Anda yakin?',
-          text: "Data akan diselesaikan!",
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Ya, selesaikan!',
-          cancelButtonText: 'Batal'
-      }).then((result) => {
-          if (result.isConfirmed) {
-              document.getElementById(`kirimForm-${id}`).submit();
-          }
-      });
-  }
+ function confirmVerifikasi(id) {
+    Swal.fire({
+        title: 'Konfirmasi Verifikasi',
+        text: 'Apakah Anda yakin ingin memverifikasi data pasien ini?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: ' Ya, Konfirmasi! <i class="ti ti-send"></i>',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#7367f0',
+        cancelButtonColor: '#6c757d',
+        reverseButtons: true,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading
+            Swal.fire({
+                title: 'Memproses Data...',
+                html: 'Mohon tunggu, data sedang diverifikasi',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Ambil form utama yang berisi semua data
+            let mainForm = document.querySelector(`form[id*="dokterForm"]`);
+            
+            if (!mainForm) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Form tidak ditemukan!'
+                });
+                return;
+            }
+            
+            // Ubah action form ke route send
+            mainForm.action = `/analyst/dokter/send/${id}`;
+            
+            // Submit form
+            setTimeout(() => {
+                mainForm.submit();
+            }, 500);
+        }
+    });
+}
+// Fungsi untuk konfirmasi back to analyst dengan SweetAlert2
+function confirmVerify(id) {
+    Swal.fire({
+        title: 'Kembalikan ke Analyst?',
+        text: "Data akan dikembalikan ke analyst untuk perbaikan",
+        icon: 'warning',
+        input: 'textarea',
+        inputPlaceholder: 'Contoh: Terdapat kesalahan pada hasil pemeriksaan hematologi...',
+        inputAttributes: {
+            'rows': '4',
+            'style': 'resize: vertical;'
+        },
+        showCancelButton: true,
+        confirmButtonText: '<i class="ti ti-arrow-back"></i> Ya, Kembalikan!',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#17a2b8',
+        cancelButtonColor: '#6c757d',
+        reverseButtons: true,
+        inputValidator: (value) => {
+            if (!value || value.trim() === '') {
+                return 'Catatan wajib diisi!';
+            }
+            if (value.trim().length < 10) {
+                return 'Catatan minimal 10 karakter';
+            }
+            return null;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Ambil form utama yang sudah ada di halaman
+            let backForm = document.querySelector(`form[id*="dokterForm"]`);
+            
+            // Jika tidak ditemukan, buat form baru
+            if (!backForm) {
+                backForm = document.createElement('form');
+                backForm.id = `backToAnalystForm-${id}`;
+                backForm.method = 'POST';
+                backForm.action = `/analyst/dokter/back/${id}`;
+                
+                // CSRF Token
+                const csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = '_token';
+                csrf.value = document.querySelector('meta[name="csrf-token"]').content;
+                backForm.appendChild(csrf);
+                
+                document.body.appendChild(backForm);
+            } else {
+                // Ubah action form yang sudah ada
+                backForm.action = `/analyst/dokter/back/${id}`;
+            }
+            
+            // Hapus note lama jika ada
+            const oldNote = backForm.querySelector('input[name="note"]');
+            if (oldNote && oldNote.type === 'hidden') {
+                oldNote.remove();
+            }
+            
+            // Tambahkan note baru sebagai hidden input
+            const noteInput = document.createElement('input');
+            noteInput.type = 'hidden';
+            noteInput.name = 'note';
+            noteInput.value = result.value.trim();
+            backForm.appendChild(noteInput);
+            
+            // Show loading
+            Swal.fire({
+                title: 'Mengembalikan Data...',
+                html: 'Mohon tunggu sebentar',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Submit form
+            setTimeout(() => {
+                backForm.submit();
+            }, 500);
+        }
+    });
+}
 </script>
 <script>
   function confirmDok(id) {
