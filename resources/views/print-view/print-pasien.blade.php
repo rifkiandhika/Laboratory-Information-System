@@ -501,7 +501,7 @@
                                         <td>
                                             <strong>‎ ‎ ‎ ‎</strong>{{ $hematologiMapping[$hasil->nama_pemeriksaan] ?? $hasil->nama_pemeriksaan }}
                                         </td>
-                                        <td>
+                                        <td style="word-wrap: break-word; word-break: break-word; white-space: normal; max-width: 250px;">
                                             @if($hasil->nama_pemeriksaan === 'WBC')
                                                 {{ (strpos($hasil->hasil, '.') !== false && strlen(substr(strrchr($hasil->hasil, "."), 1)) == 2) 
                                                     ? $hasil->hasil . '0' 
@@ -544,7 +544,8 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td class="courier-new">- Hasil di atas merupakan interpretasi berdasarkan pemeriksaan laboratorium saat ini dan dari keterangan klinis yang dicantumkan.</td>
+                    <td class="courier-new">- Hasil di atas merupakan interpretasi berdasarkan pemeriksaan laboratorium saat ini dan dari keterangan 
+  klinis yang dicantumkan.</td>
                 </tr>
                 <tr>
                     <td></td>
@@ -555,7 +556,8 @@
             <table class="note-section">
                 <tr>
                     <td valign="top" style="white-space: nowrap;"><b>Catatan :</b></td>
-                    <td class="courier-new">- Hasil di atas merupakan interpretasi berdasarkan pemeriksaan laboratorium saat ini dan dari keterangan klinis yang dicantumkan.</td>
+                    <td class="courier-new">- Hasil di atas merupakan interpretasi berdasarkan pemeriksaan laboratorium saat ini dan dari keterangan 
+  klinis yang dicantumkan.</td>
                 </tr>
                 <tr>
                     <td></td>
