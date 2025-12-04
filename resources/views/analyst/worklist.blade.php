@@ -1617,6 +1617,57 @@
                                 default: ''
                             },
 			            ];
+                        const HapusanDarahParams = [
+                            {
+                                judul: 'Hapusan Darah',
+                                nama: 'Eritrosit',
+                                display_name: 'Eritrosit',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: '-',
+                                tipe_inputan : 'text',
+                                opsi_output : '',
+                                default: 'Normal'
+                            },
+                            {
+                                judul: 'Hapusan Darah',
+                                nama: 'Leukosit',
+                                display_name: 'Leukosit',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: '-',
+                                tipe_inputan : 'text',
+                                opsi_output : '',
+                                default: 'Normal'
+                            },
+                            {
+                                judul: 'Hapusan Darah',
+                                nama: 'Trombosit',
+                                display_name: 'Trombosit',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: '-',
+                                tipe_inputan : 'text',
+                                opsi_output : '', 
+                                default: 'Normal'
+                            },
+                            {
+                                judul: 'Hapusan Darah',
+                                nama: 'Kesimpulan',
+                                display_name: 'Kesimpulan',
+                                satuan: '-',
+                                normal_min: 'L.- P.-',
+                                normal_max: 'L.- P.-',
+                                nilai_rujukan: '-',
+                                tipe_inputan : 'text',
+                                opsi_output : '',
+                                default: '-' 
+                            }
+                        ];
+
 
                         // Fungsi untuk mendapatkan nilai normal berdasarkan jenis kelamin
                         function getNormalValues(param, jenisKelamin) {
@@ -2109,6 +2160,11 @@
                                                             return isHematologi;
                                                         });
 
+                                                        const hasHapusanDarah = e.pasiens.some(p => {
+                                                            const isHapusanDarah = p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('hapusan darah');
+                                                            return isHapusanDarah;
+                                                        });
+
                                                         // Cek apakah ada pemeriksaan widal di grup ini
                                                         const hasWidal = e.pasiens.some(p => {
                                                             const isWidal = p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('widal');
@@ -2332,6 +2388,60 @@
                                                             
                                                             return html;
 
+                                                        }
+                                                        if (hasHapusanDarah) {
+                                                            const hapusanDarahPemeriksaan = e.pasiens.find(p => 
+                                                                p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('hapusan darah')
+                                                            );
+                                                            const judulHapusan = e.pasiens.find(p => p.data_pemeriksaan?.judul)?.data_pemeriksaan?.judul || '';
+                                                            const namaPemeriksaanHapusan = hapusanDarahPemeriksaan ? hapusanDarahPemeriksaan.data_pemeriksaan.nama_pemeriksaan : 'Hapusan Darah';
+                                                            
+                                                            let html = '';
+                                                            
+                                                            if (judulHapusan) {
+                                                                html += `
+                                                                    <tr class="hapusan-title-header">
+                                                                        <td colspan="5" class="fw-bold text-primary ps-3" style="background-color: #e3f2fd; border-left: 4px solid #2196f3; padding: 10px;">
+                                                                            ${judulHapusan}
+                                                                        </td>
+                                                                    </tr>
+                                                                `;
+                                                            }
+                                                            
+                                                            html += HapusanDarahParams.map((param, paramIdx) => {
+                                                                const obxValues = getObxValues(param.nama);
+                                                                const rowId = `hapusan_${idx}_${paramIdx}`;
+                                                                const uniqueID = generateParameterUID('Hapusan', param.nama, paramIdx);
+                                                                
+                                                                return `
+                                                                    <tr data-id="${rowId}" data-parameter="${param.nama}" data-uid="${uniqueID}" class="hapusan-row">
+                                                                        <td class="col-2 ${judulHapusan ? 'ps-4' : ''}" ${judulHapusan ? 'style="border-left: 2px solid #e9ecef;"' : ''}>
+                                                                            <strong>${param.display_name}</strong>
+                                                                            <input type="hidden" name="uid[]" value="${uniqueID}" />
+                                                                            <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${namaPemeriksaanHapusan}" />
+                                                                            ${judulHapusan ? `<input type="hidden" name="judul[${uniqueID}]" value="${judulHapusan}" />` : ''}
+                                                                            <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
+                                                                            <input type="hidden" name="metode[${uniqueID}]" value="${param.metode ?? ''}" />
+                                                                            <input type="hidden" name="department[${uniqueID}]" value="${e.data_departement.nama_department}" />
+                                                                        </td>
+                                                                        <td class="col-8" colspan="3">
+                                                                            <textarea name="hasil[${uniqueID}]" 
+                                                                                class="form-control manualInput w-100" 
+                                                                                rows="3"
+                                                                                placeholder="Masukkan hasil pemeriksaan..."
+                                                                                required
+                                                                                style="resize: vertical; min-height: 60px; width: 100% !important;">${obxValues.hasilUtama || ''}</textarea>
+                                                                        </td>
+                                                                        <td class="col-1 text-center">
+                                                                            <input type="hidden" name="satuan[${uniqueID}]" class="form-control" 
+                                                                                value="${param.satuan}" readonly />
+                                                                            <span class="text-muted">${param.satuan}</span>
+                                                                        </td>
+                                                                    </tr>
+                                                                `;
+                                                            }).join('');
+                                                            
+                                                            return html;
                                                         } else if (hasWidal) {
                                                             const widalPemeriksaan = e.pasiens.find(p => 
                                                                 p.data_pemeriksaan.nama_pemeriksaan.toLowerCase().includes('widal')

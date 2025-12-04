@@ -572,7 +572,7 @@ class worklistController extends Controller
             'nama_dokter' => 'required',
             'parameter_name.*' => 'required',
             'nama_pemeriksaan.*' => 'required',
-            'hasil.*' => 'nullable',   // ⬅️ sama dengan store (tidak wajib)
+            'hasil.*' => 'nullable',
             'duplo_d1.*' => 'nullable',
             'duplo_d2.*' => 'nullable',
             'duplo_d3.*' => 'nullable',
