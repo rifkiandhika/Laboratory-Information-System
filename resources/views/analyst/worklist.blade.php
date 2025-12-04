@@ -2430,7 +2430,7 @@
                                                                                 rows="3"
                                                                                 placeholder="Masukkan hasil pemeriksaan..."
                                                                                 required
-                                                                                style="resize: vertical; min-height: 60px; width: 100% !important;">${obxValues.hasilUtama || ''}</textarea>
+                                                                                style="resize: vertical; min-height: 60px; width: 100% !important;">${obxValues.hasilUtama || 'normal'}</textarea>
                                                                         </td>
                                                                         <td class="col-1 text-center">
                                                                             <input type="hidden" name="satuan[${uniqueID}]" class="form-control" 
