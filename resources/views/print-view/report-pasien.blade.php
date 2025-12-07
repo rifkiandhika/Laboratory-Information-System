@@ -424,6 +424,7 @@ function unduhExcel() {
         const wb = XLSX.utils.book_new();
         const data = [];
 
+        // Header Excel
         data.push([judul]);
         data.push([rentangTanggal]);
         data.push(['']);
@@ -431,70 +432,112 @@ function unduhExcel() {
         data.push([getTeksFilter().replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')]);
         data.push(['']);
 
-        const headerRow = ['No', 'Tanggal', 'No Lab', 'Nama Pasien', 'Jenis Kelamin', 'Umur', 'Pemeriksaan', 'Departemen', 'Payment Method', 'Qty', 'Harga', 'Total'];
+        // Header kolom
+        const headerRow = ['No', 'Tanggal', 'No Lab', 'Nama Pasien', 'Jenis Kelamin', 'Umur', 'Pemeriksaan', 'Departemen', 'Dokter', 'Payment Method', 'Qty', 'Harga', 'Total'];
         data.push(headerRow);
 
         let no = 1;
+        
+        // Loop through table rows
         $('#reportTableBody tr').each(function() {
             const $row = $(this);
             const $cells = $row.find('td');
             
             if ($cells.length === 0) return;
             
+            // Skip patient header rows
             if ($row.hasClass('patient-header')) {
-                const headerText = $cells.first().text().trim();
-                data.push([headerText]);
-            } else if ($row.find('td').first().attr('colspan') === '11') {
+                return;
+            }
+            
+            // Handle total patient row
+            if ($cells.first().attr('colspan') === '12') {
                 const totalText = $cells.first().text().trim();
-                const totalValue = $cells.last().text().trim().replace('Rp ', '').replace(/\./g, '');
-                data.push([totalText, '', '', '', '', '', '', '', '', '', '', parseInt(totalValue) || 0]);
-            } else {
+                const totalValue = $cells.last().text().trim().replace('Rp ', '').replace(/\./g, '').replace(/,/g, '');
+                data.push(['', '', '', '', '', '', '', '', '', '', '', totalText, parseInt(totalValue) || 0]);
+                return;
+            }
+            
+            // Handle grand total row
+            if ($row.hasClass('total-row')) {
+                const totalText = $cells.first().text().trim();
+                const totalValue = $cells.last().text().trim().replace('Rp ', '').replace(/\./g, '').replace(/,/g, '');
+                data.push(['', '', '', '', '', '', '', '', '', '', '', totalText, parseInt(totalValue) || 0]);
+                return;
+            }
+            
+            // Handle regular data rows (must have 13 columns)
+            if ($cells.length === 13) {
                 const row = [];
+                
                 $cells.each(function(index) {
-                    let cellValue = $(this).text().trim();
+                    let cellValue = $(this).clone(); // Clone untuk manipulasi
                     
+                    // Remove badges/spans untuk mendapatkan text bersih
+                    cellValue.find('.badge').remove();
+                    cellValue = cellValue.text().trim();
+                    
+                    // Convert currency to number
                     if (cellValue.includes('Rp ')) {
-                        cellValue = parseInt(cellValue.replace('Rp ', '').replace(/\./g, '')) || 0;
+                        cellValue = parseInt(cellValue.replace('Rp ', '').replace(/\./g, '').replace(/,/g, '')) || 0;
+                    }
+                    
+                    // Convert quantity to number
+                    if (index === 10) { // Kolom Qty
+                        cellValue = parseInt(cellValue) || 0;
                     }
                     
                     row.push(cellValue);
                 });
                 
-                if (row.length === 12) {
-                    data.push(row);
-                }
+                // Update nomor urut
+                row[0] = no++;
+                data.push(row);
             }
         });
 
+        // Check if data exists
+        if (data.length <= 7) { // Only headers, no actual data
+            alert('Tidak ada data untuk diunduh. Silakan tampilkan data terlebih dahulu.');
+            $('#printModal').modal('hide');
+            return;
+        }
+
         const ws = XLSX.utils.aoa_to_sheet(data);
         
+        // Set column widths
         ws['!cols'] = [
-            { wch: 5 },
-            { wch: 12 },
-            { wch: 15 },
-            { wch: 25 },
-            { wch: 12 },
-            { wch: 8 },
-            { wch: 30 },
-            { wch: 15 },
-            { wch: 15 },
-            { wch: 8 },
-            { wch: 15 },
-            { wch: 15 }
+            { wch: 5 },   // No
+            { wch: 12 },  // Tanggal
+            { wch: 15 },  // No Lab
+            { wch: 25 },  // Nama Pasien
+            { wch: 12 },  // Jenis Kelamin
+            { wch: 8 },   // Umur
+            { wch: 30 },  // Pemeriksaan
+            { wch: 15 },  // Departemen
+            { wch: 20 },  // Dokter
+            { wch: 15 },  // Payment Method
+            { wch: 8 },   // Qty
+            { wch: 15 },  // Harga
+            { wch: 15 }   // Total
         ];
 
         XLSX.utils.book_append_sheet(wb, ws, 'Data Pasien');
 
+        // Generate filename
         const safeJudul = judul.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
         const tanggal = new Date().toISOString().slice(0, 10);
         const namaFile = `${safeJudul}_${tanggal}.xlsx`;
 
         XLSX.writeFile(wb, namaFile);
         $('#printModal').modal('hide');
+        
+        // Show success message
+        console.log('Excel file downloaded successfully:', namaFile);
 
     } catch (error) {
         console.error('Error in unduhExcel:', error);
-        alert('Terjadi kesalahan saat membuat file Excel. Silakan coba lagi.');
+        alert('Terjadi kesalahan saat membuat file Excel: ' + error.message);
     }
 }
 
