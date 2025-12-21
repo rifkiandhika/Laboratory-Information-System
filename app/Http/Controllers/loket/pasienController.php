@@ -525,27 +525,6 @@ class pasienController extends Controller
                     ]);
                 }
             }
-        } else {
-            foreach ($request->pemeriksaan as $pemeriksaan) {
-                $existingPemeriksaan = pemeriksaan_pasien::where('no_lab', $pasien->no_lab)
-                    ->where('id_parameter', $pemeriksaan)
-                    ->first();
-
-                if (!$existingPemeriksaan) {
-                    $data = DetailDepartment::find($pemeriksaan);
-                    if ($data) {
-                        pemeriksaan_pasien::create([
-                            'no_lab' => $pasien->no_lab,
-                            'id_parameter' => $pemeriksaan,
-                            'id_departement' => $data->department_id,
-                            'nama_parameter' => $data->nama_parameter,
-                            'harga' => $harga,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]);
-                    }
-                }
-            }
         }
 
         session()->flash('status', 'updated');
