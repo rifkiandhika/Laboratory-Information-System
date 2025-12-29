@@ -3317,12 +3317,12 @@
                             
                             <div class="row">
                                 <div class="col-lg-6 mb-3 mt-2">
-                                    <button type="button" id="verifikasiHasilBtn" 
-                                            class="btn btn-outline-info btn-block w-100">Verifikasi Hasil</button>
-                                </div>
-                                <div class="col-lg-6 mb-3 mt-2">
                                     <button type="button" id="simpaniHasilBtn" 
                                             class="btn btn-outline-warning btn-block w-100">Simpan Hasil</button>
+                                </div>
+                                <div class="col-lg-6 mb-3 mt-2">
+                                    <button type="button" id="verifikasiHasilBtn" 
+                                            class="btn btn-outline-info btn-block w-100">Verifikasi Hasil</button>
                                 </div>
                                 <div class="col-lg-12 mt-2">
                                     <button type="button" id="verifikasiDokterBtn" 
