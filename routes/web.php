@@ -185,6 +185,8 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
     Route::post('worklist/upload-images', [HasilImageController::class, 'uploadImages']);
     Route::delete('worklist/delete-image/{id}', [HasilImageController::class, 'deleteImage']);
     Route::post('/hasil/kirim/{no_lab}', [HasilController::class, 'kirimHasil'])->name('hasil.kirim');
+    Route::post('/worklist/simpan-sementara', [WorklistController::class, 'simpanSementara'])
+        ->name('worklist.simpanSementara');
     // Route Dokter
     Route::resource('vdokter', vDokterController::class);
     Route::post('/dokter/back/{id}', [vDokterController::class, 'back'])->name('dokter.back');

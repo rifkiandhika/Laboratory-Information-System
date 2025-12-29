@@ -1722,21 +1722,34 @@
                             });
                         }
 
-                        function getObxValues(parameterName) {
-                            const key = (parameterName || '').toLowerCase().trim();
-                            const obxItems = [];
-
-                            // Guard clause: pastikan data_pasien dan obrs ada
-                            if (!data_pasien || !Array.isArray(data_pasien.obrs)) {
-                                console.warn('data_pasien.obrs tidak tersedia atau bukan array');
-                                return {
-                                    duplo_d1: '',
-                                    duplo_d2: '',
-                                    duplo_d3: '',
-                                    hasilUtama: ''
+                        const hasilMap = {};
+                        if (hasil && hasil.length > 0) {
+                            hasil.forEach(item => {
+                                hasilMap[item.nama_pemeriksaan] = {
+                                    hasil: item.hasil || '',
+                                    duplo_d1: item.duplo_d1 || '',
+                                    duplo_d2: item.duplo_d2 || '',
+                                    duplo_d3: item.duplo_d3 || '',
+                                    duplo_dx: item.duplo_dx || '',
+                                    range: item.range || '',
+                                    satuan: item.satuan || '',
+                                    note: item.note || '',
+                                    flag: item.flag || '',
+                                    flag_dx: item.flag_dx || '',
+                                    uid: item.uid || '',
+                                    is_switched: Number(item.is_switched) || 0
                                 };
-                            }
+                            });
+                        }
 
+                        function getObxValues(parameterName) {
+                        const key = (parameterName || '').toLowerCase().trim();
+                        const obxItems = [];
+
+                        // 1. CEK OBX DULU (PRIORITAS UTAMA)
+                        // Pastikan data_pasien dan obrs ada
+                        if (data_pasien && Array.isArray(data_pasien.obrs)) {
+                            // Ambil data dari OBX
                             data_pasien.obrs.forEach(obr => {
                                 if (Array.isArray(obr.obx)) {
                                     obr.obx.forEach(obx => {
@@ -1748,13 +1761,44 @@
                                 }
                             });
 
+                            // Jika ada data OBX, return data OBX
+                            if (obxItems.length > 0) {
+                                console.log(`✓ Data dari OBX ditemukan untuk: ${parameterName}`, obxItems);
+                                
+                                return {
+                                    duplo_d1: obxItems[1] ?? '',
+                                    duplo_d2: obxItems[2] ?? '',
+                                    duplo_d3: obxItems[3] ?? '',
+                                    hasilUtama: obxItems[0] ?? ''
+                                };
+                            }
+                        }
+                        
+                        // 2. FALLBACK KE DATABASE JIKA TIDAK ADA DI OBX
+                        // Cek apakah ada data dari database yang sudah tersimpan sebelumnya
+                        if (hasilMap && hasilMap[parameterName]) {
+                            const data = hasilMap[parameterName];
+                            
+                            console.log(`→ Data TIDAK ada di OBX, ambil dari DATABASE untuk: ${parameterName}`, data);
+                            
                             return {
-                                duplo_d1: obxItems[1] ?? '',
-                                duplo_d2: obxItems[2] ?? '',
-                                duplo_d3: obxItems[3] ?? '',
-                                hasilUtama: obxItems[0] ?? ''
+                                duplo_d1: data.duplo_d1 || '',
+                                duplo_d2: data.duplo_d2 || '',
+                                duplo_d3: data.duplo_d3 || '',
+                                hasilUtama: data.hasil || ''
                             };
                         }
+
+                        // 3. Jika tidak ada di OBX maupun Database, return empty
+                        console.warn(`⚠ Data TIDAK ditemukan di OBX maupun DATABASE untuk: ${parameterName}`);
+                        
+                        return {
+                            duplo_d1: '',
+                            duplo_d2: '',
+                            duplo_d3: '',
+                            hasilUtama: ''
+                        };
+                    }
 
 
                         function getInitialFlagContent(value, parameter = null, isHematologi = false, isUrine = false, nilaiRujukan = null, jenisKelamin = null) {
@@ -2249,10 +2293,8 @@
                                                                             <strong>${label}</strong>
                                                                             ${param.nilai_rujukan ? `<small class="text-muted d-block">${param.nilai_rujukan}</small>` : ''}
                                                                             
-                                                                            <!-- ★ PERBAIKAN: Tambah UID sebagai master key -->
                                                                             <input type="hidden" name="uid[]" value="${uniqueID}" />
                                                                             
-                                                                            <!-- ★ PERBAIKAN: Semua field sekarang menggunakan UID sebagai key -->
                                                                             <input type="hidden" name="nama_pemeriksaan[${uniqueID}]" value="${namaPemeriksaan}" />
                                                                             <input type="hidden" name="judul[${uniqueID}]" value="${judul}" />
                                                                             <input type="hidden" name="parameter_name[${uniqueID}]" value="${param.nama}" />
@@ -3069,202 +3111,7 @@
                                                             
                                                             if (!window.currentActiveLab) {
                                                                 window.currentActiveLab = null;
-                                                            }
-                                                            
-                                                            
-                                                            window.saveTempData = function(noLab, forceAll = false) {
-                                                                if (!noLab) {
-                                                                    return;
-                                                                }
-                                                                
-                                                                const data = [];
-                                                                
-                                                                document.querySelectorAll('[data-id][data-parameter]').forEach(row => {
-                                                                    // Cari semua kemungkinan input hasil
-                                                                    const hasilInput = row.querySelector('.hasil-input');
-                                                                    const hasilSelect = row.querySelector('.hasil-select');
-                                                                    const manualInput = row.querySelector('.manualInput'); // Tambahan untuk menangkap semua .manualInput
-                                                                    const d1 = row.querySelector('.d1');
-                                                                    const d2 = row.querySelector('.d2');
-                                                                    const d3 = row.querySelector('.d3');
-                                                                    
-                                                                    // Ambil nilai hasil dari input yang visible
-                                                                    let hasil = '';
-                                                                    if (hasilInput && hasilInput.style.display !== 'none') {
-                                                                        hasil = hasilInput.value || '';
-                                                                    } else if (hasilSelect && hasilSelect.style.display !== 'none') {
-                                                                        hasil = hasilSelect.value || '';
-                                                                    } else if (manualInput && manualInput.style.display !== 'none') {
-                                                                        hasil = manualInput.value || '';
-                                                                    }
-                                                                    
-                                                                    const d1Val = d1?.value || '';
-                                                                    const d2Val = d2?.value || '';
-                                                                    const d3Val = d3?.value || '';
-                                                                    
-                                                                    // Simpan jika ada data terisi
-                                                                    if (forceAll || hasil || d1Val || d2Val || d3Val) {
-                                                                        const rowData = {
-                                                                            id: row.getAttribute('data-id'),
-                                                                            parameter: row.getAttribute('data-parameter'),
-                                                                            hasil: hasil,
-                                                                            duplo_d1: d1Val,
-                                                                            duplo_d2: d2Val,
-                                                                            duplo_d3: d3Val
-                                                                        };
-                                                                        data.push(rowData);
-                                                                    }
-                                                                });
-                                                                
-                                                                if (data.length > 0) {
-                                                                    sessionStorage.setItem(`temp_lab_${noLab}`, JSON.stringify(data));
-                                                                    // console.log(`Saved ${data.length} rows for ${noLab}`);
-                                                                }
-                                                            };
-                                                            
-                                                            
-                                                            window.loadTempData = function(noLab) {
-                                                                if (!noLab) {
-                                                                    return;
-                                                                }
-                                                                
-                                                                const saved = sessionStorage.getItem(`temp_lab_${noLab}`);
-                                                                if (!saved) {
-                                                                    return;
-                                                                }
-                                                                
-                                                                try {
-                                                                    const data = JSON.parse(saved);
-                                                                    
-                                                                    setTimeout(() => {
-                                                                        let loadedCount = 0;
-                                                                        
-                                                                        // Buat map dari row yang ada saat ini
-                                                                        const currentRows = new Map();
-                                                                        document.querySelectorAll('[data-id][data-parameter]').forEach(row => {
-                                                                            const key = `${row.getAttribute('data-id')}-${row.getAttribute('data-parameter')}`;
-                                                                            currentRows.set(key, row);
-                                                                        });
-                                                                        
-                                                                        // Load data ke setiap row
-                                                                        data.forEach((savedRow) => {
-                                                                            const key = `${savedRow.id}-${savedRow.parameter}`;
-                                                                            const row = currentRows.get(key);
-                                                                            
-                                                                            if (!row) {
-                                                                                return;
-                                                                            }
-                                                                            
-                                                                            // Cari semua kemungkinan input hasil
-                                                                            const hasilInput = row.querySelector('.hasil-input');
-                                                                            const hasilSelect = row.querySelector('.hasil-select');
-                                                                            const manualInput = row.querySelector('.manualInput');
-                                                                            
-                                                                            // Load hasil ke input yang visible
-                                                                            if (hasilInput && hasilInput.style.display !== 'none' && savedRow.hasil !== '') {
-                                                                                hasilInput.value = savedRow.hasil;
-                                                                                loadedCount++;
-                                                                                hasilInput.dispatchEvent(new Event('input', { bubbles: true }));
-                                                                            }
-                                                                            if (hasilSelect && hasilSelect.style.display !== 'none' && savedRow.hasil !== '') {
-                                                                                hasilSelect.value = savedRow.hasil;
-                                                                                loadedCount++;
-                                                                                hasilSelect.dispatchEvent(new Event('change', { bubbles: true }));
-                                                                            }
-                                                                            if (manualInput && manualInput.style.display !== 'none' && savedRow.hasil !== '') {
-                                                                                manualInput.value = savedRow.hasil;
-                                                                                loadedCount++;
-                                                                                
-                                                                                // Trigger event yang sesuai dengan tipe input
-                                                                                if (manualInput.tagName === 'SELECT') {
-                                                                                    manualInput.dispatchEvent(new Event('change', { bubbles: true }));
-                                                                                } else {
-                                                                                    manualInput.dispatchEvent(new Event('input', { bubbles: true }));
-                                                                                }
-                                                                            }
-                                                                            
-                                                                            // Load duplo values
-                                                                            const d1 = row.querySelector('.d1');
-                                                                            const d2 = row.querySelector('.d2');
-                                                                            const d3 = row.querySelector('.d3');
-                                                                            
-                                                                            if (d1 && savedRow.duplo_d1 !== '') {
-                                                                                d1.value = savedRow.duplo_d1;
-                                                                                if (d1.tagName === 'SELECT') {
-                                                                                    d1.dispatchEvent(new Event('change', { bubbles: true }));
-                                                                                }
-                                                                            }
-                                                                            if (d2 && savedRow.duplo_d2 !== '') {
-                                                                                d2.value = savedRow.duplo_d2;
-                                                                                if (d2.tagName === 'SELECT') {
-                                                                                    d2.dispatchEvent(new Event('change', { bubbles: true }));
-                                                                                }
-                                                                            }
-                                                                            if (d3 && savedRow.duplo_d3 !== '') {
-                                                                                d3.value = savedRow.duplo_d3;
-                                                                                if (d3.tagName === 'SELECT') {
-                                                                                    d3.dispatchEvent(new Event('change', { bubbles: true }));
-                                                                                }
-                                                                            }
-                                                                        });
-                                                                        
-                                                                        if (loadedCount > 0) {
-                                                                            // console.log(`Loaded ${loadedCount} values for ${noLab}`);
-                                                                        }
-                                                                    }, 300);
-                                                                } catch (error) {
-                                                                    console.error('Error loading temp data:', error);
-                                                                }
-                                                            };
-                                                            
-                                                            if (!window.autoSaveSetupDone) {
-                                                                let autoSaveTimer;
-                                                                
-                                                                $(document).on('input change', '.hasil-input, .hasil-select, .manualInput, .d1, .d2, .d3', function(e) {
-                                                                    if (!window.currentActiveLab) {
-                                                                        return;
-                                                                    }
-                                                                    
-                                                                    clearTimeout(autoSaveTimer);
-                                                                    autoSaveTimer = setTimeout(() => {
-                                                                        window.saveTempData(window.currentActiveLab);
-                                                                    }, 600);
-                                                                });
-                                                                
-                                                                window.autoSaveSetupDone = true;
-                                                                // console.log('Auto-save setup complete for input and select fields');
-                                                            }
-                                                            
-                                                            window.clearTempData = function(noLab) {
-                                                                if (!noLab) return;
-                                                                sessionStorage.removeItem(`temp_lab_${noLab}`);
-                                                            };
-                                                            
-                                                            window.clearAllTempData = function() {
-                                                                const keys = Object.keys(sessionStorage);
-                                                                let count = 0;
-                                                                keys.forEach(key => {
-                                                                    if (key.startsWith('temp_lab_')) {
-                                                                        sessionStorage.removeItem(key);
-                                                                        count++;
-                                                                    }
-                                                                });
-                                                            };
-                                                            
-                                                            window.viewAllTempData = function() {
-                                                                const keys = Object.keys(sessionStorage);
-                                                                const tempData = {};
-                                                                keys.forEach(key => {
-                                                                    if (key.startsWith('temp_lab_')) {
-                                                                        const noLab = key.replace('temp_lab_', '');
-                                                                        const data = JSON.parse(sessionStorage.getItem(key));
-                                                                        const filledParams = data.filter(d => d.hasil || d.duplo_d1 || d.duplo_d2 || d.duplo_d3);
-                                                                        tempData[noLab] = `${filledParams.length}/${data.length} terisi`;
-                                                                    }
-                                                                });
-                                                                return tempData;
-                                                            };
-                                                            
+                                                            }                                                            
                                                             
                                                             let html = '';
                                                             let lastJudul = null;
@@ -3469,9 +3316,13 @@
                             </div>
                             
                             <div class="row">
-                                <div class="col-lg-12 mb-3 mt-2">
+                                <div class="col-lg-6 mb-3 mt-2">
                                     <button type="button" id="verifikasiHasilBtn" 
                                             class="btn btn-outline-info btn-block w-100">Verifikasi Hasil</button>
+                                </div>
+                                <div class="col-lg-6 mb-3 mt-2">
+                                    <button type="button" id="simpaniHasilBtn" 
+                                            class="btn btn-outline-warning btn-block w-100">Simpan Hasil</button>
                                 </div>
                                 <div class="col-lg-12 mt-2">
                                     <button type="button" id="verifikasiDokterBtn" 
@@ -4168,6 +4019,128 @@
                                             document.getElementById('worklistForm').submit();
                                         }
                                     });
+                                });
+                            }
+
+                            if (document.getElementById('simpaniHasilBtn')) {
+                                document.getElementById('simpaniHasilBtn').addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    
+                                    // Tampilkan konfirmasi
+                                    Swal.fire({
+                                        title: 'Simpan Hasil Sementara?',
+                                        html: `
+                                            <p>Hasil yang sudah diisi akan disimpan ke database.</p>
+                                            <p class="text-muted small">Parameter yang kosong akan diabaikan. Status pasien tidak akan berubah.</p>
+                                        `,
+                                        icon: 'question',
+                                        showCancelButton: true,
+                                        confirmButtonColor: '#ffc107',
+                                        cancelButtonColor: '#6c757d',
+                                        confirmButtonText: 'Ya, Simpan!',
+                                        cancelButtonText: 'Batal'
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            simpanHasilSementara();
+                                        }
+                                    });
+                                });
+                            }
+
+                            function simpanHasilSementara() {
+                                // Tampilkan loading
+                                Swal.fire({
+                                    title: 'Menyimpan...',
+                                    html: 'Mohon tunggu sebentar',
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    didOpen: () => {
+                                        Swal.showLoading();
+                                    }
+                                });
+
+                                // Kumpulkan data dari form
+                                const formData = new FormData(document.getElementById('worklistForm'));
+                                
+                                // Tambahkan flag khusus untuk simpan sementara
+                                formData.append('simpan_sementara', '1');
+
+                                // Kirim via AJAX
+                                fetch("{{ route('worklist.simpanSementara') }}", {
+                                    method: 'POST',
+                                    body: formData,
+                                    headers: {
+                                        'X-Requested-With': 'XMLHttpRequest',
+                                        'Accept': 'application/json',
+                                    }
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    if (data.success) {
+                                        // Tampilkan notifikasi sukses
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Berhasil Disimpan!',
+                                            html: `
+                                                <p>${data.message}</p>
+                                                <div class="alert alert-info mt-3">
+                                                    <small>
+                                                        <strong>Tersimpan:</strong> ${data.saved} parameter<br>
+                                                        ${data.skipped > 0 ? `<strong>Diabaikan:</strong> ${data.skipped} parameter kosong` : ''}
+                                                    </small>
+                                                </div>
+                                            `,
+                                            confirmButtonText: 'OK',
+                                            confirmButtonColor: '#28a745',
+                                            timer: 3000
+                                        });
+
+                                        // Update UI jika diperlukan (misalnya highlight field yang tersimpan)
+                                        highlightSavedFields(data.saved_uids || []);
+                                    } else {
+                                        throw new Error(data.message || 'Gagal menyimpan data');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Gagal Menyimpan',
+                                        text: error.message || 'Terjadi kesalahan saat menyimpan data',
+                                        confirmButtonText: 'OK',
+                                        confirmButtonColor: '#dc3545'
+                                    });
+                                });
+                            }
+
+                            // Fungsi untuk highlight field yang berhasil disimpan
+                            function highlightSavedFields(savedUids) {
+                                if (!savedUids || savedUids.length === 0) return;
+                                
+                                // Reset semua highlight terlebih dahulu
+                                document.querySelectorAll('.hasil-input, .hasil-select, .manualInput').forEach(input => {
+                                    input.style.backgroundColor = '';
+                                });
+                                
+                                // Highlight field yang tersimpan
+                                savedUids.forEach(uid => {
+                                    const row = document.querySelector(`tr[data-uid="${uid}"]`);
+                                    if (row) {
+                                        const activeInput = row.querySelector('.hasil-input:not([style*="display: none"]), .hasil-select:not([style*="display: none"]), .manualInput:not([style*="display: none"])');
+                                        if (activeInput && activeInput.value) {
+                                            activeInput.style.backgroundColor = '#d4edda'; // Light green
+                                            
+                                            // Remove highlight after 2 seconds
+                                            setTimeout(() => {
+                                                activeInput.style.backgroundColor = '';
+                                            }, 2000);
+                                        }
+                                    }
                                 });
                             }
 
