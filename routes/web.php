@@ -182,6 +182,8 @@ Route::group(['prefix' => 'analyst', 'middleware' => ['auth']], function () {
     Route::post('/worklist/end/{id}', [worklistController::class, 'end'])->name('worklist.end');
     Route::post('/worklist/update-hasil/{no_lab}', [WorklistController::class, 'updateHasil'])
         ->name('worklist.update-hasil');
+    Route::post('/worklist/simpan-sementara', [WorklistController::class, 'simpanSementara'])
+        ->name('worklist.simpanSementara');
     Route::post('worklist/upload-images', [HasilImageController::class, 'uploadImages']);
     Route::delete('worklist/delete-image/{id}', [HasilImageController::class, 'deleteImage']);
     Route::post('/hasil/kirim/{no_lab}', [HasilController::class, 'kirimHasil'])->name('hasil.kirim');

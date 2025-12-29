@@ -286,6 +286,219 @@ class worklistController extends Controller
         }
     }
 
+    public function simpanSementara(Request $request)
+    {
+        // Validasi input dasar saja (tidak validasi hasil wajib diisi)
+        $request->validate([
+            'no_lab' => 'required',
+            'no_rm' => 'required',
+            'nama' => 'required',
+            'ruangan' => 'required',
+            'nama_dokter' => 'required',
+            'uid' => 'required|array',
+            'uid.*' => 'required|string',
+            'parameter_name' => 'nullable|array',
+            'nama_pemeriksaan' => 'nullable|array',
+            'hasil' => 'nullable|array',
+            'duplo_d1' => 'nullable|array',
+            'duplo_d2' => 'nullable|array',
+            'duplo_d3' => 'nullable|array',
+            'nilai_rujukan' => 'nullable|array',
+            'satuan' => 'nullable|array',
+            'metode' => 'nullable|array',
+            'department' => 'nullable|array',
+            'flag' => 'nullable|array',
+            'judul' => 'nullable|array',
+            'note' => 'nullable|string',
+        ]);
+
+        // Ambil data umum pasien
+        $no_lab = $request->input('no_lab');
+        $no_rm = $request->input('no_rm');
+        $nama = $request->input('nama');
+        $ruangan = $request->input('ruangan');
+        $nama_dokter = $request->input('nama_dokter');
+        $note = $request->input('note');
+
+        // Ambil array UID sebagai master key
+        $uids = $request->input('uid', []);
+
+        // Ambil semua data dengan UID sebagai key
+        $parameter_names = $request->input('parameter_name', []);
+        $nama_pemeriksaans = $request->input('nama_pemeriksaan', []);
+        $hasils = $request->input('hasil', []);
+        $duplo_d1s = $request->input('duplo_d1', []);
+        $duplo_d2s = $request->input('duplo_d2', []);
+        $duplo_d3s = $request->input('duplo_d3', []);
+        $nilai_rujukans = $request->input('nilai_rujukan', []);
+        $satuans = $request->input('satuan', []);
+        $metodes = $request->input('metode', []);
+        $juduls = $request->input('judul', []);
+        $flags = $request->input('flag', []);
+        $departments = $request->input('department', []);
+
+        Log::info('SIMPAN SEMENTARA - Total UIDs received: ' . count($uids));
+
+        $savedCount = 0;
+        $skippedCount = 0;
+        $errorCount = 0;
+        $savedUids = [];
+        $errors = [];
+
+        DB::beginTransaction();
+
+        try {
+            // Loop berdasarkan UID (master key)
+            foreach ($uids as $uid) {
+                // Ambil data untuk UID ini
+                $parameter_name = $parameter_names[$uid] ?? null;
+                $nama_pemeriksaan = $nama_pemeriksaans[$uid] ?? null;
+                $hasil = $hasils[$uid] ?? null;
+                $duplo_d1 = $duplo_d1s[$uid] ?? null;
+                $duplo_d2 = $duplo_d2s[$uid] ?? null;
+                $duplo_d3 = $duplo_d3s[$uid] ?? null;
+                $nilai_rujukan = $nilai_rujukans[$uid] ?? null;
+                $satuan = $satuans[$uid] ?? null;
+                $metode = $metodes[$uid] ?? null;
+                $judul = $juduls[$uid] ?? null;
+                $flag = $flags[$uid] ?? null;
+                $department = $departments[$uid] ?? null;
+
+                // Skip jika parameter_name atau nama_pemeriksaan kosong
+                if (empty($parameter_name) || empty($nama_pemeriksaan)) {
+                    Log::warning("SIMPAN SEMENTARA - Skipping UID {$uid}: missing parameter_name or nama_pemeriksaan");
+                    $skippedCount++;
+                    continue;
+                }
+
+                // PERBEDAAN UTAMA: Skip jika hasil kosong
+                // Ini yang membedakan dengan store() biasa
+                if (empty($hasil) || trim($hasil) === '') {
+                    Log::info("SIMPAN SEMENTARA - Skipping UID {$uid} ({$parameter_name}): hasil kosong");
+                    $skippedCount++;
+                    continue;
+                }
+
+                try {
+                    // Cari existing record berdasarkan no_lab dan parameter_name
+                    $existingHasil = HasilPemeriksaan::where('no_lab', $no_lab)
+                        ->where('nama_pemeriksaan', $parameter_name)
+                        ->where('judul', $judul ?? '')
+                        ->first();
+
+                    // Prepare data untuk save
+                    $dataToSave = [
+                        'uid' => $uid,
+                        'no_lab' => $no_lab,
+                        'no_rm' => $no_rm,
+                        'nama' => $nama,
+                        'ruangan' => $ruangan,
+                        'nama_dokter' => $nama_dokter,
+                        'nama_pemeriksaan' => $parameter_name,
+                        'hasil' => $hasil,
+                        'duplo_d1' => $duplo_d1,
+                        'duplo_d2' => $duplo_d2,
+                        'duplo_d3' => $duplo_d3,
+                        'range' => $nilai_rujukan,
+                        'satuan' => $satuan,
+                        'metode' => $metode,
+                        'flag' => $flag,
+                        'judul' => $judul,
+                        'department' => $department,
+                        'note' => $note,
+                    ];
+
+                    if ($existingHasil) {
+                        // Update existing record
+                        $existingHasil->update($dataToSave);
+                        Log::info("SIMPAN SEMENTARA - ✓ Updated: {$parameter_name} (UID: {$uid})", [
+                            'hasil' => $hasil,
+                            'flag' => $flag
+                        ]);
+                    } else {
+                        // Create new record
+                        HasilPemeriksaan::create($dataToSave);
+                        Log::info("SIMPAN SEMENTARA - ✓ Created: {$parameter_name} (UID: {$uid})", [
+                            'hasil' => $hasil,
+                            'flag' => $flag
+                        ]);
+                    }
+
+                    $savedCount++;
+                    $savedUids[] = $uid;
+                } catch (\Exception $e) {
+                    $errorCount++;
+                    $errorMsg = "Failed to save UID {$uid} ({$parameter_name}): " . $e->getMessage();
+                    Log::error("SIMPAN SEMENTARA - " . $errorMsg);
+                    $errors[] = $errorMsg;
+                }
+            }
+
+            // PENTING: TIDAK update status pasien
+            // TIDAK create history pasien
+            // TIDAK update report analyst
+            // Hanya simpan data hasil pemeriksaan saja tanpa mengubah workflow
+
+            DB::commit();
+
+            // Log summary
+            Log::info("=== SIMPAN SEMENTARA SUMMARY ===", [
+                'no_lab' => $no_lab,
+                'total_uids' => count($uids),
+                'saved' => $savedCount,
+                'skipped' => $skippedCount,
+                'errors' => $errorCount,
+                'saved_uids' => $savedUids
+            ]);
+
+            // Return JSON response untuk AJAX
+            if ($errorCount > 0 && $savedCount === 0) {
+                // Semua gagal
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal menyimpan semua data',
+                    'saved' => $savedCount,
+                    'skipped' => $skippedCount,
+                    'errors' => $errorCount,
+                    'error_messages' => $errors
+                ], 500);
+            } elseif ($errorCount > 0) {
+                // Sebagian berhasil
+                return response()->json([
+                    'success' => true,
+                    'message' => "Berhasil menyimpan {$savedCount} parameter, {$errorCount} gagal",
+                    'saved' => $savedCount,
+                    'skipped' => $skippedCount,
+                    'errors' => $errorCount,
+                    'saved_uids' => $savedUids,
+                    'error_messages' => $errors
+                ]);
+            } else {
+                // Semua berhasil
+                return response()->json([
+                    'success' => true,
+                    'message' => $savedCount > 0
+                        ? "Berhasil menyimpan {$savedCount} parameter"
+                        : "Tidak ada data yang perlu disimpan",
+                    'saved' => $savedCount,
+                    'skipped' => $skippedCount,
+                    'errors' => $errorCount,
+                    'saved_uids' => $savedUids
+                ]);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('SIMPAN SEMENTARA - Transaction failed: ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyimpan data: ' . $e->getMessage(),
+                'errors' => [$e->getMessage()]
+            ], 500);
+        }
+    }
+
 
     public function updateHasil(Request $request, $no_lab)
     {

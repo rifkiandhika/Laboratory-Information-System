@@ -1723,21 +1723,34 @@
                             });
                         }
 
-                        function getObxValues(parameterName) {
-                            const key = (parameterName || '').toLowerCase().trim();
-                            const obxItems = [];
-
-                            // Guard clause: pastikan data_pasien dan obrs ada
-                            if (!data_pasien || !Array.isArray(data_pasien.obrs)) {
-                                console.warn('data_pasien.obrs tidak tersedia atau bukan array');
-                                return {
-                                    duplo_d1: '',
-                                    duplo_d2: '',
-                                    duplo_d3: '',
-                                    hasilUtama: ''
+                        const hasilMap = {};
+                        if (hasil && hasil.length > 0) {
+                            hasil.forEach(item => {
+                                hasilMap[item.nama_pemeriksaan] = {
+                                    hasil: item.hasil || '',
+                                    duplo_d1: item.duplo_d1 || '',
+                                    duplo_d2: item.duplo_d2 || '',
+                                    duplo_d3: item.duplo_d3 || '',
+                                    duplo_dx: item.duplo_dx || '',
+                                    range: item.range || '',
+                                    satuan: item.satuan || '',
+                                    note: item.note || '',
+                                    flag: item.flag || '',
+                                    flag_dx: item.flag_dx || '',
+                                    uid: item.uid || '',
+                                    is_switched: Number(item.is_switched) || 0
                                 };
-                            }
+                            });
+                        }
 
+                        function getObxValues(parameterName) {
+                        const key = (parameterName || '').toLowerCase().trim();
+                        const obxItems = [];
+
+                        // 1. CEK OBX DULU (PRIORITAS UTAMA)
+                        // Pastikan data_pasien dan obrs ada
+                        if (data_pasien && Array.isArray(data_pasien.obrs)) {
+                            // Ambil data dari OBX
                             data_pasien.obrs.forEach(obr => {
                                 if (Array.isArray(obr.obx)) {
                                     obr.obx.forEach(obx => {
@@ -1749,13 +1762,44 @@
                                 }
                             });
 
+                            // Jika ada data OBX, return data OBX
+                            if (obxItems.length > 0) {
+                                console.log(`✓ Data dari OBX ditemukan untuk: ${parameterName}`, obxItems);
+                                
+                                return {
+                                    duplo_d1: obxItems[1] ?? '',
+                                    duplo_d2: obxItems[2] ?? '',
+                                    duplo_d3: obxItems[3] ?? '',
+                                    hasilUtama: obxItems[0] ?? ''
+                                };
+                            }
+                        }
+                        
+                        // 2. FALLBACK KE DATABASE JIKA TIDAK ADA DI OBX
+                        // Cek apakah ada data dari database yang sudah tersimpan sebelumnya
+                        if (hasilMap && hasilMap[parameterName]) {
+                            const data = hasilMap[parameterName];
+                            
+                            console.log(`→ Data TIDAK ada di OBX, ambil dari DATABASE untuk: ${parameterName}`, data);
+                            
                             return {
-                                duplo_d1: obxItems[1] ?? '',
-                                duplo_d2: obxItems[2] ?? '',
-                                duplo_d3: obxItems[3] ?? '',
-                                hasilUtama: obxItems[0] ?? ''
+                                duplo_d1: data.duplo_d1 || '',
+                                duplo_d2: data.duplo_d2 || '',
+                                duplo_d3: data.duplo_d3 || '',
+                                hasilUtama: data.hasil || ''
                             };
                         }
+
+                        // 3. Jika tidak ada di OBX maupun Database, return empty
+                        console.warn(`⚠ Data TIDAK ditemukan di OBX maupun DATABASE untuk: ${parameterName}`);
+                        
+                        return {
+                            duplo_d1: '',
+                            duplo_d2: '',
+                            duplo_d3: '',
+                            hasilUtama: ''
+                        };
+                    }
 
 
                         function getInitialFlagContent(value, parameter = null, isHematologi = false, isUrine = false, nilaiRujukan = null, jenisKelamin = null) {
@@ -3472,9 +3516,13 @@
                             </div>
                             
                             <div class="row">
-                                <div class="col-lg-12 mb-3 mt-2">
+                                <div class="col-lg-6 mb-3 mt-2">
                                     <button type="button" id="verifikasiHasilBtn" 
                                             class="btn btn-outline-info btn-block w-100">Verifikasi Hasil</button>
+                                </div>
+                                <div class="col-lg-6 mb-3 mt-2">
+                                    <button type="button" id="simpaniHasilBtn" 
+                                            class="btn btn-outline-warning btn-block w-100">Simpan Hasil</button>
                                 </div>
                                 <div class="col-lg-12 mt-2">
                                     <button type="button" id="verifikasiDokterBtn" 
@@ -4171,6 +4219,128 @@
                                             document.getElementById('worklistForm').submit();
                                         }
                                     });
+                                });
+                            }
+
+                             if (document.getElementById('simpaniHasilBtn')) {
+                                document.getElementById('simpaniHasilBtn').addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    
+                                    // Tampilkan konfirmasi
+                                    Swal.fire({
+                                        title: 'Simpan Hasil Sementara?',
+                                        html: `
+                                            <p>Hasil yang sudah diisi akan disimpan ke database.</p>
+                                            <p class="text-muted small">Parameter yang kosong akan diabaikan. Status pasien tidak akan berubah.</p>
+                                        `,
+                                        icon: 'question',
+                                        showCancelButton: true,
+                                        confirmButtonColor: '#ffc107',
+                                        cancelButtonColor: '#6c757d',
+                                        confirmButtonText: 'Ya, Simpan!',
+                                        cancelButtonText: 'Batal'
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            simpanHasilSementara();
+                                        }
+                                    });
+                                });
+                            }
+
+                            function simpanHasilSementara() {
+                                // Tampilkan loading
+                                Swal.fire({
+                                    title: 'Menyimpan...',
+                                    html: 'Mohon tunggu sebentar',
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    didOpen: () => {
+                                        Swal.showLoading();
+                                    }
+                                });
+
+                                // Kumpulkan data dari form
+                                const formData = new FormData(document.getElementById('worklistForm'));
+                                
+                                // Tambahkan flag khusus untuk simpan sementara
+                                formData.append('simpan_sementara', '1');
+
+                                // Kirim via AJAX
+                                fetch("{{ route('worklist.simpanSementara') }}", {
+                                    method: 'POST',
+                                    body: formData,
+                                    headers: {
+                                        'X-Requested-With': 'XMLHttpRequest',
+                                        'Accept': 'application/json',
+                                    }
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    if (data.success) {
+                                        // Tampilkan notifikasi sukses
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Berhasil Disimpan!',
+                                            html: `
+                                                <p>${data.message}</p>
+                                                <div class="alert alert-info mt-3">
+                                                    <small>
+                                                        <strong>Tersimpan:</strong> ${data.saved} parameter<br>
+                                                        ${data.skipped > 0 ? `<strong>Diabaikan:</strong> ${data.skipped} parameter kosong` : ''}
+                                                    </small>
+                                                </div>
+                                            `,
+                                            confirmButtonText: 'OK',
+                                            confirmButtonColor: '#28a745',
+                                            timer: 3000
+                                        });
+
+                                        // Update UI jika diperlukan (misalnya highlight field yang tersimpan)
+                                        highlightSavedFields(data.saved_uids || []);
+                                    } else {
+                                        throw new Error(data.message || 'Gagal menyimpan data');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Gagal Menyimpan',
+                                        text: error.message || 'Terjadi kesalahan saat menyimpan data',
+                                        confirmButtonText: 'OK',
+                                        confirmButtonColor: '#dc3545'
+                                    });
+                                });
+                            }
+
+                            // Fungsi untuk highlight field yang berhasil disimpan
+                            function highlightSavedFields(savedUids) {
+                                if (!savedUids || savedUids.length === 0) return;
+                                
+                                // Reset semua highlight terlebih dahulu
+                                document.querySelectorAll('.hasil-input, .hasil-select, .manualInput').forEach(input => {
+                                    input.style.backgroundColor = '';
+                                });
+                                
+                                // Highlight field yang tersimpan
+                                savedUids.forEach(uid => {
+                                    const row = document.querySelector(`tr[data-uid="${uid}"]`);
+                                    if (row) {
+                                        const activeInput = row.querySelector('.hasil-input:not([style*="display: none"]), .hasil-select:not([style*="display: none"]), .manualInput:not([style*="display: none"])');
+                                        if (activeInput && activeInput.value) {
+                                            activeInput.style.backgroundColor = '#d4edda'; // Light green
+                                            
+                                            // Remove highlight after 2 seconds
+                                            setTimeout(() => {
+                                                activeInput.style.backgroundColor = '';
+                                            }, 2000);
+                                        }
+                                    }
                                 });
                             }
 
