@@ -1764,7 +1764,7 @@
 
                             // Jika ada data OBX, return data OBX
                             if (obxItems.length > 0) {
-                                console.log(`✓ Data dari OBX ditemukan untuk: ${parameterName}`, obxItems);
+                                // console.log(`✓ Data dari OBX ditemukan untuk: ${parameterName}`, obxItems);
                                 
                                 return {
                                     duplo_d1: obxItems[1] ?? '',
@@ -1780,7 +1780,7 @@
                         if (hasilMap && hasilMap[parameterName]) {
                             const data = hasilMap[parameterName];
                             
-                            console.log(`→ Data TIDAK ada di OBX, ambil dari DATABASE untuk: ${parameterName}`, data);
+                            // console.log(`→ Data TIDAK ada di OBX, ambil dari DATABASE untuk: ${parameterName}`, data);
                             
                             return {
                                 duplo_d1: data.duplo_d1 || '',
@@ -1791,7 +1791,7 @@
                         }
 
                         // 3. Jika tidak ada di OBX maupun Database, return empty
-                        console.warn(`⚠ Data TIDAK ditemukan di OBX maupun DATABASE untuk: ${parameterName}`);
+                        // console.warn(`⚠ Data TIDAK ditemukan di OBX maupun DATABASE untuk: ${parameterName}`);
                         
                         return {
                             duplo_d1: '',
@@ -4031,25 +4031,7 @@
                              if (document.getElementById('simpaniHasilBtn')) {
                                 document.getElementById('simpaniHasilBtn').addEventListener('click', (e) => {
                                     e.preventDefault();
-                                    
-                                    // Tampilkan konfirmasi
-                                    Swal.fire({
-                                        title: 'Simpan Hasil Sementara?',
-                                        html: `
-                                            <p>Hasil yang sudah diisi akan disimpan ke database.</p>
-                                            <p class="text-muted small">Parameter yang kosong akan diabaikan. Status pasien tidak akan berubah.</p>
-                                        `,
-                                        icon: 'question',
-                                        showCancelButton: true,
-                                        confirmButtonColor: '#ffc107',
-                                        cancelButtonColor: '#6c757d',
-                                        confirmButtonText: 'Ya, Simpan!',
-                                        cancelButtonText: 'Batal'
-                                    }).then((result) => {
-                                        if (result.isConfirmed) {
-                                            simpanHasilSementara();
-                                        }
-                                    });
+                                    simpanHasilSementara();
                                 });
                             }
 
